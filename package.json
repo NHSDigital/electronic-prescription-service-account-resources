@@ -2,5 +2,9 @@
   "dependencies": {
     "pip": "^0.0.1",
     "poetry": "^0.6.28"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "check-licenses": "node_modules/.bin/license-checker --failOn GPL --failOn LGPL"
   }
 }
