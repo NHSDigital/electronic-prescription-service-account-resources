@@ -90,7 +90,7 @@ jobs:
           { 
               "currentTag": "$target_tag", 
               "targetTag": "$dev_tag", 
-              "repoName": "prescriptionsforpatients", 
+              "repoName": "electronic-prescription-service-account-resources", 
               "targetEnvironment": "INT", 
               "productName": "Prescritpions for Patients AWS layer", 
               "releaseNotesPageId": "693750027", 
@@ -114,7 +114,7 @@ jobs:
           { 
               "currentTag": "$target_tag", 
               "targetTag": "$dev_tag", 
-              "repoName": "prescriptionsforpatients", 
+              "repoName": "electronic-prescription-service-account-resources", 
               "targetEnvironment": "PROD", 
               "productName": "Prescritpions for Patients AWS layer", 
               "releaseNotesPageId": "693750029", 

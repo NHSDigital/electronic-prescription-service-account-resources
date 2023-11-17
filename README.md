@@ -95,7 +95,7 @@ When the token expires, you may need to reauthorise using `make aws-login`
 The GitHub Actions require a secret to exist on the repo called "SONAR_TOKEN".
 This can be obtained from [SonarCloud](https://sonarcloud.io/)
 as described [here](https://docs.sonarsource.com/sonarqube/latest/user-guide/user-account/generating-and-using-tokens/).
-You will need the "Execute Analysis" permission for the project (NHSDigital_prescriptionsforpatients) in order for the token to work.
+You will need the "Execute Analysis" permission for the project (NHSDigital_electronic-prescription-service-account-resources) in order for the token to work.
 
 ### Continuous deployment for testing
 

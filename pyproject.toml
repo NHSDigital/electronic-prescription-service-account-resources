@@ -20,7 +20,7 @@ authors = [
     Jonathan Welch <jonathan.welch1@nhs.net>"
 ]
 readme = "README.md"
-repository = "https://github.com/NHSDigital/prescriptionsforpatients"
+repository = "https://github.com/NHSDigital/electronic-prescription-service-account-resources"
 
 [tool.poetry.dependencies]
 python = "^3.8"
