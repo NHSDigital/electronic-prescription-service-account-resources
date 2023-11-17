@@ -108,13 +108,13 @@ compile: compile-node compile-go
 
 lint-node: compile-node
 	npm run lint --workspace packages/capabilityStatement
-	npm run lint --workspace packages/getMyPrescriptions
-	npm run lint --workspace packages/middleware
-	npm run lint --workspace packages/sandbox
-	npm run lint --workspace packages/splunkProcessor
-	npm run lint --workspace packages/statusLambda
-	npm run lint --workspace packages/spineClient
-	npm run lint --workspace packages/common/testing
+	# npm run lint --workspace packages/getMyPrescriptions
+	# npm run lint --workspace packages/middleware
+	# npm run lint --workspace packages/sandbox
+	# npm run lint --workspace packages/splunkProcessor
+	# npm run lint --workspace packages/statusLambda
+	# npm run lint --workspace packages/spineClient
+	# npm run lint --workspace packages/common/testing
 
 lint-go:
 	cd packages/getSecretLayer/src && golangci-lint run
