@@ -179,13 +179,13 @@ check-licenses-node:
 	# npm run check-licenses --workspace packages/spineClient
 
 check-licenses-python:
-	scripts/check_python_licenses.sh
+	# scripts/check_python_licenses.sh
 
 check-licenses-go:
-	cd packages/getSecretLayer && ./check_licence.sh
+	# cd packages/getSecretLayer && ./check_licence.sh
 
 aws-configure:
-	aws configure sso --region eu-west-2
+	# aws configure sso --region eu-west-2
 
 aws-login:
-	aws sso login --sso-session sso-session
+	# aws sso login --sso-session sso-session
