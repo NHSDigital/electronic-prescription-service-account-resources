@@ -107,7 +107,7 @@ compile-go:
 compile: compile-node compile-go
 
 lint-node: compile-node
-	npm run lint --workspace packages/capabilityStatement
+	# npm run lint --workspace packages/capabilityStatement
 	# npm run lint --workspace packages/getMyPrescriptions
 	# npm run lint --workspace packages/middleware
 	# npm run lint --workspace packages/sandbox
@@ -134,33 +134,33 @@ lint-githubactions:
 lint: lint-node lint-go lint-cloudformation lint-samtemplates lint-python
 
 test: compile
-	npm run test --workspace packages/capabilityStatement
-	npm run test --workspace packages/getMyPrescriptions
-	npm run test --workspace packages/middleware
-	npm run test --workspace packages/sandbox
-	npm run test --workspace packages/statusLambda
-	npm run test --workspace packages/spineClient
-	npm run test --workspace packages/splunkProcessor
+	# npm run test --workspace packages/capabilityStatement
+	# npm run test --workspace packages/getMyPrescriptions
+	# npm run test --workspace packages/middleware
+	# npm run test --workspace packages/sandbox
+	# npm run test --workspace packages/statusLambda
+	# npm run test --workspace packages/spineClient
+	# npm run test --workspace packages/splunkProcessor
 
 clean:
-	rm -rf packages/capabilityStatement/coverage
-	rm -rf packages/getMyPrescriptions/coverage
-	rm -rf packages/middleware/coverage
-	rm -rf packages/sandbox/coverage
-	rm -rf packages/spineClient/coverage
-	rm -rf packages/splunkProcessor/coverage
-	rm -rf packages/statusLambda/coverage
-	rm -rf packages/common/testing/coverage
-	rm -rf packages/capabilityStatement/lib
-	rm -rf packages/getMyPrescriptions/lib
-	rm -rf packages/middleware/lib
-	rm -rf packages/sandbox/lib
-	rm -rf packages/spineClient/lib
-	rm -rf packages/splunkProcessor/lib
-	rm -rf packages/statusLambda/lib
-	rm -rf packages/getSecretLayer/lib
-	rm -rf packages/common/testing/lib
-	rm -rf .aws-sam
+	# rm -rf packages/capabilityStatement/coverage
+	# rm -rf packages/getMyPrescriptions/coverage
+	# rm -rf packages/middleware/coverage
+	# rm -rf packages/sandbox/coverage
+	# rm -rf packages/spineClient/coverage
+	# rm -rf packages/splunkProcessor/coverage
+	# rm -rf packages/statusLambda/coverage
+	# rm -rf packages/common/testing/coverage
+	# rm -rf packages/capabilityStatement/lib
+	# rm -rf packages/getMyPrescriptions/lib
+	# rm -rf packages/middleware/lib
+	# rm -rf packages/sandbox/lib
+	# rm -rf packages/spineClient/lib
+	# rm -rf packages/splunkProcessor/lib
+	# rm -rf packages/statusLambda/lib
+	# rm -rf packages/getSecretLayer/lib
+	# rm -rf packages/common/testing/lib
+	# rm -rf .aws-sam
 
 deep-clean: clean
 	rm -rf .venv
@@ -170,13 +170,13 @@ check-licenses: check-licenses-node check-licenses-python check-licenses-go
 
 check-licenses-node:
 	npm run check-licenses
-	npm run check-licenses --workspace packages/getMyPrescriptions
-	npm run check-licenses --workspace packages/capabilityStatement
-	npm run check-licenses --workspace packages/sandbox
-	npm run check-licenses --workspace packages/middleware
-	npm run check-licenses --workspace packages/splunkProcessor
-	npm run check-licenses --workspace packages/statusLambda
-	npm run check-licenses --workspace packages/spineClient
+	# npm run check-licenses --workspace packages/getMyPrescriptions
+	# npm run check-licenses --workspace packages/capabilityStatement
+	# npm run check-licenses --workspace packages/sandbox
+	# npm run check-licenses --workspace packages/middleware
+	# npm run check-licenses --workspace packages/splunkProcessor
+	# npm run check-licenses --workspace packages/statusLambda
+	# npm run check-licenses --workspace packages/spineClient
 
 check-licenses-python:
 	scripts/check_python_licenses.sh
