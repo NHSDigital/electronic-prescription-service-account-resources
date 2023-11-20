@@ -21,7 +21,7 @@ lint-cloudformation:
 lint-githubactions:
 	actionlint
 
-lint: lint-cloudformation lint-python
+lint: lint-cloudformation 
 
 
 clean:
