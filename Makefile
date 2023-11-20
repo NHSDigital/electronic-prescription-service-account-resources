@@ -55,7 +55,6 @@ deep-clean: clean
 
 check-licenses: check-licenses-python 
 
-
 check-licenses-python:
 	scripts/check_python_licenses.sh
 
