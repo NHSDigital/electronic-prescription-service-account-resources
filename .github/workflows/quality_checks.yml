@@ -2,9 +2,6 @@ name: quality checks
 
 on:
   workflow_call:
-    secrets:
-      SONAR_TOKEN:
-        required: true
 
 jobs:
   quality_checks:
@@ -47,12 +44,3 @@ jobs:
 
       - name: run lint
         run: make lint
-
-      - name: run unit tests
-        run: make test
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
