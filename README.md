@@ -10,7 +10,6 @@ It is called by an Apigee proxy that is defined at https://github.com/NHSDigital
 - `.github` Contains github workflows that are used for building and deploying from pull requests and releases
 - `.vscode` Contains vscode workspace file
 - `cloudformation/` Contains cloudformation files used to create resources for CI builds and deployments
-- `SAMtemplates/` Contains the SAM templates used to define the stacks
 
 ## Contributing
 
@@ -178,7 +177,6 @@ These are used to do common commands
 - `lint` runs lint for all code
 - `lint-node` runs lint for node code
 - `lint-cloudformation` runs lint for cloudformation templates
-- `lint-samtemplates` runs lint for SAM templates
 - `test` runs unit tests for all code
 
 #### Compiling

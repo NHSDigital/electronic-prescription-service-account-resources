@@ -17,16 +17,13 @@ install-hooks: install-python
 lint-cloudformation:
 	poetry run cfn-lint -t cloudformation/*.yml
 
-lint-samtemplates:
-	poetry run cfn-lint -t SAMtemplates/*.yaml
-
 lint-python:
 	poetry run flake8 scripts/*.py --config .flake8
 
 lint-githubactions:
 	actionlint
 
-lint: lint-cloudformation lint-samtemplates lint-python
+lint: lint-cloudformation lint-python
 
 
 clean:
