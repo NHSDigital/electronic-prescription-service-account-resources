@@ -17,8 +17,6 @@ install-hooks: install-python
 lint-cloudformation:
 	poetry run cfn-lint -t cloudformation/*.yml
 
-lint-python:
-	poetry run flake8 scripts/*.py --config .flake8
 
 lint-githubactions:
 	actionlint
