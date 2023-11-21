@@ -92,9 +92,9 @@ jobs:
               "targetTag": "$dev_tag", 
               "repoName": "electronic-prescription-service-account-resources", 
               "targetEnvironment": "INT", 
-              "productName": "Prescritpions for Patients AWS layer", 
+              "productName": "EPS Account Resources", 
               "releaseNotesPageId": "693750027", 
-              "releaseNotesPageTitle": "Current PfP AWS layer release notes - INT"
+              "releaseNotesPageTitle": "Infrastructure code defining resources used in AWS EPS. - INT"
           }
           EOF
           cat payload.json
@@ -116,9 +116,9 @@ jobs:
               "targetTag": "$dev_tag", 
               "repoName": "electronic-prescription-service-account-resources", 
               "targetEnvironment": "PROD", 
-              "productName": "Prescritpions for Patients AWS layer", 
+              "productName": "EPSAccount Resources", 
               "releaseNotesPageId": "693750029", 
-              "releaseNotesPageTitle": "Current PfP AWS layer release notes - PROD"
+              "releaseNotesPageTitle": "Infrastructure code defining resources used in AWS EPS. - PROD"
           }
           EOF
           cat payload.json

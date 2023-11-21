@@ -12,15 +12,6 @@ updates:
       interval: "daily"
 
   ###################################
-  # NPM workspace  ##################
-  ###################################
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    versioning-strategy: increase
-
-  ###################################
   # Poetry  #########################
   ###################################
   - package-ecosystem: "pip"

@@ -4,7 +4,7 @@
 
 This is the repo containing infrastructure code that defines resources that are to be used in AWS accounts associated with the EPS project.
 
-It is called by an Apigee proxy that is defined at https://github.com/NHSDigital/prescriptions-for-patients
+It is called by an Apigee proxy that is defined at https://github.com/NHSDigital/electronic-prescription-service-account-resources
 
 - `.devcontainer` Contains a dockerfile and vscode devcontainer definition
 - `.github` Contains github workflows that are used for building and deploying from pull requests and releases
@@ -26,7 +26,7 @@ The contents of this repository are protected by Crown Copyright (C).
 It is recommended that you use visual studio code and a devcontainer as this will install all necessary components and correct versions of tools and languages.  
 See https://code.visualstudio.com/docs/devcontainers/containers for details on how to set this up on your host machine.  
 There is also a workspace file in .vscode that should be opened once you have started the devcontainer. The workspace file can also be opened outside of a devcontainer if you wish.  
-The project uses [SAM](https://aws.amazon.com/serverless/sam/) to develop and deploy resources.
+
 
 All commits must be made using [signed commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
 
@@ -51,9 +51,6 @@ This will ensure that your VSCode bash terminal prompts you for your GPG key pas
 
 You can cache the gpg key passphrase by following instructions at https://superuser.com/questions/624343/keep-gnupg-credentials-cached-for-entire-user-session
 
-### SAM setup and usage
-
-[SAM](https://aws.amazon.com/serverless/sam/) allows rapid local development and deployment to AWS for development and testing.
 
 ### Setup
 
@@ -85,7 +82,7 @@ SSO registration scopes [sso:account:access]:
 This will then open a browser window and you should authenticate with your hscic credentials
 You should then select the development account and set default region to be eu-west-2.
 
-You will now be able to use AWS and SAM CLI commands to access the dev account. You can also use the AWS extension to view resources.
+You will now be able to use AWS CLI commands to access the dev account. You can also use the AWS extension to view resources.
 
 When the token expires, you may need to reauthorise using `make aws-login`
 
@@ -99,10 +96,6 @@ You will need the "Execute Analysis" permission for the project (NHSDigital_elec
 ### Continuous deployment for testing
 
 You can run the following command to deploy the code to AWS for testing
-
-```
-make sam-sync
-```
 
 This will take a few minutes to deploy - you will see something like this when deployment finishes
 
@@ -126,7 +119,6 @@ Stack creation succeeded. Sync infra completed.
 Note - the command will keep running and should not be stopped.
 Once complete, the resources should be present in the desired AWS account.
 
-Any code changes you make are automatically uploaded to AWS while `make sam-sync` is running allowing you to quickly test any changes you make.
 
 ### Pre-commit hooks
 
@@ -145,27 +137,7 @@ There are `make` commands that are run as part of the CI pipeline and help alias
 - `install-hooks` installs git pre commit hooks
 - `install` runs all install targets
 
-#### SAM targets
 
-These are used to do common commands
-
-- `sam-build` prepares the lambdas and SAM definition file to be used in subsequent steps
-- `sam-run-local` run the API and lambdas locally
-- `sam-sync` sync the API and lambda to AWS. This keeps running and automatically uploads any changes to lambda code made locally. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-sync-sandbox` sync the API and lambda to AWS. This keeps running and automatically uploads any changes to lambda code made locally. Needs stack_name environment variables set, the path and file name where the AWS SAM template is located.
-- `sam-deploy` deploys the compiled SAM template from sam-build to AWS. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-delete` deletes the deployed SAM cloud formation stack and associated resources. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-list-endpoints` lists endpoints created for the current stack. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-list-resources` lists resources created for the current stack. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-list-outputs` lists outputs from the current stack. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-validate` validates the main SAM template and the splunk firehose template.
-- `sam-validate-sandbox` validates the sandbox SAM template and the splunk firehose template.
-- `sam-deploy-package` deploys a package created by sam-build. Used in CI builds. Needs the following environment variables set
-  - artifact_bucket - bucket where uploaded packaged files are
-  - artifact_bucket_prefix - prefix in bucket of where uploaded packaged files ore
-  - stack_name - name of stack to deploy
-  - template_file - name of template file created by sam-package
-  - cloud_formation_execution_role - ARN of role that cloud formation assumes when applying the changeset
 
 #### Clean and deep-clean targets
 
@@ -205,10 +177,8 @@ Workflows are in the .github/workflows folder
 
 - `combine-dependabot-prs.yml`: Workflow for combining dependabot pull requests. Runs on demand
 - `delete_old_cloudformation_stacks.yml`: Workflow for deleting old cloud formation stacks. Runs daily
-- `pull_request.yml`: Called when pull request is opened or updated. Calls sam_package_code and sam_release_code to build and deploy the code. Deploys to dev AWS account. The main and sandbox stacks deployed have PR-<PULL_REQUEST_ID> in the name
+- `pull_request.yml`: Called when pull request is opened or updated. Builds and deploys the code to dev AWS account. The main and sandbox stacks deployed have PR-<PULL_REQUEST_ID> in the name
 - `quality_checks.yml`: Runs check-licenses, lint, test and sonarcloud scan against the repo. Called from pull_request.yml and release.yml
-- `release.yml`: Run when code is merged to main branch or a tag starting v is pushed. Calls sam_package_code and sam_release_code to build and deploy the code.
-- `sam_package_code.yml`: Packages code and uploads to a github artifact for later deployment
-- `sam_release_code.yml`: Release code built by sam_package_code.yml to an environment
+- `release.yml`: Run when code is merged to main branch or a tag starting v is pushed. Builds and deploys the code.
 - `pr-link.yaml`: This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
 - `dependabot.yml`: Dependabot definition file

@@ -97,9 +97,8 @@ aws cloudformation deploy \
 environment_route53.yml contains route 53 resources created in each environment account.  
 It creates the following resources
 
-- route 53 hosted zone for {environment}.electronic-prescription-service-account-resources.national.nhs.uk
+- route 53 hosted zone for {environment}.{domain}.national.nhs.uk
 
-It outputs the following as exports as they are used in SAM deployments
 
 
 
@@ -123,8 +122,8 @@ On bootstrap or major changes, you should get the name server host names for the
 management_route53.yml contains route 53 resources created in the management account. This should only be applied to the management account.  
 It creates the following resources
 
-- route 53 hosted zone for electronic-prescription-service-account-resources.national.nhs.uk
-- NS records for {dev, int, ref, qa, prod}.electronic-prescription-service-account-resources.national.nhs.uk pointing to route 53 hosted zones in each account
+- route 53 hosted zone for {domain}.national.nhs.uk
+- NS records for {dev, int, ref, qa, prod}.{domain}.national.nhs.uk pointing to route 53 hosted zones in each account
 
 To deploy the stack, use the following
 

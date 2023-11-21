@@ -21,32 +21,8 @@ lint-cloudformation:
 lint-githubactions:
 	actionlint
 
-lint: lint-cloudformation 
-
-
-clean:
-	# rm -rf packages/capabilityStatement/coverage
-	# rm -rf packages/getMyPrescriptions/coverage
-	# rm -rf packages/middleware/coverage
-	# rm -rf packages/sandbox/coverage
-	# rm -rf packages/spineClient/coverage
-	# rm -rf packages/splunkProcessor/coverage
-	# rm -rf packages/statusLambda/coverage
-	# rm -rf packages/common/testing/coverage
-	# rm -rf packages/capabilityStatement/lib
-	# rm -rf packages/getMyPrescriptions/lib
-	# rm -rf packages/middleware/lib
-	# rm -rf packages/sandbox/lib
-	# rm -rf packages/spineClient/lib
-	# rm -rf packages/splunkProcessor/lib
-	# rm -rf packages/statusLambda/lib
-	# rm -rf packages/getSecretLayer/lib
-	# rm -rf packages/common/testing/lib
-	# rm -rf .aws-sam
-
-deep-clean: clean
+deep-clean:
 	rm -rf .venv
-	find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +
 
 check-licenses: check-licenses-python 
 

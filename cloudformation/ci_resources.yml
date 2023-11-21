@@ -166,6 +166,10 @@ Resources:
                   - "acm:RemoveTagsFromCertificate"
                   - "acm:RenewCertificate"
                   - "acm:RequestCertificate"
+                  - "route53:ChangeResourceRecordSets"
+                  - "route53:GetHostedZone"
+                  - "route53:ListResourceRecordSets"
+                  - "route53:GetChange"
                 Resource: "*"
 
 Outputs:
