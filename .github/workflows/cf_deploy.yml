@@ -1,0 +1,50 @@
+name: Deploy Cloudformation Stack
+
+on:
+  workflow_call:
+    inputs:
+      target_environment:
+        required: true
+        type: string
+      stack_name:
+        required: true
+        type: string
+      template:
+        required: true
+        type: string
+      capabilities:
+        required: true
+        type: string
+      parameter_overrides:
+        required: true
+        type: string
+      execute_changeset:
+        required: true
+        type: string
+    secrets:
+      cf_deploy_role:
+        required: true
+
+jobs:
+  deploy_stack:
+    name: Deploy CF Stack
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    steps:
+    - name: Configure AWS Credentials
+      id: creds
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_deploy_role }}
+        role-session-name: github-actions
+    - name: Deploy CF Stack to AWS
+      id: deploy
+      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      with:
+        name: ${{ inputs.stack_name }}
+        template: ${{ inputs.template }}
+        capabilities: ${{ inputs.capabilities }}
+        parameter-overrides: ${{ inputs.parameter_overrides }}
+        no-execute-changeset: ${{ inputs.execute_changeset }}
+

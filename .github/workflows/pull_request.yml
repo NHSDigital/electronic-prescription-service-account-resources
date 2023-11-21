@@ -1,0 +1,74 @@
+name: pr
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality_checks:
+    uses: ./.github/workflows/quality_checks.yml
+
+  get_issue_number:
+    runs-on: ubuntu-latest
+    needs: quality_checks
+    outputs:
+        issue_number: ${{steps.get_issue_number.outputs.result}}
+    steps:
+      - uses: actions/github-script@v6
+        name: get issue number
+        id: get_issue_number
+        with:
+          script: |
+            if (context.issue.number) {
+              // Return issue number if present
+              return context.issue.number;
+            } else {
+              // Otherwise return issue number from commit
+              return (
+                await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  commit_sha: context.sha,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                })
+              ).data[0].number;
+            }
+          result-encoding: string
+  
+  get_commit_id:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_id: ${{steps.commit_id.outputs.commit_id}}
+    steps:
+      - name: Get Commit ID
+        id: commit_id
+        run: |
+          echo "commit_id=${{github.sha}}" >> "$GITHUB_OUTPUT"
+
+  list_ci_resources_cf_changes:
+    needs: get_commit_id
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: dev
+      stack_name: ci-resources
+      template: ./cloudformation/ci_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-release-notes:*"
+      execute_changeset: 1
+    secrets:
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+  
+  list_account_resources_cf_changes:
+    needs: list_ci_resources_cf_changes
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: dev
+      stack_name: account-resources
+      template: ./cloudformation/account_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: ""
+      execute_changeset: 1
+    secrets:
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      
+
+
