@@ -4,9 +4,15 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
+
 jobs:
   quality_checks:
     uses: ./.github/workflows/quality_checks.yml
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   get_issue_number:
     runs-on: ubuntu-latest
@@ -41,11 +47,10 @@ jobs:
     steps:
       - name: Get Commit ID
         id: commit_id
-        run: |
-          echo "commit_id=${{github.sha}}" >> "$GITHUB_OUTPUT"
+        run: echo "commit_id=${{github.sha}}" >> "$GITHUB_OUTPUT"
 
   list_ci_resources_cf_changes:
-    needs: get_commit_id
+    needs: [quality_checks, get_issue_number, get_commit_id]
     uses: ./.github/workflows/cf_deploy.yml
     with:
       target_environment: dev
@@ -58,7 +63,7 @@ jobs:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   list_account_resources_cf_changes:
-    needs: list_ci_resources_cf_changes
+    needs: [quality_checks, get_issue_number, get_commit_id]
     uses: ./.github/workflows/cf_deploy.yml
     with:
       target_environment: dev

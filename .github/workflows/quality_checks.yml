@@ -1,0 +1,56 @@
+name: Deploy Cloudformation Stack
+
+on:
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+      SONAR_TOKEN:
+        required: true
+
+jobs:
+  quality_checks:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          fetch-depth: 0
+
+      - name: Install asdf
+        uses: asdf-vm/actions/setup@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.11.3
+      
+      - name: Cashe asdf
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.asdf
+          key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
+          restore-keys: |
+            ${{ runner.os }}-asdf-
+      
+      - name: Install asdf dependencies in .tool-versions
+        uses: asdf-vm/actions/install@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.11.3
+        env:
+            PYTHON_CONFIGURE_OPTS: --enable-shared
+
+      - name: Install Dependencies
+        run: make install
+      
+      - name: Check Licenses
+        run: make check-licenses
+      
+      - name: Lint
+        run: make lint
+      
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

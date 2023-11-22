@@ -1,0 +1,25 @@
+name: Release Changes
+
+on:
+  push:
+    branches: [main]
+    tags: [v**]
+
+env:
+  BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
+
+jobs:
+  quality_checks:
+    uses: ./.github/workflows/quality_checks.yml
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  
+  get_commit_id:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_id: ${{ steps.commit_id.outputs.commit_id }}
+    steps:
+      - name: Get Commit ID
+        id: commit_id
+        run: echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
