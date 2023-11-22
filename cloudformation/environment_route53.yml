@@ -8,7 +8,7 @@ Parameters:
     AllowedValues: [dev, ref, qa, int, prod]
   hostedZone:
     Type: String
-    Default: "prescriptionsforpatients.national.nhs.uk"
+    Default: "{domain}.national.nhs.uk"
     Description: >
       Domain name we are going to be hosting
 
