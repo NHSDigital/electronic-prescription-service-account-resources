@@ -50,7 +50,7 @@ jobs:
         run: echo "commit_id=${{github.sha}}" >> "$GITHUB_OUTPUT"
 
   list_ci_resources_cf_changes:
-    needs: [quality_checks, get_issue_number, get_commit_id]
+    needs: [get_issue_number, get_commit_id]
     uses: ./.github/workflows/cf_deploy.yml
     with:
       target_environment: dev
@@ -63,7 +63,7 @@ jobs:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   list_account_resources_cf_changes:
-    needs: [quality_checks, get_issue_number, get_commit_id]
+    needs: [get_issue_number, get_commit_id]
     uses: ./.github/workflows/cf_deploy.yml
     with:
       target_environment: dev

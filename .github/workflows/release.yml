@@ -23,3 +23,199 @@ jobs:
       - name: Get Commit ID
         id: commit_id
         run: echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+  
+  tag_release:
+    needs: quality_checks
+    runs-on: ubuntu-latest
+    outputs:
+      spec_version: ${{ steps.output_spec_version.outputs.SPEC_VERSION }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          fetch-depth: 0
+      
+      - name: Install asdf
+        uses: asdf-vm/actions/setup@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.11.3
+        
+      - name: Cashe asdf
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.asdf
+          key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
+          restore-keys: |
+            ${{ runner.os }}-asdf-
+      
+      - name: Install asdf dependencies in .tool-versions
+        uses: asdf-vm/actions/install@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.11.3
+        env:
+            PYTHON_CONFIGURE_OPTS: --enable-shared
+      
+      - name: Install Dependencies
+        run: make install
+      
+      - name: Set SPEC_VERSION for merges to main
+        run: echo "SPEC_VERSION=$(poetry run python scripts/calculate_version.py)" >> $GITHUB_ENV
+        if: github.ref == 'refs/heads/main'
+      
+      - name: Set SPEC_VERSION for tags
+        run: echo "SPEC_VERSION=${{  github.ref_name }}" >> $GITHUB_ENV
+        if: github.ref != 'refs/heads/main'
+      
+      - name: Create Release
+        id: create-release
+        uses: ncipollo/release-action@6c75be85e571768fa31b40abf38de58ba0397db5
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ env.SPEC_VERSION }}
+          commit: ${{  github.sha }}
+          body: |
+            ## Commit message
+            ${{ github.event.head_commit.message }}
+            ## Info
+            [See code diff](${{ github.event.compare }})
+            [Release workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            It was initialized by [${{ github.event.sender.login }}](${{ github.event.sender.html_url }})
+      
+      - name: Output SPEC_VERSION
+        id: output_spec_version
+        run: echo SPEC_VERSION=${{ env.SPEC_VERSION }} >> $GITHUB_OUTPUT
+
+  release_ci_resources_dev:
+    needs: [get_commit_id, tag_release]
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: dev
+      stack_name: ci-resources
+      template: ./cloudformation/ci_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-release-notes:*"
+      execute_changeset: 0
+    secrets:
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+  
+  release_account_resources_dev:
+    needs: release_ci_resources_dev
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: dev
+      stack_name: account-resources
+      template: ./cloudformation/account_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: ""
+      execute_changeset: 0
+    secrets:
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+    
+  release_ci_resources_ref:
+    needs: [release_ci_resources_dev, release_account_resources_dev]
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: ref
+      stack_name: ci-resources
+      template: ./cloudformation/ci_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-release-notes:*"
+      execute_changeset: 0
+    secrets:
+      cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+  
+  release_account_resources_ref:
+    needs: release_ci_resources_ref
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: ref
+      stack_name: account-resources
+      template: ./cloudformation/account_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: ""
+      execute_changeset: 0
+    secrets:
+      cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+  
+  release_ci_resources_qa:
+    needs: [release_ci_resources_ref, release_account_resources_ref]
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: qa
+      stack_name: ci-resources
+      template: ./cloudformation/ci_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-release-notes:*"
+      execute_changeset: 0
+    secrets:
+      cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
+  
+  release_account_resources_qa:
+    needs: release_ci_resources_qa
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: qa
+      stack_name: account-resources
+      template: ./cloudformation/account_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: ""
+      execute_changeset: 0
+    secrets:
+      cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
+
+  release_ci_resources_int:
+    needs: [release_ci_resources_qa, release_account_resources_qa]
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: int
+      stack_name: ci-resources
+      template: ./cloudformation/ci_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-release-notes:*"
+      execute_changeset: 0
+    secrets:
+      cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
+  
+  release_account_resources_int:
+    needs: release_ci_resources_int
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: int
+      stack_name: account-resources
+      template: ./cloudformation/account_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: ""
+      execute_changeset: 0
+    secrets:
+      cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
+
+  release_ci_resources_prod:
+    needs: [release_ci_resources_int, release_account_resources_int]
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: prod
+      stack_name: ci-resources
+      template: ./cloudformation/ci_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-release-notes:*"
+      execute_changeset: 0
+    secrets:
+      cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
+  
+  release_account_resources_prod:
+    needs: release_ci_resources_prod
+    uses: ./.github/workflows/cf_deploy.yml
+    with:
+      target_environment: prod
+      stack_name: account-resources
+      template: ./cloudformation/account_resources.yml
+      capabilities: CAPABILITY_IAM
+      parameter_overrides: ""
+      execute_changeset: 0
+    secrets:
+      cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}

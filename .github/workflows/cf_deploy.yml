@@ -31,7 +31,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.target_environment }}
     steps:
-
     - name: Configure AWS Credentials
       id: creds
       uses: aws-actions/configure-aws-credentials@v4
