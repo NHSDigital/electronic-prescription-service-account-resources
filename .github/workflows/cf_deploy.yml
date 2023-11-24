@@ -19,6 +19,7 @@ on:
         required: true
         type: string
       execute_changeset:
+        description: If the changes should be deployed, 0 for yes, 1 for no
         required: true
         type: string
     secrets:
