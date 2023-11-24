@@ -14,6 +14,8 @@ install-python:
 install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
 
+lint: lint-cloudformation 
+
 lint-cloudformation:
 	poetry run cfn-lint -t cloudformation/*.yml
 

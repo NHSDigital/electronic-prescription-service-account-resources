@@ -4,8 +4,6 @@
 
 This is the repo containing infrastructure code that defines resources that are to be used in AWS accounts associated with the EPS project.
 
-It is called by an Apigee proxy that is defined at https://github.com/NHSDigital/electronic-prescription-service-account-resources
-
 - `.devcontainer` Contains a dockerfile and vscode devcontainer definition
 - `.github` Contains github workflows that are used for building and deploying from pull requests and releases
 - `.vscode` Contains vscode workspace file
@@ -94,11 +92,6 @@ as described [here](https://docs.sonarsource.com/sonarqube/latest/user-guide/use
 You will need the "Execute Analysis" permission for the project (NHSDigital_electronic-prescription-service-account-resources) in order for the token to work.
 
 ### Continuous deployment for testing
-
-You can run the following command to deploy the code to AWS for testing
-
-This will take a few minutes to deploy - you will see something like this when deployment finishes
-
 ```
 ......
 CloudFormation events from stack operations (refresh every 0.5 seconds)
@@ -116,8 +109,6 @@ CREATE_COMPLETE                           AWS::CloudFormation::Stack            
 Stack creation succeeded. Sync infra completed.
 ```
 
-Note - the command will keep running and should not be stopped.
-Once complete, the resources should be present in the desired AWS account.
 
 
 ### Pre-commit hooks
