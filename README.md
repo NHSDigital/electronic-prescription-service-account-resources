@@ -62,7 +62,7 @@ export TARGET_SPINE_SERVER=<NAME OF DEV TARGET SPINE SERVER>
 
 UNIQUE_NAME_FOR_YOU should be a unique name for you with no underscores in it - eg anthony-brown-1
 
-Once you have saved .envrc, start a new terminal in vscode and run this command to authenticate against AWS
+Once you have saved .envrc, start a new terminal in vscode and run this command to authenticate against AWS.
 
 ```
 make aws-configure
