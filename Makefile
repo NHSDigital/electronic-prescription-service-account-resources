@@ -19,10 +19,6 @@ lint: lint-cloudformation
 lint-cloudformation:
 	poetry run cfn-lint -t cloudformation/*.yml
 
-
-lint-githubactions:
-	actionlint
-
 deep-clean:
 	rm -rf .venv
 
