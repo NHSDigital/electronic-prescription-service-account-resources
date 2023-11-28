@@ -1,0 +1,20 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-merge-conflict
+        name: Check for merge conflict strings
+
+      - id: end-of-file-fixer
+        name: Fix missing newline at the end of files
+
+      - id: check-shebang-scripts-are-executable
+        name: Check shell scripts are executable
+        files: \.(sh)$
+
+      - id: check-yaml
+        name: Check pipelines configuration
+        files: ^(.github)|cloudformation/.yaml$
+
+fail_fast: true
+default_stages: [commit]
