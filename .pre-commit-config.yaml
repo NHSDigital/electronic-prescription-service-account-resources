@@ -17,7 +17,7 @@ repos:
         files: ^(.github)
 
   - repo: https://github.com/pycqa/flake8
-    rev: "7ef0350a439c93166bc8ba89fcc3de6a9a664e6c" # release 6.1.0
+    rev: "7ef0350a439c93166bc8ba89fcc3de6a9a664e6c"
     hooks:
       - id: flake8
 

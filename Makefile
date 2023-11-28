@@ -20,3 +20,7 @@ lint-cloudformation:
 
 lint-githubactions:
 	actionlint
+
+deep-clean: clean
+	rm -rf venv
+	poetry env remove --all
