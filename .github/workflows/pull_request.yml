@@ -75,5 +75,3 @@ jobs:
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       
-
-
