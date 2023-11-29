@@ -52,6 +52,7 @@ Resources:
                   - "cloudformation:GetTemplateSummary"
                   - "cloudformation:ListStacks"
                   - "cloudformation:DeleteChangeSet"
+                  - "cloudformation:ValidateTemplate"
                 Resource: "*"
         - PolicyName: AssumeExecutionRole
           PolicyDocument:
