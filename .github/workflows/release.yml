@@ -97,6 +97,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*,repo:NHSDigital/electronic-prescription-service-release-notes:*,repo:NHSDigital/prescriptions-for-patients:*,repo:NHSDigital/electronic-prescription-service-api:*"
       execute_changeset: "0"
+      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
   
@@ -110,6 +111,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
       execute_changeset: "0"
+      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
     
@@ -123,6 +125,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
       execute_changeset: "0"
+      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
     secrets:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
   
@@ -136,6 +139,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
       execute_changeset: "0"
+      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
     secrets:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
   
@@ -149,6 +153,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
       execute_changeset: "0"
+      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
     secrets:
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
   
@@ -162,6 +167,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
       execute_changeset: "0"
+      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
     secrets:
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
 
@@ -175,6 +181,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
       execute_changeset: "0"
+      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
     secrets:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
   
@@ -188,6 +195,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
       execute_changeset: "0"
+      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
     secrets:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
 
@@ -201,6 +209,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
       execute_changeset: "0"
+      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
     secrets:
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
   
@@ -214,5 +223,6 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
       execute_changeset: "0"
+      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
     secrets:
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}

@@ -56,6 +56,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*,repo:NHSDigital/electronic-prescription-service-release-notes:*,repo:NHSDigital/prescriptions-for-patients:*,repo:NHSDigital/electronic-prescription-service-api:*"
       execute_changeset: "1"
+      changeset_name: "ci-resources-${{github.event.number}}"
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
   
@@ -69,6 +70,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
       execute_changeset: "1"
+      changeset_name: "ci-resources-${{github.event.number}}"
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       

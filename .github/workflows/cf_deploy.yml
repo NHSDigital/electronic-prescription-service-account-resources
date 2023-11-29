@@ -22,6 +22,9 @@ on:
         description: If the changes should be deployed, 0 for yes, 1 for no
         required: true
         type: string
+      changeset_name:
+        required: true
+        type: string
     secrets:
       cf_deploy_role:
         required: true
@@ -59,3 +62,4 @@ jobs:
         parameter-overrides: ${{ inputs.parameter_overrides }}
         no-execute-changeset: ${{ inputs.execute_changeset }}
         no-fail-on-empty-changeset: "1"
+        change-set-name: ${{ inputs.change_set_name }}
