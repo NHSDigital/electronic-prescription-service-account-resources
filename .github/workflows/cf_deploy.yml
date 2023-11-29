@@ -35,6 +35,12 @@ jobs:
       id-token: write
       contents: read
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ env.BRANCH_NAME }}
+        fetch-depth: 0
+
     - shell: bash
       name: debug
       run: |
