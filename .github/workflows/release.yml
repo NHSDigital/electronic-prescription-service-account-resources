@@ -11,9 +11,6 @@ env:
 jobs:
   quality_checks:
     uses: ./.github/workflows/quality_checks.yml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   
   get_commit_id:
     runs-on: ubuntu-latest

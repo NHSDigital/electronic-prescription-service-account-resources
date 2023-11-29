@@ -2,9 +2,6 @@ name: Deploy Cloudformation Stack
 
 on:
   workflow_call:
-    secrets:
-      SONAR_TOKEN:
-        required: true
 
 jobs:
   quality_checks:
@@ -45,9 +42,3 @@ jobs:
       
       - name: Lint
         run: make lint
-      
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
