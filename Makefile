@@ -24,3 +24,9 @@ lint-githubactions:
 deep-clean: clean
 	rm -rf venv
 	poetry env remove --all
+
+aws-configure:
+	aws configure sso --region eu-west-2
+
+aws-login:
+	aws sso login --sso-session sso-session
