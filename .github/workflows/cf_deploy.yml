@@ -35,6 +35,12 @@ jobs:
       id-token: write
       contents: read
     steps:
+    - shell: bash
+      name: debug
+      run: |
+        pwd
+        ls -la
+      
     - name: Configure AWS Credentials
       id: creds
       uses: aws-actions/configure-aws-credentials@v4
