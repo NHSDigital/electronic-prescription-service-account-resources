@@ -31,6 +31,9 @@ jobs:
     name: Deploy CF Stack
     runs-on: ubuntu-latest
     environment: ${{ inputs.target_environment }}
+    permissions:
+      id-token: write
+      contents: read
     steps:
     - name: Configure AWS Credentials
       id: creds
@@ -49,4 +52,3 @@ jobs:
         capabilities: ${{ inputs.capabilities }}
         parameter-overrides: ${{ inputs.parameter_overrides }}
         no-execute-changeset: ${{ inputs.execute_changeset }}
-
