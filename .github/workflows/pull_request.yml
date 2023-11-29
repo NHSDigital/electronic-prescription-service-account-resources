@@ -55,7 +55,7 @@ jobs:
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
       parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*,repo:NHSDigital/electronic-prescription-service-release-notes:*,repo:NHSDigital/prescriptions-for-patients:*,repo:NHSDigital/electronic-prescription-service-api:*"
-      execute_changeset: 1
+      execute_changeset: "1"
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
   
@@ -68,7 +68,7 @@ jobs:
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
-      execute_changeset: 1
+      execute_changeset: "1"
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       

@@ -64,3 +64,4 @@ jobs:
         capabilities: ${{ inputs.capabilities }}
         parameter-overrides: ${{ inputs.parameter_overrides }}
         no-execute-changeset: ${{ inputs.execute_changeset }}
+        no-fail-on-empty-changeset: "1"
