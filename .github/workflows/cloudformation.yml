@@ -72,9 +72,10 @@ jobs:
         echo "$CHANGE_SET" >> $GITHUB_STEP_SUMMARY
         echo "```"
   
-  execute_changeset:
+  execute_change_set:
     name: Execute Change Set
     if: ${{ inputs.execute_change_set == true }}
+    needs: create_change_set
     runs-on: ubuntu-latest
     environment: ${{ inputs.target_environment }}
     permissions:
@@ -98,6 +99,7 @@ jobs:
   delete_change_set:
     name: Delete Change Set
     if: ${{ inputs.execute_change_set == false || cancelled() || failure() }}
+    needs: create_change_set
     runs-on: ubuntu-latest
     permissions:
       id-token: write
