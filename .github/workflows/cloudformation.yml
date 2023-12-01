@@ -1,12 +1,12 @@
-name: Deploy Cloudformation Stack
+name: Cloudformation Actions
 
 on:
   workflow_call:
     inputs:
-      target_environment:
+      stack_name:
         required: true
         type: string
-      stack_name:
+      change_set_name:
         required: true
         type: string
       template:
@@ -18,11 +18,10 @@ on:
       parameter_overrides:
         required: true
         type: string
-      execute_changeset:
-        # description: If the changes should be deployed, 0 for yes, 1 for no
+      execute_change_set:
         required: true
         type: boolean
-      change_set_name:
+      target_environment:
         required: true
         type: string
     secrets:
@@ -30,20 +29,19 @@ on:
         required: true
 
 jobs:
-  deploy_stack:
-    name: Deploy CF Stack
+  create_change_set:
+    name: Create CF Change Set
     runs-on: ubuntu-latest
-    environment: ${{ inputs.target_environment }}
     permissions:
       id-token: write
       contents: read
     steps:
-    - name: Checkout code
+    - name: checkout code
       uses: actions/checkout@v4
       with:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
-      
+    
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -51,17 +49,6 @@ jobs:
         role-to-assume: ${{ secrets.cf_deploy_role }}
         role-session-name: github-actions
 
-    # - name: Deploy CF Stack to AWS
-    #   uses: aws-actions/aws-cloudformation-github-deploy@v1
-    #   with:
-    #     name: ${{ inputs.stack_name }}
-    #     template: ${{ inputs.template }}
-    #     capabilities: ${{ inputs.capabilities }}
-    #     parameter-overrides: ${{ inputs.parameter_overrides }}
-    #     no-execute-changeset: ${{ inputs.execute_changeset }}
-    #     no-fail-on-empty-changeset: "1"
-    #     changeset-name: ${{ inputs.change_set_name }}
-    
     - name: Create Change Set
       shell: bash
       run: |
@@ -72,7 +59,7 @@ jobs:
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
         --parameters ${{ inputs.parameter_overrides }}
-    
+      
     - name: Describe Change Set
       shell: bash
       run: |
@@ -84,19 +71,49 @@ jobs:
         echo "```" >> $GITHUB_STEP_SUMMARY
         echo "$CHANGE_SET" >> $GITHUB_STEP_SUMMARY
         echo "```"
+  
+  execute_changeset:
+    name: Execute Change Set
+    if: ${{ inputs.execute_change_set == true }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.cf_deploy_role }}
+          role-session-name: github-actions
 
-    - name: Execute Change Set
-      if: inputs.execute_changeset == true
-      shell: bash
-      run: |
-        aws cloudformation execute-change-set \
-        --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.change_set_name }}
-    
+      - name: Execute Change Set
+        shell: bash
+        run: |
+          aws cloudformation execute-change-set \
+          --stack-name ${{ inputs.stack_name }} \
+          --change-set-name ${{ inputs.change_set_name }}
+
+  delete_change_set:
+    name: Delete Change Set
+    if: ${{ inputs.execute_change_set == false || cancelled() || failure() }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_deploy_role }}
+        role-session-name: github-actions 
+
     - name: Delete Change Set
-      if: ${{ inputs.execute_changeset == false || cancelled() || failure() }}
       shell: bash
       run: |
         aws cloudformation delete-change-set
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.change_set_name }}
+  

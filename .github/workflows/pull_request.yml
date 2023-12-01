@@ -48,29 +48,29 @@ jobs:
 
   list_ci_resources_cf_changes:
     needs: [get_issue_number, get_commit_id]
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev
       stack_name: ci-resources
+      change_set_name: "ci-resources-${{github.event.number}}"
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
       parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*,repo:NHSDigital/electronic-prescription-service-release-notes:*,repo:NHSDigital/prescriptions-for-patients:*,repo:NHSDigital/electronic-prescription-service-api:*"
-      execute_changeset: "1"
-      changeset_name: "ci-resources-${{github.event.number}}"
+      execute_change_set: false
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   list_account_resources_cf_changes:
     needs: [get_issue_number, get_commit_id]
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev
       stack_name: account-resources
+      change_set_name: "ci-resources-${{github.event.number}}"
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
-      execute_changeset: "1"
-      changeset_name: "ci-resources-${{github.event.number}}"
+      execute_change_set: false
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       
