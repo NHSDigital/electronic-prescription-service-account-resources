@@ -70,10 +70,10 @@ jobs:
         echo "### [${{inputs.target_environment}}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "```" >> $GITHUB_STEP_SUMMARY
-        if [ -z "$CHANGE_SET" ]; then
+        if [ -z "${CHANGE_SET}" ]; then
           echo "No changes." >> $GITHUB_STEP_SUMMARY
         else
-          echo "$CHANGE_SET" >> $GITHUB_STEP_SUMMARY
+          echo "${CHANGE_SET}" >> $GITHUB_STEP_SUMMARY
         fi
         echo "```" >> $GITHUB_STEP_SUMMARY
   
