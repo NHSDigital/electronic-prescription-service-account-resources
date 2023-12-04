@@ -70,7 +70,12 @@ jobs:
         echo "### Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "```" >> $GITHUB_STEP_SUMMARY
-        echo "$CHANGE_SET" >> $GITHUB_STEP_SUMMARY
+        if [[ -z "$CHANGE_SET" ]]
+        then
+          echo "No changes." >>  $GITHUB_STEP_SUMMARY
+        else
+          echo "$CHANGE_SET" >> $GITHUB_STEP_SUMMARY
+        fi
         echo "```" >> $GITHUB_STEP_SUMMARY
   
   execute_change_set:
@@ -117,7 +122,7 @@ jobs:
     - name: Delete Change Set
       shell: bash
       run: |
-        aws cloudformation delete-change-set
+        aws cloudformation delete-change-set \
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.change_set_name }}
   
