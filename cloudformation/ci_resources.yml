@@ -66,8 +66,6 @@ Resources:
   TestRole:
     Type: AWS::IAM::Role #remove after testing
     Properties:
-      RoleName: TestRole
-      Description: Test IAM Role
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
