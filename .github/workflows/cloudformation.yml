@@ -96,27 +96,27 @@ jobs:
           --stack-name ${{ inputs.stack_name }} \
           --change-set-name ${{ inputs.change_set_name }}
 
-  delete_change_set:
-    name: Delete Change Set
-    if: ${{ inputs.execute_change_set == false || cancelled() || failure() }}
-    needs: create_change_set
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.target_environment }}
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: eu-west-2
-        role-to-assume: ${{ secrets.cf_deploy_role }}
-        role-session-name: github-actions 
+  # delete_change_set:
+  #   name: Delete Change Set
+  #   if: ${{ inputs.execute_change_set == false || cancelled() || failure() }}
+  #   needs: create_change_set
+  #   runs-on: ubuntu-latest
+  #   environment: ${{ inputs.target_environment }}
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   steps:
+  #   - name: Configure AWS Credentials
+  #     uses: aws-actions/configure-aws-credentials@v4
+  #     with:
+  #       aws-region: eu-west-2
+  #       role-to-assume: ${{ secrets.cf_deploy_role }}
+  #       role-session-name: github-actions 
 
-    - name: Delete Change Set
-      shell: bash
-      run: |
-        aws cloudformation delete-change-set \
-        --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.change_set_name }}
+  #   - name: Delete Change Set
+  #     shell: bash
+  #     run: |
+  #       aws cloudformation delete-change-set \
+  #       --stack-name ${{ inputs.stack_name }} \
+  #       --change-set-name ${{ inputs.change_set_name }}
   
