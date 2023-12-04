@@ -71,7 +71,7 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "```" >> $GITHUB_STEP_SUMMARY
         echo "$CHANGE_SET" >> $GITHUB_STEP_SUMMARY
-        echo "```"
+        echo "```" >> $GITHUB_STEP_SUMMARY
   
   execute_change_set:
     name: Execute Change Set
