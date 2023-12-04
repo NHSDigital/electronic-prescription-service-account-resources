@@ -67,10 +67,10 @@ jobs:
         CHANGE_SET=$(aws cloudformation describe-change-set \
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.change_set_name }})
-        echo "### Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "### [${{inputs.target_environment}}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "```" >> $GITHUB_STEP_SUMMARY
-        if [[ -z "$CHANGE_SET" ]]
+        if [ -z "$CHANGE_SET" ]
         then
           echo "No changes." >>  $GITHUB_STEP_SUMMARY
         else
