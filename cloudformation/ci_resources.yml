@@ -63,6 +63,20 @@ Resources:
                   - "iam:PassRole"
                 Resource: !GetAtt CloudFormationExecutionRole.Arn
 
+  TestRole:
+    Type: AWS::IAM::Role #remove after testing
+    Properties:
+      RoleName: TestRole
+      Description: Test IAM Role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudformation.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
     Properties:
