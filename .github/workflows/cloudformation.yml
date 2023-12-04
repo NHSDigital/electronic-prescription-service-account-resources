@@ -70,6 +70,7 @@ jobs:
         echo $CHANGE_SET
         echo "### [${{inputs.target_environment}}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
+        echo "TEST" >> $GITHUB_STEP_SUMMARY
         echo "```" >> $GITHUB_STEP_SUMMARY
         echo $CHANGE_SET >> $GITHUB_STEP_SUMMARY
         echo "```" >> $GITHUB_STEP_SUMMARY
