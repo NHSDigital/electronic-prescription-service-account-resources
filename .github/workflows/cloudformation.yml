@@ -89,9 +89,9 @@ jobs:
         echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "#### Parameters:" >> $GITHUB_STEP_SUMMARY
-        echo "~~~ json"
+        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
         echo "$PARAMETERS" >> $GITHUB_STEP_SUMMARY
-        echo "~~~"
+        echo "~~~"  >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "#### Capabilities:" >> $GITHUB_STEP_SUMMARY
         echo "    $CAPABILITIES" >> $GITHUB_STEP_SUMMARY
