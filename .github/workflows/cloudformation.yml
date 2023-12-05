@@ -65,7 +65,7 @@ jobs:
       shell: bash
       run: |
         STATUS="INCOMPLETE"
-        while [ $STATUS != "CREATE_COMPLETE" || $STATUS != "FAILED" ]
+        while [ $STATUS != "CREATE_COMPLETE" ] || [ $STATUS != "FAILED" ]
         do
           echo "Getting change set..."
           CHANGE_SET=$(aws cloudformation describe-change-set \
