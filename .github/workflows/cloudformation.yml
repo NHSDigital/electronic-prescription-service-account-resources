@@ -71,7 +71,7 @@ jobs:
           CHANGE_SET=$(aws cloudformation describe-change-set \
           --stack-name ${{ inputs.stack_name }} \
           --change-set-name ${{ inputs.change_set_name }})
-          STATUS=(echo $CHANGE_SET | jq '.["Status"]')
+          STATUS=$(jq '.["Status"]' <<< "$CHANGE_SET")
           echo "$STATUS"
         done
         echo $CHANGE_SET
