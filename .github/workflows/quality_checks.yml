@@ -1,4 +1,4 @@
-name: Deploy Cloudformation Stack
+name: Quality Checks
 
 on:
   workflow_call:
