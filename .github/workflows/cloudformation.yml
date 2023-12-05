@@ -65,7 +65,6 @@ jobs:
       shell: bash
       run: |
         STATUS="CREATE_IN_PROGRESS"
-        echo "Starting Status: $STATUS"
         while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
         do
           echo "Getting change set..."
@@ -73,12 +72,27 @@ jobs:
           --stack-name ${{ inputs.stack_name }} \
           --change-set-name ${{ inputs.change_set_name }})
           STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
-          echo "Current Status: $STATUS"
         done
         echo $CHANGE_SET
-        echo "### [${{inputs.target_environment}}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "    $CHANGE_SET" >> $GITHUB_STEP_SUMMARY
+        STACK_NAME=$(jq -r '.["StackName"]')
+        STACK_ID=$(jq -r '.["StackId"]')
+        CHANGE_SET_NAME=$(jq -r '.["ChangeSetName"]')
+        CHANGE_SET_ID=$(jq -r '.["ChangeSetId"]')
+        STATUS_REASON=$(jq -r '.["StatusReason"]')
+        PARAMETERS=$(jq '.["Parameters"]')
+        CAPABILITIES=$(jq '.["Capabilities"]')
+        CHANGES=$(jq '.["Changes"]')
+        echo "## [${{inputs.target_environment}}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
+        echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
+        echo "- **Stack ID:** $STACK_ID" >> $GITHUB_STEP_SUMMARY
+        echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
+        echo "#### Parameters:" >> $GITHUB_STEP_SUMMARY
+        echo "    $PARAMETERS" >> $GITHUB_STEP_SUMMARY
+        echo "#### Capabilities:" >> $GITHUB_STEP_SUMMARY
+        echo "    $CAPABILITIES" >> $GITHUB_STEP_SUMMARY
+        echo "#### Changes:" >> $GITHUB_STEP_SUMMARY
+        echo "    $CHANGES" >> $GITHUB_STEP_SUMMARY
   
   execute_change_set:
     name: Execute Change Set
