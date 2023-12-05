@@ -32,7 +32,6 @@ jobs:
   create_change_set:
     name: Create CF Change Set
     runs-on: ubuntu-latest
-    environment: ${{ inputs.target_environment }}
     permissions:
       id-token: write
       contents: read
@@ -134,7 +133,6 @@ jobs:
     if: ${{ inputs.execute_change_set == false || cancelled() || failure() }}
     needs: create_change_set
     runs-on: ubuntu-latest
-    environment: ${{ inputs.target_environment }}
     permissions:
       id-token: write
       contents: read

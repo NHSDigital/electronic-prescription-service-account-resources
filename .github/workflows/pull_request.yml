@@ -66,7 +66,7 @@ jobs:
     with:
       target_environment: dev
       stack_name: account-resources
-      change_set_name: "ci-resources-${{github.event.number}}"
+      change_set_name: "account-resources-${{github.event.number}}"
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""

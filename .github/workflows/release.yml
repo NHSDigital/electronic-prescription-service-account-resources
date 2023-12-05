@@ -89,140 +89,140 @@ jobs:
 
   release_ci_resources_dev:
     needs: [get_commit_id, tag_release]
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev
       stack_name: ci-resources
+      change_set_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
-      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*,repo:NHSDigital/electronic-prescription-service-release-notes:*,repo:NHSDigital/prescriptions-for-patients:*,repo:NHSDigital/electronic-prescription-service-api:*"
-      execute_changeset: "0"
-      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
+      parameter_overrides: ParameterKey="SubjectClaimFilters",ParameterValue="'repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*,repo:NHSDigital/electronic-prescription-service-release-notes:*,repo:NHSDigital/prescriptions-for-patients:*,repo:NHSDigital/electronic-prescription-service-api:*'"
+      execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_dev:
     needs: release_ci_resources_dev
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev
       stack_name: account-resources
+      change_set_name: "account-resources-${{needs.tag_release.outputs.spec_version}}"
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
-      execute_changeset: "0"
-      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
+      execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
     
   release_ci_resources_ref:
     needs: [release_ci_resources_dev, release_account_resources_dev]
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: ref
       stack_name: ci-resources
+      change_set_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
-      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
-      execute_changeset: "0"
-      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
+      parameter_overrides: ParameterKey="SubjectClaimFilters",ParameterValue="'repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*'"
+      execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_ref:
     needs: release_ci_resources_ref
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: ref
       stack_name: account-resources
+      change_set_name: "account-resources-${{needs.tag_release.outputs.spec_version}}"
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
-      execute_changeset: "0"
-      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
+      execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_ci_resources_qa:
     needs: [release_ci_resources_ref, release_account_resources_ref]
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: qa
       stack_name: ci-resources
+      change_set_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
-      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
-      execute_changeset: "0"
-      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
+      parameter_overrides: ParameterKey="SubjectClaimFilters",ParameterValue="'repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*'"
+      execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_qa:
     needs: release_ci_resources_qa
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: qa
       stack_name: account-resources
+      change_set_name: "account-resources-${{needs.tag_release.outputs.spec_version}}"
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
-      execute_changeset: "0"
-      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
+      execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
 
   release_ci_resources_int:
     needs: [release_ci_resources_qa, release_account_resources_qa]
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: int
       stack_name: ci-resources
+      change_set_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
-      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
-      execute_changeset: "0"
-      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
+      parameter_overrides: ParameterKey="SubjectClaimFilters",ParameterValue="'repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*'"
+      execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_int:
     needs: release_ci_resources_int
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: int
       stack_name: account-resources
+      change_set_name: "account-resources-${{needs.tag_release.outputs.spec_version}}"
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
-      execute_changeset: "0"
-      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
+      execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
 
   release_ci_resources_prod:
     needs: [release_ci_resources_int, release_account_resources_int]
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: prod
       stack_name: ci-resources
+      change_set_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
-      parameter_overrides: SubjectClaimFilters="repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
-      execute_changeset: "0"
-      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
+      parameter_overrides: ParameterKey="SubjectClaimFilters",ParameterValue="'repo:NHSDigital/prescriptionsforpatients:*,repo:NHSDigital/electronic-prescription-service-account-resources:*,repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*'"
+      execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_prod:
     needs: release_ci_resources_prod
-    uses: ./.github/workflows/cf_deploy.yml
+    uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: prod
       stack_name: account-resources
+      change_set_name: "account-resources-${{needs.tag_release.outputs.spec_version}}"
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
       parameter_overrides: ""
-      execute_changeset: "0"
-      changeset_name: "ci-resources-${{needs.tag_release.outputs.spec_version}}"
+      execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
