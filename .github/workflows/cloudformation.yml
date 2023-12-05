@@ -64,9 +64,18 @@ jobs:
     - name: Describe Change Set
       shell: bash
       run: |
-        CHANGE_SET=$(aws cloudformation describe-change-set \
-        --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.change_set_name }})
+        
+        
+        STATUS = "INCOMPLETE"
+        while [ $STATUS != "CREATE_COMPLETE" || $STATUS != "FAILED" ]
+        do
+          echo "Getting change set..."
+          CHANGE_SET=$(aws cloudformation describe-change-set \
+          --stack-name ${{ inputs.stack_name }} \
+          --change-set-name ${{ inputs.change_set_name }})
+          STATUS=( jq '.["Status"]' <<< "$CHANGE_SET")
+          echo "$STATUS"
+        done
         echo $CHANGE_SET
         echo "### [${{inputs.target_environment}}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
@@ -96,27 +105,27 @@ jobs:
           --stack-name ${{ inputs.stack_name }} \
           --change-set-name ${{ inputs.change_set_name }}
 
-  # delete_change_set:
-  #   name: Delete Change Set
-  #   if: ${{ inputs.execute_change_set == false || cancelled() || failure() }}
-  #   needs: create_change_set
-  #   runs-on: ubuntu-latest
-  #   environment: ${{ inputs.target_environment }}
-  #   permissions:
-  #     id-token: write
-  #     contents: read
-  #   steps:
-  #   - name: Configure AWS Credentials
-  #     uses: aws-actions/configure-aws-credentials@v4
-  #     with:
-  #       aws-region: eu-west-2
-  #       role-to-assume: ${{ secrets.cf_deploy_role }}
-  #       role-session-name: github-actions 
+  delete_change_set:
+    name: Delete Change Set
+    if: ${{ inputs.execute_change_set == false || cancelled() || failure() }}
+    needs: create_change_set
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_deploy_role }}
+        role-session-name: github-actions 
 
-  #   - name: Delete Change Set
-  #     shell: bash
-  #     run: |
-  #       aws cloudformation delete-change-set \
-  #       --stack-name ${{ inputs.stack_name }} \
-  #       --change-set-name ${{ inputs.change_set_name }}
+    - name: Delete Change Set
+      shell: bash
+      run: |
+        aws cloudformation delete-change-set \
+        --stack-name ${{ inputs.stack_name }} \
+        --change-set-name ${{ inputs.change_set_name }}
   
