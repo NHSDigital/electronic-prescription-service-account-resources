@@ -74,14 +74,14 @@ jobs:
           STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
         done
         echo $CHANGE_SET
-        STACK_NAME=$(jq -r '.["StackName"]')
+        STACK_NAME=$(jq -r '.["StackName"]' <<< "$CHANGE_SET")
         STACK_ID=$(jq -r '.["StackId"]')
-        CHANGE_SET_NAME=$(jq -r '.["ChangeSetName"]')
-        CHANGE_SET_ID=$(jq -r '.["ChangeSetId"]')
-        STATUS_REASON=$(jq -r '.["StatusReason"]')
-        PARAMETERS=$(jq '.["Parameters"]')
-        CAPABILITIES=$(jq '.["Capabilities"]')
-        CHANGES=$(jq '.["Changes"]')
+        CHANGE_SET_NAME=$(jq -r '.["ChangeSetName"]' <<< "$CHANGE_SET")
+        CHANGE_SET_ID=$(jq -r '.["ChangeSetId"]' <<< "$CHANGE_SET")
+        STATUS_REASON=$(jq -r '.["StatusReason"]' <<< "$CHANGE_SET")
+        PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
+        CAPABILITIES=$(jq '.["Capabilities"]' <<< "$CHANGE_SET")
+        CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
         echo "## [${{inputs.target_environment}}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
