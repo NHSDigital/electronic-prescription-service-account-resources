@@ -64,7 +64,7 @@ jobs:
     - name: Describe Change Set
       shell: bash
       run: |
-        STATUS="CREATE_IN_PROGRESS"
+        STATUS='"CREATE_IN_PROGRESS"'
         echo "Starting Status: $STATUS"
         while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
         do
