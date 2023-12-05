@@ -64,9 +64,7 @@ jobs:
     - name: Describe Change Set
       shell: bash
       run: |
-        
-        
-        STATUS = "INCOMPLETE"
+        STATUS="INCOMPLETE"
         while [ $STATUS != "CREATE_COMPLETE" || $STATUS != "FAILED" ]
         do
           echo "Getting change set..."
