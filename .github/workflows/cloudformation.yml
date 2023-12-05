@@ -64,15 +64,15 @@ jobs:
     - name: Describe Change Set
       shell: bash
       run: |
-        STATUS='"CREATE_IN_PROGRESS"'
+        STATUS="CREATE_IN_PROGRESS"
         echo "Starting Status: $STATUS"
-        while [ "$STATUS" == '"CREATE_IN_PROGRESS"' ]
+        while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
         do
           echo "Getting change set..."
           CHANGE_SET=$(aws cloudformation describe-change-set \
           --stack-name ${{ inputs.stack_name }} \
           --change-set-name ${{ inputs.change_set_name }})
-          STATUS=$(jq '.["Status"]' <<< "$CHANGE_SET")
+          STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
           echo "Current Status: $STATUS"
         done
         echo $CHANGE_SET
