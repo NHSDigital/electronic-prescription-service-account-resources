@@ -65,7 +65,7 @@ jobs:
       shell: bash
       run: |
         STATUS="CREATE_IN_PROGRESS"
-        while [ $STATUS == "CREATE_IN_PROGRESS" ]
+        while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
         do
           echo "Getting change set..."
           CHANGE_SET=$(aws cloudformation describe-change-set \
