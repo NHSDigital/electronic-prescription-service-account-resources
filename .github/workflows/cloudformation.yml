@@ -89,13 +89,15 @@ jobs:
         echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "#### Parameters:" >> $GITHUB_STEP_SUMMARY
-        echo "    $PARAMETERS" >> $GITHUB_STEP_SUMMARY
+        echo "~~~ json"
+        echo "$PARAMETERS" >> $GITHUB_STEP_SUMMARY
+        echo "~~~"
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "#### Capabilities:" >> $GITHUB_STEP_SUMMARY
         echo "    $CAPABILITIES" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "#### Changes:" >> $GITHUB_STEP_SUMMARY
-        if [ "$STATUS" == "FAILED"]; then
+        if [ "$STATUS" == "FAILED" ]; then
           echo "    $STATUS_REASON" >> $GITHUB_STEP_SUMMARY
         else
           echo "    $CHANGES" >> $GITHUB_STEP_SUMMARY
