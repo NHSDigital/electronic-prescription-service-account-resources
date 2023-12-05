@@ -38,7 +38,7 @@ jobs:
         with:
           asdf_branch: v0.11.3
         
-      - name: Cashe asdf
+      - name: Cache asdf
         uses: actions/cache@v3
         with:
           path: |
