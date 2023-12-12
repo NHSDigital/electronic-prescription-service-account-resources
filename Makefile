@@ -1,9 +1,12 @@
 .PHONY: install check-licenses lint
 
-install: install-python install-hooks
+install: install-python install-node install-hooks
 
 install-python:
 	poetry install
+
+install-node:
+	npm ci
 
 install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
@@ -20,6 +23,9 @@ lint-cloudformation:
 
 lint-githubactions:
 	actionlint
+
+package-code:
+	npm run build
 
 deep-clean: clean
 	rm -rf venv
