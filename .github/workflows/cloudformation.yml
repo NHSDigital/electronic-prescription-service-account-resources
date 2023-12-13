@@ -155,4 +155,4 @@ jobs:
       run: |
         aws cloudformation delete-change-set \
         --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.change_set_name }}
+        --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }}
