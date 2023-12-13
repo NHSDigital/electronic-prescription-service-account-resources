@@ -64,7 +64,7 @@ jobs:
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
         --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
-        --tags "version=${{ inputs.version }}"
+        --tags Key="version",Value="${{ inputs.version }}"
       
     - name: Describe Change Set
       shell: bash
@@ -156,4 +156,3 @@ jobs:
         aws cloudformation delete-change-set \
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.change_set_name }}
-  

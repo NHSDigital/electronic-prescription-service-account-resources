@@ -128,7 +128,7 @@ This .github folder contains workflows and templates related to github
 Workflows are in the .github/workflows folder
 
 - `combine-dependabot-prs.yml`: Workflow for combining dependabot pull requests. Runs on demand
-- `pull_request.yml`: Called when pull request is opened or updated. Creates change sets for stacks against dev. The changesets are named <stack_name>-PR<PR_NO>
+- `pull_request.yml`: Called when pull request is opened or updated. Creates change sets for stacks against dev. The changesets are named <stack_name>-pr-<PR_NO>
 - `quality_checks.yml`: Runs check-licenses and linting against the repo. Called from pull_request.yml and release.yml
 - `release.yml`: Run when code is merged to main branch or a tag starting v is pushed. Creates versioned changesets that are executed after being reviewed.
 - `pr-link.yaml`: This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
