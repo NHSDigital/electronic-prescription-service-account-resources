@@ -32,10 +32,10 @@ def parse_parameters(env, stack):
         if not value:
             return EMPTY
         elif isinstance(value, str):
-            output = f'{output}ParameterKey="{parameter}",ParameterValue="{value}" '
+            output = f'{output}ParameterKey="{parameter}",ParameterValue="\'{value}\'" '
         elif isinstance(value, list):
             values = ','.join(value)
-            output = f'{output}ParameterKey="{parameter}",ParameterValue="{values}" '
+            output = f'{output}ParameterKey="{parameter}",ParameterValue="\'{values}\'" '
         else:
             return EMPTY
 
