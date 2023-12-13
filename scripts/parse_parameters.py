@@ -37,7 +37,7 @@ def parse_parameters(env, stack):
             values = ','.join(value)
             output = f'{output}ParameterKey="{parameter}",ParameterValue="{values}" '
         else:
-            print("value - invalid type. Parameter value should be a string or list of strings")
+            return EMPTY
 
     return output.rstrip()
 
@@ -48,5 +48,4 @@ if __name__ == "__main__":
     parser.add_argument("stack", help="the stack to parse for")
     args = parser.parse_args()
 
-    print(f"parsing parameters for: {args.env} {args.stack}")
     print(parse_parameters(args.env, args.stack))
