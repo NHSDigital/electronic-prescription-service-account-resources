@@ -18,15 +18,30 @@ for (const repo_package of repo_packages) {
     outfile: `dist/${repo_package}/app.js`,
   })
 
-  const output = fs.createWriteStream(`${repo_package}.zip`)
-  const zip = archiver("zip", { zlib: { level: 9 } })
+  const output = fs.createWriteStream(`dist/${repo_package}.zip`)
+  const archive = archiver("zip", { zlib: { level: 9 } })
 
   output.on('close', function () {
     console.log(archive.pointer() + ' total bytes');
     console.log('archiver has been finalized and the output file descriptor has closed.');
   });
 
-  zip.pipe(output)
-  zip.directory(`dist/${repo_package}/`, false)
-  zip.finalize()
+  output.on('end', function () {
+    console.log('Data has been drained');
+  });
+
+  archive.on('warning', function (err) {
+    if (err.code === 'ENOENT') {
+    } else {
+      throw err;
+    }
+  });
+
+  archive.on('error', function (err) {
+    throw err;
+  });
+
+  archive.pipe(output)
+  archive.directory(`dist/${repo_package}/`, false)
+  archive.finalize()
 }

@@ -121,6 +121,12 @@ jobs:
           role-to-assume: ${{ secrets.cf_deploy_role }}
           role-session-name: github-actions
 
+      - name: Download Build Artefacts
+        uses: actions/download-artifact@v3
+        with:
+          name: packaged_code
+          path: .
+
       - name: Execute Change Set
         shell: bash
         run: |

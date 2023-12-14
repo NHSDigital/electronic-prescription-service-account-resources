@@ -44,3 +44,9 @@ jobs:
         run: |
           export PATH=$PATH:$PWD/node_modules/.bin
           make package-code
+
+      - uses: actions/upload-artifact@v3
+        name: Upload Build Artifacts
+        with:
+          name: packaged_code
+          path: dist/*.zip
