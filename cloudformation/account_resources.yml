@@ -690,6 +690,12 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SpineCAChain"]]
 
+  ServiceSearchApiKey:
+    Description: ServiceSearchApiKey
+    Value: !GetAtt ServiceSearchApiKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ServiceSearchApiKey"]]
+
   JiraToken:
     Description: JiraToken
     Value: !GetAtt JiraToken.Id
