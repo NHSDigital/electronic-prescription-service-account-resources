@@ -585,6 +585,14 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
+  ServiceSearchApiKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: API key for service search
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
   JiraToken:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
