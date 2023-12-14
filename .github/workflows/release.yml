@@ -131,7 +131,7 @@ jobs:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_ci_resources_qa:
-    needs: [release_ci_resources_ref, release_account_resources_ref]
+    needs: [release_ci_resources_dev, release_account_resources_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: qa
