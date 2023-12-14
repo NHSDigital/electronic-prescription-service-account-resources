@@ -1,0 +1,16 @@
+{
+  "env": "dev",
+  "parameters": {
+    "ci-resources": {
+      "SubjectClaimFilters": [
+        "repo:NHSDigital/prescriptionsforpatients:*",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/electronic-prescription-service-release-notes:*",
+        "repo:NHSDigital/prescriptions-for-patients:*",
+        "repo:NHSDigital/electronic-prescription-service-api:*"
+      ]
+    },
+    "account-resources": {}
+  }
+}

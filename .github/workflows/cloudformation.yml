@@ -6,22 +6,19 @@ on:
       stack_name:
         required: true
         type: string
-      change_set_name:
-        required: true
-        type: string
       template:
         required: true
         type: string
       capabilities:
         required: true
         type: string
-      parameter_overrides:
-        required: true
-        type: string
       execute_change_set:
         required: true
         type: boolean
       target_environment:
+        required: true
+        type: string
+      version:
         required: true
         type: string
     secrets:
@@ -35,6 +32,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
     steps:
     - name: checkout code
       uses: actions/checkout@v4
@@ -48,17 +47,24 @@ jobs:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_deploy_role }}
         role-session-name: github-actions
+    
+    - name: Parse Parameters
+      id: parse_parameters
+      shell: bash
+      run: |
+        echo PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }}) >> $GITHUB_OUTPUT
 
     - name: Create Change Set
       shell: bash
       run: |
         aws cloudformation create-change-set \
         --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.change_set_name }} \
+        --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }} \
         --change-set-type UPDATE \
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
-        --parameters ${{ inputs.parameter_overrides }}
+        --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
+        --tags Key="version",Value="${{ inputs.version }}"
       
     - name: Describe Change Set
       shell: bash
@@ -69,7 +75,7 @@ jobs:
           echo "Getting change set..."
           CHANGE_SET=$(aws cloudformation describe-change-set \
           --stack-name ${{ inputs.stack_name }} \
-          --change-set-name ${{ inputs.change_set_name }})
+          --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }})
           STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
         done
         echo $CHANGE_SET
@@ -81,7 +87,7 @@ jobs:
         PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
         CAPABILITIES=$(jq '.["Capabilities"]' <<< "$CHANGE_SET")
         CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
-        echo "## [${{inputs.target_environment}}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack ID:** $STACK_ID" >> $GITHUB_STEP_SUMMARY
@@ -132,7 +138,7 @@ jobs:
         run: |
           aws cloudformation execute-change-set \
           --stack-name ${{ inputs.stack_name }} \
-          --change-set-name ${{ inputs.change_set_name }}
+          --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }}
 
   delete_change_set:
     name: Delete Change Set
@@ -155,5 +161,4 @@ jobs:
       run: |
         aws cloudformation delete-change-set \
         --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.change_set_name }}
-  
+        --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }}
