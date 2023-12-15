@@ -43,9 +43,9 @@ jobs:
         id: output_change_set_version
         shell: bash
         run: |
-          TIMESTAMP=$(date +%s)
-          VERSION=$(echo ${{ env.SPEC_VERSION }} | tr . -)
-          echo CHANGE_SET_VERSION=$VERSION-$TIMESTAMP >> $GITHUB_OUPUT
+          TIMESTAMP="$(date +%s)"
+          VERSION="$(echo ${{ env.SPEC_VERSION }} | tr . -)"
+          echo CHANGE_SET_VERSION=$VERSION-$TIMESTAMP >> "$GITHUB_OUPUT"
 
   list_ci_resources_cf_changes:
     needs: get_issue_number
