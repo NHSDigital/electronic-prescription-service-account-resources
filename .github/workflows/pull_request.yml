@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: quality_checks
     env:
-      SPEC_VERSION: v1.22.3 # remove after testing
+      SPEC_VERSION: "v1.22.3" # remove after testing
     outputs:
         issue_number: ${{steps.get_issue_number.outputs.result}}
     steps:
@@ -43,9 +43,9 @@ jobs:
         id: output_change_set_version
         shell: bash
         run: |
-          TIMESTAMP="$(date +%s)"
-          VERSION="$(echo ${{ env.SPEC_VERSION }} | tr . -)"
-          echo CHANGE_SET_VERSION=$VERSION-$TIMESTAMP >> "$GITHUB_OUPUT"
+          TIMESTAMP=$(date +%s)
+          VERSION=$(echo ${{ env.SPEC_VERSION }} | tr . -)
+          echo "CHANGE_SET_VERSION=${VERSION}-${TIMESTAMP}" >> "$GITHUB_OUPUT"
 
   list_ci_resources_cf_changes:
     needs: get_issue_number
