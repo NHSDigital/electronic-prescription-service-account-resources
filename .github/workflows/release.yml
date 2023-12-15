@@ -90,6 +90,8 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{}"
+      
   
   release_account_resources_dev:
     needs: release_ci_resources_dev
@@ -103,6 +105,7 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{'splunk_hec_token': '${{ secrets.DEV_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.DEV_SPLUNK_HEC_ENDPOINT }}'}"
     
   release_ci_resources_ref:
     needs: [release_ci_resources_dev, release_account_resources_dev]
@@ -116,6 +119,7 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{}"
   
   release_account_resources_ref:
     needs: release_ci_resources_ref
@@ -129,6 +133,7 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{'splunk_hec_token': '${{ secrets.REF_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.REF_SPLUNK_HEC_ENDPOINT }}'}"
   
   release_ci_resources_qa:
     needs: [release_ci_resources_dev, release_account_resources_dev]
@@ -142,6 +147,7 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{}"
   
   release_account_resources_qa:
     needs: release_ci_resources_qa
@@ -155,6 +161,7 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{'splunk_hec_token': '${{ secrets.QA_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.QA_SPLUNK_HEC_ENDPOINT }}'}"
 
   release_ci_resources_int:
     needs: [release_ci_resources_qa, release_account_resources_qa]
@@ -168,6 +175,7 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{}"
   
   release_account_resources_int:
     needs: release_ci_resources_int
@@ -181,6 +189,7 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{'splunk_hec_token': '${{ secrets.INT_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.INT_SPLUNK_HEC_ENDPOINT }}'}"
 
   release_ci_resources_prod:
     needs: [release_ci_resources_int, release_account_resources_int]
@@ -194,6 +203,7 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{}"
   
   release_account_resources_prod:
     needs: release_ci_resources_prod
@@ -207,3 +217,4 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{'splunk_hec_token': '${{ secrets.PROD_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.PROD_SPLUNK_HEC_ENDPOINT }}'}"

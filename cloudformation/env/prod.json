@@ -8,6 +8,12 @@
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
       ]
     },
-    "account-resources": {}
+    "account-resources": {
+      "SplunkHECToken": "SECRET.splunk_hec_token",
+      "SplunkHECEndpoint": "SECRET.splunk_hec_endpoint",
+      "EnableSplunk": "true",
+      "LogRetentionDays": "30",
+      "Env": "prod"
+    }
   }
 }

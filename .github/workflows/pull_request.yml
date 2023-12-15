@@ -49,6 +49,7 @@ jobs:
       execute_change_set: false
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: "{'splunk_hec_token': '${{ secrets.DEV_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.DEV_SPLUNK_HEC_ENDPOINT }}'}"
   
   list_account_resources_cf_changes:
     needs: get_issue_number
@@ -62,4 +63,6 @@ jobs:
       execute_change_set: false
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      parameter_secrets: '{"splunk_hec_token": "${{ secrets.DEV_SPLUNK_HEC_TOKEN }}", "splunk_hec_endpoint": "${{ secrets.DEV_SPLUNK_HEC_ENDPOINT }}"}'
+
       

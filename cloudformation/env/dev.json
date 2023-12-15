@@ -11,6 +11,12 @@
         "repo:NHSDigital/electronic-prescription-service-api:*"
       ]
     },
-    "account-resources": {}
+    "account-resources": {
+      "SplunkHECToken": "SECRET.splunk_hec_token",
+      "SplunkHECEndpoint": "SECRET.splunk_hec_endpoint",
+      "EnableSplunk": "true",
+      "LogRetentionDays": "30",
+      "Env": "dev"
+    }
   }
 }
