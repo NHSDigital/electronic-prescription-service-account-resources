@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       spec_version: ${{ steps.output_spec_version.outputs.SPEC_VERSION }}
+      change_set_version: ${{ steps.output_change_set_version.outputs.CHANGE_SET_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -78,12 +79,18 @@ jobs:
         id: output_spec_version
         run: echo SPEC_VERSION=${{ env.SPEC_VERSION }} >> $GITHUB_OUTPUT
 
+      - name: Output Change Set Version
+        id: output_change_set_version
+        run: |
+          TIMESTAMP=$(date +%s)
+          echo CHANGE_SET_VERSION=$(${{ env.SPEC_VERSION }}-$TIMESTAMP | tr . -) >> $GITHUB_OUPUT
+
   release_ci_resources_dev:
     needs: tag_release
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -96,7 +103,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
@@ -109,7 +116,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: ref
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -122,7 +129,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: ref
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
@@ -135,7 +142,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: qa
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -148,7 +155,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: qa
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
@@ -161,7 +168,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: int
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -174,7 +181,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: int
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
@@ -187,7 +194,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: prod
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -200,7 +207,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: prod
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
