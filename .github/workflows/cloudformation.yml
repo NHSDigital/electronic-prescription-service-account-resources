@@ -1,0 +1,158 @@
+name: Cloudformation Actions
+
+on:
+  workflow_call:
+    inputs:
+      stack_name:
+        required: true
+        type: string
+      template:
+        required: true
+        type: string
+      capabilities:
+        required: true
+        type: string
+      execute_change_set:
+        required: true
+        type: boolean
+      target_environment:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+    secrets:
+      cf_deploy_role:
+        required: true
+
+jobs:
+  create_change_set:
+    name: Create CF Change Set
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ env.BRANCH_NAME }}
+        fetch-depth: 0
+    
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_deploy_role }}
+        role-session-name: github-actions
+    
+    - name: Parse Parameters
+      id: parse_parameters
+      shell: bash
+      run: |
+        echo PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }}) >> $GITHUB_OUTPUT
+
+    - name: Create Change Set
+      shell: bash
+      run: |
+        aws cloudformation create-change-set \
+        --stack-name ${{ inputs.stack_name }} \
+        --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }} \
+        --change-set-type UPDATE \
+        --template-body file://${{ inputs.template }} \
+        --capabilities ${{ inputs.capabilities }} \
+        --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
+        --tags Key="version",Value="${{ inputs.version }}"
+      
+    - name: Describe Change Set
+      shell: bash
+      run: |
+        STATUS="CREATE_IN_PROGRESS"
+        while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
+        do
+          echo "Getting change set..."
+          CHANGE_SET=$(aws cloudformation describe-change-set \
+          --stack-name ${{ inputs.stack_name }} \
+          --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }})
+          STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
+        done
+        echo $CHANGE_SET
+        STACK_NAME=$(jq -r '.["StackName"]' <<< "$CHANGE_SET")
+        STACK_ID=$(jq -r '.["StackId"]' <<< "$CHANGE_SET")
+        CHANGE_SET_NAME=$(jq -r '.["ChangeSetName"]' <<< "$CHANGE_SET")
+        CHANGE_SET_ID=$(jq -r '.["ChangeSetId"]' <<< "$CHANGE_SET")
+        STATUS_REASON=$(jq -r '.["StatusReason"]' <<< "$CHANGE_SET")
+        PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
+        CAPABILITIES=$(jq '.["Capabilities"]' <<< "$CHANGE_SET")
+        CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
+        echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
+        echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
+        echo "- **Stack ID:** $STACK_ID" >> $GITHUB_STEP_SUMMARY
+        echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "#### Parameters:" >> $GITHUB_STEP_SUMMARY
+        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
+        echo "$PARAMETERS" >> $GITHUB_STEP_SUMMARY
+        echo "~~~"  >> $GITHUB_STEP_SUMMARY
+        echo "#### Capabilities:" >> $GITHUB_STEP_SUMMARY
+        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
+        echo "$CAPABILITIES" >> $GITHUB_STEP_SUMMARY
+        echo "~~~"  >> $GITHUB_STEP_SUMMARY
+        echo "#### Changes:" >> $GITHUB_STEP_SUMMARY
+        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
+        if [ "$STATUS" == "FAILED" ]; then
+          echo "$STATUS_REASON" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "$CHANGES" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "~~~"  >> $GITHUB_STEP_SUMMARY
+  
+  execute_change_set:
+    name: Execute Change Set
+    if: ${{ inputs.execute_change_set == true }}
+    needs: create_change_set
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.cf_deploy_role }}
+          role-session-name: github-actions
+
+      - name: Execute Change Set
+        shell: bash
+        run: |
+          aws cloudformation execute-change-set \
+          --stack-name ${{ inputs.stack_name }} \
+          --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }}
+
+  delete_change_set:
+    name: Delete Change Set
+    if: ${{ inputs.execute_change_set == false || cancelled() || failure() }}
+    needs: create_change_set
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_deploy_role }}
+        role-session-name: github-actions 
+
+    - name: Delete Change Set
+      shell: bash
+      run: |
+        aws cloudformation delete-change-set \
+        --stack-name ${{ inputs.stack_name }} \
+        --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }}

@@ -1,10 +1,4 @@
-guard-%:
-	@ if [ "${${*}}" = "" ]; then \
-		echo "Environment variable $* not set"; \
-		exit 1; \
-	fi
-
-.PHONY: install build test publish release clean
+.PHONY: install check-licenses lint
 
 install: install-python install-hooks
 
@@ -14,19 +8,22 @@ install-python:
 install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
 
-lint: lint-cloudformation 
-
-lint-cloudformation:
-	poetry run cfn-lint -t cloudformation/*.yml
-
-deep-clean:
-	rm -rf .venv
-
-check-licenses: check-licenses-python 
+check-licenses: check-licenses-python
 
 check-licenses-python:
 	scripts/check_python_licenses.sh
 
+lint: lint-cloudformation
+
+lint-cloudformation:
+	poetry run cfn-lint -t cloudformation/*.yml
+
+lint-githubactions:
+	actionlint
+
+deep-clean: clean
+	rm -rf venv
+	poetry env remove --all
 
 aws-configure:
 	aws configure sso --region eu-west-2
