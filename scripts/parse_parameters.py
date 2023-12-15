@@ -43,9 +43,14 @@ def parse_parameters(env, stack):
 
 
 if __name__ == "__main__":
+    """
+        Note: In github the env is split into dev-ci and dev-account, to save extra command or args in the workflow
+        we instead split the github env here to get the main env name e.g. dev
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("env", help="the environment to parse for")
     parser.add_argument("stack", help="the stack to parse for")
     args = parser.parse_args()
+    [env, _] = args.env.split("-")
 
-    print(parse_parameters(args.env, args.stack))
+    print(parse_parameters(env, args.stack))

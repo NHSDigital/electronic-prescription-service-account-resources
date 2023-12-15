@@ -41,7 +41,7 @@ jobs:
     needs: get_issue_number
     uses: ./.github/workflows/cloudformation.yml
     with:
-      target_environment: dev
+      target_environment: dev-ci
       version: pr-${{github.event.number}}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
@@ -54,7 +54,7 @@ jobs:
     needs: get_issue_number
     uses: ./.github/workflows/cloudformation.yml
     with:
-      target_environment: dev
+      target_environment: dev-account
       version: pr-${{github.event.number}}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
