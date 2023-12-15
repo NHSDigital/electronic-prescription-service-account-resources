@@ -14,6 +14,8 @@ jobs:
   get_issue_number:
     runs-on: ubuntu-latest
     needs: quality_checks
+    env:
+      SPEC_VERSION: v1.22.3 # remove after testing
     outputs:
         issue_number: ${{steps.get_issue_number.outputs.result}}
     steps:
@@ -36,6 +38,13 @@ jobs:
               ).data[0].number;
             }
           result-encoding: string
+
+      - name: Output Change Set Version # remove after testing
+        id: output_change_set_version
+        run: |
+          TIMESTAMP=$(date +%s)
+          VERSION=$(echo ${{ env.SPEC_VERSION }} | tr . -)
+          echo CHANGE_SET_VERSION=$VERSION-$TIMESTAMP >> "$GITHUB_OUPUT"
 
   list_ci_resources_cf_changes:
     needs: get_issue_number
