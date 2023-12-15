@@ -81,6 +81,7 @@ jobs:
 
       - name: Output Change Set Version
         id: output_change_set_version
+        shell: bash
         run: |
           TIMESTAMP=$(date +%s)
           VERSION=$(echo ${{ env.SPEC_VERSION }} | tr . -)
