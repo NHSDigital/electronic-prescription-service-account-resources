@@ -21,6 +21,9 @@ on:
       version:
         required: true
         type: string
+      change_set_version:
+        required: true
+        type: string
     secrets:
       cf_deploy_role:
         required: true
@@ -59,7 +62,7 @@ jobs:
       run: |
         aws cloudformation create-change-set \
         --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }} \
+        --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }} \
         --change-set-type UPDATE \
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
@@ -75,7 +78,7 @@ jobs:
           echo "Getting change set..."
           CHANGE_SET=$(aws cloudformation describe-change-set \
           --stack-name ${{ inputs.stack_name }} \
-          --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }})
+          --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }})
           STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
         done
         echo $CHANGE_SET
@@ -116,7 +119,7 @@ jobs:
       run: |
         aws cloudformation delete-change-set \
         --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }}
+        --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
 
   
   execute_change_set:
@@ -141,4 +144,4 @@ jobs:
         run: |
           aws cloudformation execute-change-set \
           --stack-name ${{ inputs.stack_name }} \
-          --change-set-name ${{ inputs.stack_name }}-${{ inputs.version }}
+          --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}

@@ -92,7 +92,8 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev-ci
-      version: ${{ needs.tag_release.outputs.change_set_version }}
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -101,11 +102,12 @@ jobs:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_dev:
-    needs: release_ci_resources_dev
+    needs: [tag_release, release_ci_resources_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev-account
-      version: ${{ needs.tag_release.outputs.change_set_version }}
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
@@ -114,11 +116,12 @@ jobs:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
     
   release_ci_resources_ref:
-    needs: [release_ci_resources_dev, release_account_resources_dev]
+    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: ref-ci
-      version: ${{ needs.tag_release.outputs.change_set_version }}
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -127,11 +130,12 @@ jobs:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_ref:
-    needs: [release_ci_resources_dev, release_account_resources_dev]
+    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: ref-account
-      version: ${{ needs.tag_release.outputs.change_set_version }}
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
@@ -140,11 +144,12 @@ jobs:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_ci_resources_qa:
-    needs: [release_ci_resources_dev, release_account_resources_dev]
+    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: qa-ci
-      version: ${{ needs.tag_release.outputs.change_set_version }}
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -153,11 +158,12 @@ jobs:
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_qa:
-    needs: [release_ci_resources_dev, release_account_resources_dev]
+    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: qa-account
-      version: ${{ needs.tag_release.outputs.change_set_version }}
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
@@ -166,11 +172,12 @@ jobs:
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
 
   release_ci_resources_int:
-    needs: [release_ci_resources_qa, release_account_resources_qa]
+    needs: [tag_release, release_ci_resources_qa, release_account_resources_qa]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: int-ci
-      version: ${{ needs.tag_release.outputs.change_set_version }}
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -179,11 +186,12 @@ jobs:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_int:
-    needs: [release_ci_resources_qa, release_account_resources_qa]
+    needs: [tag_release, release_ci_resources_qa, release_account_resources_qa]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: int-account
-      version: ${{ needs.tag_release.outputs.change_set_version }}
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
@@ -192,11 +200,12 @@ jobs:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
 
   release_ci_resources_prod:
-    needs: [release_ci_resources_int, release_account_resources_int]
+    needs: [tag_release, release_ci_resources_int, release_account_resources_int]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: prod-ci
-      version: ${{ needs.tag_release.outputs.change_set_version }}
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -205,11 +214,12 @@ jobs:
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_prod:
-    needs: [release_ci_resources_int, release_account_resources_int]
+    needs: [tag_release, release_ci_resources_int, release_account_resources_int]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: prod-account
-      version: ${{ needs.tag_release.outputs.change_set_version }}
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM

@@ -43,6 +43,7 @@ jobs:
     with:
       target_environment: dev-ci
       version: pr-${{github.event.number}}
+      change_set_version: pr-${{github.event.number}}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -56,6 +57,7 @@ jobs:
     with:
       target_environment: dev-account
       version: pr-${{github.event.number}}
+      change_set_version: pr-${{github.event.number}}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
