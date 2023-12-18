@@ -53,6 +53,14 @@ Resources:
                   - "cloudformation:ListStacks"
                   - "cloudformation:DeleteChangeSet"
                 Resource: "*"
+        - PolicyName: AllowOpenIDProviderPermissions
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:GetOpenIDConnectProvider"
+                Resource: "*"
         - PolicyName: AssumeExecutionRole
           PolicyDocument:
             Version: "2012-10-17"
