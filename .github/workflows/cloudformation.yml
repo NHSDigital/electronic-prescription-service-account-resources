@@ -80,6 +80,10 @@ jobs:
           --stack-name ${{ inputs.stack_name }} \
           --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }})
           STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
+          if [ "$STATUS" == "CREATE_IN_PROGRESS" ]; then
+            echo "sleeping 1..."
+            sleep 1
+          fi
         done
         echo $CHANGE_SET
         STACK_NAME=$(jq -r '.["StackName"]' <<< "$CHANGE_SET")
@@ -90,6 +94,10 @@ jobs:
         PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
         CAPABILITIES=$(jq '.["Capabilities"]' <<< "$CHANGE_SET")
         CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
+        if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information didn't contain changes."* ]; then
+          echo "Failed to create change set."
+          exit 1
+        fi
         echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
@@ -145,3 +153,36 @@ jobs:
           aws cloudformation execute-change-set \
           --stack-name ${{ inputs.stack_name }} \
           --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
+          STATUS="UPDATE_IN_PROGRESS"
+          while [ "$STATUS" == "UPDATE_IN_PROGRESS" ]
+          do
+            echo "Checking stack status..."
+            STACKS=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }})
+            STATUS=$(jq -r .["Stacks"][0]["StackStatus"] <<< "$STACKS")
+            if [ "$STATUS" == "UPDATE_IN_PROGRESS" ]; then
+              echo "sleeping 5..."
+              sleep 5
+            fi
+          done
+          if [ "$STATUS" == "ROLLBACK_IN_PROGRESS " ]; then
+            echo "Failed to execute change set, rollback in progress..."
+            echo "$STACKS"
+            exit 1
+          elif [ "$STATUS" == "ROLLBACK_COMPLETE  " ]; then
+            echo "Failed to execute change set, rollback complete."
+            echo "$STACKS"
+            exit 1
+          elif [ "$STATUS" == "UPDATE_FAILED   " ]; then
+            echo "Failed to execute change set."
+            echo "$STACKS"
+            exit 1
+          elif [ "$STATUS" == "UPDATE_ROLLBACK_IN_PROGRESS" ]; then
+            echo "Failed to execute change set, rollback in progress..."
+            echo "$STACKS"
+            exit 1
+          elif [ "$STATUS" == "UPDATE_ROLLBACK_FAILED" ]; then
+            echo "Failed to execute change set, rollback failed."
+            echo "$STACKS"
+            exit 1
+          fi
+          echo "Execute change set comeplete."
