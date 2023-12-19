@@ -286,6 +286,14 @@ Resources:
                 Action:
                   - "iam:GetOpenIDConnectProvider"
                 Resource: "*"
+        - PolicyName: AssumeExecutionRole
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:PassRole"
+                Resource: !GetAtt CloudFormationExecutionRole.Arn
 
 Outputs:
   CloudFormationDeployRole:
