@@ -106,6 +106,7 @@ jobs:
         echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
+        echo "- **Version Tag:** ${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack ID:** $STACK_ID" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
