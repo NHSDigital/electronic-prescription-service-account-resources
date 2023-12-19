@@ -49,7 +49,7 @@ jobs:
       capabilities: CAPABILITY_IAM
       execute_change_set: false
     secrets:
-      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
   
   list_account_resources_cf_changes:
     needs: get_issue_number
@@ -63,5 +63,5 @@ jobs:
       capabilities: CAPABILITY_IAM
       execute_change_set: false
     secrets:
-      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       

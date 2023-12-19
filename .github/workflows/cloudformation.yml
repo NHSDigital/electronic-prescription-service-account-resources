@@ -26,6 +26,8 @@ on:
         type: string
     secrets:
       cf_deploy_role:
+        required: false
+      cf_create_changeset_role:
         required: true
 
 jobs:
@@ -44,11 +46,11 @@ jobs:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
     
-    - name: Configure AWS Credentials
+    - name: Assume create changeset role
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
-        role-to-assume: ${{ secrets.cf_deploy_role }}
+        role-to-assume: ${{ secrets.cf_create_changeset_role}}
         role-session-name: github-actions
     
     - name: Parse Parameters
@@ -132,7 +134,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: Configure AWS Credentials
+      - name: Assume deploy changeset role
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-2
