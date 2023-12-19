@@ -77,9 +77,6 @@ Resources:
                 Action:
                   - "iam:PassRole"
                 Resource: !GetAtt CloudFormationExecutionRole.Arn
-                Condition:
-                  StringEquals: 
-                    iam:PassedToService: cloudformation.amazonaws.com
 
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
