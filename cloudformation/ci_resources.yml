@@ -60,6 +60,15 @@ Resources:
               - Effect: Allow
                 Action:
                   - "iam:GetOpenIDConnectProvider"
+                  - "iam:UpdateOpenIDConnectProviderThumbprint"
+                Resource: "*"
+        - PolicyName: AllowIAMPermissions
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:UntagRole"
                 Resource: "*"
         - PolicyName: AssumeExecutionRole
           PolicyDocument:
