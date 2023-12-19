@@ -61,7 +61,7 @@ jobs:
       shell: bash
       run: |
         ROLE=$(aws cloudformation list-exports --output json | \
-        jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' ))
+        jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
         aws cloudformation create-change-set \
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }} \
