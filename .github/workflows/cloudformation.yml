@@ -166,18 +166,23 @@ jobs:
           done
           if [ "$STATUS" == "ROLLBACK_IN_PROGRESS " ]; then
             echo "Failed to execute change set, rollback in progress..."
+            echo "$STACKS"
             exit 1
           elif [ "$STATUS" == "ROLLBACK_COMPLETE  " ]; then
             echo "Failed to execute change set, rollback complete."
+            echo "$STACKS"
             exit 1
           elif [ "$STATUS" == "UPDATE_FAILED   " ]; then
             echo "Failed to execute change set."
+            echo "$STACKS"
             exit 1
           elif [ "$STATUS" == "UPDATE_ROLLBACK_IN_PROGRESS" ]; then
             echo "Failed to execute change set, rollback in progress..."
+            echo "$STACKS"
             exit 1
           elif [ "$STATUS" == "UPDATE_ROLLBACK_FAILED" ]; then
             echo "Failed to execute change set, rollback failed."
+            echo "$STACKS"
             exit 1
           fi
           echo "Execute change set comeplete."
