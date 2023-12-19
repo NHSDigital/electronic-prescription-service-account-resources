@@ -56,11 +56,7 @@ Ensure you have the following lines in the file .envrc
 
 ```
 export AWS_DEFAULT_PROFILE=prescription-dev
-export stack_name=<UNIQUE_NAME_FOR_YOU>
-export TARGET_SPINE_SERVER=<NAME OF DEV TARGET SPINE SERVER>
 ```
-
-UNIQUE_NAME_FOR_YOU should be a unique name for you with no underscores in it - eg anthony-brown-1
 
 Once you have saved .envrc, start a new terminal in vscode and run this command to authenticate against AWS.
 
@@ -133,3 +129,18 @@ Workflows are in the .github/workflows folder
 - `release.yml`: Run when code is merged to main branch or a tag starting v is pushed. Creates versioned changesets that are executed after being reviewed.
 - `pr-link.yaml`: This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
 - `dependabot.yml`: Dependabot definition file
+- `cloudformation.yml`: Creates a changeset for specified stack and outputs changes. Either runs it or deletes it
+
+## Roles and subject claim filters
+There are 4 roles created by the ci-resources stack that can be assumed by github actions
+- CloudFormationDeployRole. This is used to deploy a cloudformation stack
+- CloudFormationCheckVersion - This is used to get the version tag from cloudformation stacks
+- ReleaseNotesExecuteLambda - This is used to execute the release notes lambda
+- CloudFormationPrepareChangesetRole - This is used to prepare a cloudformation changeset
+
+
+For more details of OIDC see https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+
+Each role has a subject claim filters that allow only named repos to assume the role from github actions. These are defined in cloudformation/env/ENVIRONMENT_NAME.json 
+
+For more details about restrictions see https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
