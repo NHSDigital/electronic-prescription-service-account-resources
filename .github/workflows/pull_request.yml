@@ -27,16 +27,25 @@ jobs:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
           role-session-name: github-actions
-      - name: get current tags
+      - id: output_account_resources_tag
         shell: bash
         run: |
           export current_deployed_account_resources_tag=$(aws cloudformation describe-stacks --stack-name account-resources --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
-          export current_deployed_ci_resources_tag=$(aws cloudformation describe-stacks --stack-name ci-resources --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
-      - id: output_account_resources_tag
-        run: echo "account_resources_tag=${current_deployed_account_resources_tag}" >> "$GITHUB_OUTPUT"
+
+          if [ "${current_deployed_account_resources_tag}" == "" ]; then
+            echo "Can not find target tag. Using initial tag in repo"
+            export current_deployed_account_resources_tag="v1.0.4-alpha"
+          fi
+          echo "account_resources_tag=${current_deployed_account_resources_tag}" >> "$GITHUB_OUTPUT"
       - id: output_ci_resources_tag
-        run: echo "ci_resources_tag=${current_deployed_ci_resources_tag}" >> "$GITHUB_OUTPUT"
-          
+        shell: bash
+        run: |
+          export current_deployed_ci_resources_tag=$(aws cloudformation describe-stacks --stack-name ci-resources --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
+          if [ "${current_deployed_ci_resources_tag}" == "" ]; then
+            echo "Can not find target tag. Using initial tag in repo"
+            export current_deployed_ci_resources_tag="v1.0.4-alpha"
+          fi
+          echo "ci_resources_tag=${current_deployed_ci_resources_tag}" >> "$GITHUB_OUTPUT"
 
   list_ci_resources_cf_changes:
     needs: get_deployed_tags
