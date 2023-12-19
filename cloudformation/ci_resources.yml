@@ -180,6 +180,13 @@ Resources:
                   - "route53:GetHostedZone"
                   - "route53:ListResourceRecordSets"
                   - "route53:GetChange"
+                  - "secretsmanager:Create*"
+                  - "secretsmanager:Update*"
+                  - "secretsmanager:Delete*"
+                  - "secretsmanager:Describe*"
+                  - "secretsmanager:List*"
+                  - "secretsmanager:Tag*"
+                  - "secretsmanager:Untag*"
                 Resource: "*"
 
 Outputs:
