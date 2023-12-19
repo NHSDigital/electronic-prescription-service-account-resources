@@ -70,7 +70,7 @@ jobs:
         --capabilities ${{ inputs.capabilities }} \
         --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
         --tags Key="version",Value="${{ inputs.version }}"
-        --role-arn=$ROLE
+        --role-arn="$ROLE"
       
     - name: Describe Change Set
       shell: bash
