@@ -11,38 +11,36 @@ jobs:
   quality_checks:
     uses: ./.github/workflows/quality_checks.yml
 
-  get_issue_number:
+  get_deployed_tags:
     runs-on: ubuntu-latest
     needs: quality_checks
     outputs:
-        issue_number: ${{steps.get_issue_number.outputs.result}}
+      account_resources_tag: ${{steps.output_account_resources_tag.outputs.account_resources_tag}}
+      ci_resources_tag: ${{steps.output_ci_resources_tag.outputs.ci_resources_tag}}
     steps:
-      - uses: actions/github-script@v6
-        name: get issue number
-        id: get_issue_number
+      - name: connect to target account
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          script: |
-            if (context.issue.number) {
-              // Return issue number if present
-              return context.issue.number;
-            } else {
-              // Otherwise return issue number from commit
-              return (
-                await github.rest.repos.listPullRequestsAssociatedWithCommit({
-                  commit_sha: context.sha,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                })
-              ).data[0].number;
-            }
-          result-encoding: string
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+          role-session-name: github-actions
+      - name: get current tags
+        shell: bash
+        run: |
+          export current_deployed_account_resources_tag=$(aws cloudformation describe-stacks --stack-name account-resources --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
+          export current_deployed_ci_resources_tag=$(aws cloudformation describe-stacks --stack-name ci-resources --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
+      - id: output_account_resources_tag
+        run: echo "account_resources_tag=${current_deployed_account_resources_tag}" >> "$GITHUB_OUTPUT"
+      - id: output_ci_resources_tag
+        run: echo "ci_resources_tag=${current_deployed_ci_resources_tag}" >> "$GITHUB_OUTPUT"
+          
 
   list_ci_resources_cf_changes:
-    needs: get_issue_number
+    needs: get_deployed_tags
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev-ci
-      version: pr-${{github.event.number}}
+      version: ${{needs.get_deployed_tags.outputs.ci_resources_tag}}
       change_set_version: pr-${{github.event.number}}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
@@ -52,11 +50,11 @@ jobs:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
   
   list_account_resources_cf_changes:
-    needs: get_issue_number
+    needs: get_deployed_tags
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev-account
-      version: pr-${{github.event.number}}
+      version: ${{needs.get_deployed_tags.outputs.account_resources_tag}}
       change_set_version: pr-${{github.event.number}}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
