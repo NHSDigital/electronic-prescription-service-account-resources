@@ -89,7 +89,17 @@ jobs:
         --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
         --tags Key="version",Value="${current_deployed_tag}" \
         --role-arn="$ROLE"
-          
+
+    - name: Header output
+      shell: bash
+      run: |
+        echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Stack Name:** ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Version Tag:** ${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "The FULL change set below shows all changes including tag changes" >> $GITHUB_STEP_SUMMARY
+        echo "The change set with existing tag below shows all changes using the current tag and may be easier to identify changes" >> $GITHUB_STEP_SUMMARY
+        
     - name: Describe Full Change Set
       shell: bash
       run: |
@@ -115,16 +125,16 @@ jobs:
         PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
         CAPABILITIES=$(jq '.["Capabilities"]' <<< "$CHANGE_SET")
         CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
+        TAGS=$(jq '.["Tags"]' <<< "$CHANGE_SET")
         if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information didn't contain changes. Submit different information to create a change set." ]; then
           echo "Failed to create change set."
           exit 1
         fi
         echo "<details><summary>[${{ inputs.target_environment }}] FULL Change Set for ${{ inputs.stack_name }}</summary>" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
-        echo "- **Version Tag:** ${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Tags:** $TAGS"  >> $GITHUB_STEP_SUMMARY
         echo "- **Stack ID:** $STACK_ID" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
@@ -171,6 +181,7 @@ jobs:
         PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
         CAPABILITIES=$(jq '.["Capabilities"]' <<< "$CHANGE_SET")
         CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
+        TAGS=$(jq '.["Tags"]' <<< "$CHANGE_SET")
         if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information didn't contain changes. Submit different information to create a change set." ]; then
           echo "Failed to create change set."
           exit 1
@@ -180,7 +191,7 @@ jobs:
         echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
-        echo "- **Version Tag:** ${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Tags:** $TAGS"  >> $GITHUB_STEP_SUMMARY
         echo "- **Stack ID:** $STACK_ID" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
