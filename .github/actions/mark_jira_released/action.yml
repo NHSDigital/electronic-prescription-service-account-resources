@@ -4,7 +4,7 @@ inputs:
   RELEASE_TAG:
     required: false
     description: "The tag we are marking as released in jira"
-  EXECUTE_RELEASE_NOTES_LAMBDA_ROLE:
+  DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE:
     required: true
     description: "The role to assume to execute the release notes lambda"
   DRY_RUN:
@@ -20,8 +20,8 @@ runs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
-        role-to-assume: ${{ inputs.EXECUTE_RELEASE_NOTES_LAMBDA_ROLE }}
-        role-session-name: github-actions
+        role-to-assume: ${{ inputs.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
+        role-session-name: account-resources-release-notes-run-lambda
     - name: create markJiraReleased payload
       shell: bash
       run: |
