@@ -52,7 +52,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev-ci
-      version: ${{needs.get_deployed_tags.outputs.ci_resources_tag}}
+      version: pr-${{github.event.number}}
       change_set_version: pr-${{github.event.number}}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
