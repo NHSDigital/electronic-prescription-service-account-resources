@@ -190,7 +190,7 @@ Resources:
                   - "route53:GetChange"
                 Resource: "*"
 
-  CloudFormationCheckVersion:
+  CloudFormationCheckVersionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -224,7 +224,7 @@ Resources:
                   - "iam:GetOpenIDConnectProvider"
                 Resource: "*"
 
-  ReleaseNotesExecuteLambda:
+  ReleaseNotesExecuteLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -319,26 +319,26 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "CloudFormationExecutionRoleName"]]
   CloudFormationCheckVersionRole:
     Description: ARN of the IAM Role(CloudFormationCheckVersionName)
-    Value: !GetAtt CloudFormationCheckVersion.Arn
+    Value: !GetAtt CloudFormationCheckVersionRole.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersion"]]
-  CloudFormationCheckVersionName:
+  CloudFormationCheckVersionRoleName:
     Description: Name of the IAM Role(CloudFormationCheckVersionName)
-    Value: !Ref CloudFormationCheckVersion
+    Value: !Ref CloudFormationCheckVersionRole
     Export:
       Name:
-        !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersionName"]]
+        !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersionRoleName"]]
   ReleaseNotesExecuteLambdaRole:
     Description: ARN of the IAM Role(CloudFormationExecutionRole)
-    Value: !GetAtt ReleaseNotesExecuteLambda.Arn
+    Value: !GetAtt ReleaseNotesExecuteLambdaRole.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambda"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRole"]]
   ReleaseNotesExecuteLambdaName:
     Description: Name of the IAM Role(ReleaseNotesExecuteLambda)
-    Value: !Ref ReleaseNotesExecuteLambda
+    Value: !Ref ReleaseNotesExecuteLambdaRole
     Export:
       Name:
-        !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaName"]]
+        !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRoleName"]]
   CloudFormationPrepareChangesetRole:
     Description: ARN of the IAM Role(CloudFormationPrepareChangesetRole)
     Value: !GetAtt CloudFormationPrepareChangesetRole.Arn

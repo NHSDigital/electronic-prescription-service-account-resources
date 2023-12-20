@@ -25,7 +25,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-2
-          role-to-assume: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+          role-to-assume: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           role-session-name: github-actions
       - id: output_account_resources_tag
         shell: bash
