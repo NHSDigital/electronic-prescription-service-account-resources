@@ -187,42 +187,6 @@ Resources:
                   - "secretsmanager:Tag*"
                   - "secretsmanager:Untag*"
                 Resource: "*"
-        - PolicyName: SecretsKMSReadWrite
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "kms:DescribeKey"
-                  - "kms:GenerateDataKey*"
-                  - "kms:Encrypt"
-                  - "kms:ReEncrypt*"
-                  - "kms:Decrypt"
-                Resource: !GetAtt SecretsKMSKey.Arn
-
-  SecretsKMSKey:
-    Type: AWS::KMS::Key
-    Properties:
-      KeyPolicy:
-        Version: 2012-10-17
-        Id: key-s3
-        Statement:
-          - Sid: Enable IAM User Permissions
-            Effect: Allow
-            Principal:
-              AWS: !Join
-                - ""
-                - - "arn:aws:iam::"
-                  - !Ref "AWS::AccountId"
-                  - ":root"
-            Action: "kms:*"
-            Resource: "*"
-
-  SecretsKMSKeyKMSKeyAlias:
-    Type: AWS::KMS::Alias
-    Properties:
-      AliasName: alias/SecretsKMSKeyAlias
-      TargetKeyId: !Ref SecretsKMSKey
 
 Outputs:
   CloudFormationDeployRole:
@@ -246,13 +210,3 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudFormationExecutionRoleName"]]
-  SecretsKMSKeyArn:
-    Description: SecretsKMSKeyArn
-    Value: !GetAtt SecretsKMSKey.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKeyArn"]]
-  SecretsKMSKeyKeyId:
-    Description: SecretsKMSKeyKeyId
-    Value: !GetAtt SecretsKMSKey.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKeyKeyId"]]

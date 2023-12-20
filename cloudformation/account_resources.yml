@@ -473,103 +473,159 @@ Resources:
       Roles:
         - !Ref SplunkDeliveryStreamBackupBucketRole
 
+  SecretsKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-s3
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Join
+                - ""
+                - - "arn:aws:iam::"
+                  - !Ref "AWS::AccountId"
+                  - ":root"
+            Action: "kms:*"
+            Resource: "*"
+
+  SecretsKMSKeyKMSKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/SecretsKMSKeyAlias
+      TargetKeyId: !Ref SecretsKMSKey
+
+  UseSecretsKMSKeyPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: UseSecretsKMSKey
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "kms:DescribeKey"
+              - "kms:GenerateDataKey*"
+              - "kms:Encrypt"
+              - "kms:ReEncrypt*"
+              - "kms:Decrypt"
+            Resource: !GetAtt SecretsKMSKey.Arn
+      Roles:
+        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+
   CAKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: CA private key
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   CACertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: CA certificate
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   ClientKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: Client private key
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   ClientCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: Client cert
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   ClientSandboxKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: Client sandbox private key
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   ClientSandboxCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: Client sandbox cert
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   SpinePrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: Private key for spine mutual TLS
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   SpinePublicCertificate:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: Public certificate for spine mutual TLS
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   SpineASID:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: ASID for spine
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   SpinePartyKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: PartyKey for spine
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   SpineCAChain:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: CA chain for spine
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   ServiceSearchApiKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: API key for service search
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   JiraToken:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: Jira token for creating release notes
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-jiraToken"
 
   ConfluenceToken:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: Confluence token for creating release notes
-      KmsKeyId: !ImportValue ci-resources:SecretsKMSKeyKeyId
+      KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-confluenceToken"
 
@@ -639,6 +695,12 @@ Outputs:
     Value: !GetAtt SpinePartyKey.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SpinePartyKey"]]
+
+  SecretsKMSKey:
+    Description: SecretsKMSKey
+    Value: !GetAtt SecretsKMSKey.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
 
   SpineCAChain:
     Description: SpineCAChain
