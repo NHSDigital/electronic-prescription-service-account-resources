@@ -116,7 +116,22 @@ jobs:
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       cf_create_changeset_role:  ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
-    
+
+  create_release_notes_post_dev:
+    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
+    uses: ./.github/workflows/create_confluence_release_notes.yml
+    with:
+      VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
+      CREATE_INT_RELEASE_NOTES: true
+      CREATE_INT_RC_RELEASE_NOTES: false
+      CREATE_PROD_RELEASE_NOTES: true
+      MARK_JIRA_RELEASED: false
+    secrets:
+      EXECUTE_RELEASE_NOTES_LAMBDA_ROLE: ${{ secrets.EXECUTE_RELEASE_NOTES_LAMBDA_ROLE }}      
+      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+          
   release_ci_resources_ref:
     needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
     uses: ./.github/workflows/cloudformation.yml
@@ -177,8 +192,24 @@ jobs:
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
       cf_create_changeset_role:  ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
 
-  release_ci_resources_int:
+  create_release_notes_pre_int:
     needs: [tag_release, release_ci_resources_qa, release_account_resources_qa]
+    uses: ./.github/workflows/create_confluence_release_notes.yml
+    with:
+      VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
+      CREATE_INT_RELEASE_NOTES: false
+      CREATE_INT_RC_RELEASE_NOTES: true
+      CREATE_PROD_RELEASE_NOTES: false
+      MARK_JIRA_RELEASED: false
+      TARGET_ENVIRONMENT: int-ci
+    secrets:
+      EXECUTE_RELEASE_NOTES_LAMBDA_ROLE: ${{ secrets.EXECUTE_RELEASE_NOTES_LAMBDA_ROLE }}      
+      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+    
+  release_ci_resources_int:
+    needs: [create_release_notes_pre_int, tag_release, release_ci_resources_qa, release_account_resources_qa]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: int-ci
@@ -193,7 +224,7 @@ jobs:
       cf_create_changeset_role:  ${{ secrets.INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
   
   release_account_resources_int:
-    needs: [tag_release, release_ci_resources_qa, release_account_resources_qa]
+    needs: [create_release_notes_pre_int, tag_release, release_ci_resources_qa, release_account_resources_qa]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: int-account
@@ -206,6 +237,21 @@ jobs:
     secrets:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
       cf_create_changeset_role:  ${{ secrets.INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+
+  create_release_notes_post_int:
+    needs: [tag_release, release_ci_resources_int, release_account_resources_int]
+    uses: ./.github/workflows/create_confluence_release_notes.yml
+    with:
+      VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
+      CREATE_INT_RELEASE_NOTES: true
+      CREATE_INT_RC_RELEASE_NOTES: false
+      CREATE_PROD_RELEASE_NOTES: false
+      MARK_JIRA_RELEASED: false
+    secrets:
+      EXECUTE_RELEASE_NOTES_LAMBDA_ROLE: ${{ secrets.EXECUTE_RELEASE_NOTES_LAMBDA_ROLE }}      
+      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
 
   release_ci_resources_prod:
     needs: [tag_release, release_ci_resources_int, release_account_resources_int]
@@ -236,3 +282,19 @@ jobs:
     secrets:
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
       cf_create_changeset_role:  ${{ secrets.PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+
+  create_release_notes_post_prod:
+    needs: [tag_release, release_ci_resources_prod, release_account_resources_prod]
+    uses: ./.github/workflows/create_confluence_release_notes.yml
+    with:
+      VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
+      CREATE_INT_RELEASE_NOTES: false
+      CREATE_INT_RC_RELEASE_NOTES: false
+      CREATE_PROD_RELEASE_NOTES: true
+      MARK_JIRA_RELEASED: true
+    secrets:
+      EXECUTE_RELEASE_NOTES_LAMBDA_ROLE: ${{ secrets.EXECUTE_RELEASE_NOTES_LAMBDA_ROLE }}      
+      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+   
