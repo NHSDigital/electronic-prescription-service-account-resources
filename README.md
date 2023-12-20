@@ -8,6 +8,7 @@ This is the repo containing infrastructure code that defines resources that are 
 - `.github` Contains github workflows that are used for building and deploying from pull requests and releases
 - `.vscode` Contains vscode workspace file
 - `cloudformation/` Contains cloudformation files used to create resources for CI builds and deployments
+- `scripts/` Useful scripts
 
 ## Contributing
 
@@ -132,10 +133,10 @@ Workflows are in the .github/workflows folder
 - `cloudformation.yml`: Creates a changeset for specified stack and outputs changes. Either runs it or deletes it
 
 ## Roles and subject claim filters
-There are 4 roles created by the ci-resources stack that can be assumed by github actions
+There are 4 roles created by the ci-resources stack that can be assumed by github actions using OIDC
 - CloudFormationDeployRole. This is used to deploy a cloudformation stack
-- CloudFormationCheckVersion - This is used to get the version tag from cloudformation stacks
-- ReleaseNotesExecuteLambda - This is used to execute the release notes lambda
+- CloudFormationCheckVersionRole - This is used to get the version tag from cloudformation stacks
+- ReleaseNotesExecuteLambdaRole - This is used to execute the release notes lambda
 - CloudFormationPrepareChangesetRole - This is used to prepare a cloudformation changeset
 
 
@@ -144,3 +145,9 @@ For more details of OIDC see https://docs.github.com/en/actions/deployment/secur
 Each role has a subject claim filters that allow only named repos to assume the role from github actions. These are defined in cloudformation/env/ENVIRONMENT_NAME.json 
 
 For more details about restrictions see https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
+
+## Scripts
+- calculate_version.py - used when merge to main to calculate a semver-compliant version number to name the release in github 
+- check_python_licenses.sh - check that all python libraries used have a compatible license
+- parse_parameters.py - used in github pipelines to parse cloudformation/env files to set parameters in format that can be passed to cloudformation command
+- set_secrets.sh - script which can be manually run to set secrets in all EPS repositories

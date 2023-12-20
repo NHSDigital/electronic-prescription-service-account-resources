@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
 
+# This script can be used to set role secrets in all EPS repos
+# it gets the role from cloudformation exports
+# it needs the following aws profiles defined in ~/.aws/config
+# prescription-dev
+# prescription-ref
+# prescription-qa
+# prescription-int
+# prescription-prod
+#
+# you need to be authenticated to aws and github before running this by running these two commands
+#
+# make aws-login
+# gh auth login
+#
+
+
+
 check_gh_logged_in() {
     if ! gh auth status >/dev/null 2>&1; then
         echo "You need to login using gh auth login"
@@ -353,6 +370,8 @@ echo "PROD_CLOUD_FORMATION_DEPLOY_ROLE:           ${PROD_CLOUD_FORMATION_DEPLOY_
 echo "PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE:    ${PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE}"
 echo "PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE: ${PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}"
 echo
+
+read -p "Press any key to start setting secrets or ctrl+c to exit"
 
 set_secrets "NHSDigital/electronic-prescription-service-clinical-prescription-tracker"
 echo
