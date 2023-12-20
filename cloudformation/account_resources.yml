@@ -3,9 +3,6 @@ Resources:
   ApiGwCloudWatchRole:
     Type: "AWS::IAM::Role"
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -124,9 +121,6 @@ Resources:
   ArtifactsBucket:
     Type: AWS::S3::Bucket
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
       LoggingConfiguration:
         DestinationBucketName: !Ref AuditLoggingBucket
         LogFilePrefix: artifact/
@@ -221,9 +215,6 @@ Resources:
   TrustStoreBucket:
     Type: AWS::S3::Bucket
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
       LoggingConfiguration:
         DestinationBucketName: !Ref AuditLoggingBucket
         LogFilePrefix: truststore/
@@ -290,9 +281,6 @@ Resources:
   AuditLoggingBucket:
     Type: AWS::S3::Bucket
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
       VersioningConfiguration:
         Status: Enabled
       PublicAccessBlockConfiguration:
@@ -394,9 +382,6 @@ Resources:
   SplunkDeliveryStreamBackupBucket:
     Type: AWS::S3::Bucket
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
       VersioningConfiguration:
         Status: Enabled
       LoggingConfiguration:
@@ -417,9 +402,6 @@ Resources:
   SplunkDeliveryStreamBackupBucketRole:
     Type: "AWS::IAM::Role"
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:

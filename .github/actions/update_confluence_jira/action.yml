@@ -11,7 +11,7 @@ inputs:
     required: true
     description: "whether to create rc release notes page instead of normal release notes"
     default: "false"
-  EXECUTE_RELEASE_NOTES_LAMBDA_ROLE:
+  DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE:
     required: true
     description: "The role to assume to execute the release notes lambda"
   DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE:
@@ -95,7 +95,7 @@ runs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
-        role-to-assume: ${{ inputs.EXECUTE_RELEASE_NOTES_LAMBDA_ROLE }}
+        role-to-assume: ${{ inputs.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
         role-session-name: account-resources-release-notes-run-lambda
         unset-current-credentials: true
     - name: create int release notes
