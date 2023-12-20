@@ -51,6 +51,7 @@ Resources:
   CloudwatchLogsKmsKey:
     Type: "AWS::KMS::Key"
     Properties:
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-policy-id
@@ -98,6 +99,7 @@ Resources:
       Tags:
         - Key: "version"
           Value: "static"
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
@@ -194,6 +196,7 @@ Resources:
       Tags:
         - Key: "version"
           Value: "static"
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
@@ -366,6 +369,7 @@ Resources:
       Tags:
         - Key: "version"
           Value: "static"
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
@@ -506,6 +510,7 @@ Resources:
       Tags:
         - Key: "version"
           Value: "static"
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
