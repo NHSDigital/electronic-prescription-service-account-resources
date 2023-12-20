@@ -34,7 +34,8 @@ runs:
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ inputs.TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-        role-session-name: github-actions
+        role-session-name: account-resources-release-notes-target
+        unset-current-credentials: true
     - name: Get deployed tags on target
       shell: bash
       run: |
@@ -64,7 +65,8 @@ runs:
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ inputs.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-        role-session-name: github-actions
+        role-session-name: account-resources-release-notes-dev
+        unset-current-credentials: true
     - name: get current dev tag
       shell: bash
       run: |
@@ -94,7 +96,8 @@ runs:
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ inputs.EXECUTE_RELEASE_NOTES_LAMBDA_ROLE }}
-        role-session-name: github-actions
+        role-session-name: account-resources-release-notes-run-lambda
+        unset-current-credentials: true
     - name: create int release notes
       shell: bash
       if: inputs.TARGET_ENVIRONMENT == 'int' && inputs.CREATE_RC_RELEASE_NOTES == 'false'
