@@ -13,7 +13,7 @@
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
-        ""
+        "NONE"
       ],
       "PrepareChangesetClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-account-resources:*"
