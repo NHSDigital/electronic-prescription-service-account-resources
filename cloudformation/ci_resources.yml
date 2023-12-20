@@ -92,9 +92,6 @@ Resources:
         - Key: "version"
           Value: "static"
       AssumeRolePolicyDocument:
-        Tags:
-          - Key: "version"
-            Value: "static"
         Version: 2012-10-17
         Statement:
           - Effect: Allow
