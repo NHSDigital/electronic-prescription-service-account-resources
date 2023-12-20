@@ -337,7 +337,7 @@ Outputs:
     Description: ARN of the IAM Role(CloudFormationCheckVersionName)
     Value: !GetAtt CloudFormationCheckVersionRole.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersion"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersionRole"]]
   CloudFormationCheckVersionRoleName:
     Description: Name of the IAM Role(CloudFormationCheckVersionName)
     Value: !Ref CloudFormationCheckVersionRole
