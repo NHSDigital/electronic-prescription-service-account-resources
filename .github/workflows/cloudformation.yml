@@ -26,6 +26,8 @@ on:
         type: string
     secrets:
       cf_deploy_role:
+        required: false
+      cf_create_changeset_role:
         required: true
 
 jobs:
@@ -44,11 +46,11 @@ jobs:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
     
-    - name: Configure AWS Credentials
+    - name: Assume create changeset role
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
-        role-to-assume: ${{ secrets.cf_deploy_role }}
+        role-to-assume: ${{ secrets.cf_create_changeset_role}}
         role-session-name: github-actions
     
     - name: Parse Parameters
@@ -97,13 +99,14 @@ jobs:
         PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
         CAPABILITIES=$(jq '.["Capabilities"]' <<< "$CHANGE_SET")
         CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
-        if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information didn't contain changes."* ]; then
+        if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information didn't contain changes. Submit different information to create a change set." ]; then
           echo "Failed to create change set."
           exit 1
         fi
         echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
+        echo "- **Version Tag:** ${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack ID:** $STACK_ID" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
@@ -143,7 +146,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: Configure AWS Credentials
+      - name: Assume deploy changeset role
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-2

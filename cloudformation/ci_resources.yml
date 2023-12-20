@@ -1,13 +1,21 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Parameters:
-  SubjectClaimFilters:
+  DeploySubjectClaimFilters:
     Type: CommaDelimitedList
-    Default: "repo:NHSDigital/electronic-prescription-service-account-resources:*"
     Description: >
-      Subject claim filter for valid tokens.
-      Default allows only pull requests of the NHSDigital/electronic-prescription-service-account-resources to assume the role.
-      See https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#example-subject-claims
-      for examples of filtering by branch or deployment environment.
+      Subject claim filter for valid tokens for the deploy role.
+  CheckVersionSubjectClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the check version role.
+  ReleaseNotesExecuteLambdaClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the release notes execute lambda role.
+  PrepareChangesetClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the prepare changeset role.
 
 Resources:
   GitHubIdentityProvider:
@@ -32,7 +40,7 @@ Resources:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               ForAnyValue:StringLike:
-                token.actions.githubusercontent.com:sub: !Ref SubjectClaimFilters
+                token.actions.githubusercontent.com:sub: !Ref DeploySubjectClaimFilters
       Policies:
         - PolicyName: CreateCloudFormationStack
           PolicyDocument:
@@ -152,7 +160,6 @@ Resources:
                   - "apigateway:AddCertificateToDomain"
                   - "apigateway:RemoveCertificateFromDomain"
                   - "apigateway:TagResource"
-                  # s3 permissions can be removed once https://github.com/NHSDigital/electronic-prescription-service-account-resources/pull/165 is merged
                   - "s3:CreateBucket"
                   - "s3:DeleteBucket"
                   - "s3:SetBucketEncryption"
@@ -180,7 +187,119 @@ Resources:
                   - "route53:GetHostedZone"
                   - "route53:ListResourceRecordSets"
                   - "route53:GetChange"
+                  - "secretsmanager:Create*"
+                  - "secretsmanager:Update*"
+                  - "secretsmanager:Delete*"
+                  - "secretsmanager:Describe*"
+                  - "secretsmanager:List*"
+                  - "secretsmanager:Tag*"
+                  - "secretsmanager:Untag*"
                 Resource: "*"
+
+  CloudFormationCheckVersionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref CheckVersionSubjectClaimFilters
+      Policies:
+        - PolicyName: CreateCloudFormationStack
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cloudformation:DescribeStacks"
+                  - "cloudformation:ListExports"
+                  - "cloudformation:ListStacks"
+                Resource: "*"
+        - PolicyName: AllowOpenIDProviderPermissions
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:GetOpenIDConnectProvider"
+                Resource: "*"
+
+  ReleaseNotesExecuteLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref ReleaseNotesExecuteLambdaClaimFilters
+      Policies:
+        - PolicyName: AllowOpenIDProviderPermissions
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:GetOpenIDConnectProvider"
+                Resource: "*"
+
+  CloudFormationPrepareChangesetRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref PrepareChangesetClaimFilters
+      Policies:
+        - PolicyName: CreateCloudFormationStack
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cloudformation:DescribeStacks"
+                  - "cloudformation:ListExports"
+                  - "cloudformation:CreateChangeSet"
+                  - "cloudformation:DescribeChangeSet"
+                  - "cloudformation:DescribeStackEvents"
+                  - "cloudformation:GetTemplateSummary"
+                  - "cloudformation:ListStacks"
+                  - "cloudformation:DeleteChangeSet"
+                Resource: "*"
+        - PolicyName: AllowOpenIDProviderPermissions
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:GetOpenIDConnectProvider"
+                Resource: "*"
+        - PolicyName: AssumeExecutionRole
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:PassRole"
+                Resource: !GetAtt CloudFormationExecutionRole.Arn
 
 Outputs:
   CloudFormationDeployRole:
@@ -204,3 +323,36 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudFormationExecutionRoleName"]]
+  CloudFormationCheckVersionRole:
+    Description: ARN of the IAM Role(CloudFormationCheckVersionName)
+    Value: !GetAtt CloudFormationCheckVersionRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersion"]]
+  CloudFormationCheckVersionRoleName:
+    Description: Name of the IAM Role(CloudFormationCheckVersionName)
+    Value: !Ref CloudFormationCheckVersionRole
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersionRoleName"]]
+  ReleaseNotesExecuteLambdaRole:
+    Description: ARN of the IAM Role(CloudFormationExecutionRole)
+    Value: !GetAtt ReleaseNotesExecuteLambdaRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRole"]]
+  ReleaseNotesExecuteLambdaName:
+    Description: Name of the IAM Role(ReleaseNotesExecuteLambda)
+    Value: !Ref ReleaseNotesExecuteLambdaRole
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRoleName"]]
+  CloudFormationPrepareChangesetRole:
+    Description: ARN of the IAM Role(CloudFormationPrepareChangesetRole)
+    Value: !GetAtt CloudFormationPrepareChangesetRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CloudFormationPrepareChangesetRole"]]
+  CloudFormationPrepareChangesetName:
+    Description: Name of the IAM Role(CloudFormationPrepareChangesetRole)
+    Value: !Ref CloudFormationPrepareChangesetRole
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CloudFormationPrepareChangesetRoleName"]]
