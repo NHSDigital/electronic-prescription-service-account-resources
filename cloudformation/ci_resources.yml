@@ -90,6 +90,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - "cloudformation:CreateChangeSet"
+                  - "iam:AddClientIDToOpenIDConnectProvider"
                   - "iam:Attach*"
                   - "iam:Create*"
                   - "iam:Delete*"

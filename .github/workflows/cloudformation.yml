@@ -60,6 +60,8 @@ jobs:
     - name: Create Change Set
       shell: bash
       run: |
+        ROLE=$(aws cloudformation list-exports --output json | \
+        jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
         aws cloudformation create-change-set \
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }} \
@@ -67,7 +69,8 @@ jobs:
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
         --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
-        --tags Key="version",Value="${{ inputs.version }}"
+        --tags Key="version",Value="${{ inputs.version }}" \
+        --role-arn="$ROLE"
       
     - name: Describe Change Set
       shell: bash
@@ -158,7 +161,7 @@ jobs:
           do
             echo "Checking stack status..."
             STACKS=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }})
-            STATUS=$(jq -r .["Stacks"][0]["StackStatus"] <<< "$STACKS")
+            STATUS=$(jq -r '.["Stacks"][0]["StackStatus"]' <<< "$STACKS")
             if [ "$STATUS" == "UPDATE_IN_PROGRESS" ]; then
               echo "sleeping 5..."
               sleep 5
