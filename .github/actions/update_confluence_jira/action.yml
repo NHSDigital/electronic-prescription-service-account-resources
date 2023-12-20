@@ -77,7 +77,7 @@ runs:
           export dev_ci_resources_tag="current_deployed_tag"
         fi
 
-        if [ "${dev_account_resources_tag}" != "${dev_account_resources_tag}" ]; then
+        if [ "${dev_account_resources_tag}" != "${dev_ci_resources_tag}" ]; then
           echo "ci-resources and account-resources tags do not match in dev. Please investigate"
           exit 1
         fi
