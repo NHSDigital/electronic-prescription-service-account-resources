@@ -88,6 +88,9 @@ Resources:
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      Tags:
+        - Key: "version"
+          Value: "static"
       AssumeRolePolicyDocument:
         Tags:
           - Key: "version"
