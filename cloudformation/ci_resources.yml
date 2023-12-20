@@ -4,18 +4,22 @@ Parameters:
     Type: CommaDelimitedList
     Description: >
       Subject claim filter for valid tokens for the deploy role.
+    Default: ""
   CheckVersionSubjectClaimFilters:
     Type: CommaDelimitedList
     Description: >
       Subject claim filter for valid tokens for the check version role.
+    Default: ""
   ReleaseNotesExecuteLambdaClaimFilters:
     Type: CommaDelimitedList
     Description: >
       Subject claim filter for valid tokens for the release notes execute lambda role.
+    Default: ""
   PrepareChangesetClaimFilters:
     Type: CommaDelimitedList
     Description: >
       Subject claim filter for valid tokens for the prepare changeset role.
+    Default: ""
 
 Resources:
   GitHubIdentityProvider:
