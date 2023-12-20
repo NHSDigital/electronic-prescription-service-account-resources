@@ -221,7 +221,7 @@ Resources:
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref CheckVersionSubjectClaimFilters
       Policies:
-        - PolicyName: CreateCloudFormationStack
+        - PolicyName: DescribeCloudFormationStack
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -279,7 +279,7 @@ Resources:
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref PrepareChangesetClaimFilters
       Policies:
-        - PolicyName: CreateCloudFormationStack
+        - PolicyName: CreateCloudFormationStackChangeSet
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -334,18 +334,18 @@ Outputs:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudFormationExecutionRoleName"]]
   CloudFormationCheckVersionRole:
-    Description: ARN of the IAM Role(CloudFormationCheckVersionName)
+    Description: ARN of the IAM Role(CloudFormationCheckVersionRole)
     Value: !GetAtt CloudFormationCheckVersionRole.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersionRole"]]
   CloudFormationCheckVersionRoleName:
-    Description: Name of the IAM Role(CloudFormationCheckVersionName)
+    Description: Name of the IAM Role(CloudFormationCheckVersionRole)
     Value: !Ref CloudFormationCheckVersionRole
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersionRoleName"]]
   ReleaseNotesExecuteLambdaRole:
-    Description: ARN of the IAM Role(CloudFormationExecutionRole)
+    Description: ARN of the IAM Role(ReleaseNotesExecuteLambdaRole)
     Value: !GetAtt ReleaseNotesExecuteLambdaRole.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRole"]]
