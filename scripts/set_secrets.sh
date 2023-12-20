@@ -371,8 +371,11 @@ echo "PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE:    ${PROD_CLOUD_FORMATION_CHECK_V
 echo "PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE: ${PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}"
 echo
 
-read -p "Press any key to start setting secrets or ctrl+c to exit"
+read -p "Press Enter to start setting secrets or ctrl+c to exit"
 
+echo
+echo "************************************************"
+echo
 set_secrets "NHSDigital/electronic-prescription-service-clinical-prescription-tracker"
 echo
 set_secrets "NHSDigital/prescriptionsforpatients"
