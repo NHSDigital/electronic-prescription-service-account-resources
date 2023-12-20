@@ -497,6 +497,24 @@ Resources:
       AliasName: alias/SecretsKMSKeyAlias
       TargetKeyId: !Ref SecretsKMSKey
 
+  UseSecretsKMSKeyPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: UseSecretsKMSKey
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "kms:DescribeKey"
+              - "kms:GenerateDataKey*"
+              - "kms:Encrypt"
+              - "kms:ReEncrypt*"
+              - "kms:Decrypt"
+            Resource: !GetAtt SecretsKMSKey.Arn
+      Roles:
+        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+
   CAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
