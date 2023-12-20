@@ -603,31 +603,6 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
-  ServiceSearchApiKey:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Description: API key for service search
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
-
-  JiraToken:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Description: Jira token for creating release notes
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
-      Name: !Sub "${AWS::StackName}-jiraToken"
-
-  ConfluenceToken:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Description: Confluence token for creating release notes
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
-      Name: !Sub "${AWS::StackName}-confluenceToken"
 
 Outputs:
   CloudwatchLogsKmsKeyArn:
@@ -708,23 +683,6 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SpineCAChain"]]
 
-  ServiceSearchApiKey:
-    Description: ServiceSearchApiKey
-    Value: !GetAtt ServiceSearchApiKey.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ServiceSearchApiKey"]]
-
-  JiraToken:
-    Description: JiraToken
-    Value: !GetAtt JiraToken.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "JiraToken"]]
-
-  ConfluenceToken:
-    Description: ConfluenceToken
-    Value: !GetAtt ConfluenceToken.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ConfluenceToken"]]
 
   AuditLoggingBucket:
     Description: ARN of the audit logging bucket
