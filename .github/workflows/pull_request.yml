@@ -12,6 +12,7 @@ jobs:
     uses: ./.github/workflows/quality_checks.yml
 
   list_ci_resources_cf_changes:
+    needs: quality_checks
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev-ci
@@ -25,6 +26,7 @@ jobs:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
   
   list_account_resources_cf_changes:
+    needs: quality_checks
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev-account
