@@ -120,6 +120,7 @@ jobs:
           exit 1
         fi
         echo "<details><summary>[${{ inputs.target_environment }}] FULL Change Set for ${{ inputs.stack_name }}</summary>" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
         echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
@@ -175,6 +176,7 @@ jobs:
           exit 1
         fi
         echo "<details><summary>[${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }} with existing tag</summary>" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
         echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
         echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
