@@ -30,6 +30,9 @@ Resources:
         - 6938fd4d98bab03faadb97b34396831e3780aea1
       ClientIdList:
         - sts.amazonaws.com
+      Tags:
+        - Key: "version"
+          Value: "static"
 
   CloudFormationDeployRole:
     Type: AWS::IAM::Role
@@ -85,6 +88,9 @@ Resources:
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      Tags:
+        - Key: "version"
+          Value: "static"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
