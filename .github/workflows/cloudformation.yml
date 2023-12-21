@@ -61,7 +61,6 @@ jobs:
       run: |
         set +x
         stack_exists=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }} 2>&1)
-        set -e
         if [ "${stack_exists}" == "An error occurred (ValidationError) when calling the DescribeStacks operation: Stack with id lambda-resources does not exist" ]; then
           echo "Stack does not exist"
           echo "STACK_EXISTS=false" >> $GITHUB_OUTPUT
