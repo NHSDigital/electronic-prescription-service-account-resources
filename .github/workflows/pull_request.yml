@@ -88,7 +88,7 @@ jobs:
     needs: [get_issue_number, package_code, get_commit_id]
     uses: ./.github/workflows/sam_release_code.yml
     with:
-      STACK_NAME: pr-${{needs.get_issue_number.outputs.issue_number}}
+      STACK_NAME: lambda-resources-pr-${{needs.get_issue_number.outputs.issue_number}}
       ARTIFACT_BUCKET_PREFIX: PR-${{needs.get_issue_number.outputs.issue_number}}
       TARGET_ENVIRONMENT: dev-pr
       BUILD_ARTIFACT: packaged_code
