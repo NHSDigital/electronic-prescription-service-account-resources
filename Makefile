@@ -83,10 +83,3 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 			  LogLevel=$$LOG_LEVEL \
 			  LogRetentionDays=$$LOG_RETENTION_DAYS \
 			  Env=$$TARGET_ENVIRONMENT
-
-
-
-			  TruststoreVersion=$$LATEST_TRUSTSTORE_VERSION \
-			  EnableMutualTLS=$$enable_mutual_tls \
-			  TargetSpineServer=$$target_spine_server \
-			  EnableSplunk=true \
