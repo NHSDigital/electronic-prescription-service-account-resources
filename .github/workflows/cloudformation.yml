@@ -83,7 +83,7 @@ jobs:
       shell: bash
       run: |
         aws cloudformation create-stack --stack-name ${{ inputs.stack_name }} \
-        --template-body file:///./cloudformation/empty_stack.yml
+        --template-body file://./cloudformation/empty_stack.yml
 
     - name: Assume create changeset role
       if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
