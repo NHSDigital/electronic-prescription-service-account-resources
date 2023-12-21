@@ -59,7 +59,7 @@ jobs:
       id: parse_parameters
       shell: bash
       run: |
-        PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }})
+        PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }} ${{secrets.parameter_secrets}})) 
         echo ${PARAMETERS} >> $GITHUB_OUTPUT
 
     - name: Create Change Set with new tags
