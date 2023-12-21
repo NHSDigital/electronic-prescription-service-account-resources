@@ -57,7 +57,7 @@ jobs:
       stack_name: lambda-resources
       template: ./cloudformation/lambda_resources.yml
       capabilities: CAPABILITY_IAM
-      execute_change_set: false
+      execute_change_set: true
     secrets:
       parameter_secrets: '{"splunk_hec_token": "${{ secrets.DEV_SPLUNK_HEC_TOKEN }}", "splunk_hec_endpoint": "${{ secrets.DEV_SPLUNK_HEC_ENDPOINT }}"}'
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
