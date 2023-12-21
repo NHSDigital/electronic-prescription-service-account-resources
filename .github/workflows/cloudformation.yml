@@ -71,7 +71,7 @@ jobs:
         fi
 
     - name: Assume create deploy stack role
-      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == false }} 
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
@@ -79,14 +79,14 @@ jobs:
         role-session-name: github-actions
 
     - name: create stack
-      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == false }} 
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
       shell: bash
       run: |
         aws cloudformation create-stack --stack-name ${{ inputs.stack_name }} \
         --template-body file:///./cloudformation/empty_stack.yml
 
     - name: Assume create changeset role
-      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == false }} 
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
