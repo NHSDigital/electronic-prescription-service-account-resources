@@ -96,12 +96,11 @@ jobs:
       parameter_secrets: "{}"
 
   release_account_resources_dev:
-    needs: release_ci_resources_dev
+    needs: [tag_release, release_ci_resources_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev-account
       version: ${{ needs.tag_release.outputs.spec_version }}
-      cf_create_changeset_role:  ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
@@ -142,8 +141,6 @@ jobs:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
       parameter_secrets: "{}"
       cf_create_changeset_role:  ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
-      target_environment: ref
-      version: ${{ needs.tag_release.outputs.spec_version }}
   
   release_account_resources_ref:
     needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
