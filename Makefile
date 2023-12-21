@@ -1,3 +1,11 @@
+SHELL=/bin/bash -euo pipefail
+
+guard-%:
+	@ if [ "${${*}}" = "" ]; then \
+		echo "Environment variable $* not set"; \
+		exit 1; \
+	fi
+
 .PHONY: install check-licenses lint
 
 install: install-python install-node install-hooks
