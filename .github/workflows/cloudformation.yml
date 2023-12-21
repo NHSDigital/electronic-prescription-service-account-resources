@@ -58,11 +58,9 @@ jobs:
     - name: check stack exists
       id: check_stack_exists
       shell: bash
-      continue-on-error: true
       run: |
-        echo "STACK_EXISTS=false" >> $GITHUB_OUTPUT
-        stack_exists=$( aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }} 2>&1 )
-        if [ "${stack_exists}" == "An error occurred (ValidationError) when calling the DescribeStacks operation: Stack with id lambda-resources does not exist" ]; then
+        stack_exists=$( aws cloudformation list-stacks --query "StackSummaries[].StackName" | grep ${{ inputs.stack_name }} )
+        if [ -z "${stack_exists}" ]; then
           echo "Stack does not exist"
           echo "STACK_EXISTS=false" >> $GITHUB_OUTPUT
         else
