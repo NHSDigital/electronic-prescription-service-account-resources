@@ -93,9 +93,6 @@ Resources:
   ArtifactsBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
       EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
@@ -187,9 +184,6 @@ Resources:
   TrustStoreBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
       EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
@@ -354,9 +348,6 @@ Resources:
   SplunkDeliveryStreamBackupKMSKey:
     Type: AWS::KMS::Key
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
       EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
@@ -489,9 +480,6 @@ Resources:
   SecretsKMSKey:
     Type: AWS::KMS::Key
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
       EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
