@@ -92,8 +92,8 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}      
       parameter_secrets: "{}"
+      cf_create_changeset_role:  ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
 
   release_account_resources_dev:
     needs: [tag_release, release_ci_resources_dev]
