@@ -12,6 +12,16 @@ jobs:
   quality_checks:
     uses: ./.github/workflows/quality_checks.yml
 
+  get_commit_id:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_id: ${{ steps.commit_id.outputs.commit_id }}
+    steps:
+      - name: Get Commit ID
+        id: commit_id
+        run: |
+          echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
   package_code:
     needs: quality_checks
     uses: ./.github/workflows/sam_package_code.yml
@@ -116,20 +126,20 @@ jobs:
       cf_create_changeset_role:  ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
 
   release_lambda_resources_dev:
-    needs: [tag_release, release_ci_resources_dev]
-    uses: ./.github/workflows/cloudformation.yml
+    needs: [tag_release, get_commit_id, release_ci_resources_dev]
+    uses: ./.github/workflows/sam_release_code.yml
     with:
-      target_environment: dev-lambda
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: lambda-resources
-      template: ./cloudformation/lambda_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
+      STACK_NAME: lambda-resources
+      ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
+      TARGET_ENVIRONMENT: dev-lambda
+      BUILD_ARTIFACT: packaged_code
+      VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
+      COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
+      LOG_LEVEL: DEBUG
+      LOG_RETENTION_DAYS: 30
     secrets:
-      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      parameter_secrets: "{'splunk_hec_token': '${{ secrets.DEV_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.DEV_SPLUNK_HEC_ENDPOINT }}'}"
-      cf_create_changeset_role:  ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      SPLUNK_HEC_TOKEN: ${{ secrets.DEV_SPLUNK_HEC_TOKEN }}
 
   create_release_notes_post_dev:
     needs: [tag_release, release_ci_resources_dev, release_account_resources_dev, release_lambda_resources_dev]
@@ -179,20 +189,20 @@ jobs:
       cf_create_changeset_role:  ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
 
   release_lambda_resources_ref:
-    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev, release_lambda_resources_dev]
-    uses: ./.github/workflows/cloudformation.yml
+    needs: [tag_release, get_commit_id, release_ci_resources_dev, release_account_resources_dev, release_lambda_resources_dev]
+    uses: ./.github/workflows/sam_release_code.yml
     with:
-      target_environment: ref-lambda
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: lambda-resources
-      template: ./cloudformation/lambda_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
+      STACK_NAME: lambda-resources
+      ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
+      TARGET_ENVIRONMENT: ref-lambda
+      BUILD_ARTIFACT: packaged_code
+      VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
+      COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
+      LOG_LEVEL: DEBUG
+      LOG_RETENTION_DAYS: 30
     secrets:
-      cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
-      parameter_secrets: "{'splunk_hec_token': '${{ secrets.REF_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.REF_SPLUNK_HEC_ENDPOINT }}'}"
-      cf_create_changeset_role:  ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+      SPLUNK_HEC_TOKEN: ${{ secrets.REF_SPLUNK_HEC_TOKEN }}
       
   release_ci_resources_qa:
     needs: [tag_release, release_ci_resources_dev, release_account_resources_dev, release_lambda_resources_dev]
@@ -227,20 +237,20 @@ jobs:
       cf_create_changeset_role:  ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
 
   release_lambda_resources_qa:
-    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev, release_lambda_resources_dev]
-    uses: ./.github/workflows/cloudformation.yml
+    needs: [tag_release, get_commit_id, release_ci_resources_dev, release_account_resources_dev, release_lambda_resources_dev]
+    uses: ./.github/workflows/sam_release_code.yml
     with:
-      target_environment: qa-lambda
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: lambda-resources
-      template: ./cloudformation/lambda_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
+      STACK_NAME: lambda-resources
+      ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
+      TARGET_ENVIRONMENT: qa-lambda
+      BUILD_ARTIFACT: packaged_code
+      VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
+      COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
+      LOG_LEVEL: DEBUG
+      LOG_RETENTION_DAYS: 30
     secrets:
-      cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
-      parameter_secrets: "{'splunk_hec_token': '${{ secrets.QA_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.QA_SPLUNK_HEC_ENDPOINT }}'}"
-      cf_create_changeset_role:  ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
+      SPLUNK_HEC_TOKEN: ${{ secrets.QA_SPLUNK_HEC_TOKEN }}
       
   create_release_notes_pre_int:
     needs: [tag_release, release_ci_resources_qa, release_account_resources_qa, release_lambda_resources_qa]
@@ -291,20 +301,20 @@ jobs:
       cf_create_changeset_role:  ${{ secrets.INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
 
   release_lambda_resources_int:
-    needs: [create_release_notes_pre_int, tag_release, release_ci_resources_qa, release_account_resources_qa, release_lambda_resources_qa]
-    uses: ./.github/workflows/cloudformation.yml
+    needs: [create_release_notes_pre_int, tag_release, get_commit_id, release_ci_resources_qa, release_account_resources_qa, release_lambda_resources_qa]
+    uses: ./.github/workflows/sam_release_code.yml
     with:
-      target_environment: int-lambda
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: lambda-resources
-      template: ./cloudformation/lambda_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
+      STACK_NAME: lambda-resources
+      ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
+      TARGET_ENVIRONMENT: int-lambda
+      BUILD_ARTIFACT: packaged_code
+      VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
+      COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
+      LOG_LEVEL: DEBUG
+      LOG_RETENTION_DAYS: 30
     secrets:
-      cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
-      parameter_secrets: "{'splunk_hec_token': '${{ secrets.INT_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.INT_SPLUNK_HEC_ENDPOINT }}'}"
-      cf_create_changeset_role:  ${{ secrets.INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
+      SPLUNK_HEC_TOKEN: ${{ secrets.INT_SPLUNK_HEC_TOKEN }}
       
   create_release_notes_post_int:
     needs: [tag_release, release_ci_resources_int, release_account_resources_int, release_lambda_resources_int]
@@ -354,20 +364,20 @@ jobs:
       cf_create_changeset_role:  ${{ secrets.PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
 
   release_lambda_resources_prod:
-    needs: [tag_release, release_ci_resources_int, release_account_resources_int, release_lambda_resources_int]
-    uses: ./.github/workflows/cloudformation.yml
+    needs: [tag_release, get_commit_id, release_ci_resources_int, release_account_resources_int, release_lambda_resources_int]
+    uses: ./.github/workflows/sam_release_code.yml
     with:
-      target_environment: prod-lambda
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: lambda-resources
-      template: ./cloudformation/lambda_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
+      STACK_NAME: lambda-resources
+      ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
+      TARGET_ENVIRONMENT: prod-lambda
+      BUILD_ARTIFACT: packaged_code
+      VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
+      COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
+      LOG_LEVEL: DEBUG
+      LOG_RETENTION_DAYS: 30
     secrets:
-      cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
-      parameter_secrets: "{'splunk_hec_token': '${{ secrets.PROD_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.PROD_SPLUNK_HEC_ENDPOINT }}'}"
-      cf_create_changeset_role:  ${{ secrets.PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
+      SPLUNK_HEC_TOKEN: ${{ secrets.PROD_SPLUNK_HEC_TOKEN }}
 
   create_release_notes_post_prod:
     needs: [tag_release, release_ci_resources_prod, release_account_resources_prod, release_lambda_resources_prod]
