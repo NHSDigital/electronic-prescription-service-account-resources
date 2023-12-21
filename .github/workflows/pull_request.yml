@@ -23,7 +23,6 @@ jobs:
       capabilities: CAPABILITY_IAM
       execute_change_set: false
     secrets:
-      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       parameter_secrets: "{'splunk_hec_token': '${{ secrets.DEV_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.DEV_SPLUNK_HEC_ENDPOINT }}'}"
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
   
@@ -39,7 +38,6 @@ jobs:
       capabilities: CAPABILITY_IAM
       execute_change_set: false
     secrets:
-      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       parameter_secrets: '{"splunk_hec_token": "${{ secrets.DEV_SPLUNK_HEC_TOKEN }}", "splunk_hec_endpoint": "${{ secrets.DEV_SPLUNK_HEC_ENDPOINT }}"}'
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       
