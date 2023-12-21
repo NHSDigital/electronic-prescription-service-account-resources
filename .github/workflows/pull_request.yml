@@ -51,7 +51,7 @@ jobs:
     needs: package_code
     uses: ./.github/workflows/cloudformation.yml
     with:
-      target_environment: dev-account
+      target_environment: dev-lambda
       version: pr-${{github.event.number}}
       change_set_version: pr-${{github.event.number}}
       stack_name: lambda-resources
