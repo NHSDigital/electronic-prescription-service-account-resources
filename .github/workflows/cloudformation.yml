@@ -48,6 +48,12 @@ jobs:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
 
+    - name: Download Build Artefacts
+      uses: actions/download-artifact@v4
+      with:
+        name: packaged_code
+        path: .
+        
     - name: Assume create changeset role
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -293,12 +299,6 @@ jobs:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.cf_deploy_role }}
           role-session-name: github-actions
-
-      - name: Download Build Artefacts
-        uses: actions/download-artifact@v4
-        with:
-          name: packaged_code
-          path: .
 
       - name: Execute Change Set
         shell: bash

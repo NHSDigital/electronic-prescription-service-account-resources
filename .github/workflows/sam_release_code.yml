@@ -1,0 +1,76 @@
+name: sam release code
+
+on:
+  workflow_call:
+    inputs:
+      STACK_NAME:
+        required: true
+        type: string
+      ARTIFACT_BUCKET_PREFIX:
+        required: true
+        type: string
+      TARGET_ENVIRONMENT:
+        required: true
+        type: string
+      BUILD_ARTIFACT:
+        required: true
+        type: string
+      VERSION_NUMBER:
+        required: true
+        type: string
+      COMMIT_ID:
+        required: true
+        type: string
+      LOG_LEVEL:
+        required: true
+        type: string
+      LOG_RETENTION_DAYS:
+        required: true
+        type: string
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE:
+        required: true
+      SPLUNK_HEC_TOKEN:
+        required: true
+  
+jobs:
+  sam_release_code:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.TARGET_ENVIRONMENT }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
+          role-session-name: github-actions
+
+      - uses: actions/download-artifact@v4
+        name: download build artifact
+        with:
+          name: ${{ inputs.BUILD_ARTIFACT }}
+          path: .
+
+      - shell: bash
+        name: release code
+        run: |
+          echo ${{ inputs.COMMIT_ID }}
+          export artifact_bucket=$(aws cloudformation list-exports --output json | \
+            jq -r '.Exports[] | select(.Name == "account-resources:ArtifactsBucket") | .Value' |grep -o '[^:]*$')
+          export artifact_bucket_prefix=prescriptions_for_patients/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
+          export template_file=template.yaml
+          export stack_name=${{ inputs.STACK_NAME }}
+          export SPLUNK_HEC_ENDPOINT=${{ vars.SPLUNK_STRUCTURED_ENDPOINT }}
+          export SPLUNK_HEC_TOKEN=${{ secrets.SPLUNK_HEC_TOKEN }}
+          export VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}
+          export COMMIT_ID=${{ inputs.COMMIT_ID }}
+          export cloud_formation_execution_role=$(aws cloudformation list-exports --output json | \
+              jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
+          export LOG_LEVEL=${{inputs.LOG_LEVEL}}
+          export LOG_RETENTION_DAYS=${{inputs.LOG_RETENTION_DAYS}}
+          export TARGET_ENVIRONMENT=${{inputs.TARGET_ENVIRONMENT}}
+          cd .aws-sam/build
+          make sam-deploy-package
