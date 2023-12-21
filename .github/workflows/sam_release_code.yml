@@ -72,5 +72,4 @@ jobs:
           export LOG_LEVEL=${{inputs.LOG_LEVEL}}
           export LOG_RETENTION_DAYS=${{inputs.LOG_RETENTION_DAYS}}
           export TARGET_ENVIRONMENT=${{inputs.TARGET_ENVIRONMENT}}
-          cd .aws-sam/build
           make sam-deploy-package
