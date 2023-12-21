@@ -47,14 +47,50 @@ jobs:
       with:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
-    
+
     - name: Assume create changeset role
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_create_changeset_role}}
         role-session-name: github-actions
-    
+
+    - name: check stack exists
+      id: check_stack_exists
+      shell: bash
+      run: |
+        stack_exists=$(aws cloudformation describe-stacks --stack-name lambda-resources 2>&1)
+        if [ "${stack_exists}" == "An error occurred (ValidationError) when calling the DescribeStacks operation: Stack with id lambda-resources does not exist" ]; then
+          echo "STACK_EXISTS=false" >> $GITHUB_OUTPUT
+        else
+          echo "STACK_EXISTS=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Assume create deploy stack role
+      if: ${{ steps.check.outputs.STACK_EXISTS == false }} 
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_deploy_role}}
+        role-session-name: github-actions
+
+    - name: create stack
+      if: ${{ steps.check.outputs.STACK_EXISTS == false }} 
+      shell: bash
+      run: |
+        ROLE=$(aws cloudformation list-exports --output json | \
+        jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
+        aws cloudformation create-stack --stack-name ${{ inputs.stack_name }} \
+        --template-body file:///./cloudformation/empty_resources.yml
+
+    - name: Assume create changeset role
+      if: ${{ steps.check.outputs.STACK_EXISTS == false }} 
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_create_changeset_role}}
+        role-session-name: github-actions
+        
     - name: Parse Parameters
       env:
         parameter_secrets: ${{ secrets.parameter_secrets }}

@@ -29,6 +29,7 @@ jobs:
     secrets:
       parameter_secrets: "{}"
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   list_account_resources_cf_changes:
     needs: package_code
@@ -44,6 +45,7 @@ jobs:
     secrets:
       parameter_secrets: "{}"
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       
   list_lambda_resources_cf_changes:
     needs: package_code
@@ -59,3 +61,4 @@ jobs:
     secrets:
       parameter_secrets: '{"splunk_hec_token": "${{ secrets.DEV_SPLUNK_HEC_TOKEN }}", "splunk_hec_endpoint": "${{ secrets.DEV_SPLUNK_HEC_ENDPOINT }}"}'
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
