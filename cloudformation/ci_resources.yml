@@ -149,6 +149,7 @@ Resources:
                   - "kms:Create*"
                   - "kms:Delete*"
                   - "kms:Describe*"
+                  - "kms:EnableKeyRotation"
                   - "kms:Get*"
                   - "kms:List*"
                   - "kms:Put*"
