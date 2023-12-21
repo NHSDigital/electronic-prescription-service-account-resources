@@ -2,13 +2,28 @@
   "env": "dev",
   "parameters": {
     "ci-resources": {
-      "SubjectClaimFilters": [
+      "DeploySubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
         "repo:NHSDigital/electronic-prescription-service-account-resources:*",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/electronic-prescription-service-release-notes:*"
+      ],
+      "CheckVersionSubjectClaimFilters": [
+        "repo:NHSDigital/prescriptionsforpatients:*",
         "repo:NHSDigital/electronic-prescription-service-release-notes:*",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
+      ],
+      "ReleaseNotesExecuteLambdaClaimFilters": [
+        "repo:NHSDigital/prescriptionsforpatients:*",
+        "repo:NHSDigital/electronic-prescription-service-release-notes:*",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
         "repo:NHSDigital/prescriptions-for-patients:*",
         "repo:NHSDigital/electronic-prescription-service-api:*"
+      ],
+      "PrepareChangesetClaimFilters": [
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*"
       ]
     },
     "account-resources": {

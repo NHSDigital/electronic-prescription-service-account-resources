@@ -11,38 +11,13 @@ jobs:
   quality_checks:
     uses: ./.github/workflows/quality_checks.yml
 
-  get_issue_number:
-    runs-on: ubuntu-latest
-    needs: quality_checks
-    outputs:
-        issue_number: ${{steps.get_issue_number.outputs.result}}
-    steps:
-      - uses: actions/github-script@v6
-        name: get issue number
-        id: get_issue_number
-        with:
-          script: |
-            if (context.issue.number) {
-              // Return issue number if present
-              return context.issue.number;
-            } else {
-              // Otherwise return issue number from commit
-              return (
-                await github.rest.repos.listPullRequestsAssociatedWithCommit({
-                  commit_sha: context.sha,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                })
-              ).data[0].number;
-            }
-          result-encoding: string
-
   list_ci_resources_cf_changes:
-    needs: get_issue_number
+    needs: quality_checks
     uses: ./.github/workflows/cloudformation.yml
     with:
-      target_environment: dev
+      target_environment: dev-ci
       version: pr-${{github.event.number}}
+      change_set_version: pr-${{github.event.number}}
       stack_name: ci-resources
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
@@ -50,13 +25,15 @@ jobs:
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       parameter_secrets: "{'splunk_hec_token': '${{ secrets.DEV_SPLUNK_HEC_TOKEN }}', 'splunk_hec_endpoint': '${{ secrets.DEV_SPLUNK_HEC_ENDPOINT }}'}"
+      cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
   
   list_account_resources_cf_changes:
-    needs: get_issue_number
+    needs: quality_checks
     uses: ./.github/workflows/cloudformation.yml
     with:
-      target_environment: dev
+      target_environment: dev-account
       version: pr-${{github.event.number}}
+      change_set_version: pr-${{github.event.number}}
       stack_name: account-resources
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_IAM
@@ -64,5 +41,5 @@ jobs:
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       parameter_secrets: '{"splunk_hec_token": "${{ secrets.DEV_SPLUNK_HEC_TOKEN }}", "splunk_hec_endpoint": "${{ secrets.DEV_SPLUNK_HEC_ENDPOINT }}"}'
-
+      cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       

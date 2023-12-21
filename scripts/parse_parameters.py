@@ -65,5 +65,6 @@ if __name__ == "__main__":
     parser.add_argument("stack", help="the stack to parse for")
     parser.add_argument("secrets", help="secrets to substitute (json string)")
     args = parser.parse_args()
+    [env, _] = args.env.split("-")
 
-    print(parse_parameters(args.env, args.stack, args.secrets))
+    print(parse_parameters(env, args.stack, args.secrets))
