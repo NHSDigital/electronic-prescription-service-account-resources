@@ -108,7 +108,6 @@ Resources:
   CloudwatchLogsKmsKey:
     Type: "AWS::KMS::Key"
     Properties:
-      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-policy-id
@@ -153,10 +152,6 @@ Resources:
   ArtifactsBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
-      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
@@ -247,10 +242,6 @@ Resources:
   TrustStoreBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
-      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
@@ -414,10 +405,6 @@ Resources:
   SplunkDeliveryStreamBackupKMSKey:
     Type: AWS::KMS::Key
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
-      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
@@ -549,10 +536,6 @@ Resources:
   SecretsKMSKey:
     Type: AWS::KMS::Key
     Properties:
-      Tags:
-        - Key: "version"
-          Value: "static"
-      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
@@ -595,6 +578,7 @@ Resources:
   CloudWatchKMSKey:
     Type: "AWS::KMS::Key"
     Properties:
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-policy-id
@@ -1113,11 +1097,20 @@ Outputs:
   SplunkSubscriptionFilterRole:
     Description: "SplunkSubscriptionFilterRole ARN"
     Value: !GetAtt SplunkSubscriptionFilterRole.Arn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "SplunkSubscriptionFilterRole"]]
 
   SplunkDeliveryStream:
     Description: "SplunkDeliveryStream ARN"
     Value: !If [ShouldUseSplunk, !GetAtt SplunkDeliveryStream.Arn, ""]
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStream"]]
 
   CloudWatchKMSKey:
     Description: "CloudWatch KMS Key ARN"
     Value: !GetAtt CloudWatchKMSKey.Arn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CloudWatchKMSKey"]]
