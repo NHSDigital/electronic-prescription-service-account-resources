@@ -262,7 +262,7 @@ jobs:
         echo "~~~"  >> $GITHUB_STEP_SUMMARY
         echo "</details>" >> $GITHUB_STEP_SUMMARY
 
-    - name: Delete Change Set
+    - name: Delete Change Set for new tag
       if: ${{ inputs.execute_change_set == false }}
       shell: bash
       run: |
@@ -270,7 +270,7 @@ jobs:
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
 
-    - name: Delete Change Set
+    - name: Delete Change Set for existing tag
       shell: bash
       run: |
         aws cloudformation delete-change-set \
@@ -337,5 +337,10 @@ jobs:
             echo "Failed to execute change set, rollback failed."
             echo "$STACKS"
             exit 1
+          elif [ "$STATUS" == "UPDATE_COMPLETE" ]; then
+            echo "Execute change set comeplete."
+            exit 0
           fi
-          echo "Execute change set comeplete."
+          echo "Failed to execute change set, for unknown reason."
+          echo "$STACKS"
+          exit 1
