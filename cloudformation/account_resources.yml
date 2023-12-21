@@ -48,6 +48,7 @@ Resources:
   CloudwatchLogsKmsKey:
     Type: "AWS::KMS::Key"
     Properties:
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-policy-id
@@ -92,6 +93,7 @@ Resources:
   ArtifactsBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
@@ -182,6 +184,7 @@ Resources:
   TrustStoreBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
@@ -345,6 +348,7 @@ Resources:
   SplunkDeliveryStreamBackupKMSKey:
     Type: AWS::KMS::Key
     Properties:
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
@@ -476,6 +480,7 @@ Resources:
   SecretsKMSKey:
     Type: AWS::KMS::Key
     Properties:
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: key-s3
