@@ -11,9 +11,13 @@ env:
 jobs:
   quality_checks:
     uses: ./.github/workflows/quality_checks.yml
-  
-  tag_release:
+
+  package_code:
     needs: quality_checks
+    uses: ./.github/workflows/package_code.yml
+    
+  tag_release:
+    needs: package_code
     runs-on: ubuntu-latest
     outputs:
       spec_version: ${{ steps.output_spec_version.outputs.SPEC_VERSION }}
