@@ -61,6 +61,9 @@ jobs:
       run: |
         stacks=$( aws cloudformation list-stacks --query "StackSummaries[].StackName" )
         stack_exists=$( echo $stacks | grep ${{ inputs.stack_name }} )
+        echo "foo"
+        echo "${stack_exists}""
+        echo "bar"
         if [ -z "${stack_exists}" ]
         then
           echo "Stack does not exist"
