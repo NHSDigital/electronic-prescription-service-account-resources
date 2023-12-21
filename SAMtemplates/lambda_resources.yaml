@@ -336,9 +336,19 @@ Outputs:
   SplunkSubscriptionFilterRole:
     Description: "SplunkSubscriptionFilterRole ARN"
     Value: !GetAtt SplunkSubscriptionFilterRole.Arn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "SplunkSubscriptionFilterRole"]]
   SplunkDeliveryStream:
     Description: "SplunkDeliveryStream ARN"
     Value: !GetAtt SplunkDeliveryStream.Arn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStream"]]
   CloudWatchKMSKey:
     Description: "CloudWatch KMS Key ARN"
     Value: !GetAtt CloudWatchKMSKey.Arn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CloudWatchKMSKey"]]
+    

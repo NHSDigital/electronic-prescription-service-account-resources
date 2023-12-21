@@ -4,8 +4,7 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "check-licenses": "node_modules/.bin/license-checker --failOn GPL --failOn LGPL",
-    "build": "node ./build.mjs"
+    "check-licenses": "node_modules/.bin/license-checker --failOn GPL --failOn LGPL"
   },
   "repository": {
     "type": "git",
