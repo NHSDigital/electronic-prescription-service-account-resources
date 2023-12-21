@@ -59,7 +59,9 @@ jobs:
       id: check_stack_exists
       shell: bash
       run: |
+        set +x
         stack_exists=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }} 2>&1)
+        set -e
         if [ "${stack_exists}" == "An error occurred (ValidationError) when calling the DescribeStacks operation: Stack with id lambda-resources does not exist" ]; then
           echo "Stack does not exist"
           echo "STACK_EXISTS=false" >> $GITHUB_OUTPUT
@@ -83,7 +85,7 @@ jobs:
         ROLE=$(aws cloudformation list-exports --output json | \
         jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
         aws cloudformation create-stack --stack-name ${{ inputs.stack_name }} \
-        --template-body file:///./cloudformation/empty_resources.yml
+        --template-body file:///./cloudformation/empty_stack.yml
 
     - name: Assume create changeset role
       if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == false }} 
