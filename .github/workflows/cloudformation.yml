@@ -61,13 +61,15 @@ jobs:
       run: |
         stack_exists=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }} 2>&1)
         if [ "${stack_exists}" == "An error occurred (ValidationError) when calling the DescribeStacks operation: Stack with id lambda-resources does not exist" ]; then
+          echo "Stack does not exist"
           echo "STACK_EXISTS=false" >> $GITHUB_OUTPUT
         else
+          echo "Stack does exist"
           echo "STACK_EXISTS=true" >> $GITHUB_OUTPUT
         fi
 
     - name: Assume create deploy stack role
-      if: ${{ steps.check.outputs.STACK_EXISTS == false }} 
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == false }} 
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
@@ -75,7 +77,7 @@ jobs:
         role-session-name: github-actions
 
     - name: create stack
-      if: ${{ steps.check.outputs.STACK_EXISTS == false }} 
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == false }} 
       shell: bash
       run: |
         ROLE=$(aws cloudformation list-exports --output json | \
@@ -84,7 +86,7 @@ jobs:
         --template-body file:///./cloudformation/empty_resources.yml
 
     - name: Assume create changeset role
-      if: ${{ steps.check.outputs.STACK_EXISTS == false }} 
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == false }} 
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
