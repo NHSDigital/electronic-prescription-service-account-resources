@@ -2,6 +2,7 @@
 import argparse
 import json
 import re
+import os
 
 EMPTY = ""
 
@@ -76,11 +77,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("env", help="the environment to parse for")
     parser.add_argument("stack", help="the stack to parse for")
-    parser.add_argument("secrets", help="secrets to substitute (json string)")
-    parser.add_argument("dynamic_vars", help="dynamic vars to substitute (json string)")
     args = parser.parse_args()
+
     [env, _] = args.env.split("-")
     regex = re.compile(r"-pr-[\d]+", re.IGNORECASE)
     stack = regex.sub("", args.stack)
 
-    print(parse_parameters(env, stack, args.secrets, args.dynamic_vars))
+    parameter_secrets = os.environ["parameter_secrets"]
+    dynamic_vars = os.environ["dynamic_vars"]
+
+    print(parse_parameters(env, stack, parameter_secrets, dynamic_vars))
