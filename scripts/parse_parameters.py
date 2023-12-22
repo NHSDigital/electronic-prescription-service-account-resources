@@ -43,7 +43,7 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
             values = []
             for list_value in raw_value:
                 value = replace_secrets(list_value, parsed_secrets)
-                value = replace_dynamic_variables(raw_value, parsed_dynamic_vars)
+                value = replace_dynamic_variables(list_value, parsed_dynamic_vars)
                 values.append(value)
             concatenated_values = ','.join(values)
             output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{concatenated_values}\'" '
