@@ -34,8 +34,6 @@ on:
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
-      SPLUNK_HEC_TOKEN:
-        required: true
       parameter_secrets:
         required: false
 
