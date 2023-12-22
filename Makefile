@@ -61,7 +61,7 @@ sam-validate:
 sam-build: sam-validate
 	sam build --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
 
-sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-SPLUNK_HEC_TOKEN guard-SPLUNK_HEC_ENDPOINT guard-VERSION_NUMBER guard-COMMIT_ID guard-LOG_LEVEL guard-LOG_RETENTION_DAYS guard-TARGET_ENVIRONMENT
+sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-PARAMETERS
 	sam deploy \
 		--template-file $$template_file \
 		--stack-name $$stack_name \
@@ -75,11 +75,4 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 		--no-confirm-changeset \
 		--force-upload \
 		--tags "version=$$VERSION_NUMBER" \
-		--parameter-overrides \
-			  SplunkHECToken=$$SPLUNK_HEC_TOKEN \
-			  SplunkHECEndpoint=$$SPLUNK_HEC_ENDPOINT \
-			  VersionNumber=$$VERSION_NUMBER \
-			  CommitId=$$COMMIT_ID \
-			  LogLevel=$$LOG_LEVEL \
-			  LogRetentionDays=$$LOG_RETENTION_DAYS \
-			  Env=$$TARGET_ENVIRONMENT
+		--parameter-overrides $$PARAMETERS

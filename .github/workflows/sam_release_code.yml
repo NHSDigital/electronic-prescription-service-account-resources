@@ -27,12 +27,18 @@ on:
       LOG_RETENTION_DAYS:
         required: true
         type: string
+      dynamic_vars:
+        required: false
+        type: string
+        default: "{}"
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
       SPLUNK_HEC_TOKEN:
         required: true
-  
+      parameter_secrets:
+        required: false
+
 jobs:
   sam_release_code:
     runs-on: ubuntu-latest
@@ -54,6 +60,16 @@ jobs:
           name: ${{ inputs.BUILD_ARTIFACT }}
           path: .
 
+      - name: Parse Parameters
+        env:
+          parameter_secrets: ${{ secrets.parameter_secrets }}
+        id: parse_parameters
+        shell: bash
+        run: |
+          PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }} "${parameter_secrets}" "${{ inputs.dynamic_vars }}")
+          echo ${PARAMETERS}
+          echo "PARAMETERS=${PARAMETERS}" >> $GITHUB_OUTPUT
+
       - shell: bash
         name: release code
         run: |
@@ -63,13 +79,7 @@ jobs:
           export artifact_bucket_prefix=lambda_resources/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
           export template_file=template.yaml
           export stack_name=${{ inputs.STACK_NAME }}
-          export SPLUNK_HEC_ENDPOINT=${{ vars.SPLUNK_STRUCTURED_ENDPOINT }}
-          export SPLUNK_HEC_TOKEN=${{ secrets.SPLUNK_HEC_TOKEN }}
-          export VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}
-          export COMMIT_ID=${{ inputs.COMMIT_ID }}
           export cloud_formation_execution_role=$(aws cloudformation list-exports --output json | \
               jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
-          export LOG_LEVEL=${{inputs.LOG_LEVEL}}
-          export LOG_RETENTION_DAYS=${{inputs.LOG_RETENTION_DAYS}}
-          export TARGET_ENVIRONMENT=${{inputs.TARGET_ENVIRONMENT}}
+          export PARAMETERS=${{ steps.parse_parameters.outputs.PARAMETERS }}
           make sam-deploy-package

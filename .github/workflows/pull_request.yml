@@ -96,6 +96,7 @@ jobs:
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
       LOG_LEVEL: DEBUG
       LOG_RETENTION_DAYS: 30
+      dynamic_vars: '{"CommitId": "${{ needs.get_commit_id.outputs.commit_id }}", "VersionNumber": "PR-${{ needs.get_issue_number.outputs.issue_number }}" }'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       SPLUNK_HEC_TOKEN: ${{ secrets.DEV_SPLUNK_HEC_TOKEN }}

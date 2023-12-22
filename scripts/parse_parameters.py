@@ -5,7 +5,7 @@ import json
 EMPTY = ""
 
 
-def parse_parameters(env, stack, secrets):
+def parse_parameters(env, stack, secrets, dynamic_vars):
     """ Parse Cloudformation Parameters
     - Reads and parses json file of parameters @ cloudformation/env/<env_name>.json
     - Takes the name of the environment, the name of the stack, and any secrets to substitute as arguments
@@ -22,6 +22,7 @@ def parse_parameters(env, stack, secrets):
     output = EMPTY
 
     parsed_secrets = json.loads(secrets)
+    parsed_dynamic_vars = json.loads(dynamic_vars)
 
     parameters = d.get("parameters")
     if not parameters:
@@ -36,11 +37,13 @@ def parse_parameters(env, stack, secrets):
             return EMPTY
         elif isinstance(raw_value, str):
             value = replace_secrets(raw_value, parsed_secrets)
+            value = replace_dynamic_variables(raw_value, parsed_dynamic_vars)
             output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{value}\'" '
         elif isinstance(raw_value, list):
             values = []
             for list_value in raw_value:
                 value = replace_secrets(list_value, parsed_secrets)
+                value = replace_dynamic_variables(raw_value, parsed_dynamic_vars)
                 values.append(value)
             concatenated_values = ','.join(values)
             output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{concatenated_values}\'" '
@@ -59,12 +62,22 @@ def replace_secrets(value, secrets):
         return value
 
 
+def replace_dynamic_variables(value, dynamic_vars):
+    if value.startswith("VAR."):
+        [_, dynamic_var_name] = value.split(".")
+        real_value = dynamic_vars.get(dynamic_var_name)
+        return real_value
+    else:
+        return value
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("env", help="the environment to parse for")
     parser.add_argument("stack", help="the stack to parse for")
     parser.add_argument("secrets", help="secrets to substitute (json string)")
+    parser.add_argument("dynamic_vars", help="dynamic vars to substitute (json string)")
     args = parser.parse_args()
     [env, _] = args.env.split("-")
 
-    print(parse_parameters(env, args.stack, args.secrets))
+    print(parse_parameters(env, args.stack, args.secrets, args.dynamic_vars))
