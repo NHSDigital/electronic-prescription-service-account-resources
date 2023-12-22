@@ -12,7 +12,6 @@ jobs:
     uses: ./.github/workflows/quality_checks.yml
 
   package_code:
-    needs: quality_checks
     uses: ./.github/workflows/sam_package_code.yml
 
   get_issue_number:
@@ -52,51 +51,19 @@ jobs:
         run: |
           echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
 
-  list_ci_resources_cf_changes:
-    needs: quality_checks
-    uses: ./.github/workflows/cloudformation.yml
+  deploy_stacks:
+    needs: [quality_checks, package_code, get_issue_number, get_commit_id]
+    uses: ./.github/workflows/release_all_stacks.yml
     with:
-      target_environment: dev-ci
+      target_environment: dev
       version: pr-${{github.event.number}}
       change_set_version: pr-${{github.event.number}}
-      stack_name: ci-resources
-      template: ./cloudformation/ci_resources.yml
-      capabilities: CAPABILITY_IAM
       execute_change_set: false
+      lambda_stack_suffix: -pr-${{needs.get_issue_number.outputs.issue_number}}
+      artifact_buckt_prefix: PR-${{needs.get_issue_number.outputs.issue_number}}
+      version_number: PR-${{ needs.get_issue_number.outputs.issue_number }}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
     secrets:
-      parameter_secrets: "{}"
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-  
-  list_account_resources_cf_changes:
-    needs: quality_checks
-    uses: ./.github/workflows/cloudformation.yml
-    with:
-      target_environment: dev-account
-      version: pr-${{github.event.number}}
-      change_set_version: pr-${{github.event.number}}
-      stack_name: account-resources
-      template: ./cloudformation/account_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: false
-    secrets:
-      parameter_secrets: "{}"
-      cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
-      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-
-  release_lambda_resources:
-    needs: [get_issue_number, package_code, get_commit_id]
-    uses: ./.github/workflows/sam_release_code.yml
-    with:
-      STACK_NAME: lambda-resources-pr-${{needs.get_issue_number.outputs.issue_number}}
-      ARTIFACT_BUCKET_PREFIX: PR-${{needs.get_issue_number.outputs.issue_number}}
-      TARGET_ENVIRONMENT: dev-pr
-      BUILD_ARTIFACT: packaged_code
-      VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
-      COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-      LOG_LEVEL: DEBUG
-      LOG_RETENTION_DAYS: 30
-      dynamic_vars: '{"CommitId": "${{ needs.get_commit_id.outputs.commit_id }}", "VersionNumber": "PR-${{ needs.get_issue_number.outputs.issue_number }}" }'
-    secrets:
-      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      parameter_secrets: '{"splunk_hec_token": "${{ secrets.DEV_SPLUNK_HEC_TOKEN }}"}'
+      SPLUNK_HEC_TOKEN: ${{ secrets.DEV_SPLUNK_HEC_TOKEN }}
