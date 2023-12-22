@@ -39,13 +39,13 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
             return EMPTY
         elif isinstance(raw_value, str):
             value = replace_secrets(raw_value, parsed_secrets)
-            value = replace_dynamic_variables(raw_value, parsed_dynamic_vars)
+            value = replace_dynamic_variables(value, parsed_dynamic_vars)
             output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{value}\'" '
         elif isinstance(raw_value, list):
             values = []
             for list_value in raw_value:
                 value = replace_secrets(list_value, parsed_secrets)
-                value = replace_dynamic_variables(list_value, parsed_dynamic_vars)
+                value = replace_dynamic_variables(value, parsed_dynamic_vars)
                 values.append(value)
             concatenated_values = ','.join(values)
             output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{concatenated_values}\'" '
@@ -85,8 +85,5 @@ if __name__ == "__main__":
 
     parameter_secrets = os.environ["parameter_secrets"]
     dynamic_vars = os.environ["dynamic_vars"]
-
-    print(f'parameter_secrets: {parameter_secrets}\n')
-    print(f'dynamic_vars: {dynamic_vars}\n')
 
     print(parse_parameters(env, stack, parameter_secrets, dynamic_vars))
