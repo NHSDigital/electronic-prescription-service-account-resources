@@ -51,6 +51,7 @@ jobs:
           cp Makefile .aws-sam/build/
           cp samconfig_package_and_deploy.toml .aws-sam/build/
           cp -r scripts .aws-sam/build
+          cp -r cloudformation/env .aws-sam/build
 
       - uses: actions/upload-artifact@v4
         name: upload build artifact
