@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import json
+import re
 
 EMPTY = ""
 
@@ -79,5 +80,7 @@ if __name__ == "__main__":
     parser.add_argument("dynamic_vars", help="dynamic vars to substitute (json string)")
     args = parser.parse_args()
     [env, _] = args.env.split("-")
+    regex = re.compile(r"-pr-[\d]+", re.IGNORECASE)
+    stack = regex.sub("", args.stack)
 
-    print(parse_parameters(env, args.stack, args.secrets, args.dynamic_vars))
+    print(parse_parameters(env, stack, args.secrets, args.dynamic_vars))
