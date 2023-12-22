@@ -86,4 +86,7 @@ if __name__ == "__main__":
     parameter_secrets = os.environ["parameter_secrets"]
     dynamic_vars = os.environ["dynamic_vars"]
 
+    print(f'parameter_secrets: ${parameter_secrets}')
+    print(f'dynamic_vars: ${dynamic_vars}')
+
     print(parse_parameters(env, stack, parameter_secrets, dynamic_vars))
