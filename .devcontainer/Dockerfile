@@ -30,6 +30,7 @@ ENV PATH="$PATH:/home/vscode/.asdf/bin/:/workspaces/electronic-prescription-serv
 # Install ASDF plugins
 RUN asdf plugin add python; \
     asdf plugin add poetry https://github.com/asdf-community/asdf-poetry.git; \
+    asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git; \
     asdf plugin add shellcheck https://github.com/luizm/asdf-shellcheck.git; \
     asdf plugin-add direnv; \
     asdf plugin add actionlint;
@@ -42,4 +43,5 @@ ADD .tool-versions /home/vscode/.tool-versions
 RUN asdf install; \
     asdf reshim python; \
     asdf reshim poetry; \
+    asdf reshim nodejs; \
     asdf direnv setup --shell bash --version 2.32.2;
