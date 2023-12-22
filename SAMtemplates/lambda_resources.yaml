@@ -331,24 +331,46 @@ Resources:
               - !GetAtt SplunkDeliveryStreamProcessor.Arn
       Roles:
         - !Ref SplunkDeliveryStreamProcessorInvokeRole
-
+  # capabilityStatement lambda
+  CapabilityStatementResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: common_lambda_resources.yaml
+      Parameters:
+        CloudWatchKMSKey: !GetAtt CloudWatchKMSKey.Arn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-CapabilityStatement"
+        LogRetentionDays: !Ref LogRetentionDays
+  CapabilityStatement:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-CapabilityStatement"
+      CodeUri: ../packages
+      Handler: capabilityStatement.handler
+      Role: !GetAtt CapabilityStatementResources.Outputs.LambdaRoleArn
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: capabilityStatement/tsconfig.json
+        EntryPoints:
+          - capabilityStatement/src/capabilityStatement.ts
 Outputs:
   SplunkSubscriptionFilterRole:
     Description: "SplunkSubscriptionFilterRole ARN"
     Value: !GetAtt SplunkSubscriptionFilterRole.Arn
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "SplunkSubscriptionFilterRole"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "SplunkSubscriptionFilterRole"]]
   SplunkDeliveryStream:
     Description: "SplunkDeliveryStream ARN"
     Value: !GetAtt SplunkDeliveryStream.Arn
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStream"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStream"]]
   CloudWatchKMSKey:
     Description: "CloudWatch KMS Key ARN"
     Value: !GetAtt CloudWatchKMSKey.Arn
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "CloudWatchKMSKey"]]
-    
+      Name: !Join [":", [!Ref "AWS::StackName", "CloudWatchKMSKey"]]
