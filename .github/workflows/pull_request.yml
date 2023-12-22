@@ -99,4 +99,4 @@ jobs:
       dynamic_vars: '{"CommitId": "${{ needs.get_commit_id.outputs.commit_id }}", "VersionNumber": "PR-${{ needs.get_issue_number.outputs.issue_number }}" }'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      SPLUNK_HEC_TOKEN: ${{ secrets.DEV_SPLUNK_HEC_TOKEN }}
+      parameter_secrets: '{"splunk_hec_token": "${{ secrets.DEV_SPLUNK_HEC_TOKEN }}"}'
