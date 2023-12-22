@@ -81,4 +81,5 @@ jobs:
           export cloud_formation_execution_role=$(aws cloudformation list-exports --output json | \
               jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
           export PARAMETERS=${{ steps.parse_parameters.outputs.PARAMETERS }}
+          export VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}
           make sam-deploy-package
