@@ -11,6 +11,8 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
     """ Parse Cloudformation Parameters
     - Reads and parses json file of parameters @ cloudformation/env/<env_name>.json
     - Takes the name of the environment, the name of the stack, and any secrets to substitute as arguments
+    - Also expect environment variables parameter_secrets and dynamic_vars to be set
+     -This is used as they may have quotes in it which are hard to pass on command line
     - Outputs "" for no parameters
     - Outputs parameters in the form 'ParameterKey=Somekey,ParameterValue=SomeValue' for create-change-set aws cli calls
     - Parameter values can be either a string for a single value,

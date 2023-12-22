@@ -66,7 +66,6 @@ jobs:
         shell: bash
         run: |
           PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }} )
-          echo ${PARAMETERS}
           echo "PARAMETERS=${PARAMETERS}" >> $GITHUB_OUTPUT
 
       - shell: bash

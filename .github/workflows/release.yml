@@ -126,7 +126,7 @@ jobs:
       cf_create_changeset_role:  ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
 
   release_lambda_resources_dev:
-    needs: [tag_release, get_commit_id, release_ci_resources_dev]
+    needs: [tag_release, get_commit_id, release_ci_resources_dev, package_code]
     uses: ./.github/workflows/sam_release_code.yml
     with:
       STACK_NAME: lambda-resources
@@ -137,9 +137,11 @@ jobs:
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
       LOG_RETENTION_DAYS: 30
+      dynamic_vars: '{"CommitId": "${{ needs.get_commit_id.outputs.commit_id }}", "VersionNumber": "PR-${{ needs.get_issue_number.outputs.issue_number }}" }'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       SPLUNK_HEC_TOKEN: ${{ secrets.DEV_SPLUNK_HEC_TOKEN }}
+      parameter_secrets: '{"splunk_hec_token": "${{ secrets.DEV_SPLUNK_HEC_TOKEN }}"}'
 
   create_release_notes_post_dev:
     needs: [tag_release, release_ci_resources_dev, release_account_resources_dev, release_lambda_resources_dev]
@@ -200,9 +202,11 @@ jobs:
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
       LOG_RETENTION_DAYS: 30
+      dynamic_vars: '{"CommitId": "${{ needs.get_commit_id.outputs.commit_id }}", "VersionNumber": "PR-${{ needs.get_issue_number.outputs.issue_number }}" }'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
       SPLUNK_HEC_TOKEN: ${{ secrets.REF_SPLUNK_HEC_TOKEN }}
+      parameter_secrets: '{"splunk_hec_token": "${{ secrets.REF_SPLUNK_HEC_TOKEN }}"}'
       
   release_ci_resources_qa:
     needs: [tag_release, release_ci_resources_dev, release_account_resources_dev, release_lambda_resources_dev]
@@ -248,9 +252,10 @@ jobs:
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
       LOG_RETENTION_DAYS: 30
+      dynamic_vars: '{"CommitId": "${{ needs.get_commit_id.outputs.commit_id }}", "VersionNumber": "PR-${{ needs.get_issue_number.outputs.issue_number }}" }'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
-      SPLUNK_HEC_TOKEN: ${{ secrets.QA_SPLUNK_HEC_TOKEN }}
+      parameter_secrets: '{"splunk_hec_token": "${{ secrets.QA_SPLUNK_HEC_TOKEN }}"}'
       
   create_release_notes_pre_int:
     needs: [tag_release, release_ci_resources_qa, release_account_resources_qa, release_lambda_resources_qa]
@@ -312,9 +317,11 @@ jobs:
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
       LOG_RETENTION_DAYS: 30
+      dynamic_vars: '{"CommitId": "${{ needs.get_commit_id.outputs.commit_id }}", "VersionNumber": "PR-${{ needs.get_issue_number.outputs.issue_number }}" }'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
       SPLUNK_HEC_TOKEN: ${{ secrets.INT_SPLUNK_HEC_TOKEN }}
+      parameter_secrets: '{"splunk_hec_token": "${{ secrets.INT_SPLUNK_HEC_TOKEN }}"}'
       
   create_release_notes_post_int:
     needs: [tag_release, release_ci_resources_int, release_account_resources_int, release_lambda_resources_int]
@@ -375,9 +382,10 @@ jobs:
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
       LOG_RETENTION_DAYS: 30
+      dynamic_vars: '{"CommitId": "${{ needs.get_commit_id.outputs.commit_id }}", "VersionNumber": "PR-${{ needs.get_issue_number.outputs.issue_number }}" }'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
-      SPLUNK_HEC_TOKEN: ${{ secrets.PROD_SPLUNK_HEC_TOKEN }}
+      parameter_secrets: '{"splunk_hec_token": "${{ secrets.DEV_SPLUNK_HEC_TOKEN }}"}'
 
   create_release_notes_post_prod:
     needs: [tag_release, release_ci_resources_prod, release_account_resources_prod, release_lambda_resources_prod]
