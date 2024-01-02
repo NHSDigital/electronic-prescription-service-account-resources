@@ -31,6 +31,9 @@ Resources:
       ClientIdList:
         - sts.amazonaws.com
 
+# see https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
+# for details about subject claim filters that are used for each role
+
   CloudFormationDeployRole:
     Type: AWS::IAM::Role
     Properties:

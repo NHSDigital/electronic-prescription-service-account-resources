@@ -1,0 +1,84 @@
+name: sam release code
+
+on:
+  workflow_call:
+    inputs:
+      STACK_NAME:
+        required: true
+        type: string
+      ARTIFACT_BUCKET_PREFIX:
+        required: true
+        type: string
+      TARGET_ENVIRONMENT:
+        required: true
+        type: string
+      BUILD_ARTIFACT:
+        required: true
+        type: string
+      VERSION_NUMBER:
+        required: true
+        type: string
+      COMMIT_ID:
+        required: true
+        type: string
+      LOG_LEVEL:
+        required: true
+        type: string
+      LOG_RETENTION_DAYS:
+        required: true
+        type: string
+      dynamic_vars:
+        required: false
+        type: string
+        default: "{}"
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE:
+        required: true
+      parameter_secrets:
+        required: false
+
+jobs:
+  sam_release_code:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.TARGET_ENVIRONMENT }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
+          role-session-name: github-actions
+
+      - uses: actions/download-artifact@v4
+        name: download build artifact
+        with:
+          name: ${{ inputs.BUILD_ARTIFACT }}
+          path: .
+
+      - name: Parse Parameters
+        env:
+          parameter_secrets: ${{ secrets.parameter_secrets }}
+          dynamic_vars: ${{ inputs.dynamic_vars }}
+        id: parse_parameters
+        shell: bash
+        run: |
+          PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }} )
+          echo "PARAMETERS=${PARAMETERS}" >> $GITHUB_OUTPUT
+
+      - shell: bash
+        name: release code
+        run: |
+          echo ${{ inputs.COMMIT_ID }}
+          export artifact_bucket=$(aws cloudformation list-exports --output json | \
+            jq -r '.Exports[] | select(.Name == "account-resources:ArtifactsBucket") | .Value' |grep -o '[^:]*$')
+          export artifact_bucket_prefix=lambda_resources/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
+          export template_file=template.yaml
+          export stack_name=${{ inputs.STACK_NAME }}
+          export cloud_formation_execution_role=$(aws cloudformation list-exports --output json | \
+              jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
+          export PARAMETERS=${{ steps.parse_parameters.outputs.PARAMETERS }}
+          export VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}
+          make sam-deploy-package

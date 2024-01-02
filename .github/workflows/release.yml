@@ -11,9 +11,22 @@ env:
 jobs:
   quality_checks:
     uses: ./.github/workflows/quality_checks.yml
-  
+
+  package_code:
+    uses: ./.github/workflows/sam_package_code.yml
+
+  get_commit_id:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_id: ${{ steps.commit_id.outputs.commit_id }}
+    steps:
+      - name: Get Commit ID
+        id: commit_id
+        run: |
+          echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+    
   tag_release:
-    needs: quality_checks
+    needs: [quality_checks, package_code, get_commit_id]
     runs-on: ubuntu-latest
     outputs:
       spec_version: ${{ steps.output_spec_version.outputs.SPEC_VERSION }}
@@ -79,46 +92,25 @@ jobs:
         id: output_spec_version
         run: echo SPEC_VERSION=${{ env.SPEC_VERSION }} >> $GITHUB_OUTPUT
 
-      - name: Output Change Set Version
-        id: output_change_set_version
-        shell: bash
-        run: |
-          TIMESTAMP=$(date +%s)
-          VERSION=$(echo ${{ env.SPEC_VERSION }} | tr . -)
-          echo CHANGE_SET_VERSION=$VERSION-$TIMESTAMP >> $GITHUB_OUTPUT
-
-  release_ci_resources_dev:
-    needs: tag_release
-    uses: ./.github/workflows/cloudformation.yml
+  deploy_dev_stacks:
+    needs: [get_commit_id, package_code, tag_release]
+    uses: ./.github/workflows/release_all_stacks.yml
     with:
-      target_environment: dev-ci
+      target_environment: dev
       version: ${{ needs.tag_release.outputs.spec_version }}
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: ci-resources
-      template: ./cloudformation/ci_resources.yml
-      capabilities: CAPABILITY_IAM
       execute_change_set: true
+      lambda_stack_suffix: ""
+      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      version_number: ${{needs.tag_release.outputs.spec_version}}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
     secrets:
+      cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
-  
-  release_account_resources_dev:
-    needs: [tag_release, release_ci_resources_dev]
-    uses: ./.github/workflows/cloudformation.yml
-    with:
-      target_environment: dev-account
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: account-resources
-      template: ./cloudformation/account_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
-    secrets:
-      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      SPLUNK_HEC_TOKEN: ${{ secrets.DEV_SPLUNK_HEC_TOKEN }}
 
   create_release_notes_post_dev:
-    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
+    needs: [tag_release, deploy_dev_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
     with:
       VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
@@ -131,69 +123,43 @@ jobs:
       DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
       INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
-          
-  release_ci_resources_ref:
-    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
-    uses: ./.github/workflows/cloudformation.yml
-    with:
-      target_environment: ref-ci
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: ci-resources
-      template: ./cloudformation/ci_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
-    secrets:
-      cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
-  
-  release_account_resources_ref:
-    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
-    uses: ./.github/workflows/cloudformation.yml
-    with:
-      target_environment: ref-account
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: account-resources
-      template: ./cloudformation/account_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
-    secrets:
-      cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
-  
-  release_ci_resources_qa:
-    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
-    uses: ./.github/workflows/cloudformation.yml
-    with:
-      target_environment: qa-ci
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: ci-resources
-      template: ./cloudformation/ci_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
-    secrets:
-      cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
 
-  release_account_resources_qa:
-    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
-    uses: ./.github/workflows/cloudformation.yml
+  deploy_ref_stacks:
+    needs: [get_commit_id, package_code, tag_release, deploy_dev_stacks]
+    uses: ./.github/workflows/release_all_stacks.yml
     with:
-      target_environment: qa-account
+      target_environment: ref
       version: ${{ needs.tag_release.outputs.spec_version }}
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: account-resources
-      template: ./cloudformation/account_resources.yml
-      capabilities: CAPABILITY_IAM
       execute_change_set: true
+      lambda_stack_suffix: ""
+      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      version_number: ${{needs.tag_release.outputs.spec_version}}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
     secrets:
-      cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+      SPLUNK_HEC_TOKEN: ${{ secrets.REF_SPLUNK_HEC_TOKEN }}
 
+  deploy_qa_stacks:
+    needs: [get_commit_id, package_code, tag_release, deploy_dev_stacks]
+    uses: ./.github/workflows/release_all_stacks.yml
+    with:
+      target_environment: qa
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
+      execute_change_set: true
+      lambda_stack_suffix: ""
+      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      version_number: ${{needs.tag_release.outputs.spec_version}}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+    secrets:
+      cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+      SPLUNK_HEC_TOKEN: ${{ secrets.REF_SPLUNK_HEC_TOKEN }}
+      
   create_release_notes_pre_int:
-    needs: [tag_release, release_ci_resources_qa, release_account_resources_qa]
+    needs: [tag_release, deploy_qa_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
     with:
       VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
@@ -207,39 +173,26 @@ jobs:
       DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
       INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
-    
-  release_ci_resources_int:
-    needs: [create_release_notes_pre_int, tag_release, release_ci_resources_qa, release_account_resources_qa]
-    uses: ./.github/workflows/cloudformation.yml
-    with:
-      target_environment: int-ci
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: ci-resources
-      template: ./cloudformation/ci_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
-    secrets:
-      cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
-  
-  release_account_resources_int:
-    needs: [create_release_notes_pre_int, tag_release, release_ci_resources_qa, release_account_resources_qa]
-    uses: ./.github/workflows/cloudformation.yml
-    with:
-      target_environment: int-account
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: account-resources
-      template: ./cloudformation/account_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
-    secrets:
-      cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
 
+  deploy_int_stacks:
+    needs: [get_commit_id, package_code, tag_release, create_release_notes_pre_int]
+    uses: ./.github/workflows/release_all_stacks.yml
+    with:
+      target_environment: int
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
+      execute_change_set: true
+      lambda_stack_suffix: ""
+      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      version_number: ${{needs.tag_release.outputs.spec_version}}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+    secrets:
+      cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+      SPLUNK_HEC_TOKEN: ${{ secrets.REF_SPLUNK_HEC_TOKEN }}
+      
   create_release_notes_post_int:
-    needs: [tag_release, release_ci_resources_int, release_account_resources_int]
+    needs: [tag_release, deploy_int_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
     with:
       VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
@@ -253,38 +206,25 @@ jobs:
       INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
 
-  release_ci_resources_prod:
-    needs: [tag_release, release_ci_resources_int, release_account_resources_int]
-    uses: ./.github/workflows/cloudformation.yml
+  deploy_prod_stacks:
+    needs: [get_commit_id, package_code, tag_release, deploy_int_stacks]
+    uses: ./.github/workflows/release_all_stacks.yml
     with:
-      target_environment: prod-ci
+      target_environment: prod
       version: ${{ needs.tag_release.outputs.spec_version }}
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: ci-resources
-      template: ./cloudformation/ci_resources.yml
-      capabilities: CAPABILITY_IAM
       execute_change_set: true
+      lambda_stack_suffix: ""
+      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      version_number: ${{needs.tag_release.outputs.spec_version}}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
     secrets:
-      cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
-
-  release_account_resources_prod:
-    needs: [tag_release, release_ci_resources_int, release_account_resources_int]
-    uses: ./.github/workflows/cloudformation.yml
-    with:
-      target_environment: prod-account
-      version: ${{ needs.tag_release.outputs.spec_version }}
-      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
-      stack_name: account-resources
-      template: ./cloudformation/account_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: true
-    secrets:
-      cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
-      cf_create_changeset_role:  ${{ secrets.PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+      SPLUNK_HEC_TOKEN: ${{ secrets.REF_SPLUNK_HEC_TOKEN }}
 
   create_release_notes_post_prod:
-    needs: [tag_release, release_ci_resources_prod, release_account_resources_prod]
+    needs: [tag_release, deploy_prod_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
     with:
       VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
@@ -297,4 +237,3 @@ jobs:
       DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
       INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
-   
