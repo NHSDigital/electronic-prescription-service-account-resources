@@ -3,9 +3,9 @@
   "parameters": {
     "ci-resources": {
       "DeploySubjectClaimFilters": [
-        "repo:NHSDigital/prescriptionsforpatients:*",
-        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
+        "repo:NHSDigital/prescriptionsforpatients:prod",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:prod",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:prod"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
