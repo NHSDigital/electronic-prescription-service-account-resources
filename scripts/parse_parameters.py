@@ -42,7 +42,8 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
         elif isinstance(raw_value, str):
             value = replace_secrets(raw_value, parsed_secrets)
             value = replace_dynamic_variables(value, parsed_dynamic_vars)
-            output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{value}\'" '
+            # use unicode en space instead of space
+            output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{value}\'"{chr(0x2002)}'
         elif isinstance(raw_value, list):
             values = []
             for list_value in raw_value:
@@ -50,7 +51,8 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
                 value = replace_dynamic_variables(value, parsed_dynamic_vars)
                 values.append(value)
             concatenated_values = ','.join(values)
-            output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{concatenated_values}\'" '
+            # use unicode en space instead of space
+            output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{concatenated_values}\'"{chr(0x2002)}'
         else:
             return EMPTY
 
