@@ -118,7 +118,7 @@ jobs:
         --change-set-type UPDATE \
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
-        --parameters "${{ steps.parse_parameters.outputs.PARAMETERS }}" \
+        --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
         --tags Key="version",Value="${{ inputs.version }}" \
         --role-arn="$ROLE"
 

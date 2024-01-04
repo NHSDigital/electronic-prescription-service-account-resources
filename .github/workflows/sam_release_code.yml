@@ -66,6 +66,8 @@ jobs:
         shell: bash
         run: |
           PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }} )
+          # use unicode en space instead of space at end of line so it can be passed around correctly
+          PARAMETERS="${PARAMETERS// /\u2002}"
           echo "PARAMETERS=${PARAMETERS}" >> $GITHUB_OUTPUT
 
       - shell: bash
