@@ -98,6 +98,25 @@ Resources:
     Properties:
       AliasName: !Sub "alias/${AWS::StackName}-CloudWatchKMSAlias"
       TargetKeyId: !Ref CloudWatchKMSKey
+  # Lambda Insights cloudwatch log groups with relevant policy
+  LambdaInsightsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda-insights
+      RetentionInDays: !Ref LogRetentionDays
+      KmsKeyId: !GetAtt CloudWatchKMSKey.Arn
+  LambdaInsightsLogGroupPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: "allow-lambda-insights-log-group=policy"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !Sub "arn:aws:logs:*:*:log-group:/aws/lambda-insights:*"
   # Kinesis Splunk Firehose stuff
 
   # Subscription filter roles and policies
