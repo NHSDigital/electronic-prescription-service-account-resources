@@ -81,5 +81,4 @@ jobs:
               jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
           export PARAMETERS=${{ steps.parse_parameters.outputs.PARAMETERS }}
           export VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}
-          export LOG_RETENTION_DAYS=${{inputs.LOG_RETENTION_DAYS}}
           make sam-deploy-package

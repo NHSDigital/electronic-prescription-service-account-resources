@@ -24,8 +24,8 @@
     "lambda-resources": {
       "SplunkHECToken": "SECRET.splunk_hec_token",
       "SplunkHECEndpoint": "https://firehose.inputs.splunk.aws.digital.nhs.uk/services/collector/event",
-      "LogRetentionDays": "30",
-      "Env": "dev",
+      "LogRetentionDays": 30,
+      "Env": "ref",
       "CommitId": "VAR.commit_id",
       "VersionNumber": "VAR.VersionNumber"
     }
