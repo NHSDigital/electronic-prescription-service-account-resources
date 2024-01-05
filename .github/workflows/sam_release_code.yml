@@ -44,6 +44,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -80,5 +82,6 @@ jobs:
           export cloud_formation_execution_role=$(aws cloudformation list-exports --output json | \
               jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
           export PARAMETERS=${{ steps.parse_parameters.outputs.PARAMETERS }}
+          echo $PARAMETERS
           export VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}
           make sam-deploy-package
