@@ -81,7 +81,7 @@ jobs:
           export stack_name=${{ inputs.STACK_NAME }}
           export cloud_formation_execution_role=$(aws cloudformation list-exports --output json | \
               jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
-          export PARAMETERS=${{ steps.parse_parameters.outputs.PARAMETERS }}
+          export PARAMETERS='${{ steps.parse_parameters.outputs.PARAMETERS }}'
           echo "test------"
           echo $PARAMETERS
           echo "test------"
