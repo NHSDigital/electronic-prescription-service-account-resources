@@ -31,8 +31,8 @@ Resources:
       ClientIdList:
         - sts.amazonaws.com
 
-# see https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
-# for details about subject claim filters that are used for each role
+  # see https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
+  # for details about subject claim filters that are used for each role
 
   CloudFormationDeployRole:
     Type: AWS::IAM::Role
@@ -48,42 +48,60 @@ Resources:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref DeploySubjectClaimFilters
-      Policies:
-        - PolicyName: CreateCloudFormationStack
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "cloudformation:CreateStack"
-                  - "cloudformation:UpdateStack"
-                  - "cloudformation:DeleteStack"
-                  - "cloudformation:DescribeStacks"
-                  - "cloudformation:ListExports"
-                  - "cloudformation:CreateChangeSet"
-                  - "cloudformation:DescribeChangeSet"
-                  - "cloudformation:ExecuteChangeSet"
-                  - "cloudformation:DescribeStackEvents"
-                  - "cloudformation:GetTemplateSummary"
-                  - "cloudformation:ListStacks"
-                  - "cloudformation:DeleteChangeSet"
-                Resource: "*"
-        - PolicyName: AllowOpenIDProviderPermissions
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "iam:GetOpenIDConnectProvider"
-                Resource: "*"
-        - PolicyName: AssumeExecutionRole
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "iam:PassRole"
-                Resource: !GetAtt CloudFormationExecutionRole.Arn
+
+  CreateCloudFormationStackPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationDeployRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "cloudformation:CreateStack"
+              - "cloudformation:UpdateStack"
+              - "cloudformation:DeleteStack"
+              - "cloudformation:DescribeStacks"
+              - "cloudformation:ListExports"
+              - "cloudformation:CreateChangeSet"
+              - "cloudformation:DescribeChangeSet"
+              - "cloudformation:ExecuteChangeSet"
+              - "cloudformation:DescribeStackEvents"
+              - "cloudformation:GetTemplateSummary"
+              - "cloudformation:ListStacks"
+              - "cloudformation:DeleteChangeSet"
+            Resource: "*"
+
+  AssumeExecutionRolePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationDeployRole
+        - Ref: CloudFormationPrepareChangesetRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "iam:PassRole"
+            Resource: !GetAtt CloudFormationExecutionRole.Arn
+
+  AllowOpenIDProviderPermissionsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationDeployRole
+        - Ref: CloudFormationCheckVersionRole
+        - Ref: ReleaseNotesExecuteLambdaRole
+        - Ref: CloudFormationPrepareChangesetRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "iam:GetOpenIDConnectProvider"
+            Resource: "*"
 
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
@@ -96,113 +114,116 @@ Resources:
               Service: cloudformation.amazonaws.com
             Action:
               - "sts:AssumeRole"
-      # see https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html for permissions
-      Policies:
-        - PolicyName: GrantCloudFormationDeployAccess
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "cloudformation:CreateChangeSet"
-                  - "iam:AddClientIDToOpenIDConnectProvider"
-                  - "iam:Attach*"
-                  - "iam:Create*"
-                  - "iam:Delete*"
-                  - "iam:Detach*"
-                  - "iam:Get*"
-                  - "iam:List*"
-                  - "iam:Put*"
-                  - "iam:Remove*"
-                  - "iam:Tag*"
-                  - "iam:Untag*"
-                  - "iam:Update*"
-                  - "iam:PassRole"
-                  - "logs:AssociateKmsKey"
-                  - "logs:DisassociateKmsKey"
-                  - "logs:CreateLogGroup"
-                  - "logs:DeleteLogGroup"
-                  - "logs:TagLogGroup"
-                  - "logs:CreateLogStream"
-                  - "logs:DeleteLogStream"
-                  - "logs:PutRetentionPolicy"
-                  - "logs:DeleteRetentionPolicy"
-                  - "logs:PutSubscriptionFilter"
-                  - "logs:DescribeSubscriptionFilters"
-                  - "logs:DeleteSubscriptionFilter"
-                  - "logs:DescribeLogGroups"
-                  - "logs:CreateLogDelivery"
-                  - "logs:DeleteLogDelivery"
-                  - "logs:ListLogDeliveries"
-                  - "logs:GetLogDelivery"
-                  - "logs:UpdateLogDelivery"
-                  - "logs:ListTagsLogGroup"
-                  - "logs:UntagLogGroup"
-                  - "lambda:Add*"
-                  - "lambda:CreateFunction"
-                  - "lambda:Delete*"
-                  - "lambda:Get*"
-                  - "lambda:List*"
-                  - "lambda:Publish*"
-                  - "lambda:Put*"
-                  - "lambda:Remove*"
-                  - "lambda:Tag*"
-                  - "lambda:Untag*"
-                  - "lambda:Update*"
-                  - "kms:Create*"
-                  - "kms:Delete*"
-                  - "kms:Describe*"
-                  - "kms:EnableKeyRotation"
-                  - "kms:Get*"
-                  - "kms:List*"
-                  - "kms:Put*"
-                  - "kms:ScheduleKeyDeletion*"
-                  - "kms:Tag*"
-                  - "kms:Untag*"
-                  - "kms:Update*"
-                  - "apigateway:DELETE"
-                  - "apigateway:GET"
-                  - "apigateway:POST"
-                  - "apigateway:PATCH"
-                  - "apigateway:PUT"
-                  - "apigateway:AddCertificateToDomain"
-                  - "apigateway:RemoveCertificateFromDomain"
-                  - "apigateway:TagResource"
-                  - "s3:CreateBucket"
-                  - "s3:DeleteBucket"
-                  - "s3:SetBucketEncryption"
-                  - "s3:PutEncryptionConfiguration"
-                  - "s3:PutBucketVersioning"
-                  - "s3:GetBucketTagging"
-                  - "s3:PutBucketTagging"
-                  - "firehose:CreateDeliveryStream"
-                  - "firehose:DescribeDeliveryStream"
-                  - "firehose:DeleteDeliveryStream"
-                  - "firehose:UpdateDestination"
-                  - "firehose:ListTagsForDeliveryStream"
-                  - "firehose:TagDeliveryStream"
-                  - "firehose:UntagDeliveryStream"
-                  - "acm:AddTagsToCertificate"
-                  - "acm:DeleteCertificate"
-                  - "acm:DescribeCertificate"
-                  - "acm:GetCertificate"
-                  - "acm:ListCertificates"
-                  - "acm:ListTagsForCertificate"
-                  - "acm:RemoveTagsFromCertificate"
-                  - "acm:RenewCertificate"
-                  - "acm:RequestCertificate"
-                  - "route53:ChangeResourceRecordSets"
-                  - "route53:GetHostedZone"
-                  - "route53:ListResourceRecordSets"
-                  - "route53:GetChange"
-                  - "secretsmanager:Create*"
-                  - "secretsmanager:Update*"
-                  - "secretsmanager:Delete*"
-                  - "secretsmanager:Describe*"
-                  - "secretsmanager:List*"
-                  - "secretsmanager:Tag*"
-                  - "secretsmanager:Untag*"
-                Resource: "*"
+
+  GrantCloudFormationDeployAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - "cloudformation:CreateChangeSet"
+              - "iam:AddClientIDToOpenIDConnectProvider"
+              - "iam:Attach*"
+              - "iam:Create*"
+              - "iam:Delete*"
+              - "iam:Detach*"
+              - "iam:Get*"
+              - "iam:List*"
+              - "iam:Put*"
+              - "iam:Remove*"
+              - "iam:Tag*"
+              - "iam:Untag*"
+              - "iam:Update*"
+              - "iam:PassRole"
+              - "logs:AssociateKmsKey"
+              - "logs:DisassociateKmsKey"
+              - "logs:CreateLogGroup"
+              - "logs:DeleteLogGroup"
+              - "logs:TagLogGroup"
+              - "logs:CreateLogStream"
+              - "logs:DeleteLogStream"
+              - "logs:PutRetentionPolicy"
+              - "logs:DeleteRetentionPolicy"
+              - "logs:PutSubscriptionFilter"
+              - "logs:DescribeSubscriptionFilters"
+              - "logs:DeleteSubscriptionFilter"
+              - "logs:DescribeLogGroups"
+              - "logs:CreateLogDelivery"
+              - "logs:DeleteLogDelivery"
+              - "logs:ListLogDeliveries"
+              - "logs:GetLogDelivery"
+              - "logs:UpdateLogDelivery"
+              - "logs:ListTagsLogGroup"
+              - "logs:UntagLogGroup"
+              - "lambda:Add*"
+              - "lambda:CreateFunction"
+              - "lambda:Delete*"
+              - "lambda:Get*"
+              - "lambda:List*"
+              - "lambda:Publish*"
+              - "lambda:Put*"
+              - "lambda:Remove*"
+              - "lambda:Tag*"
+              - "lambda:Untag*"
+              - "lambda:Update*"
+              - "kms:Create*"
+              - "kms:Delete*"
+              - "kms:Describe*"
+              - "kms:EnableKeyRotation"
+              - "kms:Get*"
+              - "kms:List*"
+              - "kms:Put*"
+              - "kms:ScheduleKeyDeletion*"
+              - "kms:Tag*"
+              - "kms:Untag*"
+              - "kms:Update*"
+              - "apigateway:DELETE"
+              - "apigateway:GET"
+              - "apigateway:POST"
+              - "apigateway:PATCH"
+              - "apigateway:PUT"
+              - "apigateway:AddCertificateToDomain"
+              - "apigateway:RemoveCertificateFromDomain"
+              - "apigateway:TagResource"
+              - "s3:CreateBucket"
+              - "s3:DeleteBucket"
+              - "s3:SetBucketEncryption"
+              - "s3:PutEncryptionConfiguration"
+              - "s3:PutBucketVersioning"
+              - "s3:GetBucketTagging"
+              - "s3:PutBucketTagging"
+              - "firehose:CreateDeliveryStream"
+              - "firehose:DescribeDeliveryStream"
+              - "firehose:DeleteDeliveryStream"
+              - "firehose:UpdateDestination"
+              - "firehose:ListTagsForDeliveryStream"
+              - "firehose:TagDeliveryStream"
+              - "firehose:UntagDeliveryStream"
+              - "acm:AddTagsToCertificate"
+              - "acm:DeleteCertificate"
+              - "acm:DescribeCertificate"
+              - "acm:GetCertificate"
+              - "acm:ListCertificates"
+              - "acm:ListTagsForCertificate"
+              - "acm:RemoveTagsFromCertificate"
+              - "acm:RenewCertificate"
+              - "acm:RequestCertificate"
+              - "route53:ChangeResourceRecordSets"
+              - "route53:GetHostedZone"
+              - "route53:ListResourceRecordSets"
+              - "route53:GetChange"
+              - "secretsmanager:Create*"
+              - "secretsmanager:Update*"
+              - "secretsmanager:Delete*"
+              - "secretsmanager:Describe*"
+              - "secretsmanager:List*"
+              - "secretsmanager:Tag*"
+              - "secretsmanager:Untag*"
+            Resource: "*"
 
   CloudFormationCheckVersionRole:
     Type: AWS::IAM::Role
@@ -218,25 +239,21 @@ Resources:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref CheckVersionSubjectClaimFilters
-      Policies:
-        - PolicyName: DescribeCloudFormationStack
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "cloudformation:DescribeStacks"
-                  - "cloudformation:ListExports"
-                  - "cloudformation:ListStacks"
-                Resource: "*"
-        - PolicyName: AllowOpenIDProviderPermissions
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "iam:GetOpenIDConnectProvider"
-                Resource: "*"
+
+  DescribeCloudFormationStackPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationCheckVersionRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "cloudformation:DescribeStacks"
+              - "cloudformation:ListExports"
+              - "cloudformation:ListStacks"
+            Resource: "*"
 
   ReleaseNotesExecuteLambdaRole:
     Type: AWS::IAM::Role
@@ -252,15 +269,6 @@ Resources:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref ReleaseNotesExecuteLambdaClaimFilters
-      Policies:
-        - PolicyName: AllowOpenIDProviderPermissions
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "iam:GetOpenIDConnectProvider"
-                Resource: "*"
 
   CloudFormationPrepareChangesetRole:
     Type: AWS::IAM::Role
@@ -276,38 +284,26 @@ Resources:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref PrepareChangesetClaimFilters
-      Policies:
-        - PolicyName: CreateCloudFormationStackChangeSet
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "cloudformation:DescribeStacks"
-                  - "cloudformation:ListExports"
-                  - "cloudformation:CreateChangeSet"
-                  - "cloudformation:DescribeChangeSet"
-                  - "cloudformation:DescribeStackEvents"
-                  - "cloudformation:GetTemplateSummary"
-                  - "cloudformation:ListStacks"
-                  - "cloudformation:DeleteChangeSet"
-                Resource: "*"
-        - PolicyName: AllowOpenIDProviderPermissions
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "iam:GetOpenIDConnectProvider"
-                Resource: "*"
-        - PolicyName: AssumeExecutionRole
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "iam:PassRole"
-                Resource: !GetAtt CloudFormationExecutionRole.Arn
+
+  CreateCloudFormationStackChangeSetPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationPrepareChangesetRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "cloudformation:DescribeStacks"
+              - "cloudformation:ListExports"
+              - "cloudformation:CreateChangeSet"
+              - "cloudformation:DescribeChangeSet"
+              - "cloudformation:DescribeStackEvents"
+              - "cloudformation:GetTemplateSummary"
+              - "cloudformation:ListStacks"
+              - "cloudformation:DeleteChangeSet"
+            Resource: "*"
 
 Outputs:
   CloudFormationDeployRole:
@@ -335,32 +331,47 @@ Outputs:
     Description: ARN of the IAM Role(CloudFormationCheckVersionRole)
     Value: !GetAtt CloudFormationCheckVersionRole.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersionRole"]]
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersionRole"]]
   CloudFormationCheckVersionRoleName:
     Description: Name of the IAM Role(CloudFormationCheckVersionRole)
     Value: !Ref CloudFormationCheckVersionRole
     Export:
       Name:
-        !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersionRoleName"]]
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "CloudFormationCheckVersionRoleName"],
+        ]
   ReleaseNotesExecuteLambdaRole:
     Description: ARN of the IAM Role(ReleaseNotesExecuteLambdaRole)
     Value: !GetAtt ReleaseNotesExecuteLambdaRole.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRole"]]
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRole"]]
   ReleaseNotesExecuteLambdaName:
     Description: Name of the IAM Role(ReleaseNotesExecuteLambda)
     Value: !Ref ReleaseNotesExecuteLambdaRole
     Export:
       Name:
-        !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRoleName"]]
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRoleName"],
+        ]
   CloudFormationPrepareChangesetRole:
     Description: ARN of the IAM Role(CloudFormationPrepareChangesetRole)
     Value: !GetAtt CloudFormationPrepareChangesetRole.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CloudFormationPrepareChangesetRole"]]
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "CloudFormationPrepareChangesetRole"],
+        ]
   CloudFormationPrepareChangesetName:
     Description: Name of the IAM Role(CloudFormationPrepareChangesetRole)
     Value: !Ref CloudFormationPrepareChangesetRole
     Export:
       Name:
-        !Join [":", [!Ref "AWS::StackName", "CloudFormationPrepareChangesetRoleName"]]
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "CloudFormationPrepareChangesetRoleName"],
+        ]

@@ -11,28 +11,32 @@ Resources:
               Service:
                 - apigateway.amazonaws.com
             Action: "sts:AssumeRole"
-      Policies:
-        - PolicyName: "AllowApiGwLogging"
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "logs:CreateLogGroup"
-                  - "logs:CreateLogStream"
-                  - "logs:DescribeLogGroups"
-                  - "logs:DescribeLogStreams"
-                  - "logs:PutLogEvents"
-                  - "logs:GetLogEvents"
-                  - "logs:FilterLogEvents"
-                  - "logs:CreateLogDelivery"
-                  - "logs:PutResourcePolicy"
-                  - "logs:UpdateLogDelivery"
-                  - "logs:DeleteLogDelivery"
-                  - "logs:DescribeResourcePolicies"
-                  - "logs:GetLogDelivery"
-                  - "logs:ListLogDeliveries"
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+
+  AllowApiGwLoggingPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      Roles:
+        - Ref: "ApiGwCloudWatchRole"
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - "logs:CreateLogGroup"
+              - "logs:CreateLogStream"
+              - "logs:DescribeLogGroups"
+              - "logs:DescribeLogStreams"
+              - "logs:PutLogEvents"
+              - "logs:GetLogEvents"
+              - "logs:FilterLogEvents"
+              - "logs:CreateLogDelivery"
+              - "logs:PutResourcePolicy"
+              - "logs:UpdateLogDelivery"
+              - "logs:DeleteLogDelivery"
+              - "logs:DescribeResourcePolicies"
+              - "logs:GetLogDelivery"
+              - "logs:ListLogDeliveries"
+            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
 
   Account:
     Type: "AWS::ApiGateway::Account"
