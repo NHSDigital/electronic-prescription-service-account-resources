@@ -48,7 +48,7 @@ jobs:
       id-token: write
       contents: read
     outputs:
-      parameters_file_name: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
+      parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
