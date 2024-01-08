@@ -54,9 +54,10 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
         else:
             return EMPTY
 
-    with open(f"{env}-{stack}-params.json", "w") as f:
+    file_name = f"{env}-{stack}-params.json"
+    with open(file_name, "w") as f:
         json.dump(output, f)
-    return
+    return file_name
 
 
 def replace_secrets(value, secrets):
@@ -90,4 +91,4 @@ if __name__ == "__main__":
     parameter_secrets = os.environ.get("parameter_secrets", "{}")
     dynamic_vars = os.environ.get("dynamic_vars", "{}")
 
-    parse_parameters(env, stack, parameter_secrets, dynamic_vars)
+    print(parse_parameters(env, stack, parameter_secrets, dynamic_vars))

@@ -46,6 +46,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      parameters_file_name: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
     steps:
     - name: checkout code
       uses: actions/checkout@v4
@@ -105,8 +107,9 @@ jobs:
       id: parse_parameters
       shell: bash
       run: |
-        python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }}
-        cat ${{ inputs.env }}-${{ inputs.stack_name }}-params.json
+        PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }})
+        cat $PARAMETERS_FILE_NAME
+        echo "PARAMETERS_FILE_NAME=${PARAMETERS_FILE_NAME}" >> $GITHUB_OUTPUT
 
     - name: Create Change Set with new tags
       shell: bash
@@ -119,7 +122,7 @@ jobs:
         --change-set-type UPDATE \
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
-        --parameters file://${{ inputs.env }}-${{ inputs.stack_name }}-params.json \
+        --parameters file://${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }} \
         --cli-binary-format raw-in-base64-out \
         --tags Key="version",Value="${{ inputs.version }}" \
         --role-arn="$ROLE
@@ -139,7 +142,7 @@ jobs:
         --change-set-type UPDATE \
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
-        --parameters file://${{ inputs.env }}-${{ inputs.stack_name }}-params.json \
+        --parameters file://${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }} \
         --cli-binary-format raw-in-base64-out \
         --tags Key="version",Value="${current_deployed_tag}" \
         --role-arn="$ROLE"
