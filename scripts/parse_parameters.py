@@ -71,7 +71,7 @@ def parse_parameters(env, stack, secrets, dynamic_vars, output_format):
             json.dump(output, f)
         return file_name
     else:
-        return output
+        return output.rstrip()
 
 
 def replace_secrets(value, secrets):

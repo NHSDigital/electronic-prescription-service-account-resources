@@ -61,7 +61,7 @@ sam-validate:
 sam-build: sam-validate
 	sam build --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
 
-sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-VERSION_NUMBER guard-PARAMTERS
+sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-VERSION_NUMBER guard-PARAMETERS
 	sam deploy \
 		--template-file $$template_file \
 		--stack-name $$stack_name \
@@ -75,4 +75,4 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 		--no-confirm-changeset \
 		--force-upload \
 		--tags "version=$$VERSION_NUMBER" \
-		--parameter-overrides $$PARAMTERS
+		--parameter-overrides $$PARAMETERS
