@@ -25,7 +25,7 @@
       "SplunkHECToken": "SECRET.splunk_hec_token",
       "SplunkHECEndpoint": "https://firehose.inputs.splunk.aws.digital.nhs.uk/services/collector/event",
       "LogRetentionDays": "30",
-      "Env": "dev",
+      "Env": "ref",
       "CommitId": "VAR.commit_id",
       "VersionNumber": "VAR.VersionNumber"
     }
