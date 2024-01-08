@@ -42,6 +42,7 @@ jobs:
   list_ci_resources_cf_changes:
     uses: ./.github/workflows/cloudformation.yml
     with:
+      env: ${{ inputs.target_environment }}
       target_environment: ${{ inputs.target_environment }}-ci
       version: ${{ inputs.version }}
       change_set_version: ${{ inputs.change_set_version }}
@@ -57,6 +58,7 @@ jobs:
   list_account_resources_cf_changes:
     uses: ./.github/workflows/cloudformation.yml
     with:
+      env: ${{ inputs.target_environment }}
       target_environment: ${{inputs.target_environment}}-account
       version: ${{ inputs.version }}
       change_set_version: ${{ inputs.change_set_version }}
@@ -72,6 +74,7 @@ jobs:
   release_lambda_resources:
     uses: ./.github/workflows/sam_release_code.yml
     with:
+      env: ${{ inputs.target_environment }}
       STACK_NAME: lambda-resources${{ inputs.lambda_stack_suffix }}
       ARTIFACT_BUCKET_PREFIX: ${{ inputs.artifact_buckt_prefix }}
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-lambda
