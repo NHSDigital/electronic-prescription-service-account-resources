@@ -125,7 +125,7 @@ jobs:
         --parameters file://${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }} \
         --cli-binary-format raw-in-base64-out \
         --tags Key="version",Value="${{ inputs.version }}" \
-        --role-arn="$ROLE
+        --role-arn="$ROLE"
     - name: Create Change Set with existing tags
       shell: bash
       run: |
