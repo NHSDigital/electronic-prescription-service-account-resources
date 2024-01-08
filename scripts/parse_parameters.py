@@ -23,7 +23,7 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
     with open(f"cloudformation/env/{env}.json") as f:
         d = json.load(f)
 
-    output = EMPTY
+    output = []
 
     parsed_secrets = json.loads(secrets)
     parsed_dynamic_vars = json.loads(dynamic_vars)
@@ -42,7 +42,7 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
         elif isinstance(raw_value, str):
             value = replace_secrets(raw_value, parsed_secrets)
             value = replace_dynamic_variables(value, parsed_dynamic_vars)
-            output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{value}\'" '
+            output.append({"ParameterKey": parameter_key, "ParameterValue": value})
         elif isinstance(raw_value, list):
             values = []
             for list_value in raw_value:
@@ -50,11 +50,13 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
                 value = replace_dynamic_variables(value, parsed_dynamic_vars)
                 values.append(value)
             concatenated_values = ','.join(values)
-            output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{concatenated_values}\'" '
+            output.append({"ParameterKey": parameter_key, "ParameterValue": concatenated_values})
         else:
             return EMPTY
 
-    return output.rstrip()
+    with open(f"{env}-{stack}-params.json", "w") as f:
+        json.dump(output, f)
+    return
 
 
 def replace_secrets(value, secrets):
@@ -85,7 +87,7 @@ if __name__ == "__main__":
     regex = re.compile(r"-pr-[\d]+", re.IGNORECASE)
     stack = regex.sub("", args.stack)
 
-    parameter_secrets = os.environ["parameter_secrets"]
-    dynamic_vars = os.environ["dynamic_vars"]
+    parameter_secrets = os.environ.get("parameter_secrets", "{}")
+    dynamic_vars = os.environ.get("dynamic_vars", "{}")
 
-    print(parse_parameters(env, stack, parameter_secrets, dynamic_vars))
+    parse_parameters(env, stack, parameter_secrets, dynamic_vars)
