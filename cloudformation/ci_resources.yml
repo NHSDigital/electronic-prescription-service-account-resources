@@ -114,7 +114,7 @@ Resources:
               Service: cloudformation.amazonaws.com
             Action:
               - "sts:AssumeRole"
-
+  # https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html
   GrantCloudFormationDeployAccessPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -189,6 +189,7 @@ Resources:
               - "apigateway:AddCertificateToDomain"
               - "apigateway:RemoveCertificateFromDomain"
               - "apigateway:TagResource"
+              - "apigateway:UpdateRestApiPolicy"
               - "s3:CreateBucket"
               - "s3:DeleteBucket"
               - "s3:SetBucketEncryption"
