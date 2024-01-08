@@ -75,4 +75,4 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 		--no-confirm-changeset \
 		--force-upload \
 		--tags "version=$$VERSION_NUMBER" \
-		--parameter-overrides file://$$PARAMTERS_FILE_NAME
+		--parameter-overrides $$PARAMTERS
