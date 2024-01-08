@@ -106,6 +106,7 @@ jobs:
       shell: bash
       run: |
         python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }}
+        cat ${{ inputs.env }}-${{ inputs.stack_name }}-params.json
 
     - name: Create Change Set with new tags
       shell: bash
@@ -119,10 +120,9 @@ jobs:
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
         --parameters file://${{ inputs.env }}-${{ inputs.stack_name }}-params.json \
-        --cli-binary-format raw-in-base64-out
+        --cli-binary-format raw-in-base64-out \
         --tags Key="version",Value="${{ inputs.version }}" \
-        --role-arn="$ROLE"
-
+        --role-arn="$ROLE
     - name: Create Change Set with existing tags
       shell: bash
       run: |
