@@ -42,6 +42,7 @@ Resources:
     Type: "AWS::ApiGateway::Account"
     Properties:
       CloudWatchRoleArn: !GetAtt ApiGwCloudWatchRole.Arn
+    DependsOn: AllowApiGwLoggingPolicy
 
   CloudwatchResourcePolicy:
     Type: "AWS::Logs::ResourcePolicy"

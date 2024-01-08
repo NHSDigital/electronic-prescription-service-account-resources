@@ -113,7 +113,6 @@ Resources:
             Principal:
               Service: 
                 - cloudformation.amazonaws.com
-                - apigateway.amazonaws.com
             Action:
               - "sts:AssumeRole"
 
