@@ -67,12 +67,12 @@ jobs:
         env:
           parameter_secrets: ${{ secrets.parameter_secrets }}
           dynamic_vars: ${{ inputs.dynamic_vars }}
+          output_format: "raw"
         id: parse_parameters
         shell: bash
         run: |
-          PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }})
-          cat $PARAMETERS_FILE_NAME
-          echo "PARAMETERS_FILE_NAME=${PARAMETERS_FILE_NAME}" >> $GITHUB_OUTPUT
+          PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }} )
+          echo "PARAMETERS=${PARAMETERS}" >> $GITHUB_OUTPUT
 
       - shell: bash
         name: release code
@@ -85,6 +85,6 @@ jobs:
           export stack_name=${{ inputs.STACK_NAME }}
           export cloud_formation_execution_role=$(aws cloudformation list-exports --output json | \
               jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
-          export PARAMTERS=$(cat ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }})
+          export PARAMETERS='${{ steps.parse_parameters.outputs.PARAMETERS }}'
           export VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}
           make sam-deploy-package
