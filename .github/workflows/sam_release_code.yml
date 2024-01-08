@@ -9,6 +9,9 @@ on:
       ARTIFACT_BUCKET_PREFIX:
         required: true
         type: string
+      env:
+        required: true
+        type: string
       TARGET_ENVIRONMENT:
         required: true
         type: string
@@ -64,6 +67,7 @@ jobs:
         env:
           parameter_secrets: ${{ secrets.parameter_secrets }}
           dynamic_vars: ${{ inputs.dynamic_vars }}
+          output_format: "raw"
         id: parse_parameters
         shell: bash
         run: |
