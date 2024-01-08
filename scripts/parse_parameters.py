@@ -33,7 +33,7 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
         return EMPTY
 
     stack_parameters = parameters.get(stack)
-    if not stack_parameters:
+    if not stack_parameters and stack not in parameters:
         return EMPTY
 
     for parameter_key, raw_value in stack_parameters.items():
