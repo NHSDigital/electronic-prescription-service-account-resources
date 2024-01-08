@@ -106,7 +106,7 @@ Resources:
       RetentionInDays: !Ref LogRetentionDays
       KmsKeyId: !GetAtt CloudWatchKMSKey.Arn
   LambdaInsightsLogGroupPolicy:
-    Type: AWS::IAM::Policy
+    Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyName: "allow-lambda-insights-log-group-policy"
       PolicyDocument:
@@ -370,4 +370,10 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudWatchKMSKey"]]
+  LambdaInsightsLogGroupPolicy:
+    Description: "Lambda Insights Policy ARN"
+    Value: !GetAtt CloudWatchKMSKey.Arn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "LambdaInsightsLogGroupPolicy"]]
     
