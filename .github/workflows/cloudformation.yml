@@ -161,7 +161,7 @@ jobs:
       shell: bash
       run: |
         STATUS="CREATE_IN_PROGRESS"
-        while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
+        while [[ "$STATUS" == "CREATE_IN_PROGRESS" ]] 
         do
           echo "Getting change set..."
           CHANGE_SET=$(aws cloudformation describe-change-set \
@@ -310,12 +310,16 @@ jobs:
           --stack-name ${{ inputs.stack_name }} \
           --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
           STATUS="UPDATE_IN_PROGRESS"
-          while [ "$STATUS" == "UPDATE_IN_PROGRESS" ]
+          while [[ "$STATUS" == "UPDATE_IN_PROGRESS" ]] || [[ "$STATUS" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]] 
           do
             echo "Checking stack status..."
             STACKS=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }})
             STATUS=$(jq -r '.["Stacks"][0]["StackStatus"]' <<< "$STACKS")
             if [ "$STATUS" == "UPDATE_IN_PROGRESS" ]; then
+              echo "sleeping 5..."
+              sleep 5
+            fi
+            if [ "$STATUS" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]; then
               echo "sleeping 5..."
               sleep 5
             fi
