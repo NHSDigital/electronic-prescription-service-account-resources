@@ -161,6 +161,7 @@ Resources:
               - "logs:UpdateLogDelivery"
               - "logs:ListTagsLogGroup"
               - "logs:UntagLogGroup"
+              - "logs:ListTagsForResource"
               - "lambda:Add*"
               - "lambda:CreateFunction"
               - "lambda:Delete*"
