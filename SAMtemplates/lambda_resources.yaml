@@ -108,7 +108,6 @@ Resources:
   LambdaInsightsLogGroupPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: "allow-lambda-insights-log-group-policy"
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
