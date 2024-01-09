@@ -104,6 +104,7 @@ jobs:
       artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights
     secrets:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
@@ -136,6 +137,7 @@ jobs:
       artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights
     secrets:
       cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
@@ -153,6 +155,7 @@ jobs:
       artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights
     secrets:
       cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
@@ -186,6 +189,7 @@ jobs:
       artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights
     secrets:
       cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
@@ -218,6 +222,7 @@ jobs:
       artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights
     secrets:
       cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
