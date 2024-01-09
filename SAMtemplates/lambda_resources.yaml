@@ -49,6 +49,9 @@ Parameters:
     Type: String
     Description: The environment the lambda is deployed to
     Default: "dev"
+  LambdaInsightsLogGroupName:
+    Type: String
+    Description: The log level to set in the lambda
 
 Resources:
   # common KMS key for cloudwatch log groups
@@ -99,10 +102,10 @@ Resources:
       AliasName: !Sub "alias/${AWS::StackName}-CloudWatchKMSAlias"
       TargetKeyId: !Ref CloudWatchKMSKey
   # Lambda Insights cloudwatch log groups with relevant policy
-  LambdaInsightsLogGroup:
+  LambdaInsightsCloudwatchLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: /aws/lambda-insights
+      LogGroupName: !Ref LambdaInsightsLogGroupName
       RetentionInDays: !Ref LogRetentionDays
       KmsKeyId: !GetAtt CloudWatchKMSKey.Arn
   LambdaInsightsLogGroupPolicy:
@@ -115,7 +118,7 @@ Resources:
             Action:
               - logs:CreateLogStream
               - logs:PutLogEvents
-            Resource: !Sub "arn:aws:logs:*:*:log-group:/aws/lambda-insights:*"
+            Resource: !GetAtt LambdaInsightsCloudwatchLogGroup.Arn
   # Kinesis Splunk Firehose stuff
 
   # Subscription filter roles and policies

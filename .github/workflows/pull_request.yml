@@ -62,6 +62,7 @@ jobs:
       artifact_buckt_prefix: PR-${{needs.get_issue_number.outputs.issue_number}}
       version_number: PR-${{ needs.get_issue_number.outputs.issue_number }}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights-pr-${{ needs.get_issue_number.outputs.issue_number }}
     secrets:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
