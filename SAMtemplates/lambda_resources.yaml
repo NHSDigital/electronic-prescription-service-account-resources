@@ -109,7 +109,7 @@ Resources:
             Resource: "*"
             Condition:
               ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaInsightsLogGroupName}/*"
+                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda-insights-pr-60/*"
   CloudWatchKMSKeyAlias:
     Type: "AWS::KMS::Alias"
     Properties:
