@@ -49,6 +49,9 @@ Parameters:
     Type: String
     Description: The environment the lambda is deployed to
     Default: "dev"
+  LambdaInsightsLogGroupName:
+    Type: String
+    Description: The log level to set in the lambda
 
 Resources:
   # common KMS key for cloudwatch log groups
@@ -93,11 +96,43 @@ Resources:
             Condition:
               ArnEquals:
                 kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*"
+          - Sid: Allow Lambda Insights logging
+            Effect: Allow
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - kms:Encrypt*
+              - kms:Decrypt*
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:Describe*
+            Resource: "*"
+            Condition:
+              ArnEquals:
+                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda-insights/*"
   CloudWatchKMSKeyAlias:
     Type: "AWS::KMS::Alias"
     Properties:
       AliasName: !Sub "alias/${AWS::StackName}-CloudWatchKMSAlias"
       TargetKeyId: !Ref CloudWatchKMSKey
+  # Lambda Insights cloudwatch log groups with relevant policy
+  LambdaInsightsCloudwatchLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref LambdaInsightsLogGroupName
+      RetentionInDays: !Ref LogRetentionDays
+      KmsKeyId: !GetAtt CloudWatchKMSKey.Arn
+  LambdaInsightsLogGroupPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !GetAtt LambdaInsightsCloudwatchLogGroup.Arn
   # Kinesis Splunk Firehose stuff
 
   # Subscription filter roles and policies
@@ -351,4 +386,10 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudWatchKMSKey"]]
+  LambdaInsightsLogGroupPolicy:
+    Description: "Lambda Insights Policy ARN"
+    Value: !GetAtt CloudWatchKMSKey.Arn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "LambdaInsightsLogGroupPolicy"]]
     
