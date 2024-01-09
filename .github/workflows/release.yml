@@ -92,6 +92,14 @@ jobs:
         id: output_spec_version
         run: echo SPEC_VERSION=${{ env.SPEC_VERSION }} >> $GITHUB_OUTPUT
 
+      - name: Output Change Set Version
+        id: output_change_set_version
+        shell: bash
+        run: |
+          TIMESTAMP=$(date +%s)
+          VERSION=$(echo ${{ env.SPEC_VERSION }} | tr . -)
+          echo CHANGE_SET_VERSION=$VERSION-$TIMESTAMP >> $GITHUB_OUTPUT        
+
   deploy_dev_stacks:
     needs: [get_commit_id, package_code, tag_release]
     uses: ./.github/workflows/release_all_stacks.yml
