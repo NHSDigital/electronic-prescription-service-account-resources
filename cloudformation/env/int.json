@@ -4,7 +4,6 @@
     "ci-resources": {
       "DeploySubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:environment:int",
-        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int",
         "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-account",
         "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-ci",
         "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-lambda",
