@@ -29,7 +29,7 @@ runs:
         echo "calling mark jira released"
         cat <<EOF > payload.json
         { 
-            "releaseVersion": "${{ inputs.RELEASE_TAG }}"
+            "releaseVersion": "AWS-account-resources-${{ inputs.RELEASE_TAG }}"
         }
         EOF
         cat payload.json
