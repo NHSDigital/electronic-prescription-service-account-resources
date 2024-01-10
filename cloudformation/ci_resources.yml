@@ -162,6 +162,7 @@ Resources:
               - "logs:ListTagsLogGroup"
               - "logs:UntagLogGroup"
               - "logs:ListTagsForResource"
+              - "logs:TagResource"
               - "lambda:Add*"
               - "lambda:CreateFunction"
               - "lambda:Delete*"
