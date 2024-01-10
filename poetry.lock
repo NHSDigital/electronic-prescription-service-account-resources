@@ -100,32 +100,32 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "boto3"
-version = "1.29.7"
+version = "1.34.1"
 description = "The AWS SDK for Python"
 optional = false
-python-versions = ">= 3.7"
+python-versions = ">= 3.8"
 files = [
-    {file = "boto3-1.29.7-py3-none-any.whl", hash = "sha256:96e9890ebe7cd823b5f4976dd676e112c000c6528c28e20a2f274590589dd18b"},
-    {file = "boto3-1.29.7.tar.gz", hash = "sha256:1eb4c548118b5fc5e018dee956fd33e6fb249cd1f2def85f1bba816aef4d9f3e"},
+    {file = "boto3-1.34.1-py3-none-any.whl", hash = "sha256:aae7dbff19cb36dfd0ca391684c652a496156ca1d9e696fcbdcffde2b9e7c9bb"},
+    {file = "boto3-1.34.1.tar.gz", hash = "sha256:a08123b49430cd66850def7aa9ca6c14f8a99a95cdbcddabe805484001a5a6c3"},
 ]
 
 [package.dependencies]
-botocore = ">=1.32.7,<1.33.0"
+botocore = ">=1.34.1,<1.35.0"
 jmespath = ">=0.7.1,<2.0.0"
-s3transfer = ">=0.8.0,<0.9.0"
+s3transfer = ">=0.9.0,<0.10.0"
 
 [package.extras]
 crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.32.7"
+version = "1.34.1"
 description = "Low-level, data-driven core of boto 3."
 optional = false
-python-versions = ">= 3.7"
+python-versions = ">= 3.8"
 files = [
-    {file = "botocore-1.32.7-py3-none-any.whl", hash = "sha256:58b33d02cafa23461c8a9d211b30e8cded992380a84de409379fd02811fa3e11"},
-    {file = "botocore-1.32.7.tar.gz", hash = "sha256:c6795c731b04c8e3635588c44cfd1a4462fc5987859195522c96812cf3eceff9"},
+    {file = "botocore-1.34.1-py3-none-any.whl", hash = "sha256:99bd6e9273eba8e81fbcf9881fc0f390f1e7a563bf76faa5fab16ad9bf69de3f"},
+    {file = "botocore-1.34.1.tar.gz", hash = "sha256:0688d095305ba8638745dcdf85daa8aa41c36b27912c41e93447c1ef401b6ca1"},
 ]
 
 [package.dependencies]
@@ -1106,20 +1106,20 @@ files = [
 
 [[package]]
 name = "s3transfer"
-version = "0.8.0"
+version = "0.9.0"
 description = "An Amazon S3 Transfer Manager"
 optional = false
-python-versions = ">= 3.7"
+python-versions = ">= 3.8"
 files = [
-    {file = "s3transfer-0.8.0-py3-none-any.whl", hash = "sha256:baa479dc2e63e5c2ed51611b4d46cdf0295e2070d8d0b86b22f335ee5b954986"},
-    {file = "s3transfer-0.8.0.tar.gz", hash = "sha256:e8d6bd52ffd99841e3a57b34370a54841f12d3aab072af862cdcc50955288002"},
+    {file = "s3transfer-0.9.0-py3-none-any.whl", hash = "sha256:01d4d2c35a016db8cb14f9a4d5e84c1f8c96e7ffc211422555eed45c11fa7eb1"},
+    {file = "s3transfer-0.9.0.tar.gz", hash = "sha256:9e1b186ec8bb5907a1e82b51237091889a9973a2bb799a924bcd9f301ff79d3d"},
 ]
 
 [package.dependencies]
-botocore = ">=1.32.7,<2.0a.0"
+botocore = ">=1.33.2,<2.0a.0"
 
 [package.extras]
-crt = ["botocore[crt] (>=1.32.7,<2.0a.0)"]
+crt = ["botocore[crt] (>=1.33.2,<2.0a.0)"]
 
 [[package]]
 name = "sarif-om"
