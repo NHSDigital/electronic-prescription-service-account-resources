@@ -133,6 +133,13 @@ Resources:
               - logs:CreateLogStream
               - logs:PutLogEvents
             Resource: !GetAtt LambdaInsightsCloudwatchLogGroup.Arn
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt
+              - kms:ReEncrypt*
+            Resource: !GetAtt CloudWatchKMSKey.Arn
   # Kinesis Splunk Firehose stuff
 
   # Subscription filter roles and policies
