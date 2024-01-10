@@ -15,6 +15,9 @@ on:
       execute_change_set:
         required: true
         type: boolean
+      env:
+        required: true
+        type: string
       target_environment:
         required: true
         type: string
@@ -24,8 +27,14 @@ on:
       change_set_version:
         required: true
         type: string
+      dynamic_vars:
+        required: false
+        type: string
+        default: "{}"
     secrets:
       cf_deploy_role:
+        required: false
+      parameter_secrets:
         required: false
       cf_create_changeset_role:
         required: true
@@ -38,26 +47,69 @@ jobs:
       id-token: write
       contents: read
     outputs:
-      parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
+      parameters_file_name: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
     steps:
     - name: checkout code
       uses: actions/checkout@v4
       with:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
-    
+
     - name: Assume create changeset role
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_create_changeset_role}}
         role-session-name: github-actions
-    
+
+    - name: check stack exists
+      id: check_stack_exists
+      shell: bash
+      run: |
+        stacks=$( aws cloudformation list-stacks --query "StackSummaries[].StackName" )
+        stack_exists=$( grep -c "${{ inputs.stack_name }}" <<< $stacks || true )
+        if [ "${stack_exists}" == "0" ]
+        then
+          echo "Stack does not exist"
+          echo "STACK_EXISTS=false" >> $GITHUB_OUTPUT
+        else
+          echo "Stack does exist"
+          echo "STACK_EXISTS=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Assume create deploy stack role
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_deploy_role}}
+        role-session-name: github-actions
+
+    - name: create stack
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
+      shell: bash
+      run: |
+        aws cloudformation create-stack --stack-name ${{ inputs.stack_name }} \
+        --template-body file://./cloudformation/empty_stack.yml
+
+    - name: Assume create changeset role
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_create_changeset_role}}
+        role-session-name: github-actions
+        
     - name: Parse Parameters
+      env:
+        parameter_secrets: ${{ secrets.parameter_secrets }}
+        dynamic_vars: ${{ inputs.dynamic_vars }}
       id: parse_parameters
       shell: bash
       run: |
-        echo PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }}) >> $GITHUB_OUTPUT
+        PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }})
+        cat $PARAMETERS_FILE_NAME
+        echo "PARAMETERS_FILE_NAME=${PARAMETERS_FILE_NAME}" >> $GITHUB_OUTPUT
 
     - name: Create Change Set with new tags
       shell: bash
@@ -70,10 +122,10 @@ jobs:
         --change-set-type UPDATE \
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
-        --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
+        --parameters file://${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }} \
+        --cli-binary-format raw-in-base64-out \
         --tags Key="version",Value="${{ inputs.version }}" \
         --role-arn="$ROLE"
-
     - name: Create Change Set with existing tags
       shell: bash
       run: |
@@ -90,7 +142,8 @@ jobs:
         --change-set-type UPDATE \
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
-        --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
+        --parameters file://${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }} \
+        --cli-binary-format raw-in-base64-out \
         --tags Key="version",Value="${current_deployed_tag}" \
         --role-arn="$ROLE"
 
@@ -108,7 +161,7 @@ jobs:
       shell: bash
       run: |
         STATUS="CREATE_IN_PROGRESS"
-        while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
+        while [[ "$STATUS" == "CREATE_IN_PROGRESS" ]] 
         do
           echo "Getting change set..."
           CHANGE_SET=$(aws cloudformation describe-change-set \
@@ -218,7 +271,7 @@ jobs:
         echo "~~~"  >> $GITHUB_STEP_SUMMARY
         echo "</details>" >> $GITHUB_STEP_SUMMARY
 
-    - name: Delete Change Set
+    - name: Delete Change Set for new tag
       if: ${{ inputs.execute_change_set == false }}
       shell: bash
       run: |
@@ -226,7 +279,7 @@ jobs:
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
 
-    - name: Delete Change Set
+    - name: Delete Change Set for existing tag
       shell: bash
       run: |
         aws cloudformation delete-change-set \
@@ -257,12 +310,16 @@ jobs:
           --stack-name ${{ inputs.stack_name }} \
           --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
           STATUS="UPDATE_IN_PROGRESS"
-          while [ "$STATUS" == "UPDATE_IN_PROGRESS" ]
+          while [[ "$STATUS" == "UPDATE_IN_PROGRESS" ]] || [[ "$STATUS" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]] 
           do
             echo "Checking stack status..."
             STACKS=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }})
             STATUS=$(jq -r '.["Stacks"][0]["StackStatus"]' <<< "$STACKS")
             if [ "$STATUS" == "UPDATE_IN_PROGRESS" ]; then
+              echo "sleeping 5..."
+              sleep 5
+            fi
+            if [ "$STATUS" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]; then
               echo "sleeping 5..."
               sleep 5
             fi
@@ -287,5 +344,10 @@ jobs:
             echo "Failed to execute change set, rollback failed."
             echo "$STACKS"
             exit 1
+          elif [ "$STATUS" == "UPDATE_COMPLETE" ]; then
+            echo "Execute change set comeplete."
+            exit 0
           fi
-          echo "Execute change set comeplete."
+          echo "Failed to execute change set, for unknown reason."
+          echo "$STACKS"
+          exit 1

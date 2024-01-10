@@ -17,6 +17,12 @@ RUN wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86
     rm tmp/awscliv2.zip && \
     rm -rf /tmp/aws-cli
 
+RUN wget -O /tmp/aws-sam-cli.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip && \
+    unzip /tmp/aws-sam-cli.zip -d /tmp/aws-sam-cli && \
+    /tmp/aws-sam-cli/install && \
+    rm /tmp/aws-sam-cli.zip && \
+    rm -rf /tmp/aws-sam-cli    
+
 USER vscode
 
 # Install ASDF
@@ -30,6 +36,7 @@ ENV PATH="$PATH:/home/vscode/.asdf/bin/:/workspaces/electronic-prescription-serv
 # Install ASDF plugins
 RUN asdf plugin add python; \
     asdf plugin add poetry https://github.com/asdf-community/asdf-poetry.git; \
+    asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git; \
     asdf plugin add shellcheck https://github.com/luizm/asdf-shellcheck.git; \
     asdf plugin-add direnv; \
     asdf plugin add actionlint;
@@ -42,4 +49,5 @@ ADD .tool-versions /home/vscode/.tool-versions
 RUN asdf install; \
     asdf reshim python; \
     asdf reshim poetry; \
+    asdf reshim nodejs; \
     asdf direnv setup --shell bash --version 2.32.2;

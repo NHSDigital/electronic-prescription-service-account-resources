@@ -3,9 +3,11 @@
   "parameters": {
     "ci-resources": {
       "DeploySubjectClaimFilters": [
-        "repo:NHSDigital/prescriptionsforpatients:*",
-        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
+        "repo:NHSDigital/prescriptionsforpatients:environment:int",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-account",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-ci",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-lambda",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:int"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -19,6 +21,14 @@
         "repo:NHSDigital/electronic-prescription-service-account-resources:*"
       ]
     },
-    "account-resources": {}
+    "account-resources": {},
+    "lambda-resources": {
+      "SplunkHECToken": "SECRET.splunk_hec_token",
+      "SplunkHECEndpoint": "https://firehose.inputs.splunk.aws.digital.nhs.uk/services/collector/event",
+      "LogRetentionDays": "30",
+      "Env": "int",
+      "CommitId": "VAR.commit_id",
+      "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name"
+    }
   }
 }
