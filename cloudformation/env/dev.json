@@ -33,7 +33,8 @@
       "LogRetentionDays": "30",
       "Env": "dev",
       "CommitId": "VAR.commit_id",
-      "VersionNumber": "VAR.VersionNumber"
+      "VersionNumber": "VAR.VersionNumber",
+      "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name"
     }
   }
 }

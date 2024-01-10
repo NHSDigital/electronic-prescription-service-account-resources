@@ -3,9 +3,11 @@
   "parameters": {
     "ci-resources": {
       "DeploySubjectClaimFilters": [
-        "repo:NHSDigital/prescriptionsforpatients:*",
-        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
+        "repo:NHSDigital/prescriptionsforpatients:environment:prod",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-account",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-ci",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-lambda",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -27,7 +29,7 @@
       "LogRetentionDays": "30",
       "Env": "prod",
       "CommitId": "VAR.commit_id",
-      "VersionNumber": "VAR.VersionNumber"
+      "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name"
     }
   }
 }
