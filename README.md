@@ -8,6 +8,7 @@ This is the repo containing infrastructure code that defines resources that are 
 - `.github` Contains github workflows that are used for building and deploying from pull requests and releases
 - `.vscode` Contains vscode workspace file
 - `cloudformation/` Contains cloudformation files used to create resources for CI builds and deployments
+- `scripts/` Useful scripts
 
 ## Contributing
 
@@ -56,11 +57,7 @@ Ensure you have the following lines in the file .envrc
 
 ```
 export AWS_DEFAULT_PROFILE=prescription-dev
-export stack_name=<UNIQUE_NAME_FOR_YOU>
-export TARGET_SPINE_SERVER=<NAME OF DEV TARGET SPINE SERVER>
 ```
-
-UNIQUE_NAME_FOR_YOU should be a unique name for you with no underscores in it - eg anthony-brown-1
 
 Once you have saved .envrc, start a new terminal in vscode and run this command to authenticate against AWS.
 
@@ -89,6 +86,111 @@ When the token expires, you may need to reauthorise using `make aws-login`
 Some pre-commit hooks are installed as part of the install above, to run basic lint checks and ensure you can't accidentally commit invalid changes.
 The pre-commit hook uses python package pre-commit and is configured in the file .pre-commit-config.yaml.
 A combination of these checks are also run in CI.
+
+### Stacks
+The following stacks are defined in this repository
+
+# CI Resources
+
+cloudformation/ci_resources.yml contains resources that are needed for the CI pipeline to work. This should be applied to each environment.  
+This is created as part of CI pipeline.   
+It creates the following resources
+
+- OIDC provider allowing github to assume a role in the account
+- Cloudformation deploy role - github runners assume this role
+- Cloudformation execution role - cloudformation uses this role when applying a changeset. This has minimum permissions so if a new resource type is added, the permissions will need modifying
+- CloudFormationCheckVersionRole - role used by github pipelines to check a deployed version of a stack
+- ReleaseNotesExecuteLambdaRole - role used by github pipelines to execute the release notes lambda
+- CloudFormationPrepareChangesetRole - role used by github pipelines to prepare a changeset
+
+# Account Resources
+
+cloudformation/account_resources.yml contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
+This is created as part of CI pipeline.   
+It creates the following resources
+
+- API Gateway account role with logging permissions
+- Cloudwatch Logs Resource Policy
+- KMS Key for Cloudwatch (API GW) logging
+- Artifact bucket and KMS key - resources used by CI build are uploaded to this bucket
+- Trust store bucket and KMS key - public CA certs used for mutual TLS are uploaded to this bucket
+- Splunk delivery stream bucket and KMS key - cloudwatch logs that can not be delivered to splunk are put in here
+- Audit logging bucket - s3 access logs from artifact, trust store and splunk delivery stream buckets are sent to here
+- Secrets and KMS key - there are various secrets created for storing keys used in mutual TLS. These have a default value set, but the values are modified when creating new keys.
+- - CAKeySecret - used to store the private CA key
+- - CACertSecret - used to store the public CA cert
+- - ClientKeySecret - used to store the private client key
+- - ClientCertSecret - used to store the public client cert
+- - SpinePrivateKey - used to store the spine private key
+- - SpinePublicCertificate - used to store the spine public key
+- - SpineASID - used to store the spine ASID
+- - SpinePartyKey - used to store the spine party key
+- - SpineCAChain - used to store the spine CA chain
+- - ServiceSearchApiKey - used to store the service search API key
+- - JiraToken - used to store token for jira
+- - ConfluenceToken - used to store token for confluence
+
+
+# Route 53 resources - environment accounts
+
+cloudformation/environment_route53.yml contains route 53 resources created in each environment account.  
+This needs to be manually deployed to each environment.   
+It creates the following resources
+
+- route 53 hosted zone for {environment}.{domain}.national.nhs.uk
+
+To deploy the stack, use the following
+
+```
+make aws-login
+export AWS_PROFILE=<name of AWS profile defined in ~/.aws/config>
+
+aws cloudformation deploy \
+          --template-file cloudformation/environment_route53.yml \
+          --stack-name route53-resources \
+          --region eu-west-2 \
+          --parameter-overrides environment=<ENVIRONMENT>
+```
+
+On bootstrap or major changes, you should get the name server host names for the created zone and update the file management_route53.yml and deploy it
+
+# Route 53 resources - management account
+
+cloudformation/management_route53.yml contains route 53 resources created in the management account. This should only be applied manually to the management account.  
+It creates the following resources
+
+- route 53 hosted zone for {domain}.national.nhs.uk
+- NS records for {dev, int, ref, qa, prod}.{domain}.national.nhs.uk pointing to route 53 hosted zones in each account
+
+To deploy the stack, use the following
+
+```
+make aws-login
+export AWS_PROFILE=prescription-management
+
+aws cloudformation deploy \
+          --template-file cloudformation/management_route53.yml \
+          --stack-name route53-resources \
+          --region eu-west-2
+```
+
+# lambda_resources
+SAMtemplates/lambda_resources.yaml contains common lambdas and resources needed per environment.   
+This is created as part of CI pipeline.   
+It creates the following resources
+- CloudWatchKMSKey - used to encrypt cloudwatch logs
+- SplunkSubscriptionFilterRole - used by filters on cloudwatch logs to send to splunk
+- SplunkDeliveryStream - kinesis firehose delivery stream used to send cloudwatch logs to splunk
+- SplunkDeliveryStreamLogGroup - log group used by SplunkDeliveryStream
+- SplunkDeliveryStreamProcessor - lambda used to transform logs for sending to splunk
+- SplunkDeliveryStreamProcessorRole - role used by SplunkDeliveryStreamProcessor
+- SplunkDeliveryStreamProcessorLogGroup - used by SplunkDeliveryStreamProcessor lambda
+- SplunkDeliveryStreamProcessorInvokeRole - used by delivery stream to invoke SplunkDeliveryStreamProcessor lambda
+
+## Parameters for stacks
+Environment specific parameters are defined in JSON files in cloudformation/env folder.   
+
+This is used to create subject claim filters used for the OIDC connection to restrict which repositories and environments can connect to AWS
 
 ### Make commands
 
@@ -133,3 +235,10 @@ Workflows are in the .github/workflows folder
 - `release.yml`: Run when code is merged to main branch or a tag starting v is pushed. Creates versioned changesets that are executed after being reviewed.
 - `pr-link.yaml`: This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
 - `dependabot.yml`: Dependabot definition file
+- `cloudformation.yml`: Creates a changeset for specified stack and outputs changes. Either runs it or deletes it
+
+## Scripts
+- calculate_version.py - used when merge to main to calculate a semver-compliant version number to name the release in github 
+- check_python_licenses.sh - check that all python libraries used have a compatible license
+- parse_parameters.py - used in github pipelines to parse cloudformation/env files to set parameters in format that can be passed to cloudformation command
+- set_secrets.sh - script which can be manually run to set secrets in all EPS repositories

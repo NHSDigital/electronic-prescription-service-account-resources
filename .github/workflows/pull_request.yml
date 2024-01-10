@@ -11,13 +11,16 @@ jobs:
   quality_checks:
     uses: ./.github/workflows/quality_checks.yml
 
+  package_code:
+    uses: ./.github/workflows/sam_package_code.yml
+
   get_issue_number:
     runs-on: ubuntu-latest
-    needs: quality_checks
     outputs:
-        issue_number: ${{steps.get_issue_number.outputs.result}}
+      issue_number: ${{steps.get_issue_number.outputs.result}}
+
     steps:
-      - uses: actions/github-script@v6
+      - uses: actions/github-script@v7
         name: get issue number
         id: get_issue_number
         with:
@@ -37,29 +40,30 @@ jobs:
             }
           result-encoding: string
 
-  list_ci_resources_cf_changes:
-    needs: get_issue_number
-    uses: ./.github/workflows/cloudformation.yml
+  get_commit_id:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_id: ${{ steps.commit_id.outputs.commit_id }}
+    steps:
+      - name: Get Commit ID
+        id: commit_id
+        run: |
+          echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+  deploy_stacks:
+    needs: [quality_checks, package_code, get_issue_number, get_commit_id]
+    uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: dev
       version: pr-${{github.event.number}}
-      stack_name: ci-resources
-      template: ./cloudformation/ci_resources.yml
-      capabilities: CAPABILITY_IAM
+      change_set_version: pr-${{github.event.number}}
       execute_change_set: false
+      lambda_stack_suffix: -pr-${{needs.get_issue_number.outputs.issue_number}}
+      artifact_buckt_prefix: PR-${{needs.get_issue_number.outputs.issue_number}}
+      version_number: PR-${{ needs.get_issue_number.outputs.issue_number }}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights/pr-${{ needs.get_issue_number.outputs.issue_number }}
     secrets:
+      cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-  
-  list_account_resources_cf_changes:
-    needs: get_issue_number
-    uses: ./.github/workflows/cloudformation.yml
-    with:
-      target_environment: dev
-      version: pr-${{github.event.number}}
-      stack_name: account-resources
-      template: ./cloudformation/account_resources.yml
-      capabilities: CAPABILITY_IAM
-      execute_change_set: false
-    secrets:
-      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      
+      SPLUNK_HEC_TOKEN: ${{ secrets.DEV_SPLUNK_HEC_TOKEN }}
