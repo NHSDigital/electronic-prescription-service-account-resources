@@ -11,7 +11,7 @@ jobs:
   create_release_notes_post_prod:
     uses: ./.github/workflows/create_confluence_release_notes.yml
     with:
-      VERSION_NUMBER: ab-test-2
+      VERSION_NUMBER: ab_test_2
       CREATE_INT_RELEASE_NOTES: false
       CREATE_INT_RC_RELEASE_NOTES: false
       CREATE_PROD_RELEASE_NOTES: false
