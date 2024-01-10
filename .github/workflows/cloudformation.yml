@@ -15,6 +15,9 @@ on:
       execute_change_set:
         required: true
         type: boolean
+      env:
+        required: true
+        type: string
       target_environment:
         required: true
         type: string
@@ -44,7 +47,7 @@ jobs:
       id-token: write
       contents: read
     outputs:
-      parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
+      parameters_file_name: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
     steps:
     - name: checkout code
       uses: actions/checkout@v4
@@ -104,8 +107,9 @@ jobs:
       id: parse_parameters
       shell: bash
       run: |
-        PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }} )
-        echo "PARAMETERS=${PARAMETERS}" >> $GITHUB_OUTPUT
+        PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }})
+        cat $PARAMETERS_FILE_NAME
+        echo "PARAMETERS_FILE_NAME=${PARAMETERS_FILE_NAME}" >> $GITHUB_OUTPUT
 
     - name: Create Change Set with new tags
       shell: bash
@@ -118,10 +122,10 @@ jobs:
         --change-set-type UPDATE \
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
-        --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
+        --parameters file://${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }} \
+        --cli-binary-format raw-in-base64-out \
         --tags Key="version",Value="${{ inputs.version }}" \
         --role-arn="$ROLE"
-
     - name: Create Change Set with existing tags
       shell: bash
       run: |
@@ -138,7 +142,8 @@ jobs:
         --change-set-type UPDATE \
         --template-body file://${{ inputs.template }} \
         --capabilities ${{ inputs.capabilities }} \
-        --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
+        --parameters file://${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }} \
+        --cli-binary-format raw-in-base64-out \
         --tags Key="version",Value="${current_deployed_tag}" \
         --role-arn="$ROLE"
 
@@ -156,7 +161,7 @@ jobs:
       shell: bash
       run: |
         STATUS="CREATE_IN_PROGRESS"
-        while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
+        while [[ "$STATUS" == "CREATE_IN_PROGRESS" ]] 
         do
           echo "Getting change set..."
           CHANGE_SET=$(aws cloudformation describe-change-set \
@@ -305,12 +310,16 @@ jobs:
           --stack-name ${{ inputs.stack_name }} \
           --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
           STATUS="UPDATE_IN_PROGRESS"
-          while [ "$STATUS" == "UPDATE_IN_PROGRESS" ]
+          while [[ "$STATUS" == "UPDATE_IN_PROGRESS" ]] || [[ "$STATUS" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]] 
           do
             echo "Checking stack status..."
             STACKS=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }})
             STATUS=$(jq -r '.["Stacks"][0]["StackStatus"]' <<< "$STACKS")
             if [ "$STATUS" == "UPDATE_IN_PROGRESS" ]; then
+              echo "sleeping 5..."
+              sleep 5
+            fi
+            if [ "$STATUS" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]; then
               echo "sleeping 5..."
               sleep 5
             fi

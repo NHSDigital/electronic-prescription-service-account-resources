@@ -9,6 +9,9 @@ on:
       ARTIFACT_BUCKET_PREFIX:
         required: true
         type: string
+      env:
+        required: true
+        type: string
       TARGET_ENVIRONMENT:
         required: true
         type: string
@@ -44,6 +47,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -62,6 +67,7 @@ jobs:
         env:
           parameter_secrets: ${{ secrets.parameter_secrets }}
           dynamic_vars: ${{ inputs.dynamic_vars }}
+          output_format: "raw"
         id: parse_parameters
         shell: bash
         run: |
@@ -79,6 +85,6 @@ jobs:
           export stack_name=${{ inputs.STACK_NAME }}
           export cloud_formation_execution_role=$(aws cloudformation list-exports --output json | \
               jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
-          export PARAMETERS=${{ steps.parse_parameters.outputs.PARAMETERS }}
+          export PARAMETERS='${{ steps.parse_parameters.outputs.PARAMETERS }}'
           export VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}
           make sam-deploy-package
