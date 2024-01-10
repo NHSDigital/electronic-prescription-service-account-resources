@@ -34,7 +34,7 @@ runs:
         EOF
         cat payload.json
         if [ "${{ inputs.DRY_RUN}}" != "true" ]; then
-          aws lambda invoke --function-name MarkJiraReleased \
+          aws lambda invoke --function-name release-notes-MarkJiraReleased \
           --cli-binary-format raw-in-base64-out \
           --payload file://payload.json out.txt
         fi
