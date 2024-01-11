@@ -395,7 +395,7 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "CloudWatchKMSKey"]]
   LambdaInsightsLogGroupPolicy:
     Description: "Lambda Insights Policy ARN"
-    Value: !GetAtt CloudWatchKMSKey.Arn
+    Value: !GetAtt LambdaInsightsLogGroupPolicy.PolicyArn
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "LambdaInsightsLogGroupPolicy"]]
