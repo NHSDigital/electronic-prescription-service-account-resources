@@ -730,12 +730,6 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CloudwatchLogsKmsKeyArn"]]
 
-  CloudwatchLogsKmsKeyId:
-    Description: "The ID of the API GW cloudwatch logs KMS Key"
-    Value: !Ref CloudwatchLogsKmsKey
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CloudwatchLogsKmsKeyId"]]
-
   LambdaEncryptCloudwatchKMSPolicy:
     Description: "Lambda Encrypt Cloudwatch KMS Policy ARN"
     Value: !GetAtt LambdaEncryptCloudwatchKMSPolicy.PolicyArn

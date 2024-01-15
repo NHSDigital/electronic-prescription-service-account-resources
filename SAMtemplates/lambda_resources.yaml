@@ -62,7 +62,7 @@ Resources:
     Properties:
       LogGroupName: !Ref LambdaInsightsLogGroupName
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyId
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   LambdaInsightsLogGroupPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -168,7 +168,7 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/kinesisfirehose/${AWS::StackName}-SplunkDeliveryStream"
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyId
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   SplunkDeliveryStreamLogStream:
     Type: AWS::Logs::LogStream
