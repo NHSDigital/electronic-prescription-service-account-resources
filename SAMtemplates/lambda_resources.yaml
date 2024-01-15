@@ -54,74 +54,6 @@ Parameters:
     Description: The log level to set in the lambda
 
 Resources:
-  # common KMS key for cloudwatch log groups
-  # combine with the one in account resources?
-  ##################################################
-  # Cloudwatch
-  ##################################################
-  CloudWatchKMSKey:
-    Type: "AWS::KMS::Key"
-    Properties:
-      KeyPolicy:
-        Version: 2012-10-17
-        Id: key-policy-id
-        Statement:
-          - Sid: Enable IAM User Permissions
-            Effect: Allow
-            Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-            Action:
-              - kms:*
-            Resource: "*"
-          - Sid: Allow Lambda logging
-            Effect: Allow
-            Principal:
-              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
-            Action:
-              - kms:Encrypt*
-              - kms:Decrypt*
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:Describe*
-            Resource: "*"
-            Condition:
-              ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
-          - Sid: Allow Firehose Logging
-            Effect: Allow
-            Principal:
-              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
-            Action:
-              - kms:Encrypt*
-              - kms:Decrypt*
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:Describe*
-            Resource: "*"
-            Condition:
-              ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*"
-          - Sid: Allow Lambda Insights logging
-            Effect: Allow
-            Principal:
-              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
-            Action:
-              - kms:Encrypt*
-              - kms:Decrypt*
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:Describe*
-            Resource: "*"
-            Condition:
-              ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda-insights*"
-
-  CloudWatchKMSKeyAlias:
-    Type: "AWS::KMS::Alias"
-    Properties:
-      AliasName: !Sub "alias/${AWS::StackName}-CloudWatchKMSAlias"
-      TargetKeyId: !Ref CloudWatchKMSKey
-
   ##################################################
   # Lambda Insights
   ##################################################
@@ -130,7 +62,7 @@ Resources:
     Properties:
       LogGroupName: !Ref LambdaInsightsLogGroupName
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !GetAtt CloudWatchKMSKey.Arn
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   LambdaInsightsLogGroupPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -149,7 +81,7 @@ Resources:
               - kms:GenerateDataKey*
               - kms:Encrypt
               - kms:ReEncrypt*
-            Resource: !GetAtt CloudWatchKMSKey.Arn
+            Resource: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   ##################################################
   # Splunk Subscription Filter
@@ -194,7 +126,7 @@ Resources:
             Action:
               - kms:GenerateDataKey
             Resource:
-              - !GetAtt CloudWatchKMSKey.Arn
+              - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   ##################################################
   # Splunk Delivery Stream
@@ -236,7 +168,7 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/kinesisfirehose/${AWS::StackName}-SplunkDeliveryStream"
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !GetAtt CloudWatchKMSKey.Arn
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   SplunkDeliveryStreamLogStream:
     Type: AWS::Logs::LogStream
@@ -276,7 +208,7 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
             Resource:
-              - !GetAtt CloudWatchKMSKey.Arn
+              - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   ##################################################
   # Splunk Delivery Stream Processor
@@ -351,7 +283,7 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
             Resource:
-              - !GetAtt CloudWatchKMSKey.Arn
+              - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   SplunkDeliveryStreamProcessorDeliveryStreamPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -373,7 +305,7 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/lambda/${SplunkDeliveryStreamProcessor}"
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !GetAtt CloudWatchKMSKey.Arn
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   ##################################################
   # Splunk Delivery Stream Processor Invoke
@@ -406,15 +338,6 @@ Resources:
               - !GetAtt SplunkDeliveryStreamProcessor.Arn
 
 Outputs:
-  ##################################################
-  # Cloudwatch Outputs
-  ##################################################
-  CloudWatchKMSKey:
-    Description: "CloudWatch KMS Key ARN"
-    Value: !GetAtt CloudWatchKMSKey.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CloudWatchKMSKey"]]
-
   ##################################################
   # Lambda Insights Outputs
   ##################################################

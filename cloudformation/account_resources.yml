@@ -75,7 +75,7 @@ Resources:
             Action:
               - kms:*
             Resource: "*"
-          - Sid: Allow API Gateway Logging
+          - Sid: Allow Service Logging
             Effect: Allow
             Principal:
               Service: !Sub "logs.${AWS::Region}.amazonaws.com"
@@ -88,7 +88,11 @@ Resources:
             Resource: "*"
             Condition:
               ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+                kms:EncryptionContext:aws:logs:arn:
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda-insights*"
           - Sid: Allow API Gateway Role
             Effect: Allow
             Principal:
@@ -105,6 +109,22 @@ Resources:
     Properties:
       AliasName: alias/ApiGwCloudwatchLogsKmsKeyAlias
       TargetKeyId: !Ref CloudwatchLogsKmsKey
+
+  LambdaEncryptCloudwatchKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: allow-CloudWatchKMS-access
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt
+              - kms:ReEncrypt*
+            Resource:
+              - !GetAtt CloudwatchLogsKmsKey.Arn
 
   ##################################################
   # Artifacts Bucket
@@ -198,6 +218,9 @@ Resources:
               - !Join ["", [!GetAtt ArtifactsBucket.Arn, "/*"]]
               - !GetAtt ArtifactsBucket.Arn
 
+  ##################################################
+  # Trust Store Bucket
+  ##################################################
   TrustStoreBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -540,6 +563,19 @@ Resources:
               - kms:Decrypt
             Resource: !GetAtt SecretsKMSKey.Arn
 
+  LambdaDecryptSecretsKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: allow-SecretsKMS-access
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt SecretsKMSKey.Arn
+
   ##################################################
   # CA Secrets
   ##################################################
@@ -666,6 +702,24 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-confluenceToken"
 
+  LambdaAccessSecretsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: allow-access-to-spine-secrets
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !Ref SpinePrivateKey
+              - !Ref SpinePublicCertificate
+              - !Ref SpineASID
+              - !Ref SpinePartyKey
+              - !Ref SpineCAChain
+              - !Ref ServiceSearchApiKey
+
 Outputs:
   ##################################################
   # Cloudwatch Outputs
@@ -675,6 +729,13 @@ Outputs:
     Value: !GetAtt CloudwatchLogsKmsKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CloudwatchLogsKmsKeyArn"]]
+
+  LambdaEncryptCloudwatchKMSPolicy:
+    Description: "Lambda Encrypt Cloudwatch KMS Policy ARN"
+    Value: !GetAtt LambdaEncryptCloudwatchKMSPolicy.PolicyArn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "LambdaEncryptCloudwatchKMSPolicy"]]
 
   ##################################################
   # Artifacts Bucket Outputs
@@ -748,6 +809,13 @@ Outputs:
     Value: !GetAtt SecretsKMSKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
+
+  LambdaDecryptSecretsKMSPolicy:
+    Description: "Lambda Decrypt Secrets KMS Policy ARN"
+    Value: !GetAtt LambdaDecryptSecretsKMSPolicy.PolicyArn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "LambdaDecryptSecretsKMSPolicy"]]
 
   ##################################################
   # CA Secrets Outputs
@@ -832,3 +900,9 @@ Outputs:
     Value: !GetAtt ConfluenceToken.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ConfluenceToken"]]
+
+  LambdaAccessSecretsPolicy:
+    Description: "Lambda Access Secrets Policy ARN"
+    Value: !GetAtt LambdaAccessSecretsPolicy.PolicyArn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "LambdaAccessSecretsPolicy"]]
