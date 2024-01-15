@@ -87,7 +87,7 @@ Resources:
               - kms:Describe*
             Resource: "*"
             Condition:
-              ArnEquals:
+              StringEquals:
                 kms:EncryptionContext:aws:logs:arn:
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
