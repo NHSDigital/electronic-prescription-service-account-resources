@@ -151,7 +151,7 @@ Resources:
       AliasName: alias/ArtifactsBucketKMSKeyAlias
       TargetKeyId: !Ref ArtifactsBucketKMSKey
 
-  UseArtifactBucketKMSKeyPolicy:
+  UseArtifactBucketKMSKeyManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: UseArtifactBucketKMSKey
@@ -243,7 +243,7 @@ Resources:
       AliasName: alias/TrustStoreBucketKMSKeyAlias
       TargetKeyId: !Ref TrustStoreBucketKMSKey
 
-  UseTrustStoreBucketKMSKeyPolicy:
+  UseTrustStoreBucketKMSKeyManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: UseTrustStoreBucketKMSKey
@@ -412,7 +412,7 @@ Resources:
       AliasName: alias/SplunkDeliveryStreamBackupKMSKeyAlias
       TargetKeyId: !Ref SplunkDeliveryStreamBackupKMSKey
 
-  SplunkDeliveryStreamBackupBucketRoleKMSPolicy:
+  SplunkDeliveryStreamBackupBucketRoleKMSMangedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: allow-SplunkDeliveryStreamBackupKMSKey-access
@@ -496,7 +496,7 @@ Resources:
                 - - !GetAtt SplunkDeliveryStreamBackupBucket.Arn
                   - "/*"
 
-  SplunkDeliveryStreamBackupBucketIAMPolicy:
+  SplunkDeliveryStreamBackupBucketIAMManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: allow-backup-bucket-access
@@ -545,7 +545,7 @@ Resources:
       AliasName: alias/SecretsKMSKeyAlias
       TargetKeyId: !Ref SecretsKMSKey
 
-  UseSecretsKMSKeyPolicy:
+  UseSecretsKMSKeyManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: UseSecretsKMSKey
