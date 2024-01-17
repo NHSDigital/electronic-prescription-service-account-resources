@@ -54,6 +54,68 @@ Parameters:
     Description: The log level to set in the lambda
 
 Resources:
+  #### TO BE REMOVED
+  CloudWatchKMSKey:
+    Type: "AWS::KMS::Key"
+    Properties:
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-policy-id
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: "kms:*"
+            Resource: "*"
+          - Sid: Allow Lambda logging
+            Effect: Allow
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - kms:Encrypt*
+              - kms:Decrypt*
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:Describe*
+            Resource: "*"
+            Condition:
+              ArnEquals:
+                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+          - Sid: Allow Firehose Logging
+            Effect: Allow
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - kms:Encrypt*
+              - kms:Decrypt*
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:Describe*
+            Resource: "*"
+            Condition:
+              ArnEquals:
+                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*"
+          - Sid: Allow Lambda Insights logging
+            Effect: Allow
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - kms:Encrypt*
+              - kms:Decrypt*
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:Describe*
+            Resource: "*"
+            Condition:
+              ArnEquals:
+                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda-insights*"
+  CloudWatchKMSKeyAlias:
+    Type: "AWS::KMS::Alias"
+    Properties:
+      AliasName: !Sub "alias/${AWS::StackName}-CloudWatchKMSAlias"
+      TargetKeyId: !Ref CloudWatchKMSKey
+
   ##################################################
   # Lambda Insights
   ##################################################
@@ -101,7 +163,6 @@ Resources:
   SplunkSubscriptionFilterDeliveryStreamPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-put-data-stream-records
       Roles:
         - !Ref SplunkSubscriptionFilterRole
       PolicyDocument:
@@ -116,7 +177,6 @@ Resources:
   SplunkSubscriptionFilterKMSPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-kms-generate-data-key
       Roles:
         - !Ref SplunkSubscriptionFilterRole
       PolicyDocument:
@@ -178,7 +238,6 @@ Resources:
   SplunkDeliveryStreamLoggingPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-lambda-logging
       Roles:
         - !ImportValue account-resources:SplunkDeliveryStreamBackupBucketRole
       PolicyDocument:
@@ -195,7 +254,6 @@ Resources:
   SplunkDeliveryStreamKMSPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-KMS-access
       Roles:
         - !ImportValue account-resources:SplunkDeliveryStreamBackupBucketRole
       PolicyDocument:
@@ -253,7 +311,6 @@ Resources:
   SplunkDeliveryStreamProcessorLambdaPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-lambda-logging
       Roles:
         - !Ref SplunkDeliveryStreamProcessorRole
       PolicyDocument:
@@ -270,7 +327,6 @@ Resources:
   SplunkDeliveryStreamProcessorKMSPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-KMS-access
       Roles:
         - !Ref SplunkDeliveryStreamProcessorRole
       PolicyDocument:
@@ -288,7 +344,6 @@ Resources:
   SplunkDeliveryStreamProcessorDeliveryStreamPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-delivery-stream-put-records
       Roles:
         - !Ref SplunkDeliveryStreamProcessorRole
       PolicyDocument:
@@ -325,7 +380,6 @@ Resources:
   SplunkDeliveryStreamProcessorInvokePolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-delivery-stream-invoke-processor
       Roles:
         - !Ref SplunkDeliveryStreamProcessorInvokeRole
       PolicyDocument:
@@ -338,6 +392,12 @@ Resources:
               - !GetAtt SplunkDeliveryStreamProcessor.Arn
 
 Outputs:
+  ### TO BE REMOVED
+  CloudWatchKMSKey:
+    Description: "CloudWatch KMS Key ARN"
+    Value: !GetAtt CloudWatchKMSKey.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CloudWatchKMSKey"]]
   ##################################################
   # Lambda Insights Outputs
   ##################################################
