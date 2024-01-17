@@ -113,7 +113,6 @@ Resources:
   LambdaEncryptCloudwatchKMSPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-CloudWatchKMS-access
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -154,7 +153,6 @@ Resources:
   UseArtifactBucketKMSKeyManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: UseArtifactBucketKMSKey
       Roles:
         - !ImportValue ci-resources:CloudFormationExecutionRoleName
       PolicyDocument:
@@ -246,7 +244,6 @@ Resources:
   UseTrustStoreBucketKMSKeyManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: UseTrustStoreBucketKMSKey
       Roles:
         - !ImportValue ci-resources:CloudFormationExecutionRoleName
       PolicyDocument:
@@ -415,7 +412,6 @@ Resources:
   SplunkDeliveryStreamBackupBucketRoleKMSMangedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-SplunkDeliveryStreamBackupKMSKey-access
       Roles:
         - !Ref SplunkDeliveryStreamBackupBucketRole
       PolicyDocument:
@@ -499,7 +495,6 @@ Resources:
   SplunkDeliveryStreamBackupBucketIAMManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-backup-bucket-access
       Roles:
         - !Ref SplunkDeliveryStreamBackupBucketRole
       PolicyDocument:
@@ -548,7 +543,6 @@ Resources:
   UseSecretsKMSKeyManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: UseSecretsKMSKey
       Roles:
         - !ImportValue ci-resources:CloudFormationExecutionRoleName
       PolicyDocument:
@@ -566,7 +560,6 @@ Resources:
   LambdaDecryptSecretsKMSPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-SecretsKMS-access
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -705,7 +698,6 @@ Resources:
   LambdaAccessSecretsPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: allow-access-to-spine-secrets
       PolicyDocument:
         Version: 2012-10-17
         Statement:
