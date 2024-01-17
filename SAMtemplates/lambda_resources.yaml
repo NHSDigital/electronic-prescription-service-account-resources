@@ -54,79 +54,21 @@ Parameters:
     Description: The log level to set in the lambda
 
 Resources:
-  # common KMS key for cloudwatch log groups
-  CloudWatchKMSKey:
-    Type: "AWS::KMS::Key"
-    Properties:
-      KeyPolicy:
-        Version: 2012-10-17
-        Id: key-policy-id
-        Statement:
-          - Sid: Enable IAM User Permissions
-            Effect: Allow
-            Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-            Action: "kms:*"
-            Resource: "*"
-          - Sid: Allow Lambda logging
-            Effect: Allow
-            Principal:
-              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
-            Action:
-              - kms:Encrypt*
-              - kms:Decrypt*
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:Describe*
-            Resource: "*"
-            Condition:
-              ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
-          - Sid: Allow Firehose Logging
-            Effect: Allow
-            Principal:
-              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
-            Action:
-              - kms:Encrypt*
-              - kms:Decrypt*
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:Describe*
-            Resource: "*"
-            Condition:
-              ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*"
-          - Sid: Allow Lambda Insights logging
-            Effect: Allow
-            Principal:
-              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
-            Action:
-              - kms:Encrypt*
-              - kms:Decrypt*
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:Describe*
-            Resource: "*"
-            Condition:
-              ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda-insights*"
-  CloudWatchKMSKeyAlias:
-    Type: "AWS::KMS::Alias"
-    Properties:
-      AliasName: !Sub "alias/${AWS::StackName}-CloudWatchKMSAlias"
-      TargetKeyId: !Ref CloudWatchKMSKey
-  # Lambda Insights cloudwatch log groups with relevant policy
+  ##################################################
+  # Lambda Insights
+  ##################################################
   LambdaInsightsCloudwatchLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Ref LambdaInsightsLogGroupName
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !GetAtt CloudWatchKMSKey.Arn
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+
   LambdaInsightsLogGroupPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
@@ -139,50 +81,56 @@ Resources:
               - kms:GenerateDataKey*
               - kms:Encrypt
               - kms:ReEncrypt*
-            Resource: !GetAtt CloudWatchKMSKey.Arn
-  # Kinesis Splunk Firehose stuff
+            Resource: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
-  # Subscription filter roles and policies
+  ##################################################
+  # Splunk Subscription Filter
+  ##################################################
   SplunkSubscriptionFilterRole:
-    Type: "AWS::IAM::Role"
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Principal:
-              Service: "logs.amazonaws.com"
-            Action: "sts:AssumeRole"
+              Service: logs.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
   SplunkSubscriptionFilterDeliveryStreamPolicy:
-    Type: "AWS::IAM::Policy"
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: "allow-put-data-stream-records"
+      ManagedPolicyName: allow-put-data-stream-records
+      Roles:
+        - !Ref SplunkSubscriptionFilterRole
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
               - firehose:PutRecord
             Resource:
               - !GetAtt SplunkDeliveryStream.Arn
+
+  SplunkSubscriptionFilterKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: allow-kms-generate-data-key
       Roles:
         - !Ref SplunkSubscriptionFilterRole
-  SplunkSubscriptionFilterKMSPolicy:
-    Type: "AWS::IAM::Policy"
-    Properties:
-      PolicyName: "allow-kms-generate-data-key"
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
               - kms:GenerateDataKey
             Resource:
-              - !GetAtt CloudWatchKMSKey.Arn
-      Roles:
-        - !Ref SplunkSubscriptionFilterRole
+              - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
-  # Delivery Stream, roles and policies
+  ##################################################
+  # Splunk Delivery Stream
+  ##################################################
   SplunkDeliveryStream:
     # Depends on policy as delivery streams require a role with correct policies to be build, and a role reference doesn't provide a dependency as Stream -> Role <- Policy, so Stream -!> Policy
     DependsOn:
@@ -220,17 +168,21 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/kinesisfirehose/${AWS::StackName}-SplunkDeliveryStream"
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !GetAtt CloudWatchKMSKey.Arn
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+
   SplunkDeliveryStreamLogStream:
     Type: AWS::Logs::LogStream
     Properties:
       LogGroupName: !Ref SplunkDeliveryStreamLogGroup
+
   SplunkDeliveryStreamLoggingPolicy:
-    Type: "AWS::IAM::Policy"
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: "allow-lambda-logging"
+      ManagedPolicyName: allow-lambda-logging
+      Roles:
+        - !ImportValue account-resources:SplunkDeliveryStreamBackupBucketRole
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
@@ -239,14 +191,15 @@ Resources:
             Resource:
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${SplunkDeliveryStreamLogGroup}"
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${SplunkDeliveryStreamLogGroup}:log-stream:*"
+
+  SplunkDeliveryStreamKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: allow-KMS-access
       Roles:
         - !ImportValue account-resources:SplunkDeliveryStreamBackupBucketRole
-  SplunkDeliveryStreamKMSPolicy:
-    Type: "AWS::IAM::Policy"
-    Properties:
-      PolicyName: "allow-KMS-access"
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
@@ -255,11 +208,11 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
             Resource:
-              - !GetAtt CloudWatchKMSKey.Arn
-      Roles:
-        - !ImportValue account-resources:SplunkDeliveryStreamBackupBucketRole
+              - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
-  # Stream processor, roles,  policies and log groups
+  ##################################################
+  # Splunk Delivery Stream Processor
+  ##################################################
   SplunkDeliveryStreamProcessor:
     Type: AWS::Serverless::Function
     Properties:
@@ -284,22 +237,27 @@ Resources:
         Sourcemap: true
         EntryPoints:
           - splunkProcessor/src/splunkProcessor.js
+
   SplunkDeliveryStreamProcessorRole:
-    Type: "AWS::IAM::Role"
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Principal:
-              Service: "lambda.amazonaws.com"
-            Action: "sts:AssumeRole"
+              Service: lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
   SplunkDeliveryStreamProcessorLambdaPolicy:
-    Type: "AWS::IAM::Policy"
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: "allow-lambda-logging"
+      ManagedPolicyName: allow-lambda-logging
+      Roles:
+        - !Ref SplunkDeliveryStreamProcessorRole
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
@@ -308,14 +266,15 @@ Resources:
             Resource:
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${SplunkDeliveryStreamProcessorLogGroup}"
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${SplunkDeliveryStreamProcessorLogGroup}:log-stream:*"
+
+  SplunkDeliveryStreamProcessorKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: allow-KMS-access
       Roles:
         - !Ref SplunkDeliveryStreamProcessorRole
-  SplunkDeliveryStreamProcessorKMSPolicy:
-    Type: "AWS::IAM::Policy"
-    Properties:
-      PolicyName: "allow-KMS-access"
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
@@ -324,79 +283,84 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
             Resource:
-              - !GetAtt CloudWatchKMSKey.Arn
+              - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+
+  SplunkDeliveryStreamProcessorDeliveryStreamPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: allow-delivery-stream-put-records
       Roles:
         - !Ref SplunkDeliveryStreamProcessorRole
-  SplunkDeliveryStreamProcessorDeliveryStreamPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: "allow-delivery-stream-put-records"
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
               - firehose:PutRecordBatch
             Resource:
               - !GetAtt SplunkDeliveryStream.Arn
-      Roles:
-        - !Ref SplunkDeliveryStreamProcessorRole
+
   SplunkDeliveryStreamProcessorLogGroup:
-    Type: "AWS::Logs::LogGroup"
+    Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/lambda/${SplunkDeliveryStreamProcessor}"
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !GetAtt CloudWatchKMSKey.Arn
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
-  # Role and policy for delivery stream to invoke processor
+  ##################################################
+  # Splunk Delivery Stream Processor Invoke
+  ##################################################
   SplunkDeliveryStreamProcessorInvokeRole:
-    Type: "AWS::IAM::Role"
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Principal:
-              Service: "firehose.amazonaws.com"
-            Action: "sts:AssumeRole"
+              Service: firehose.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
   SplunkDeliveryStreamProcessorInvokePolicy:
-    Type: AWS::IAM::Policy
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: "allow-delivery-stream-invoke-processor"
+      ManagedPolicyName: allow-delivery-stream-invoke-processor
+      Roles:
+        - !Ref SplunkDeliveryStreamProcessorInvokeRole
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
               - lambda:InvokeFunction
             Resource:
               - !GetAtt SplunkDeliveryStreamProcessor.Arn
-      Roles:
-        - !Ref SplunkDeliveryStreamProcessorInvokeRole
 
 Outputs:
-  SplunkSubscriptionFilterRole:
-    Description: "SplunkSubscriptionFilterRole ARN"
-    Value: !GetAtt SplunkSubscriptionFilterRole.Arn
-    Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "SplunkSubscriptionFilterRole"]]
-  SplunkDeliveryStream:
-    Description: "SplunkDeliveryStream ARN"
-    Value: !GetAtt SplunkDeliveryStream.Arn
-    Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStream"]]
-  CloudWatchKMSKey:
-    Description: "CloudWatch KMS Key ARN"
-    Value: !GetAtt CloudWatchKMSKey.Arn
-    Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "CloudWatchKMSKey"]]
+  ##################################################
+  # Lambda Insights Outputs
+  ##################################################
   LambdaInsightsLogGroupPolicy:
     Description: "Lambda Insights Policy ARN"
     Value: !GetAtt LambdaInsightsLogGroupPolicy.PolicyArn
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "LambdaInsightsLogGroupPolicy"]]
-    
+      Name: !Join [":", [!Ref "AWS::StackName", "LambdaInsightsLogGroupPolicy"]]
+
+  ##################################################
+  # Splunk Subscription Filter Outputs
+  ##################################################
+  SplunkSubscriptionFilterRole:
+    Description: "SplunkSubscriptionFilterRole ARN"
+    Value: !GetAtt SplunkSubscriptionFilterRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SplunkSubscriptionFilterRole"]]
+
+  ##################################################
+  # Splunk Delivery Stream Outputs
+  ##################################################
+  SplunkDeliveryStream:
+    Description: "SplunkDeliveryStream ARN"
+    Value: !GetAtt SplunkDeliveryStream.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStream"]]
