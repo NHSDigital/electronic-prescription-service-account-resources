@@ -160,7 +160,7 @@ Resources:
             Action:
               - sts:AssumeRole
 
-  SplunkSubscriptionFilterDeliveryStreamPolicy:
+  SplunkSubscriptionFilterDeliveryStreamManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -174,7 +174,7 @@ Resources:
             Resource:
               - !GetAtt SplunkDeliveryStream.Arn
 
-  SplunkSubscriptionFilterKMSPolicy:
+  SplunkSubscriptionFilterKMSManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -235,7 +235,7 @@ Resources:
     Properties:
       LogGroupName: !Ref SplunkDeliveryStreamLogGroup
 
-  SplunkDeliveryStreamLoggingPolicy:
+  SplunkDeliveryStreamLoggingManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -251,7 +251,7 @@ Resources:
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${SplunkDeliveryStreamLogGroup}"
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${SplunkDeliveryStreamLogGroup}:log-stream:*"
 
-  SplunkDeliveryStreamKMSPolicy:
+  SplunkDeliveryStreamKMSManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -308,7 +308,7 @@ Resources:
             Action:
               - sts:AssumeRole
 
-  SplunkDeliveryStreamProcessorLambdaPolicy:
+  SplunkDeliveryStreamProcessorLambdaManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -324,7 +324,7 @@ Resources:
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${SplunkDeliveryStreamProcessorLogGroup}"
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${SplunkDeliveryStreamProcessorLogGroup}:log-stream:*"
 
-  SplunkDeliveryStreamProcessorKMSPolicy:
+  SplunkDeliveryStreamProcessorKMSManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -341,7 +341,7 @@ Resources:
             Resource:
               - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
-  SplunkDeliveryStreamProcessorDeliveryStreamPolicy:
+  SplunkDeliveryStreamProcessorDeliveryStreamManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -377,7 +377,7 @@ Resources:
             Action:
               - sts:AssumeRole
 
-  SplunkDeliveryStreamProcessorInvokePolicy:
+  SplunkDeliveryStreamProcessorInvokeManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
