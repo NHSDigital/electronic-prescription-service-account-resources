@@ -1,10 +1,10 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Parameters:
-  hostedZone:
+  pfpZone:
     Type: String
-    Default: "{domain}.nhs.uk"
+    Default: "prescriptionsforpatients.national.nhs.uk"
     Description: >
-      Domain name we are going to be hosting
+      Domain name for pfp
 
 Resources:
   Zone:
@@ -13,13 +13,14 @@ Resources:
     UpdateReplacePolicy: Delete
     Properties:
       HostedZoneConfig:
-        Comment: "My hosted zone"
-      Name: !Ref hostedZone
+        Comment: "hosted zone for pfp"
+      Name: !Ref pfpZone
+
   nsDevHostedZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
     Properties:
       HostedZoneId: !Ref Zone
-      Name: !Join [".", ["dev", !Ref hostedZone, ""]]
+      Name: !Join [".", ["dev", !Ref pfpZone, ""]]
       Type: NS
       TTL: "900"
       ResourceRecords:
@@ -34,7 +35,7 @@ Resources:
     Type: "AWS::Route53::RecordSet"
     Properties:
       HostedZoneId: !Ref Zone
-      Name: !Join [".", ["qa", !Ref hostedZone, ""]]
+      Name: !Join [".", ["qa", !Ref pfpZone, ""]]
       Type: NS
       TTL: "900"
       ResourceRecords:
@@ -49,7 +50,7 @@ Resources:
     Type: "AWS::Route53::RecordSet"
     Properties:
       HostedZoneId: !Ref Zone
-      Name: !Join [".", ["int", !Ref hostedZone, ""]]
+      Name: !Join [".", ["int", !Ref pfpZone, ""]]
       Type: NS
       TTL: "900"
       ResourceRecords:
@@ -64,7 +65,7 @@ Resources:
     Type: "AWS::Route53::RecordSet"
     Properties:
       HostedZoneId: !Ref Zone
-      Name: !Join [".", ["ref", !Ref hostedZone, ""]]
+      Name: !Join [".", ["ref", !Ref pfpZone, ""]]
       Type: NS
       TTL: "900"
       ResourceRecords:
@@ -79,7 +80,7 @@ Resources:
     Type: "AWS::Route53::RecordSet"
     Properties:
       HostedZoneId: !Ref Zone
-      Name: !Join [".", ["prod", !Ref hostedZone, ""]]
+      Name: !Join [".", ["prod", !Ref pfpZone, ""]]
       Type: NS
       TTL: "900"
       ResourceRecords:
