@@ -27,13 +27,16 @@ check-licenses-python:
 check-licenses-node:
 	npm run check-licenses --workspace packages/splunkProcessor
 
-lint: lint-cloudformation
+lint: lint-cloudformation lint-githubactions lint-githubaction-scripts
 
 lint-cloudformation:
 	poetry run cfn-lint -t cloudformation/*.yml
 
 lint-githubactions:
 	actionlint
+
+lint-githubaction-scripts:
+	shellcheck .github/scripts/*.sh
 
 test:
 	npm run test --workspace packages/splunkProcessor
