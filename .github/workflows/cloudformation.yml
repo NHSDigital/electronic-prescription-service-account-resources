@@ -46,6 +46,12 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      CAPABILITIES: ${{ inputs.capabilities }}
+      CHANGE_SET_VERSION: ${{ inputs.change_set_version }}
+      STACK_NAME: ${{ inputs.stack_name }}
+      TEMPLATE: ${{ inputs.template }}
+      VERSION: ${{ inputs.version }}
     outputs:
       parameters_file_name: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
     steps:
@@ -66,8 +72,6 @@ jobs:
       id: check_stack_exists
       shell: bash
       working-directory: .github/scripts
-      env:
-        STACK_NAME: ${{ inputs.stack_name }}
       run: ./check_stack_exists.sh
 
     - name: Assume create deploy stack role
@@ -101,24 +105,14 @@ jobs:
       shell: bash
       run: |
         PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }})
-        cat $PARAMETERS_FILE_NAME
+        cat "$PARAMETERS_FILE_NAME"
         echo "PARAMETERS_FILE_NAME=${PARAMETERS_FILE_NAME}" >> "$GITHUB_OUTPUT"
 
     - name: Create Change Set with new tags
       shell: bash
-      run: |
-        ROLE=$(aws cloudformation list-exports --output json | \
-        jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
-        aws cloudformation create-change-set \
-        --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }} \
-        --change-set-type UPDATE \
-        --template-body file://${{ inputs.template }} \
-        --capabilities ${{ inputs.capabilities }} \
-        --parameters file://${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }} \
-        --cli-binary-format raw-in-base64-out \
-        --tags Key="version",Value="${{ inputs.version }}" \
-        --role-arn="$ROLE"
+      working-directory: .github/scripts
+      run: ./create_changeset_new_tags.sh
+
     - name: Create Change Set with existing tags
       shell: bash
       run: |
