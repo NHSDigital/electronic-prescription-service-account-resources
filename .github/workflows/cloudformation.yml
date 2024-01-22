@@ -131,60 +131,8 @@ jobs:
 
     - name: Describe Change Set for existing tag
       shell: bash
-      run: |
-        STATUS="CREATE_IN_PROGRESS"
-        while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
-        do
-          echo "Getting change set..."
-          CHANGE_SET=$(aws cloudformation describe-change-set \
-          --stack-name ${{ inputs.stack_name }} \
-          --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}-current-tag)
-          STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
-          if [ "$STATUS" == "CREATE_IN_PROGRESS" ]; then
-            echo "sleeping 1..."
-            sleep 1
-          fi
-        done
-        echo $CHANGE_SET
-        STACK_NAME=$(jq -r '.["StackName"]' <<< "$CHANGE_SET")
-        STACK_ID=$(jq -r '.["StackId"]' <<< "$CHANGE_SET")
-        CHANGE_SET_NAME=$(jq -r '.["ChangeSetName"]' <<< "$CHANGE_SET")
-        CHANGE_SET_ID=$(jq -r '.["ChangeSetId"]' <<< "$CHANGE_SET")
-        STATUS_REASON=$(jq -r '.["StatusReason"]' <<< "$CHANGE_SET")
-        PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
-        CAPABILITIES=$(jq '.["Capabilities"]' <<< "$CHANGE_SET")
-        CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
-        TAGS=$(jq '.["Tags"]' <<< "$CHANGE_SET")
-        TAGS="${TAGS//[$'\t\r\n ']}"
-        if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information didn't contain changes. Submit different information to create a change set." ]; then
-          echo "Failed to create change set."
-          exit 1
-        fi
-        echo "<details><summary>[${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }} with existing tag</summary>" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
-        echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
-        echo "- **Tags:** $TAGS"  >> $GITHUB_STEP_SUMMARY
-        echo "- **Stack ID:** $STACK_ID" >> $GITHUB_STEP_SUMMARY
-        echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "#### Parameters:" >> $GITHUB_STEP_SUMMARY
-        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
-        echo "$PARAMETERS" >> $GITHUB_STEP_SUMMARY
-        echo "~~~"  >> $GITHUB_STEP_SUMMARY
-        echo "#### Capabilities:" >> $GITHUB_STEP_SUMMARY
-        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
-        echo "$CAPABILITIES" >> $GITHUB_STEP_SUMMARY
-        echo "~~~"  >> $GITHUB_STEP_SUMMARY
-        echo "#### Changes:" >> $GITHUB_STEP_SUMMARY
-        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
-        if [ "$STATUS" == "FAILED" ]; then
-          echo "$STATUS_REASON" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "$CHANGES" >> $GITHUB_STEP_SUMMARY
-        fi
-        echo "~~~"  >> $GITHUB_STEP_SUMMARY
-        echo "</details>" >> $GITHUB_STEP_SUMMARY
+      working-directory: .github/scripts
+      run: ./describe_changeset_for_existing_tag.sh
 
     - name: Delete Change Set for new tag
       if: ${{ inputs.execute_change_set == false }}
