@@ -158,7 +158,17 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      CHANGE_SET_VERSION: ${{ inputs.change_set_version }}
+      STACK_NAME: ${{ inputs.stack_name }}
     steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          sparse-checkout: |
+            .github/scripts
+
       - name: Assume deploy changeset role
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -168,49 +178,5 @@ jobs:
 
       - name: Execute Change Set
         shell: bash
-        run: |
-          aws cloudformation execute-change-set \
-          --stack-name ${{ inputs.stack_name }} \
-          --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
-          STATUS="UPDATE_IN_PROGRESS"
-          while [[ "$STATUS" == "UPDATE_IN_PROGRESS" ]] || [[ "$STATUS" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]] 
-          do
-            echo "Checking stack status..."
-            STACKS=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }})
-            STATUS=$(jq -r '.["Stacks"][0]["StackStatus"]' <<< "$STACKS")
-            if [ "$STATUS" == "UPDATE_IN_PROGRESS" ]; then
-              echo "sleeping 5..."
-              sleep 5
-            fi
-            if [ "$STATUS" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]; then
-              echo "sleeping 5..."
-              sleep 5
-            fi
-          done
-          if [ "$STATUS" == "ROLLBACK_IN_PROGRESS " ]; then
-            echo "Failed to execute change set, rollback in progress..."
-            echo "$STACKS"
-            exit 1
-          elif [ "$STATUS" == "ROLLBACK_COMPLETE  " ]; then
-            echo "Failed to execute change set, rollback complete."
-            echo "$STACKS"
-            exit 1
-          elif [ "$STATUS" == "UPDATE_FAILED   " ]; then
-            echo "Failed to execute change set."
-            echo "$STACKS"
-            exit 1
-          elif [ "$STATUS" == "UPDATE_ROLLBACK_IN_PROGRESS" ]; then
-            echo "Failed to execute change set, rollback in progress..."
-            echo "$STACKS"
-            exit 1
-          elif [ "$STATUS" == "UPDATE_ROLLBACK_FAILED" ]; then
-            echo "Failed to execute change set, rollback failed."
-            echo "$STACKS"
-            exit 1
-          elif [ "$STATUS" == "UPDATE_COMPLETE" ]; then
-            echo "Execute change set comeplete."
-            exit 0
-          fi
-          echo "Failed to execute change set, for unknown reason."
-          echo "$STACKS"
-          exit 1
+        working-directory: .github/scripts
+        run: ./execute_changeset.sh
