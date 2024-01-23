@@ -76,3 +76,21 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 		--force-upload \
 		--tags "version=$$VERSION_NUMBER" \
 		--parameter-overrides $$PARAMETERS
+
+prepare-pfp-route-53-management:
+	aws cloudformation create-change-set \
+			--stack-name route53-resources \
+			--change-set-name update-route-53-$$(date +"%Y-%m-%d-%H%-M%-S") \
+			--change-set-type UPDATE \
+			--template-body file://cloudformation/pfp_management_route53.yml \
+			--tags Key="stack_name",Value="route53-resources" \
+			--profile prescription-management
+
+prepare-tracker-route-53-management:
+	aws cloudformation create-change-set \
+			--stack-name route53-resources \
+			--change-set-name update-route-53-$$(date +"%Y-%m-%d-%H%-M%-S") \
+			--change-set-type UPDATE \
+			--template-body file://cloudformation/tracker_management_route53.yml \
+			--tags Key="stack_name",Value="route53-resources" \
+			--profile prescription-management
