@@ -90,7 +90,9 @@ jobs:
       
       - name: Output SPEC_VERSION
         id: output_spec_version
-        run: echo SPEC_VERSION=${{ env.SPEC_VERSION }} >> $GITHUB_OUTPUT
+        run: |
+          echo "## RELEASE TAG :** ${{ env.SPEC_VERSION  }}" >> $GITHUB_STEP_SUMMARY
+          echo SPEC_VERSION=${{ env.SPEC_VERSION }} >> $GITHUB_OUTPUT
 
       - name: Output Change Set Version
         id: output_change_set_version
