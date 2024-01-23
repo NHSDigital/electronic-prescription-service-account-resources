@@ -16,4 +16,4 @@ if [ "${current_deployed_account_resources_tag}" == "" ]; then
   export current_deployed_ci_resources_tag="v1.0.4-alpha"
 fi
 
-echo "current_deployed_tag=${current_deployed_ci_resources_tag}" >> "$GITHUB_ENV"
+echo "CURRENT_DEPLOYED_TAG=${current_deployed_ci_resources_tag}" >> "$GITHUB_ENV"

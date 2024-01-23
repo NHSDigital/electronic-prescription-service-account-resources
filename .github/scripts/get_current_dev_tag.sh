@@ -16,4 +16,4 @@ if [ "${dev_account_resources_tag}" == "" ]; then
   exit 1
 fi
 
-echo "dev_tag=${dev_account_resources_tag}" >> "$GITHUB_ENV"
+echo "DEV_TAG=${dev_account_resources_tag}" >> "$GITHUB_ENV"

@@ -61,26 +61,10 @@ runs:
     - name: create int release notes
       shell: bash
       if: inputs.TARGET_ENVIRONMENT == 'int' && inputs.CREATE_RC_RELEASE_NOTES == 'false'
-      run: |
-        # create int release notes
-        cat <<EOF > payload.json
-        { 
-            "currentTag": "$current_deployed_tag", 
-            "targetTag": "$dev_tag", 
-            "repoName": "electronic-prescription-service-account-resources", 
-            "targetEnvironment": "INT", 
-            "productName": "AWS account resources layer", 
-            "releaseNotesPageId": "749733665", 
-            "releaseNotesPageTitle": "Current AWS account resources release notes - INT"
-        }
-        EOF
-        cat payload.json
-        if [ "${{ inputs.DRY_RUN}}" != "true" ]; then
-          function_arn=$(aws cloudformation list-exports --query "Exports[?Name=='release-notes:CreateReleaseNotesLambdaArn'].Value" --output text)
-          aws lambda invoke --function-name "${function_arn}" \
-          --cli-binary-format raw-in-base64-out \
-          --payload file://payload.json out.txt
-        fi
+      env:
+        ENV: INT
+        PAGE_ID: "749733665"
+      run: ./create_env_release_notes.sh
 
     - name: create int rc release notes
       shell: bash
@@ -112,23 +96,7 @@ runs:
     - name: create prod release notes
       shell: bash
       if: inputs.TARGET_ENVIRONMENT == 'prod'
-      run: |
-        # create prod release notes
-        cat <<EOF > payload.json
-        { 
-            "currentTag": "$current_deployed_tag", 
-            "targetTag": "$dev_tag", 
-            "repoName": "electronic-prescription-service-account-resources", 
-            "targetEnvironment": "PROD", 
-            "productName": "AWS account resources layer", 
-            "releaseNotesPageId": "749733670", 
-            "releaseNotesPageTitle": "Current AWS account resources release notes - PROD"
-        }
-        EOF
-        cat payload.json
-        if [ "${{ inputs.DRY_RUN}}" != "true" ]; then
-          function_arn=$(aws cloudformation list-exports --query "Exports[?Name=='release-notes:CreateReleaseNotesLambdaArn'].Value" --output text)
-          aws lambda invoke --function-name "${function_arn}" \
-            --cli-binary-format raw-in-base64-out \
-            --payload file://payload.json out.txt
-        fi
+      env:
+        ENV: PROD
+        PAGE_ID: "749733670"
+      run: ./create_env_release_notes.sh
