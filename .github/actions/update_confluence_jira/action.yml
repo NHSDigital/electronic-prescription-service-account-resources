@@ -1,5 +1,5 @@
-name: 'Create confluence release notes'
-description: 'Do release note actions in confluence and jira'
+name: "Create confluence release notes"
+description: "Do release note actions in confluence and jira"
 inputs:
   TARGET_ENVIRONMENT:
     required: true
@@ -20,53 +20,31 @@ inputs:
   TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE:
     required: true
     description: "The target cloud formation deploy role"
-  DRY_RUN:
-    required: false
-    description: "whether to use a dry run and do not connect to anything"
-    default: "false"
 
 runs:
   using: "composite"
   steps:
     - name: connect to target account
-      if: inputs.DRY_RUN != 'true'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ inputs.TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
         role-session-name: account-resources-release-notes-target
         unset-current-credentials: true
+
     - name: Get deployed tags on target
       shell: bash
-      run: |
-        # get current deployed tags on target
-        if [ "${{ inputs.DRY_RUN}}" != "true" ]; then
-          export current_deployed_account_resources_tag=$(aws cloudformation describe-stacks --stack-name account-resources --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
-          export current_deployed_ci_resources_tag=$(aws cloudformation describe-stacks --stack-name ci-resources --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
-        else
-          export current_deployed_account_resources_tag="current_deployed_tag"
-          export current_deployed_ci_resources_tag="current_deployed_tag"
-        fi
+      working-directory: .github/scripts
+      run: ./get_target_deployed_tag.sh
 
-        if [ "${current_deployed_account_resources_tag}" != "${current_deployed_ci_resources_tag}" ]; then
-          echo "ci-resources and account-resources tags do not match in target. Please investigate"
-          exit 1
-        fi
-
-        if [ "${current_deployed_account_resources_tag}" == "" ]; then
-          echo "Can not find target tag. Using initial tag in repo"
-          export current_deployed_ci_resources_tag="v1.0.4-alpha"
-        fi
-
-        echo "current_deployed_tag=${current_deployed_ci_resources_tag}" >> "$GITHUB_ENV"
     - name: connect to dev account to get tags
-      if: inputs.DRY_RUN != 'true'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ inputs.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
         role-session-name: account-resources-release-notes-dev
         unset-current-credentials: true
+
     - name: get current dev tag
       shell: bash
       run: |
@@ -90,14 +68,15 @@ runs:
         fi
 
         echo "dev_tag=${dev_account_resources_tag}" >> "$GITHUB_ENV"
+
     - name: connect to dev account to run release notes lambda
-      if: inputs.DRY_RUN != 'true'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ inputs.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
         role-session-name: account-resources-release-notes-run-lambda
         unset-current-credentials: true
+
     - name: create int release notes
       shell: bash
       if: inputs.TARGET_ENVIRONMENT == 'int' && inputs.CREATE_RC_RELEASE_NOTES == 'false'
@@ -121,6 +100,7 @@ runs:
           --cli-binary-format raw-in-base64-out \
           --payload file://payload.json out.txt
         fi
+
     - name: create int rc release notes
       shell: bash
       if: inputs.TARGET_ENVIRONMENT == 'int' && inputs.CREATE_RC_RELEASE_NOTES == 'true'
@@ -147,6 +127,7 @@ runs:
           --cli-binary-format raw-in-base64-out \
           --payload file://payload.json out.txt
         fi
+
     - name: create prod release notes
       shell: bash
       if: inputs.TARGET_ENVIRONMENT == 'prod'
