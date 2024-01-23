@@ -162,7 +162,7 @@ jobs:
       CHANGE_SET_VERSION: ${{ inputs.change_set_version }}
       STACK_NAME: ${{ inputs.stack_name }}
     steps:
-      - name: checkout code
+      - name: Checkout scripts
         uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH_NAME }}
