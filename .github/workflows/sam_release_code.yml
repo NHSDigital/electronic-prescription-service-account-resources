@@ -50,6 +50,13 @@ jobs:
     outputs:
       parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
     steps:
+      - name: Checkout scripts
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          sparse-checkout: |
+            .github/scripts
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -57,8 +64,8 @@ jobs:
           role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
           role-session-name: github-actions
 
-      - uses: actions/download-artifact@v4
-        name: download build artifact
+      - name: download build artifact
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.BUILD_ARTIFACT }}
           path: .
@@ -72,19 +79,16 @@ jobs:
         shell: bash
         run: |
           PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }} )
-          echo "PARAMETERS=${PARAMETERS}" >> $GITHUB_OUTPUT
+          echo "PARAMETERS=${PARAMETERS}" >> "$GITHUB_OUTPUT"
 
-      - shell: bash
-        name: release code
-        run: |
-          echo ${{ inputs.COMMIT_ID }}
-          export artifact_bucket=$(aws cloudformation list-exports --output json | \
-            jq -r '.Exports[] | select(.Name == "account-resources:ArtifactsBucket") | .Value' |grep -o '[^:]*$')
-          export artifact_bucket_prefix=lambda_resources/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
-          export template_file=template.yaml
-          export stack_name=${{ inputs.STACK_NAME }}
-          export cloud_formation_execution_role=$(aws cloudformation list-exports --output json | \
-              jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
-          export PARAMETERS='${{ steps.parse_parameters.outputs.PARAMETERS }}'
-          export VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}
-          make sam-deploy-package
+      - name: release code
+        shell: bash
+        working-directory: 
+          .github/scripts
+        env:
+          ARTIFACT_BUCKET_PREFIX: ${{ inputs.ARTIFACT_BUCKET_PREFIX }}
+          COMMIT_ID: ${{ inputs.COMMIT_ID }}
+          PARAMETERS: ${{ steps.parse_parameters.outputs.PARAMETERS }}
+          STACK_NAME: ${{ inputs.STACK_NAME }}
+          VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
+        run: ./release_code.sh
