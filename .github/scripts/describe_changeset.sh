@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=SC2153
+
 STATUS="CREATE_IN_PROGRESS"
 while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
 do
   echo "Getting change set..."
   CHANGE_SET=$(aws cloudformation describe-change-set \
     --stack-name "$STACK_NAME" \
-    --change-set-name "$STACK_NAME-$CHANGE_SET_VERSION")
+    --change-set-name "$CHANGESET_NAME")
   STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
   if [ "$STATUS" == "CREATE_IN_PROGRESS" ]; then
     echo "sleeping 1..."
@@ -32,7 +34,7 @@ if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information
 fi
 
 {
-  echo "<details><summary>[$TARGET_ENVIRONMENT] FULL Change Set for $STACK_NAME</summary>"
+  echo "<details><summary>$SUMMARY</summary>"
   echo ""
   echo "- **Stack Name:** $STACK_NAME"
   echo "- **Change Set Name:** $CHANGE_SET_NAME"

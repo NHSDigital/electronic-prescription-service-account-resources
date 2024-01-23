@@ -127,12 +127,18 @@ jobs:
     - name: Describe Full Change Set
       shell: bash
       working-directory: .github/scripts
-      run: ./describe_full_changeset.sh
+      env:
+        CHANGESET_NAME: ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
+        SUMMARY: "[${{ inputs.target_environment }}] FULL Change Set for ${{ inputs.stack_name }}"
+      run: ./describe_changeset.sh
 
     - name: Describe Change Set for existing tag
       shell: bash
       working-directory: .github/scripts
-      run: ./describe_changeset_for_existing_tag.sh
+      env:
+        CHANGESET_NAME: ${{ inputs.stack_name }}-${{ inputs.change_set_version }}-current-tag
+        SUMMARY: "[${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }} with existing tag"
+      run: ./describe_changeset.sh
 
     - name: Delete Change Set for new tag
       if: ${{ inputs.execute_change_set == false }}
