@@ -7,7 +7,7 @@ cat <<EOF > payload.json
   "repoName": "electronic-prescription-service-account-resources", 
   "targetEnvironment": "INT", 
   "productName": "AWS account resources layer", 
-  "releaseNotesPageId": "749733675", 
+  "releaseNotesPageId": "$PAGE_ID", 
   "releaseNotesPageTitle": "AWS-account-resources-$RELEASE_TAG - Deployed to [INT] on $(date +'%d-%m-%y')",
   "createReleaseCandidate": "true",
   "releasePrefix": "AWS-account-resources-"
