@@ -34,7 +34,8 @@ runs:
         EOF
         cat payload.json
         if [ "${{ inputs.DRY_RUN}}" != "true" ]; then
-          aws lambda invoke --function-name MarkJiraReleased \
+          function_arn=$(aws cloudformation list-exports --query "Exports[?Name=='release-notes:MarkJiraReleasedLambdaArn'].Value" --output text)
+          aws lambda invoke --function-name "${function_arn}" \
           --cli-binary-format raw-in-base64-out \
           --payload file://payload.json out.txt
         fi
