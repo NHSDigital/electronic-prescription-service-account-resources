@@ -8,7 +8,7 @@ aws cloudformation create-change-set \
   --change-set-type UPDATE \
   --template-body "file://$TEMPLATE" \
   --capabilities "$CAPABILITIES" \
-  --parameters "file://../.$PARAMETERS" \
+  --parameters "file://../../$PARAMETERS" \
   --cli-binary-format raw-in-base64-out \
   --tags "Key=\"version\",Value=\"$VERSION\"" \
   --role-arn="$ROLE"
