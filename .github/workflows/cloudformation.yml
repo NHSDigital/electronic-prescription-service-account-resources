@@ -112,11 +112,15 @@ jobs:
     - name: Create Change Set with new tags
       shell: bash
       working-directory: .github/scripts
+      env:
+        PARAMETERS: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
       run: ./create_changeset_new_tags.sh
 
     - name: Create Change Set with existing tags
       shell: bash
       working-directory: .github/scripts
+      env:
+        PARAMETERS: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
       run: ./create_changeset_existing_tags.sh
 
     - name: Header output
