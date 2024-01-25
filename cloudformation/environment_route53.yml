@@ -18,7 +18,7 @@ Resources:
     Properties:
       HostedZoneConfig:
         Comment: !Sub
-          - "hosted zone for ${Domain}"
+          - "My hosted zone for ${Domain}"
           - Domain: !Join [".", [!Ref environment, !Ref hostedZone]]
       Name: !Join [".", [!Ref environment, !Ref hostedZone]]
 
