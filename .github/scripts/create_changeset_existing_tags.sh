@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+cd ../..
+
 current_deployed_tag=$(aws cloudformation describe-stacks --stack-name  "$STACK_NAME" --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
 if [ "${current_deployed_tag}" == "" ]; then
   echo "Can not find target tag. Using initial tag in repo"
@@ -14,7 +16,7 @@ aws cloudformation create-change-set \
   --change-set-type UPDATE \
   --template-body "file://$TEMPLATE" \
   --capabilities "$CAPABILITIES" \
-  --parameters "file://../../$PARAMETERS" \
+  --parameters "file://$PARAMETERS" \
   --cli-binary-format raw-in-base64-out \
   --tags "Key=\"version\",Value=\"${current_deployed_tag}\"" \
   --role-arn="$ROLE"

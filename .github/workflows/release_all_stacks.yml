@@ -50,7 +50,7 @@ jobs:
       version: ${{ inputs.version }}
       change_set_version: ${{ inputs.change_set_version }}
       stack_name: ci-resources
-      template: ../../cloudformation/ci_resources.yml
+      template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
       execute_change_set: ${{ inputs.execute_change_set }}
     secrets:
@@ -66,7 +66,7 @@ jobs:
       version: ${{ inputs.version }}
       change_set_version: ${{ inputs.change_set_version }}
       stack_name: account-resources
-      template: ../../cloudformation/account_resources.yml
+      template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_NAMED_IAM
       execute_change_set: ${{ inputs.execute_change_set }}
     secrets:
