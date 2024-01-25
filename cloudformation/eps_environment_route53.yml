@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  environment:
+    Type: String
+    Default: "dev"
+    Description: >
+      Environment we are deploying to
+    AllowedValues: [dev, ref, qa, int, prod]
+
+Resources:
+  DNSRecordHostedZoneEPS:
+    Type: "AWS::Route53::HostedZone"
+    Properties:
+      HostedZoneConfig:
+        Comment: !Sub
+          - "hosted zone for ${Domain}"
+          - Domain: !Join [".", [!Ref environment, "eps.national.nhs.uk"]]
+      Name: !Join [".", [!Ref environment, "eps.national.nhs.uk"]]
+
+Outputs:
+  ZoneID:
+    Description: The ZoneID of the hosted zone.
+    Value: !Ref DNSRecordHostedZoneEPS
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "EPS-ZoneID"]]
+  domain:
+    Description: The domain of the hosted zone.
+    Value: !Join [".", [!Ref environment, "eps.national.nhs.uk"]]
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "EPS-domain"]]

@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  EPSZone:
+    Type: "AWS::Route53::HostedZone"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneConfig:
+        Comment: "hosted zone for eps"
+      Name: "eps.national.nhs.uk"
+
+  nsDevHostedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "dev.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+        ]
+
+  nsQAHostedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "qa.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+        ]
+
+  nsIntHostedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "int.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+        ]
+
+  nsRefHostedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "ref.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+        ]
+
+  nsProdHostedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "prod.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+        ]
