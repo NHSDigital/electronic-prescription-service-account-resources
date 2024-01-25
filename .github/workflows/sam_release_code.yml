@@ -83,8 +83,7 @@ jobs:
 
       - name: release code
         shell: bash
-        working-directory: 
-          .github/scripts
+        working-directory: .github/scripts
         env:
           ARTIFACT_BUCKET_PREFIX: ${{ inputs.ARTIFACT_BUCKET_PREFIX }}
           COMMIT_ID: ${{ inputs.COMMIT_ID }}

@@ -12,7 +12,6 @@ runs:
   using: "composite"
   steps:
     - name: connect to dev account
-      if: ${{ inputs.DRY_RUN }} != 'true'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2

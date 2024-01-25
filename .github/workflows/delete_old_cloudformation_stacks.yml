@@ -34,6 +34,5 @@ jobs:
 
       - name: delete stacks
         shell: bash
-        working-directory: 
-          .github/scripts
+        working-directory: .github/scripts
         run: ./delete_stacks.sh
