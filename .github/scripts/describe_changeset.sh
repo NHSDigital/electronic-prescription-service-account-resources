@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC2153
-
 STATUS="CREATE_IN_PROGRESS"
 while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
 do
@@ -19,7 +17,6 @@ done
 echo "$CHANGE_SET"
 STACK_NAME=$(jq -r '.["StackName"]' <<< "$CHANGE_SET")
 STACK_ID=$(jq -r '.["StackId"]' <<< "$CHANGE_SET")
-CHANGE_SET_NAME=$(jq -r '.["ChangeSetName"]' <<< "$CHANGE_SET")
 CHANGE_SET_ID=$(jq -r '.["ChangeSetId"]' <<< "$CHANGE_SET")
 STATUS_REASON=$(jq -r '.["StatusReason"]' <<< "$CHANGE_SET")
 PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
@@ -37,7 +34,7 @@ fi
   echo "<details><summary>$SUMMARY</summary>"
   echo ""
   echo "- **Stack Name:** $STACK_NAME"
-  echo "- **Change Set Name:** $CHANGE_SET_NAME"
+  echo "- **Change Set Name:** $CHANGESET_NAME"
   echo "- **Tags:** $TAGS"
   echo "- **Stack ID:** $STACK_ID"
   echo "- **Change Set ID:** $CHANGE_SET_ID"

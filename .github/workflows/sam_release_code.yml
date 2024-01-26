@@ -85,9 +85,10 @@ jobs:
         shell: bash
         working-directory: .github/scripts
         env:
-          ARTIFACT_BUCKET_PREFIX: ${{ inputs.ARTIFACT_BUCKET_PREFIX }}
+          ARTIFACT_BUCKET_PREFIX: lambda_resources/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
           COMMIT_ID: ${{ inputs.COMMIT_ID }}
           PARAMETERS: ${{ steps.parse_parameters.outputs.PARAMETERS }}
           STACK_NAME: ${{ inputs.STACK_NAME }}
+          TEMPLATE_FILE: template.yaml
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
         run: ./release_code.sh

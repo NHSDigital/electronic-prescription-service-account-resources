@@ -111,7 +111,7 @@ jobs:
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
@@ -144,7 +144,7 @@ jobs:
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
@@ -162,7 +162,7 @@ jobs:
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
@@ -196,7 +196,7 @@ jobs:
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
@@ -229,7 +229,7 @@ jobs:
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
