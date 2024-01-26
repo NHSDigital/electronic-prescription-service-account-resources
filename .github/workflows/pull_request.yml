@@ -59,7 +59,7 @@ jobs:
       change_set_version: pr-${{github.event.number}}
       execute_change_set: false
       lambda_stack_suffix: -pr-${{needs.get_issue_number.outputs.issue_number}}
-      artifact_buckt_prefix: PR-${{needs.get_issue_number.outputs.issue_number}}
+      artifact_bucket_prefix: PR-${{needs.get_issue_number.outputs.issue_number}}
       version_number: PR-${{ needs.get_issue_number.outputs.issue_number }}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights/pr-${{ needs.get_issue_number.outputs.issue_number }}
