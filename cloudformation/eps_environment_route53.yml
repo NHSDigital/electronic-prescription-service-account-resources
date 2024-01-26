@@ -19,12 +19,17 @@ Resources:
 
 Outputs:
   ZoneID:
-    Description: The ZoneID of the hosted zone.
+    Description: The ZoneID of the hosted zone
     Value: !Ref DNSRecordHostedZoneEPS
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "EPS-ZoneID"]]
   domain:
-    Description: The domain of the hosted zone.
+    Description: The domain of the hosted zone
     Value: !Join [".", [!Ref environment, "eps.national.nhs.uk"]]
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "EPS-domain"]]
+  NameServers:
+    Description: The name servers of the hosted zone
+    Value: !Join 
+      - ", "
+      - !GetAtt DNSRecordHostedZoneEPS.NameServers
