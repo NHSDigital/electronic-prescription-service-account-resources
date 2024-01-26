@@ -12,6 +12,8 @@ Resources:
 
   nsDevHostedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "dev.eps.national.nhs.uk"
@@ -19,10 +21,16 @@ Resources:
       TTL: "900"
       ResourceRecords:
         [
+          "ns-352.awsdns-44.com", 
+          "ns-1093.awsdns-08.org", 
+          "ns-728.awsdns-27.net", 
+          "ns-1618.awsdns-10.co.uk",
         ]
 
   nsQAHostedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "qa.eps.national.nhs.uk"
@@ -30,10 +38,13 @@ Resources:
       TTL: "900"
       ResourceRecords:
         [
+          "changeme.com", 
         ]
 
   nsIntHostedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "int.eps.national.nhs.uk"
@@ -41,10 +52,13 @@ Resources:
       TTL: "900"
       ResourceRecords:
         [
+          "changeme.com", 
         ]
 
   nsRefHostedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "ref.eps.national.nhs.uk"
@@ -52,10 +66,13 @@ Resources:
       TTL: "900"
       ResourceRecords:
         [
+          "changeme.com", 
         ]
 
   nsProdHostedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "prod.eps.national.nhs.uk"
@@ -63,4 +80,5 @@ Resources:
       TTL: "900"
       ResourceRecords:
         [
+          "changeme.com", 
         ]
