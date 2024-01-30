@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  EPSZone:
+    Type: "AWS::Route53::HostedZone"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneConfig:
+        Comment: "hosted zone for eps"
+      Name: "eps.national.nhs.uk"
+
+  nsDevHostedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "dev.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+          "ns-352.awsdns-44.com", 
+          "ns-1093.awsdns-08.org", 
+          "ns-728.awsdns-27.net", 
+          "ns-1618.awsdns-10.co.uk",
+        ]
+
+  nsQAHostedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "qa.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+          "ns-1355.awsdns-41.org", 
+          "ns-1553.awsdns-02.co.uk", 
+          "ns-374.awsdns-46.com", 
+          "ns-887.awsdns-46.net",
+        ]
+
+  nsIntHostedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "int.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+          "ns-1394.awsdns-46.org", 
+          "ns-1756.awsdns-27.co.uk", 
+          "ns-242.awsdns-30.com", 
+          "ns-675.awsdns-20.net",
+        ]
+
+  nsRefHostedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "ref.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+          "ns-1635.awsdns-12.co.uk", 
+          "ns-464.awsdns-58.com", 
+          "ns-834.awsdns-40.net", 
+          "ns-1400.awsdns-47.org",
+        ]
+
+  nsProdHostedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "prod.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+          "ns-1986.awsdns-56.co.uk", 
+          "ns-1289.awsdns-33.org", 
+          "ns-91.awsdns-11.com", 
+          "ns-651.awsdns-17.net",
+        ]

@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  environment:
+    Type: String
+    Description: >
+      Environment we are creating route 53 hosted zone in
+    AllowedValues: [dev, ref, qa, int, prod]
+
+Resources:
+  DNSRecordHostedZoneEPS:
+    Type: "AWS::Route53::HostedZone"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneConfig:
+        Comment: !Sub
+          - "hosted zone for ${Domain}"
+          - Domain: !Join [".", [!Ref environment, "eps.national.nhs.uk"]]
+      Name: !Join [".", [!Ref environment, "eps.national.nhs.uk"]]
+
+Outputs:
+  ZoneID:
+    Description: The ZoneID of the hosted zone
+    Value: !Ref DNSRecordHostedZoneEPS
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "EPS-ZoneID"]]
+  domain:
+    Description: The domain of the hosted zone
+    Value: !Join [".", [!Ref environment, "eps.national.nhs.uk"]]
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "EPS-domain"]]
+  NameServers:
+    Description: The name servers of the hosted zone
+    Value: !Join 
+      - ", "
+      - !GetAtt DNSRecordHostedZoneEPS.NameServers
