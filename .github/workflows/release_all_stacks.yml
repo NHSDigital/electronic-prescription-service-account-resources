@@ -18,7 +18,7 @@ on:
         lambda_stack_suffix:
           required: true
           type: string
-        artifact_buckt_prefix:
+        artifact_bucket_prefix:
           required: true
           type: string
         version_number:
@@ -79,7 +79,7 @@ jobs:
     with:
       env: ${{ inputs.target_environment }}
       STACK_NAME: lambda-resources${{ inputs.lambda_stack_suffix }}
-      ARTIFACT_BUCKET_PREFIX: ${{ inputs.artifact_buckt_prefix }}
+      ARTIFACT_BUCKET_PREFIX: ${{ inputs.artifact_bucket_prefix }}
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-lambda
       BUILD_ARTIFACT: packaged_code
       VERSION_NUMBER: ${{ inputs.version_number }}

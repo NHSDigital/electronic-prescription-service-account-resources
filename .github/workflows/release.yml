@@ -63,11 +63,11 @@ jobs:
         run: make install
       
       - name: Set SPEC_VERSION for merges to main
-        run: echo "SPEC_VERSION=$(poetry run python scripts/calculate_version.py)" >> $GITHUB_ENV
+        run: echo "SPEC_VERSION=$(poetry run python scripts/calculate_version.py)" >> "$GITHUB_ENV"
         if: github.ref == 'refs/heads/main'
       
       - name: Set SPEC_VERSION for tags
-        run: echo "SPEC_VERSION=${{  github.ref_name }}" >> $GITHUB_ENV
+        run: echo "SPEC_VERSION=${{  github.ref_name }}" >> "$GITHUB_ENV"
         if: github.ref != 'refs/heads/main'
       
       - name: Create Release
@@ -91,8 +91,8 @@ jobs:
       - name: Output SPEC_VERSION
         id: output_spec_version
         run: |
-          echo "## RELEASE TAG :** ${{ env.SPEC_VERSION  }}" >> $GITHUB_STEP_SUMMARY
-          echo SPEC_VERSION=${{ env.SPEC_VERSION }} >> $GITHUB_OUTPUT
+          echo "## RELEASE TAG :** ${{ env.SPEC_VERSION  }}" >> "$GITHUB_STEP_SUMMARY"
+          echo SPEC_VERSION=${{ env.SPEC_VERSION }} >> "$GITHUB_OUTPUT"
 
       - name: Output Change Set Version
         id: output_change_set_version
@@ -100,7 +100,7 @@ jobs:
         run: |
           TIMESTAMP=$(date +%s)
           VERSION=$(echo ${{ env.SPEC_VERSION }} | tr . -)
-          echo CHANGE_SET_VERSION=$VERSION-$TIMESTAMP >> $GITHUB_OUTPUT        
+          echo CHANGE_SET_VERSION="$VERSION-$TIMESTAMP" >> "$GITHUB_OUTPUT"
 
   deploy_dev_stacks:
     needs: [get_commit_id, package_code, tag_release]
@@ -111,7 +111,7 @@ jobs:
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
@@ -144,7 +144,7 @@ jobs:
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
@@ -162,7 +162,7 @@ jobs:
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
@@ -196,7 +196,7 @@ jobs:
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
@@ -229,7 +229,7 @@ jobs:
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_buckt_prefix: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
       version_number: ${{needs.tag_release.outputs.spec_version}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
