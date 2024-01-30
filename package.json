@@ -14,7 +14,8 @@
   "author": "NHS Digital",
   "license": "MIT",
   "workspaces": [
-    "packages/splunkProcessor"
+    "packages/splunkProcessor",
+    "packages/certificateChecker"
   ],
   "devDependencies": {
     "aws-lambda": "^1.0.7",
@@ -32,6 +33,8 @@
     "@aws-sdk/client-secrets-manager": "^3.485.0",
     "@types/aws-lambda": "^8.10.131",
     "archiver": "^6.0.1",
-    "esbuild": "^0.19.8"
+    "esbuild": "^0.19.8",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2"
   }
 }

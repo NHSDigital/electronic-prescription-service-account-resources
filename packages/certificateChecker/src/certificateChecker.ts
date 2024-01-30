@@ -1,62 +1,61 @@
 import { SecretsManagerClient, ListSecretsCommand, BatchGetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 import { Logger } from "@aws-lambda-powertools/logger";
 import { checkCertificateExpiry } from "./helpers";
+import { Secret } from '../src/helpers';
+
 
 const secretsClient = new SecretsManagerClient({});
 
-const logger = new Logger({serviceName: "splunkProcessor"})
+const logger = new Logger({ serviceName: "splunkProcessor" })
 
 
+export const getCertificates = async (): Promise<void> => {
+  try {
+    const listSecretsCommand = new ListSecretsCommand({});
+    const listSecretsResponse = await secretsClient.send(listSecretsCommand);
 
-const getCertificates = async (): Promise<{ [key: string]: boolean }> => {
-  const listSecretsCommand = new ListSecretsCommand({});
-  const listSecretsResponse = await secretsClient.send(listSecretsCommand);
+    const secretList = listSecretsResponse.SecretList || [];
 
-  const secretList = listSecretsResponse.SecretList || [];
-  const secretIds = secretList.map(secret => secret && secret.ARN).filter(Boolean) as string[];
+    if (secretList.length === 0) {
+      logger.info("No 'cert' secrets found.");
+      return;
+    }
 
-  if (secretIds.length === 0) {
-    console.log("No 'cert' secrets found.");
-    return {};
-  }
+    const secretIds = secretList.map(secret => secret && secret.ARN).filter(Boolean) as string[];
 
-  const batchGetSecretValueCommand = new BatchGetSecretValueCommand({
-    SecretIdList: secretIds,
-  });
+    const batchGetSecretValueCommand = new BatchGetSecretValueCommand({
+      SecretIdList: secretIds,
+    });
 
-  const batchGetSecretValueResponse = await secretsClient.send(batchGetSecretValueCommand);
+    const batchGetSecretValueResponse = await secretsClient.send(batchGetSecretValueCommand);
 
-  const result: { [key: string]: boolean } = {};
+    if (batchGetSecretValueResponse.SecretValues) {
+      for (const secretValue of batchGetSecretValueResponse.SecretValues) {
+        try {
+          if (secretValue.SecretString) {
+            const secret: Secret = {
+              ARN: secretValue.ARN || '',
+              CreatedDate: secretValue.CreatedDate ? new Date(secretValue.CreatedDate) : undefined,
+              Name: secretValue.Name || '',
+              SecretString: secretValue.SecretString,
+              VersionId: secretValue.VersionId || '',
+              VersionStages: secretValue.VersionStages || [],
+            };
 
-  if(batchGetSecretValueResponse.SecretValues){
-
-
-  for (const secret of batchGetSecretValueResponse.SecretValues) {
-    try {
-      logger.info("Lambda execution started.");
-
-      const certificates = await getCertificates();
-  
-      for (const [certName, isExpired] of Object.entries(certificates)) {
-        // Assuming the certificate name is the property name and isExpired is a boolean value
-        // Modify this loop based on the actual structure of your certificates object
-  
-        if (isExpired) {
-          logger.critical(`Certificate ${certName} has expired`);
-        } else {
-          logger.info(`Checked certificate ${certName}`);
+            checkCertificateExpiry(secret, logger);
+          }
+        } catch (error) {
+          logger.error(`Error processing secret ${secretValue.Name}: ${error}`);
         }
       }
-  
-      logger.info("Lambda execution completed.");
-    } catch (error) {
-      logger.error(`Error processing secret ${secret.Name}: ${error}`)}
-  }}
-
-  return result;
+    }
+  } catch (error) {
+    logger.error(`Error in getCertificates: ${error}`);
+    throw error;
+  }
 };
 
-export const handler = async function (event) {
+export const handler = async function () {
   try {
     logger.info("Lambda execution started.");
 

@@ -1,24 +1,23 @@
 import crypto from 'crypto';
 import { Logger } from "@aws-lambda-powertools/logger";
 
-const logger = new Logger({ serviceName: "splunkProcessor" });
+// const logger = new Logger({ serviceName: "certificateChecker" });
 
 export interface Secret {
   ARN: string;
-  CreatedDate: number;
+  CreatedDate?: Date;
   Name: string;
   SecretString: string;
   VersionId: string;
   VersionStages: string[];
 }
 
-export function checkCertificateExpiry(secret: Secret): void {
+
+export function checkCertificateExpiry(secret: Secret, logger: Logger): void {
   try {
     if (secret.SecretString) {
-      const certificate = new crypto.X509Certificate(`-----BEGIN CERTIFICATE-----\n${JSON.parse(secret.SecretString)?.x509Certificate || ''}\n-----END CERTIFICATE-----`);
+      const certificate = new crypto.X509Certificate(secret.SecretString);
 
-      // Logging details for each check
-      logger.info(`Checking certificate ${secret.Name}, expiry date: ${certificate.validTo}`);
 
       const today = new Date();
       const certificateEndDate = new Date(certificate.validTo);
@@ -29,9 +28,13 @@ export function checkCertificateExpiry(secret: Secret): void {
         logger.critical(`Certificate ${secret.Name} has expired`);
       } else if (daysToExpiry < 30) {
         logger.error(`Certificate ${secret.Name} expires in ${daysToExpiry} days`);
+      } else {
+        logger.info(`Checking certificate ${secret.Name}, expiry date: ${certificate.validTo}`);
+
       }
     }
   } catch (error) {
     logger.error(`Error processing secret ${secret.Name}: ${error}`);
+    throw error
   }
 }
