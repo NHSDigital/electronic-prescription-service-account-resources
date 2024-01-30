@@ -38,7 +38,10 @@ Resources:
       TTL: "900"
       ResourceRecords:
         [
-          "changeme.com", 
+          "ns-1355.awsdns-41.org", 
+          "ns-1553.awsdns-02.co.uk", 
+          "ns-374.awsdns-46.com", 
+          "ns-887.awsdns-46.net",
         ]
 
   nsIntHostedEPSZoneRecordSet:
@@ -52,7 +55,10 @@ Resources:
       TTL: "900"
       ResourceRecords:
         [
-          "changeme.com", 
+          "ns-1394.awsdns-46.org", 
+          "ns-1756.awsdns-27.co.uk", 
+          "ns-242.awsdns-30.com", 
+          "ns-675.awsdns-20.net",
         ]
 
   nsRefHostedEPSZoneRecordSet:
@@ -66,7 +72,10 @@ Resources:
       TTL: "900"
       ResourceRecords:
         [
-          "changeme.com", 
+          "ns-1635.awsdns-12.co.uk", 
+          "ns-464.awsdns-58.com", 
+          "ns-834.awsdns-40.net", 
+          "ns-1400.awsdns-47.org",
         ]
 
   nsProdHostedEPSZoneRecordSet:
@@ -80,5 +89,8 @@ Resources:
       TTL: "900"
       ResourceRecords:
         [
-          "changeme.com", 
+          "ns-1986.awsdns-56.co.uk", 
+          "ns-1289.awsdns-33.org", 
+          "ns-91.awsdns-11.com", 
+          "ns-651.awsdns-17.net",
         ]
