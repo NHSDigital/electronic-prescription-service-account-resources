@@ -23,6 +23,9 @@ inputs:
   TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE:
     required: true
     description: "The target cloud formation deploy role"
+  RELEASE_URL:
+    required: false
+    description: "The url of the github action run"
 
 runs:
   using: "composite"
@@ -77,6 +80,7 @@ runs:
       env:
         PAGE_ID: ${{ inputs.CONFLUENCE_PAGE_ID}}
         RELEASE_TAG: ${{ inputs.RELEASE_TAG }}
+        RELEASE_URL: ${{ inputs.RELEASE_URL }}
       run: ./create_int_rc_release_notes.sh
 
     - name: create prod release notes

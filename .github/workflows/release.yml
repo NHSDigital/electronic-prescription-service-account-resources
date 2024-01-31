@@ -181,6 +181,7 @@ jobs:
       CREATE_PROD_RELEASE_NOTES: false
       MARK_JIRA_RELEASED: false
       TARGET_ENVIRONMENT: int-ci
+      RELEASE_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     secrets:
       DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}      
       DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      

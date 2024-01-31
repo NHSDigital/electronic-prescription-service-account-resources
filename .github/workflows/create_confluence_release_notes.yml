@@ -21,6 +21,9 @@ on:
       TARGET_ENVIRONMENT:
         required: false
         type: string
+      RELEASE_URL:
+        required: false
+        type: string
     secrets:
       DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE:
         required: true
@@ -59,6 +62,7 @@ jobs:
           DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
           DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
+          RELEASE_URL: ${{ inputs.RELEASE_URL }}
   
       - name: create_int_release_notes
         uses: ./.github/actions/update_confluence_jira
