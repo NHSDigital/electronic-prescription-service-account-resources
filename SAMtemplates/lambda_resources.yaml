@@ -373,56 +373,6 @@ Resources:
           Type: ScheduleV2
           Properties:
             ScheduleExpression: "rate(1 day)"
-  #   Type: AWS::Lambda::Function
-  #   Properties:
-  #     FunctionName: CertExpiryCheckFunction
-  #     Handler: index.handler
-  #     Runtime: nodejs14.x
-  #     Role: arn:aws:iam::123456789012:role/CertExpiryCheckRole
-  #     Environment:
-  #       Variables:
-  #         INTERVAL_TO_CHECK_EXPIRY_DAYS: 30  # Adjust the interval as needed
-  #         CERTIFICATE_NAMES: "certificate1,certificate2,certificate3"  # Add your certificate names
-  #     # Add other function properties as needed
-
-  # CertExpiryCheckRole:
-  #   Type: AWS::IAM::Role
-  #   Properties:
-  #     RoleName: CertExpiryCheckRole
-  #     AssumeRolePolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #         - Effect: Allow
-  #           Principal:
-  #             Service: lambda.amazonaws.com
-  #           Action: sts:AssumeRole
-  #     Policies:
-  #       - PolicyName: CertExpiryCheckPolicy
-  #         PolicyDocument:
-  #           Version: "2012-10-17"
-  #           Statement:
-  #             - Effect: Allow
-  #               Action:
-  #                 - logs:CreateLogGroup
-  #                 - logs:CreateLogStream
-  #                 - logs:PutLogEvents
-  #               Resource: arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/CertExpiryCheckFunction:*
-
-  # CertExpiryCheckLogGroup:
-  #   Type: AWS::Logs::LogGroup
-  #   Properties:
-  #     LogGroupName: /aws/lambda/CertExpiryCheckFunction
-
-  # CertExpiryCheckEventRule:
-  #   Type: AWS::Events::Rule
-  #   Properties:
-  #     Name: CertExpiryCheckEventRule
-  #     Description: Daily trigger for certificate expiry check
-  #     ScheduleExpression: cron(0 0 * * ? *)  # Adjust the cron expression as needed
-  #     State: ENABLED
-  #     Targets:
-  #       - Arn: !GetAtt CertExpiryCheckFunction.Arn
-  #         Id: CertExpiryCheckTarget
 Outputs:
   SplunkSubscriptionFilterRole:
     Description: "SplunkSubscriptionFilterRole ARN"

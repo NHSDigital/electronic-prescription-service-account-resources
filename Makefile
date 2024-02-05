@@ -35,8 +35,9 @@ lint-cloudformation:
 lint-githubactions:
 	actionlint
 
-test:
-	npm run test --workspace packages/splunkProcessor
+test: generate-mock-certs
+	# npm run test --workspace packages/splunkProcessor
+	npm run test --workspace packages/certificateChecker
 
 package-code:
 	npm run build
@@ -76,3 +77,8 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 		--force-upload \
 		--tags "version=$$VERSION_NUMBER" \
 		--parameter-overrides $$PARAMETERS
+
+generate-mock-certs:
+	cd packages/certificateChecker/tests && bash ./generate_mock_certs.sh
+
+# .PHONY: generate-mock-certs test

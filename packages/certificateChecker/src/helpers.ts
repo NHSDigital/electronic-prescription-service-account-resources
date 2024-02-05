@@ -24,12 +24,15 @@ export function checkCertificateExpiry(secret: Secret, logger: Logger): void {
       const timeToExpiry = certificateEndDate.getTime() - today.getTime();
       const daysToExpiry = Math.ceil(timeToExpiry / (1000 * 3600 * 24));
 
+
+      const formattedEndDate = certificateEndDate.toDateString()
+
       if (daysToExpiry < 0) {
         logger.critical(`Certificate ${secret.Name} has expired`);
       } else if (daysToExpiry < 30) {
         logger.error(`Certificate ${secret.Name} expires in ${daysToExpiry} days`);
       } else {
-        logger.info(`Checking certificate ${secret.Name}, expiry date: ${certificate.validTo}`);
+        logger.info(`Certificate ${secret.Name} is valid. Expiry date: ${formattedEndDate}`);
 
       }
     }

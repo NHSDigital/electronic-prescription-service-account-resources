@@ -3,6 +3,8 @@ import * as path from 'path';
 import { checkCertificateExpiry } from '../src/helpers';
 import { Secret } from '../src/helpers';
 import { Logger } from '@aws-lambda-powertools/logger';
+import crypto from 'crypto';
+
 
 
 
@@ -17,10 +19,45 @@ const mockLogger = {
 describe('checkCertificateExpiry', () => {
   const logger = new Logger({ serviceName: 'test' })
 
+  it('should log an info if a certificate has over 30 days left before expiry', () => {
+    const mockLoggerInfo = jest.spyOn(Logger.prototype, "info")
+    const validCertificateContents = fs.readFileSync(path.resolve(__dirname, './mock-certs/valid-cert.pem'), 'utf-8')
+
+    const validSecret: Secret = {
+      ARN: 'valid-arn',
+      CreatedDate: new Date(),
+      Name: 'valid-certificate',
+      SecretString: validCertificateContents,
+      VersionId: 'valid-version-id',
+      VersionStages: ['valid-stage'],
+    };
+    checkCertificateExpiry(validSecret, logger);
+
+    const today = new Date();
+
+    const futureDate = new Date(today);
+    futureDate.setDate(today.getDate() + 60);
+
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric'
+    };
+    const formattedDate = futureDate.toLocaleDateString('en-US', options)
+
+    const formattedDateWithoutComma = formattedDate.replace(/,/g, '');
+
+
+    expect(mockLoggerInfo).toHaveBeenCalled()
+    expect(mockLoggerInfo).toHaveBeenCalledWith(`Certificate valid-certificate is valid. Expiry date: ${formattedDateWithoutComma}`)
+
+  })
+
   it('should log error for expiring certificate', () => {
     const mockLoggerInfo = jest.spyOn(Logger.prototype, "error")
     const expiringCertificateContents = fs.readFileSync(
-      path.resolve(__dirname, './expiring-cert.pem'),
+      path.resolve(__dirname, './mock-certs/expiring-cert.pem'),
       'utf-8'
     );
     const expiringSecret: Secret = {
@@ -34,38 +71,27 @@ describe('checkCertificateExpiry', () => {
     checkCertificateExpiry(expiringSecret, logger);
 
 
+
     expect(mockLoggerInfo).toHaveBeenCalled()
     expect(mockLoggerInfo).toHaveBeenCalledWith("Certificate expiring-certificate expires in 23 days")
 
   });
+
+  it('should log a critical warning if a certificate is checked and has expired', () => {
+    const mockLoggerInfo = jest.spyOn(Logger.prototype, "critical")
+    const expiredCertificateContents = fs.readFileSync(path.resolve(__dirname, './mock-certs/expired-cert.pem'), 'utf-8')
+
+    const expiredSecret: Secret = {
+      ARN: 'expired-arn',
+      CreatedDate: new Date(),
+      Name: 'expired-certificate',
+      SecretString: expiredCertificateContents,
+      VersionId: 'expired-version-id',
+      VersionStages: ['expired-stage'],
+    };
+    checkCertificateExpiry(expiredSecret, logger);
+
+    expect(mockLoggerInfo).toHaveBeenCalledWith("Certificate expired-certificate has expired")
+
+  })
 });
-
-
-
-
-// openssl genpkey -algorithm RSA -out ca-key.pem
-// openssl req -new -x509 -key ca-key.pem -out ca-cert.pem
-
-// openssl genpkey -algorithm RSA -out valid-key.pem
-// openssl req -new -key valid-key.pem -out valid-csr.pem
-// openssl x509 -req -in valid-csr.pem -CA ca-cert.pem -CAkey ca-key.pem -out valid-cert.pem
-
-// openssl genpkey -algorithm RSA -out expired-key.pem
-// openssl req -new -key expired-key.pem -out expired-csr.pem
-// openssl x509 -req -in expired-csr.pem -CA ca-cert.pem -CAkey ca-key.pem -out expired-cert.pem -days -30
-
-// openssl genpkey -algorithm RSA -out expiring-key.pem
-// openssl req -new -key expiring-key.pem -out expiring-csr.pem
-// openssl x509 -req -in expiring-csr.pem -CA ca-cert.pem -CAkey ca-key.pem -out expiring-cert.pem -days 30
-
-//shell script that creates these certs every time a test is run
-//modify makefile so that it calls the shell script
-//change in the test: target line 38 to do the bash command to run shell scripts
-
-
-//examples below:
-// generate-mock-certs:
-// 	cd packages/coordinator/tests/resources/certificates && bash ./generate_mock_certs.sh
-
-//   test-api: check-licenses-api generate-mock-certs test-coordinator
-// 	cd packages/e2e-tests && $(MAKE) test

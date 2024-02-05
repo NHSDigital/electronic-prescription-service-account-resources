@@ -8,7 +8,7 @@ RUN apt-get update \
     zlib1g-dev unixodbc unixodbc-dev libsecret-1-0 libsecret-1-dev libsqlite3-dev \
     jq apt-transport-https ca-certificates gnupg-agent software-properties-common \
     bash-completion python3-pip make libbz2-dev libreadline-dev libsqlite3-dev \
-    wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev liblzma-dev netcat
+    wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev liblzma-dev netcat faketime
 
 # install aws stuff
 RUN wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \

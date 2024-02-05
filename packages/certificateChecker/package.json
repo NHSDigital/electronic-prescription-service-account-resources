@@ -13,6 +13,7 @@
         "compile": "tsc",
         "test": "npm run compile && npm run unit",
         "unit": "jest"
+
     },
     "devDependencies": {
         "@types/jest": "^29.5.11",
