@@ -27,7 +27,10 @@ check-licenses-python:
 check-licenses-node:
 	npm run check-licenses --workspace packages/splunkProcessor
 
-lint: lint-cloudformation
+lint: lint-cloudformation lint-node
+
+lint-node:
+	npm run lint --workspace packages/certificateChecker
 
 lint-cloudformation:
 	poetry run cfn-lint -t cloudformation/*.yml
@@ -36,7 +39,7 @@ lint-githubactions:
 	actionlint
 
 test: generate-mock-certs
-	# npm run test --workspace packages/splunkProcessor
+	npm run test --workspace packages/splunkProcessor
 	npm run test --workspace packages/certificateChecker
 
 package-code:

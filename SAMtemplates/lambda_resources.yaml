@@ -334,8 +334,8 @@ Resources:
               - !GetAtt SplunkDeliveryStreamProcessor.Arn
       Roles:
         - !Ref SplunkDeliveryStreamProcessorInvokeRole
-  # capabilityStatement lambda
-  CapabilityStatementResources:
+  # expiryFunction lambda
+  ExpiryFunctionResources:
     Type: AWS::Serverless::Application
     Properties:
       Location: common_lambda_resources.yaml
@@ -345,34 +345,28 @@ Resources:
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-CapabilityStatement"
         LogRetentionDays: !Ref LogRetentionDays
-  CapabilityStatement:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub "${AWS::StackName}-CapabilityStatement"
-      CodeUri: ../packages/splunkProcessor
-      Handler: capabilityStatement.handler
-      Role: !GetAtt CapabilityStatementResources.Outputs.LambdaRoleArn
-    Metadata: # Manage esbuild properties
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        tsconfig: capabilityStatement/tsconfig.json
-        EntryPoints:
-          - capabilityStatement/src/capabilityStatement.ts
+
   CertExpiryCheckFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: CertificateChecker
       CodeUri: ../packages/certificateChecker
       Handler: certficateChecker.handler
-      Role: !GetAtt CertExpiryCheckFunction.Outputs.LambdaRoleArn
+      Role: !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
       Events:
         ScheduleEvent:
           Type: ScheduleV2
           Properties:
             ScheduleExpression: "rate(1 day)"
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: certificateChecker/tsconfig.json
+        EntryPoints:
+          - certificateChecker/src/certificateChecker.ts
 Outputs:
   SplunkSubscriptionFilterRole:
     Description: "SplunkSubscriptionFilterRole ARN"

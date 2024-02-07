@@ -3,17 +3,6 @@ import * as path from 'path';
 import { checkCertificateExpiry } from '../src/helpers';
 import { Secret } from '../src/helpers';
 import { Logger } from '@aws-lambda-powertools/logger';
-import crypto from 'crypto';
-
-
-
-
-const mockLogger = {
-  info: jest.fn(),
-  error: jest.fn(),
-  critical: jest.fn(),
-};
-
 
 
 describe('checkCertificateExpiry', () => {
