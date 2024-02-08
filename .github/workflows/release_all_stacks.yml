@@ -1,0 +1,92 @@
+name: release_all_stacks
+
+on:
+    workflow_call:
+      inputs:
+        target_environment:
+          required: true
+          type: string
+        version:
+          required: true
+          type: string
+        change_set_version:
+          required: true
+          type: string
+        execute_change_set:
+          required: true
+          type: boolean
+        lambda_stack_suffix:
+          required: true
+          type: string
+        artifact_bucket_prefix:
+          required: true
+          type: string
+        version_number:
+          required: true
+          type: string
+        commit_id:
+          required: true
+          type: string
+        lambda_insights_log_group_name:
+          required: true
+          type: string
+      secrets:
+        cf_create_changeset_role:
+          required: false
+        cf_deploy_role:
+          required: false
+        SPLUNK_HEC_TOKEN:
+          required: false
+  
+env:
+  BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
+
+jobs:
+  list_ci_resources_cf_changes:
+    uses: ./.github/workflows/cloudformation.yml
+    with:
+      env: ${{ inputs.target_environment }}
+      target_environment: ${{ inputs.target_environment }}-ci
+      version: ${{ inputs.version }}
+      change_set_version: ${{ inputs.change_set_version }}
+      stack_name: ci-resources
+      template: ./cloudformation/ci_resources.yml
+      capabilities: CAPABILITY_IAM
+      execute_change_set: ${{ inputs.execute_change_set }}
+    secrets:
+      parameter_secrets: "{}"
+      cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
+      cf_deploy_role: ${{ secrets.cf_deploy_role }}
+  
+  list_account_resources_cf_changes:
+    uses: ./.github/workflows/cloudformation.yml
+    with:
+      env: ${{ inputs.target_environment }}
+      target_environment: ${{inputs.target_environment}}-account
+      version: ${{ inputs.version }}
+      change_set_version: ${{ inputs.change_set_version }}
+      stack_name: account-resources
+      template: ./cloudformation/account_resources.yml
+      capabilities: CAPABILITY_NAMED_IAM
+      execute_change_set: ${{ inputs.execute_change_set }}
+    secrets:
+      parameter_secrets: "{}"
+      cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
+      cf_deploy_role: ${{ secrets.cf_deploy_role }}
+
+  release_lambda_resources:
+    uses: ./.github/workflows/sam_release_code.yml
+    with:
+      env: ${{ inputs.target_environment }}
+      STACK_NAME: lambda-resources${{ inputs.lambda_stack_suffix }}
+      ARTIFACT_BUCKET_PREFIX: ${{ inputs.artifact_bucket_prefix }}
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-lambda
+      BUILD_ARTIFACT: packaged_code
+      VERSION_NUMBER: ${{ inputs.version_number }}
+      COMMIT_ID: ${{ inputs.commit_id }}
+      LOG_LEVEL: DEBUG
+      LOG_RETENTION_DAYS: 30
+      dynamic_vars: '{"CommitId": "${{ inputs.commit_id }}", "VersionNumber": "${{ inputs.version_number }}", "lambda_insights_log_group_name": "${{ inputs.lambda_insights_log_group_name }}"}'
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
+      parameter_secrets: '{"splunk_hec_token": "${{ secrets.SPLUNK_HEC_TOKEN }}"}'

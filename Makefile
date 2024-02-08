@@ -27,20 +27,25 @@ check-licenses-python:
 check-licenses-node:
 	npm run check-licenses --workspace packages/splunkProcessor
 
-lint: lint-cloudformation lint-node
+lint: lint-cloudformation lint-node lint-githubactions lint-githubaction-scripts
+lint-cloudformation:
+	poetry run cfn-lint -t cloudformation/*.yml
 
 lint-node:
 	npm run lint --workspace packages/certificateChecker
 
-lint-cloudformation:
-	poetry run cfn-lint -t cloudformation/*.yml
-
 lint-githubactions:
 	actionlint
+
+lint-githubaction-scripts:
+	shellcheck .github/scripts/*.sh
 
 test: generate-mock-certs
 	npm run test --workspace packages/splunkProcessor
 	npm run test --workspace packages/certificateChecker
+
+generate-mock-certs:
+	cd packages/certificateChecker/tests && bash ./generate_mock_certs.sh
 
 package-code:
 	npm run build
@@ -81,7 +86,52 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 		--tags "version=$$VERSION_NUMBER" \
 		--parameter-overrides $$PARAMETERS
 
-generate-mock-certs:
-	cd packages/certificateChecker/tests && bash ./generate_mock_certs.sh
 
-# .PHONY: generate-mock-certs test
+prepare-eps-route-53-changeset-management:
+	@echo -e "\nChecking if stack exists in management ...";
+	@if ! aws cloudformation describe-stacks --stack-name eps-route53-resources --profile prescription-management; then \
+		echo -e "\nStack does not exist in management, creating empty stack..."; \
+		aws cloudformation create-stack \
+			--stack-name eps-route53-resources \
+			--template-body file://cloudformation/empty_stack.yml \
+			--profile prescription-management; \
+		echo "Waiting for stack to be created ..."; \
+		aws cloudformation wait stack-create-complete \
+			--stack-name eps-route53-resources --profile prescription-management; \
+	fi
+	@echo -e "\nCreating changeset for stack in management ...";
+	aws cloudformation create-change-set \
+			--stack-name eps-route53-resources \
+			--change-set-name update-eps-route-53-$$(date +"%Y-%m-%d-%H%-M%-S") \
+			--change-set-type UPDATE \
+			--template-body file://cloudformation/eps_management_route53.yml \
+			--tags Key="stack_name",Value="eps-route53-resources" \
+			--profile prescription-management
+
+prepare-eps-route-53-changeset-environment: guard-env
+	@echo -e "\nChecking if stack exists in $${env} ...";
+	@if ! aws cloudformation describe-stacks --stack-name eps-route53-resources --profile prescription-$${env}; then \
+		echo -e "\nStack does not exist in $${env}, creating empty stack ..."; \
+		aws cloudformation create-stack \
+			--stack-name eps-route53-resources \
+			--template-body file://cloudformation/empty_stack.yml \
+			--profile prescription-$${env}; \
+		echo "Waiting for stack to be created ..."; \
+		aws cloudformation wait stack-create-complete \
+			--stack-name eps-route53-resources --profile prescription-$${env}; \
+	fi
+	@echo -e "\nCreating changeset for stack in $${env} ...";
+	@aws cloudformation create-change-set \
+			--stack-name eps-route53-resources \
+			--change-set-name update-route-53-$$(date +"%Y-%m-%d-%H%-M%-S") \
+			--change-set-type UPDATE \
+			--template-body file://cloudformation/eps_environment_route53.yml \
+			--tags Key="stack_name",Value="eps-$${env}-route53-resources" \
+			--parameters ParameterKey=environment,ParameterValue=$${env} \
+			--profile prescription-$${env}
+
+show-eps-route-53-nameservers: guard-env
+	aws cloudformation describe-stacks \
+		--stack-name eps-route53-resources \
+		--query "Stacks[*].Outputs[?OutputKey=='NameServers'].{OutputKey: OutputKey, OutputValue: OutputValue, Description: Description}" \
+		--profile prescription-$${env}

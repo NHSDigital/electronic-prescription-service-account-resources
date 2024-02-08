@@ -1,7 +1,10 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
+  ##################################################
+  # API Gateway
+  ##################################################
   ApiGwCloudWatchRole:
-    Type: "AWS::IAM::Role"
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -10,43 +13,55 @@ Resources:
             Principal:
               Service:
                 - apigateway.amazonaws.com
-            Action: "sts:AssumeRole"
-      Policies:
-        - PolicyName: "AllowApiGwLogging"
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "logs:CreateLogGroup"
-                  - "logs:CreateLogStream"
-                  - "logs:DescribeLogGroups"
-                  - "logs:DescribeLogStreams"
-                  - "logs:PutLogEvents"
-                  - "logs:GetLogEvents"
-                  - "logs:FilterLogEvents"
-                  - "logs:CreateLogDelivery"
-                  - "logs:PutResourcePolicy"
-                  - "logs:UpdateLogDelivery"
-                  - "logs:DeleteLogDelivery"
-                  - "logs:DescribeResourcePolicies"
-                  - "logs:GetLogDelivery"
-                  - "logs:ListLogDeliveries"
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+            Action:
+              - sts:AssumeRole
 
+  AllowApiGwLoggingPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !Ref ApiGwCloudWatchRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:DescribeLogGroups
+              - logs:DescribeLogStreams
+              - logs:PutLogEvents
+              - logs:GetLogEvents
+              - logs:FilterLogEvents
+              - logs:CreateLogDelivery
+              - logs:PutResourcePolicy
+              - logs:UpdateLogDelivery
+              - logs:DeleteLogDelivery
+              - logs:DescribeResourcePolicies
+              - logs:GetLogDelivery
+              - logs:ListLogDeliveries
+            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+
+  ##################################################
+  # Account
+  ##################################################
   Account:
-    Type: "AWS::ApiGateway::Account"
+    Type: AWS::ApiGateway::Account
     Properties:
       CloudWatchRoleArn: !GetAtt ApiGwCloudWatchRole.Arn
+    DependsOn: AllowApiGwLoggingPolicy
 
+  ##################################################
+  # Cloudwatch
+  ##################################################
   CloudwatchResourcePolicy:
-    Type: "AWS::Logs::ResourcePolicy"
+    Type: AWS::Logs::ResourcePolicy
     Properties:
-      PolicyName: "AWSLogDeliveryWrite20150319"
+      PolicyName: AWSLogDeliveryWrite20150319
       PolicyDocument: '{ "Version": "2012-10-17", "Statement": [ { "Sid": "AWSLogDeliveryWrite", "Effect": "Allow", "Principal": { "Service": "delivery.logs.amazonaws.com" }, "Action": [ "logs:CreateLogStream", "logs:PutLogEvents" ], "Resource": [ "*" ] } ] }'
 
   CloudwatchLogsKmsKey:
-    Type: "AWS::KMS::Key"
+    Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
       KeyPolicy:
@@ -57,9 +72,10 @@ Resources:
             Effect: Allow
             Principal:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-            Action: "kms:*"
+            Action:
+              - kms:*
             Resource: "*"
-          - Sid: Allow API Gateway Logging
+          - Sid: Allow Service Logging
             Effect: Allow
             Principal:
               Service: !Sub "logs.${AWS::Region}.amazonaws.com"
@@ -72,7 +88,11 @@ Resources:
             Resource: "*"
             Condition:
               ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+                kms:EncryptionContext:aws:logs:arn:
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda-insights*"
           - Sid: Allow API Gateway Role
             Effect: Allow
             Principal:
@@ -87,9 +107,27 @@ Resources:
   CloudwatchLogsKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: alias/ApiGwCloudwatchLogsKmsKeyAlias
+      AliasName: alias/CloudwatchLogsKmsKeyAlias
       TargetKeyId: !Ref CloudwatchLogsKmsKey
 
+  LambdaEncryptCloudwatchKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt
+              - kms:ReEncrypt*
+            Resource:
+              - !GetAtt CloudwatchLogsKmsKey.Arn
+
+  ##################################################
+  # Artifacts Bucket
+  ##################################################
   ArtifactsBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -101,12 +139,9 @@ Resources:
           - Sid: Enable IAM User Permissions
             Effect: Allow
             Principal:
-              AWS: !Join
-                - ""
-                - - "arn:aws:iam::"
-                  - !Ref "AWS::AccountId"
-                  - ":root"
-            Action: "kms:*"
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
             Resource: "*"
 
   ArtifactsBucketKMSKeyAlias:
@@ -114,6 +149,23 @@ Resources:
     Properties:
       AliasName: alias/ArtifactsBucketKMSKeyAlias
       TargetKeyId: !Ref ArtifactsBucketKMSKey
+
+  UseArtifactBucketKMSKeyManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt
+              - kms:ReEncrypt*
+              - kms:Decrypt
+            Resource: !GetAtt ArtifactsBucketKMSKey.Arn
 
   ArtifactsBucket:
     Type: AWS::S3::Bucket
@@ -140,47 +192,33 @@ Resources:
       Bucket: !Ref ArtifactsBucket
       PolicyDocument:
         Statement:
-          - Effect: "Deny"
-            Action: "s3:*"
+          - Effect: Deny
             Principal: "*"
+            Action:
+              - s3:*
             Resource:
               - !Join ["", [!GetAtt ArtifactsBucket.Arn, "/*"]]
               - !GetAtt ArtifactsBucket.Arn
             Condition:
               Bool:
                 aws:SecureTransport: false
-          - Effect: "Allow"
-            Action:
-              - "s3:GetObject*"
-              - "s3:PutObject*"
-              - "s3:GetBucket*"
-              - "s3:List*"
-            Resource:
-              - !Join ["", [!GetAtt ArtifactsBucket.Arn, "/*"]]
-              - !GetAtt ArtifactsBucket.Arn
+          - Effect: Allow
             Principal:
               AWS:
                 - !ImportValue ci-resources:CloudFormationDeployRole
                 - !ImportValue ci-resources:CloudFormationExecutionRole
-
-  UseArtifactBucketKMSKeyPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: UseArtifactBucketKMSKey
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
             Action:
-              - "kms:DescribeKey"
-              - "kms:GenerateDataKey*"
-              - "kms:Encrypt"
-              - "kms:ReEncrypt*"
-              - "kms:Decrypt"
-            Resource: !GetAtt ArtifactsBucketKMSKey.Arn
-      Roles:
-        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+              - s3:GetObject*
+              - s3:PutObject*
+              - s3:GetBucket*
+              - s3:List*
+            Resource:
+              - !Join ["", [!GetAtt ArtifactsBucket.Arn, "/*"]]
+              - !GetAtt ArtifactsBucket.Arn
 
+  ##################################################
+  # Trust Store Bucket
+  ##################################################
   TrustStoreBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -192,12 +230,9 @@ Resources:
           - Sid: Enable IAM User Permissions
             Effect: Allow
             Principal:
-              AWS: !Join
-                - ""
-                - - "arn:aws:iam::"
-                  - !Ref "AWS::AccountId"
-                  - ":root"
-            Action: "kms:*"
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
             Resource: "*"
 
   TrustStoreBucketKMSKeyKMSKeyAlias:
@@ -205,6 +240,23 @@ Resources:
     Properties:
       AliasName: alias/TrustStoreBucketKMSKeyAlias
       TargetKeyId: !Ref TrustStoreBucketKMSKey
+
+  UseTrustStoreBucketKMSKeyManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt
+              - kms:ReEncrypt*
+              - kms:Decrypt
+            Resource: !GetAtt TrustStoreBucketKMSKey.Arn
 
   TrustStoreBucket:
     Type: AWS::S3::Bucket
@@ -231,47 +283,33 @@ Resources:
       Bucket: !Ref TrustStoreBucket
       PolicyDocument:
         Statement:
-          - Effect: "Deny"
-            Action: "s3:*"
+          - Effect: Deny
             Principal: "*"
+            Action:
+              - s3:*
             Resource:
               - !Join ["", [!GetAtt TrustStoreBucket.Arn, "/*"]]
               - !GetAtt TrustStoreBucket.Arn
             Condition:
               Bool:
                 aws:SecureTransport: false
-          - Effect: "Allow"
-            Action:
-              - "s3:GetObject*"
-              - "s3:PutObject*"
-              - "s3:GetBucket*"
-              - "s3:List*"
-            Resource:
-              - !Join ["", [!GetAtt TrustStoreBucket.Arn, "/*"]]
-              - !GetAtt TrustStoreBucket.Arn
+          - Effect: Allow
             Principal:
               AWS:
                 - !ImportValue ci-resources:CloudFormationDeployRole
                 - !ImportValue ci-resources:CloudFormationExecutionRole
-
-  UseTrustStoreBucketKMSKeyPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: UseTrustStoreBucketKMSKey
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
             Action:
-              - "kms:DescribeKey"
-              - "kms:GenerateDataKey*"
-              - "kms:Encrypt"
-              - "kms:ReEncrypt*"
-              - "kms:Decrypt"
-            Resource: !GetAtt TrustStoreBucketKMSKey.Arn
-      Roles:
-        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+              - s3:GetObject*
+              - s3:PutObject*
+              - s3:GetBucket*
+              - s3:List*
+            Resource:
+              - !Join ["", [!GetAtt TrustStoreBucket.Arn, "/*"]]
+              - !GetAtt TrustStoreBucket.Arn
 
+  ##################################################
+  # Audit Logging Bucket
+  ##################################################
   AuditLoggingBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -293,18 +331,21 @@ Resources:
       Bucket: !Ref AuditLoggingBucket
       PolicyDocument:
         Statement:
-          - Effect: "Deny"
-            Action: "s3:*"
+          - Effect: Deny
             Principal: "*"
+            Action:
+              - "s3:*"
             Resource:
               - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/*"]]
               - !GetAtt AuditLoggingBucket.Arn
             Condition:
               Bool:
                 aws:SecureTransport: false
-          - Effect: "Allow"
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
             Action:
-              - "s3:PutObject*"
+              - s3:PutObject*
             Resource:
               - !Join [
                   "",
@@ -313,38 +354,39 @@ Resources:
                     "/splunkDeliveryStreamBackup/*",
                   ],
                 ]
-            Principal:
-              Service: logging.s3.amazonaws.com
             Condition:
               StringEquals:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt SplunkDeliveryStreamBackupBucket.Arn
-          - Effect: "Allow"
-            Action:
-              - "s3:PutObject*"
-            Resource:
-              - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/artifact/*"]]
+          - Effect: Allow
             Principal:
               Service: logging.s3.amazonaws.com
+            Action:
+              - s3:PutObject*
+            Resource:
+              - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/artifact/*"]]
             Condition:
               StringEquals:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt ArtifactsBucket.Arn
-          - Effect: "Allow"
-            Action:
-              - "s3:PutObject*"
-            Resource:
-              - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/truststore/*"]]
+          - Effect: Allow
             Principal:
               Service: logging.s3.amazonaws.com
+            Action:
+              - s3:PutObject*
+            Resource:
+              - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/truststore/*"]]
             Condition:
               StringEquals:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
 
+  ##################################################
+  # Splunk Delivery Stream Backup Bucket
+  ##################################################
   SplunkDeliveryStreamBackupKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -356,12 +398,9 @@ Resources:
           - Sid: Enable IAM User Permissions
             Effect: Allow
             Principal:
-              AWS: !Join
-                - ""
-                - - "arn:aws:iam::"
-                  - !Ref "AWS::AccountId"
-                  - ":root"
-            Action: "kms:*"
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
             Resource: "*"
 
   SplunkDeliveryStreamBackupKMSKeyAlias:
@@ -369,6 +408,34 @@ Resources:
     Properties:
       AliasName: alias/SplunkDeliveryStreamBackupKMSKeyAlias
       TargetKeyId: !Ref SplunkDeliveryStreamBackupKMSKey
+
+  SplunkDeliveryStreamBackupBucketRoleKMSMangedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !Ref SplunkDeliveryStreamBackupBucketRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt
+              - kms:ReEncrypt*
+            Resource:
+              - !GetAtt SplunkDeliveryStreamBackupKMSKey.Arn
+
+  SplunkDeliveryStreamBackupBucketRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: sts:AssumeRole
 
   SplunkDeliveryStreamBackupBucket:
     Type: AWS::S3::Bucket
@@ -390,27 +457,17 @@ Resources:
               SSEAlgorithm: aws:kms
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${SplunkDeliveryStreamBackupKMSKeyAlias}"
 
-  SplunkDeliveryStreamBackupBucketRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: "firehose.amazonaws.com"
-            Action: "sts:AssumeRole"
-
   SplunkDeliveryStreamBackupBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket: !Ref SplunkDeliveryStreamBackupBucket
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
-          - Effect: "Deny"
-            Action: "s3:*"
+          - Effect: Deny
             Principal: "*"
+            Action:
+              - s3:*
             Resource:
               - !Join ["", [!GetAtt SplunkDeliveryStreamBackupBucket.Arn, "/*"]]
               - !GetAtt SplunkDeliveryStreamBackupBucket.Arn
@@ -418,47 +475,30 @@ Resources:
               Bool:
                 aws:SecureTransport: false
           - Effect: Allow
-            Action:
-              - s3:AbortMultipartUpload
-              - s3:GetBucketLocation
-              - s3:GetObject
-              - s3:ListBucket
-              - s3:ListBucketMultipartUploads
-              - s3:PutObject
-            Resource:
-              - !GetAtt SplunkDeliveryStreamBackupBucket.Arn
-              - !Join # Access to bucket contents
-                - ""
-                - - !GetAtt SplunkDeliveryStreamBackupBucket.Arn
-                  - "/*"
             Principal:
               AWS:
                 - !GetAtt SplunkDeliveryStreamBackupBucketRole.Arn
-
-  SplunkDeliveryStreamBackupBucketRoleKMSPolicy:
-    Type: "AWS::IAM::Policy"
-    Properties:
-      PolicyName: "allow-SplunkDeliveryStreamBackupKMSKey-access"
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
             Action:
-              - kms:DescribeKey
-              - kms:GenerateDataKey*
-              - kms:Encrypt
-              - kms:ReEncrypt*
+              - s3:AbortMultipartUpload
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:PutObject
             Resource:
-              - !GetAtt SplunkDeliveryStreamBackupKMSKey.Arn
+              - !GetAtt SplunkDeliveryStreamBackupBucket.Arn
+              - !Join # Access to bucket contents
+                - ""
+                - - !GetAtt SplunkDeliveryStreamBackupBucket.Arn
+                  - "/*"
+
+  SplunkDeliveryStreamBackupBucketIAMManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
       Roles:
         - !Ref SplunkDeliveryStreamBackupBucketRole
-
-  SplunkDeliveryStreamBackupBucketIAMPolicy:
-    Type: "AWS::IAM::Policy"
-    Properties:
-      PolicyName: "allow-backup-bucket-access"
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
@@ -474,9 +514,10 @@ Resources:
                 - ""
                 - - !GetAtt SplunkDeliveryStreamBackupBucket.Arn
                   - "/*"
-      Roles:
-        - !Ref SplunkDeliveryStreamBackupBucketRole
 
+  ##################################################
+  # Secrets KMS
+  ##################################################
   SecretsKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -488,12 +529,9 @@ Resources:
           - Sid: Enable IAM User Permissions
             Effect: Allow
             Principal:
-              AWS: !Join
-                - ""
-                - - "arn:aws:iam::"
-                  - !Ref "AWS::AccountId"
-                  - ":root"
-            Action: "kms:*"
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
             Resource: "*"
 
   SecretsKMSKeyKMSKeyAlias:
@@ -502,24 +540,38 @@ Resources:
       AliasName: alias/SecretsKMSKeyAlias
       TargetKeyId: !Ref SecretsKMSKey
 
-  UseSecretsKMSKeyPolicy:
-    Type: AWS::IAM::Policy
+  UseSecretsKMSKeyManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: UseSecretsKMSKey
+      Roles:
+        - !ImportValue ci-resources:CloudFormationExecutionRoleName
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
-              - "kms:DescribeKey"
-              - "kms:GenerateDataKey*"
-              - "kms:Encrypt"
-              - "kms:ReEncrypt*"
-              - "kms:Decrypt"
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt"
+              - kms:ReEncrypt*
+              - kms:Decrypt
             Resource: !GetAtt SecretsKMSKey.Arn
-      Roles:
-        - !ImportValue ci-resources:CloudFormationExecutionRoleName
 
+  LambdaDecryptSecretsKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt SecretsKMSKey.Arn
+
+  ##################################################
+  # CA Secrets
+  ##################################################
   CAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -536,6 +588,9 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
+  ##################################################
+  # Client Secrets
+  ##################################################
   ClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -568,6 +623,9 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
+  ##################################################
+  # Spine Secrets
+  ##################################################
   SpinePrivateKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -608,6 +666,9 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
+  ##################################################
+  # Other Secrets
+  ##################################################
   ServiceSearchApiKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -634,108 +695,76 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-confluenceToken"
 
+  LambdaAccessSecretsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !Ref SpinePrivateKey
+              - !Ref SpinePublicCertificate
+              - !Ref SpineASID
+              - !Ref SpinePartyKey
+              - !Ref SpineCAChain
+              - !Ref ServiceSearchApiKey
+
 Outputs:
+  ##################################################
+  # Cloudwatch Outputs
+  ##################################################
   CloudwatchLogsKmsKeyArn:
     Description: "The Arn of the API GW cloudwatch logs KMS Key"
     Value: !GetAtt CloudwatchLogsKmsKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CloudwatchLogsKmsKeyArn"]]
 
+  LambdaEncryptCloudwatchKMSPolicy:
+    Description: "Lambda Encrypt Cloudwatch KMS Policy ARN"
+    Value: !GetAtt LambdaEncryptCloudwatchKMSPolicy.PolicyArn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "LambdaEncryptCloudwatchKMSPolicy"]]
+
+  ##################################################
+  # Artifacts Bucket Outputs
+  ##################################################
   ArtifactsBucket:
     Description: ARN of the Artifacts bucket
     Value: !GetAtt ArtifactsBucket.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ArtifactsBucket"]]
 
+  ##################################################
+  # Trust Store Bucket Outputs
+  ##################################################
   TrustStoreBucket:
     Description: ARN of the Truststore bucket
     Value: !GetAtt TrustStoreBucket.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "TrustStoreBucket"]]
 
-  CAKeySecret:
-    Description: ARN of the CA key secret
-    Value: !GetAtt CAKeySecret.Id
-
-  CACertSecret:
-    Description: ARN of the CA cert secret
-    Value: !GetAtt CACertSecret.Id
-
-  ClientKeySecret:
-    Description: ARN of the client key secret
-    Value: !GetAtt ClientKeySecret.Id
-
-  ClientCertSecret:
-    Description: ARN of the client cert secret
-    Value: !GetAtt ClientCertSecret.Id
-
-  ClientSandboxKeySecret:
-    Description: ARN of the client key secret for sandbox
-    Value: !GetAtt ClientSandboxKeySecret.Id
-
-  ClientSandboxCertSecret:
-    Description: ARN of the client cert secret for sandbox
-    Value: !GetAtt ClientSandboxCertSecret.Id
-
-  SpinePrivateKey:
-    Description: ARN of the private key for spine mutual TLS
-    Value: !GetAtt SpinePrivateKey.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SpinePrivateKey"]]
-
-  SpinePublicCertificate:
-    Description: ARN of the public certificate for spine mutual TLS
-    Value: !GetAtt SpinePublicCertificate.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SpinePublicCertificate"]]
-
-  SpineASID:
-    Description: ASID for spine
-    Value: !GetAtt SpineASID.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SpineASID"]]
-
-  SpinePartyKey:
-    Description: PartyKey for spine
-    Value: !GetAtt SpinePartyKey.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SpinePartyKey"]]
-
-  SecretsKMSKey:
-    Description: SecretsKMSKey
-    Value: !GetAtt SecretsKMSKey.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
-
-  SpineCAChain:
-    Description: SpineCAChain
-    Value: !GetAtt SpineCAChain.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SpineCAChain"]]
-
-  ServiceSearchApiKey:
-    Description: ServiceSearchApiKey
-    Value: !GetAtt ServiceSearchApiKey.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ServiceSearchApiKey"]]
-
-  JiraToken:
-    Description: JiraToken
-    Value: !GetAtt JiraToken.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "JiraToken"]]
-
-  ConfluenceToken:
-    Description: ConfluenceToken
-    Value: !GetAtt ConfluenceToken.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ConfluenceToken"]]
-
+  ##################################################
+  # Audit Logging Bucket Outputs
+  ##################################################
   AuditLoggingBucket:
     Description: ARN of the audit logging bucket
     Value: !GetAtt AuditLoggingBucket.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AuditLoggingBucket"]]
+
+  ##################################################
+  # Splunk Delivery Stream Backup Bucket Outputs
+  ##################################################
+  SplunkDeliveryStreamBackupKMSKey:
+    Description: SplunkDeliveryStreamBackupKMSKey
+    Value: !GetAtt SplunkDeliveryStreamBackupKMSKey.Arn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStreamBackupKMSKey"]]
 
   SplunkDeliveryStreamBackupBucketRole:
     Description: The splunk delivery stream role
@@ -764,9 +793,108 @@ Outputs:
       Name:
         !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStreamBackupBucket"]]
 
-  SplunkDeliveryStreamBackupKMSKey:
-    Description: SplunkDeliveryStreamBackupKMSKey
-    Value: !GetAtt SplunkDeliveryStreamBackupKMSKey.Arn
+  ##################################################
+  # Secrets KMS Outputs
+  ##################################################
+  SecretsKMSKey:
+    Description: SecretsKMSKey
+    Value: !GetAtt SecretsKMSKey.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
+
+  LambdaDecryptSecretsKMSPolicy:
+    Description: "Lambda Decrypt Secrets KMS Policy ARN"
+    Value: !GetAtt LambdaDecryptSecretsKMSPolicy.PolicyArn
     Export:
       Name:
-        !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStreamBackupKMSKey"]]
+        !Join [":", [!Ref "AWS::StackName", "LambdaDecryptSecretsKMSPolicy"]]
+
+  ##################################################
+  # CA Secrets Outputs
+  ##################################################
+  CAKeySecret:
+    Description: ARN of the CA key secret
+    Value: !GetAtt CAKeySecret.Id
+
+  CACertSecret:
+    Description: ARN of the CA cert secret
+    Value: !GetAtt CACertSecret.Id
+
+  ##################################################
+  # Client Secrets Outputs
+  ##################################################
+  ClientKeySecret:
+    Description: ARN of the client key secret
+    Value: !GetAtt ClientKeySecret.Id
+
+  ClientCertSecret:
+    Description: ARN of the client cert secret
+    Value: !GetAtt ClientCertSecret.Id
+
+  ClientSandboxKeySecret:
+    Description: ARN of the client key secret for sandbox
+    Value: !GetAtt ClientSandboxKeySecret.Id
+
+  ClientSandboxCertSecret:
+    Description: ARN of the client cert secret for sandbox
+    Value: !GetAtt ClientSandboxCertSecret.Id
+
+  ##################################################
+  # Spine Secrets Outputs
+  ##################################################
+  SpinePrivateKey:
+    Description: ARN of the private key for spine mutual TLS
+    Value: !GetAtt SpinePrivateKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SpinePrivateKey"]]
+
+  SpinePublicCertificate:
+    Description: ARN of the public certificate for spine mutual TLS
+    Value: !GetAtt SpinePublicCertificate.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SpinePublicCertificate"]]
+
+  SpineASID:
+    Description: ASID for spine
+    Value: !GetAtt SpineASID.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SpineASID"]]
+
+  SpinePartyKey:
+    Description: PartyKey for spine
+    Value: !GetAtt SpinePartyKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SpinePartyKey"]]
+
+  SpineCAChain:
+    Description: SpineCAChain
+    Value: !GetAtt SpineCAChain.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SpineCAChain"]]
+
+  ##################################################
+  # Other Secrets Outputs
+  ##################################################
+  ServiceSearchApiKey:
+    Description: ServiceSearchApiKey
+    Value: !GetAtt ServiceSearchApiKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ServiceSearchApiKey"]]
+
+  JiraToken:
+    Description: JiraToken
+    Value: !GetAtt JiraToken.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "JiraToken"]]
+
+  ConfluenceToken:
+    Description: ConfluenceToken
+    Value: !GetAtt ConfluenceToken.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ConfluenceToken"]]
+
+  LambdaAccessSecretsPolicy:
+    Description: "Lambda Access Secrets Policy ARN"
+    Value: !GetAtt LambdaAccessSecretsPolicy.PolicyArn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "LambdaAccessSecretsPolicy"]]

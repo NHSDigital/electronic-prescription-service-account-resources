@@ -21,3 +21,5 @@ release_notes
 lib/
 *.tsbuildinfo
 *.zip
+node_modules
+*-params.json

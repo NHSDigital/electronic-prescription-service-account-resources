@@ -3,16 +3,22 @@ import argparse
 import json
 import re
 import os
+import sys
 
 EMPTY = ""
 
 
-def parse_parameters(env, stack, secrets, dynamic_vars):
+def parse_parameters(env, stack, secrets, dynamic_vars, output_format):
     """ Parse Cloudformation Parameters
     - Reads and parses json file of parameters @ cloudformation/env/<env_name>.json
-    - Takes the name of the environment, the name of the stack, and any secrets to substitute as arguments
-    - Outputs "" for no parameters
-    - Outputs parameters in the form 'ParameterKey=Somekey,ParameterValue=SomeValue' for create-change-set aws cli calls
+    - Takes
+        - the name of the environment
+        - the name of the stack
+        - any secrets to substitute
+        - any dynamic vars to substitute
+        - the desired output format (raw string, or json file)
+    - parameter_secrets and dynamic_vars only need to be set if needed, will otherwise default to empty json
+    - If there are no parameters for a stack it will output a valid empty value for the desired output format
     - Parameter values can be either a string for a single value,
         a list of strings to concatenate for multiple values,
         or a string containing a reference to a secret in the format 'SECRET.<secret_name>'
@@ -21,26 +27,29 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
     with open(f"cloudformation/env/{env}.json") as f:
         d = json.load(f)
 
-    output = EMPTY
+    output = [] if output_format == "json_file" else ""
 
     parsed_secrets = json.loads(secrets)
     parsed_dynamic_vars = json.loads(dynamic_vars)
 
     parameters = d.get("parameters")
     if not parameters:
-        return EMPTY
+        print("invalid parameters file")
+        sys.exit(1)
 
     stack_parameters = parameters.get(stack)
-    if not stack_parameters:
-        return EMPTY
+    if not stack_parameters and stack not in parameters:
+        print("invalid stack")
+        sys.exit(1)
 
     for parameter_key, raw_value in stack_parameters.items():
-        if not raw_value:
-            return EMPTY
-        elif isinstance(raw_value, str):
+        if isinstance(raw_value, str):
             value = replace_secrets(raw_value, parsed_secrets)
             value = replace_dynamic_variables(value, parsed_dynamic_vars)
-            output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{value}\'" '
+            if output_format == "json_file":
+                output.append({"ParameterKey": parameter_key, "ParameterValue": value})
+            else:
+                output = f'{output}ParameterKey="{parameter_key}",ParameterValue="{value}" '
         elif isinstance(raw_value, list):
             values = []
             for list_value in raw_value:
@@ -48,11 +57,21 @@ def parse_parameters(env, stack, secrets, dynamic_vars):
                 value = replace_dynamic_variables(value, parsed_dynamic_vars)
                 values.append(value)
             concatenated_values = ','.join(values)
-            output = f'{output}ParameterKey="{parameter_key}",ParameterValue="\'{concatenated_values}\'" '
+            if output_format == "json_file":
+                output.append({"ParameterKey": parameter_key, "ParameterValue": concatenated_values})
+            else:
+                output = f'{output}ParameterKey="{parameter_key}",ParameterValue="{concatenated_values}" '
         else:
-            return EMPTY
+            print("invalid value type, skipping...")
+            continue
 
-    return output.rstrip()
+    if output_format == "json_file":
+        file_name = f"{env}-{stack}-params.json"
+        with open(file_name, "w") as f:
+            json.dump(output, f)
+        return file_name
+    else:
+        return output.rstrip()
 
 
 def replace_secrets(value, secrets):
@@ -83,7 +102,10 @@ if __name__ == "__main__":
     regex = re.compile(r"-pr-[\d]+", re.IGNORECASE)
     stack = regex.sub("", args.stack)
 
-    parameter_secrets = os.environ["parameter_secrets"]
-    dynamic_vars = os.environ["dynamic_vars"]
-
-    print(parse_parameters(env, stack, parameter_secrets, dynamic_vars))
+    parameter_secrets = os.environ.get("parameter_secrets", "{}")
+    dynamic_vars = os.environ.get("dynamic_vars", "{}")
+    output_format = os.environ.get("output_format", "json_file")
+    if output_format not in ["json_file", "raw"]:
+        print("invalid return format")
+        sys.exit(1)
+    print(parse_parameters(env, stack, parameter_secrets, dynamic_vars, output_format))
