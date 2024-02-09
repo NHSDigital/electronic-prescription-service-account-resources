@@ -12,8 +12,8 @@
     "scripts": {
         "compile": "tsc",
         "test": "npm run compile && npm run unit",
-        "unit": "jest"
-
+        "unit": "jest",
+        "lint": "eslint . --ext .ts --max-warnings 0 --debug"
     },
     "devDependencies": {
         "@types/jest": "^29.5.11",

@@ -1,18 +1,18 @@
-// import type { Config } from '@jest/types';
+// const { defaults } = require("ts-jest/presets")
 
-// const config: Config.InitialOptions = {
-//   preset: 'ts-jest',
-//   testEnvironment: 'node',
-//   roots: ['<rootDir>/src', '<rootDir>/tests'],
-//   transform: {
-//     '^.+\\.tsx?$': 'ts-jest',
+// const esModules = ["@middy"].join("|")
+// const jestConfig = {
+//   ...defaults,
+//   moduleNameMapper: {
+//     "^(\\.{1,2}/.*)\\.js$": "$1"
 //   },
-//   testRegex: '(/tests/.*\\.(test|spec))\\.tsx?$',
-//   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-//   testMatch: ["**/tests/*.test.js"]
-// };
+//   transformIgnorePatterns: [`node_modules/(?!${esModules})`],
+//   rootDir: "./",
+//   testMatch: ["**/tests/*.test.ts"],
+//   verbose: true
+// }
 
-// export default config;
+// module.exports = jestConfig
 import type {JestConfigWithTsJest} from "ts-jest"
 
 const esModules = ["@middy"].join("|")
@@ -40,7 +40,7 @@ const jestConfig: JestConfigWithTsJest = {
   extensionsToTreatAsEsm: [".ts"],
   verbose: true,
   transformIgnorePatterns: [`node_modules/(?!${esModules})`],
-  rootDir: './'
+  rootDir: "./"
 }
 
 export default jestConfig
