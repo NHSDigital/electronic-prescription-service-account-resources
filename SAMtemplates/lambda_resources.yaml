@@ -348,8 +348,7 @@ Resources:
       FunctionName: CertificateChecker
       CodeUri: ../packages/certificateChecker
       Handler: certficateChecker.handler
-      Runtime: nodejs14.x # or whichever runtime you're using
-      PackageType: Zip
+      Runtime: nodejs18.x 
       Role: !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
       Events:
         ScheduleEvent:
