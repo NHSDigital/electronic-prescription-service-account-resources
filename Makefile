@@ -70,14 +70,14 @@ sam-validate:
 sam-build: sam-validate
 	sam build --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
 
-sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-VERSION_NUMBER guard-PARAMETERS
+sam-deploy-package: guard-artifact_bucket guard-ARTIFACT_BUCKET_PREFIX guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-VERSION_NUMBER guard-PARAMETERS
 	sam deploy \
 		--template-file $$template_file \
 		--stack-name $$stack_name \
 		--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
 		--region eu-west-2 \
 		--s3-bucket $$artifact_bucket \
-		--s3-prefix $$artifact_bucket_prefix \
+		--s3-prefix $$ARTIFACT_BUCKET_PREFIX \
 		--config-file samconfig_package_and_deploy.toml \
 		--no-fail-on-empty-changeset \
 		--role-arn $$cloud_formation_execution_role \
