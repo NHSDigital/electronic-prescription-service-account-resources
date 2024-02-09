@@ -334,7 +334,7 @@ Resources:
   ExpiryFunctionResources:
     Type: AWS::Serverless::Application
     Properties:
-      Location: common_lambda_resources.yaml
+      Location: common_lambda_resources.yml
       Parameters:
         CloudWatchKMSKey: !GetAtt CloudWatchKMSKey.Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
