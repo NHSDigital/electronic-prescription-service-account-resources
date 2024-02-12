@@ -54,7 +54,8 @@ readonly CERT_PREFIX="${environment}-"
 readonly CERT_PREFIX_CI="ci"
 readonly CERT_PREFIX_SANDBOX="sandbox"
 readonly SECRET_OUTPUT_PREFIX="${secret_output_prefix}"
-readonly BUCKET_PREFIX="${app_name_lowercase// /_}"
+readonly BUCKET_PREFIX="${app_name_lowercase// /-}"
+readonly FILE_PREFIX="${app_name_lowercase// /_}"
 
 readonly CLIENT_CERT_SUBJECT_PREFIX="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=${app_name_lowercase} private CA/CN=client-cert-"
 
@@ -142,6 +143,7 @@ echo "AWS_PROFILE: ${AWS_PROFILE}"
 echo "CERT_PREFIX: ${CERT_PREFIX}"
 echo "SECRET_OUTPUT_PREFIX: ${SECRET_OUTPUT_PREFIX}"
 echo "BUCKET_PREFIX: ${BUCKET_PREFIX}"
+echo "FILE_PREFIX: ${FILE_PREFIX}"
 echo "DRY_RUN: ${DRY_RUN}"
 read -p "Press any key to resume or press ctrl+c to exit ..."
 
@@ -219,23 +221,23 @@ aws secretsmanager get-secret-value \
 
 echo "Creating new combined truststore files for upload"
 
-aws s3api head-object --bucket ${TRUSTSTORE_BUCKET_NAME} --key ${BUCKET_PREFIX}_truststore.pem || NOT_EXIST=true
+aws s3api head-object --bucket ${TRUSTSTORE_BUCKET_NAME} --key ${BUCKET_PREFIX}-truststore.pem || NOT_EXIST=true
 if [ $NOT_EXIST ]; then
-  echo "" > ${BACKUP_CERTS_DIR}/s3_${BUCKET_PREFIX}_truststore.pem
+  echo "" > ${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem
 else
-    aws s3 cp s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}_truststore.pem ${BACKUP_CERTS_DIR}/s3_${BUCKET_PREFIX}_truststore.pem 
+    aws s3 cp s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-truststore.pem ${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem 
 fi
 
-aws s3api head-object --bucket ${TRUSTSTORE_BUCKET_NAME} --key ${BUCKET_PREFIX}_sandbox-truststore.pem || NOT_EXIST=true
+aws s3api head-object --bucket ${TRUSTSTORE_BUCKET_NAME} --key ${BUCKET_PREFIX}-sandbox-truststore.pem || NOT_EXIST=true
 if [ $NOT_EXIST ]; then
-  echo "" > ${BACKUP_CERTS_DIR}/s3_${BUCKET_PREFIX}_sandbox_truststore.pem
+  echo "" > ${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_sandbox_truststore.pem
 else
-    aws s3 cp s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}_sandbox-truststore.pem ${BACKUP_CERTS_DIR}/s3_${BUCKET_PREFIX}_sandbox_truststore.pem 
+    aws s3 cp s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-sandbox-truststore.pem ${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_sandbox_truststore.pem 
 fi
 
 
-cat ${BACKUP_CERTS_DIR}/s3_${BUCKET_PREFIX}_truststore.pem ${CERTS_DIR}/${CA_NAME}.pem > ${CERTS_DIR}/${BUCKET_PREFIX}_truststore.pem
-cat ${BACKUP_CERTS_DIR}/s3_${BUCKET_PREFIX}_sandbox_truststore.pem ${CERTS_DIR}/${CA_NAME}.pem > ${CERTS_DIR}/${BUCKET_PREFIX}_sandbox_truststore.pem
+cat ${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem ${CERTS_DIR}/${CA_NAME}.pem > ${CERTS_DIR}/${FILE_PREFIX}_truststore.pem
+cat ${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_sandbox_truststore.pem ${CERTS_DIR}/${CA_NAME}.pem > ${CERTS_DIR}/${FILE_PREFIX}_sandbox_truststore.pem
 
 
 if [ "$DRY_RUN" = "false" ]; then
@@ -265,8 +267,8 @@ if [ "$DRY_RUN" = "false" ]; then
     echo "Going to create new truststore files on S3"
     read -p "Press any key to resume or press ctrl+c to exit ..."
 
-    aws s3 cp ${CERTS_DIR}/truststore.pem s3://${TRUSTSTORE_BUCKET_NAME}/truststore.pem
-    aws s3 cp ${CERTS_DIR}/sandbox_truststore.pem s3://${TRUSTSTORE_BUCKET_NAME}/sandbox-truststore.pem
+    aws s3 cp ${CERTS_DIR}/${FILE_PREFIX}_truststore.pem s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-truststore.pem
+    aws s3 cp ${CERTS_DIR}/${FILE_PREFIX}_sandbox_truststore.pem s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-sandbox-truststore.pem
 
 else
     echo "Not setting new secrets or upleading truststore files as dry run set to true"
