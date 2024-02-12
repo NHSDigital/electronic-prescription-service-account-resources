@@ -383,7 +383,7 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
-  
+
   ##################################################
   # Splunk Delivery Stream Backup Bucket
   ##################################################
@@ -589,41 +589,6 @@ Resources:
       SecretString: ChangeMe
 
   ##################################################
-  # Clinical Tracker CA Secrets
-  ##################################################
-  ClinicalTrackerCAKeySecret:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Description: Clinical tracker CA private key
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
-
-  ClinicalTrackerCACertSecret:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Description: Clinical tracker CA secret
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
-
-  ClinicalTrackerSandboxCAKeySecret:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Description: Clinical tracker sandbox CA private key
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
-
-  ClinicalTrackerSandboxCACertSecret:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Description: Clinical tracker sandbox CA secret
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
-
-  ##################################################
   # Client Secrets
   ##################################################
   ClientKeySecret:
@@ -655,6 +620,60 @@ Resources:
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: Client sandbox cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
+  # Clinical Tracker CA Secrets
+  ##################################################
+  ClinicalTrackerCAKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Clinical tracker CA private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ClinicalTrackerCACertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Clinical tracker CA secret
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
+  # Clinical Tracker Client Secrets
+  ##################################################
+  ClinicalTrackerClientKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Clinical tracker client private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ClinicalTrackerClientCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Clinical tracker client cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ClinicalTrackerClientSandboxKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Clinical tracker client sandbox private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ClinicalTrackerClientSandboxCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Clinical tracker client sandbox cert
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
@@ -856,41 +875,6 @@ Outputs:
     Value: !GetAtt CACertSecret.Id
 
   ##################################################
-  # Clinical Tracker CA Secrets Outputs
-  ##################################################
-  ClinicalTrackerCAKeySecret:
-    Description: ARN of the clinical tracker CA key secret
-    Value: !GetAtt ClinicalTrackerCAKeySecret.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerCAKeySecret"]]
-
-  ClinicalTrackerCACertSecret:
-    Description: ARN of the clinical tracker CA cert secret
-    Value: !GetAtt ClinicalTrackerCACertSecret.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerCACertSecret"]]
-
-  ClinicalTrackerSandboxCAKeySecret:
-    Description: ARN of the clinical tracker CA key secret for sandbox
-    Value: !GetAtt ClinicalTrackerSandboxCAKeySecret.Id
-    Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "ClinicalTrackerSandboxCAKeySecret"],
-        ]
-
-  ClinicalTrackerSandboxCACertSecret:
-    Description: ARN of the clinical tracker CA cert secret for sandbox
-    Value: !GetAtt ClinicalTrackerSandboxCACertSecret.Id
-    Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "ClinicalTrackerSandboxCACertSecret"],
-        ]
-
-  ##################################################
   # Client Secrets Outputs
   ##################################################
   ClientKeySecret:
@@ -908,6 +892,40 @@ Outputs:
   ClientSandboxCertSecret:
     Description: ARN of the client cert secret for sandbox
     Value: !GetAtt ClientSandboxCertSecret.Id
+
+  ##################################################
+  # Clinical Tracker CA Secrets Outputs
+  ##################################################
+  ClinicalTrackerCAKeySecret:
+    Description: ARN of the clinical tracker CA key secret
+    Value: !GetAtt ClinicalTrackerCAKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerCAKeySecret"]]
+
+  ClinicalTrackerCACertSecret:
+    Description: ARN of the clinical tracker CA cert secret
+    Value: !GetAtt ClinicalTrackerCACertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerCACertSecret"]]
+
+  ##################################################
+  # Clinical Tracker Client Secrets Outputs
+  ##################################################
+  ClinicalTrackerClientKeySecret:
+    Description: ARN of the clinical tracker client key secret
+    Value: !GetAtt ClinicalTrackerClientKeySecret.Id
+
+  ClinicalTrackerClientCertSecret:
+    Description: ARN of the clinical tracker client cert secret
+    Value: !GetAtt ClinicalTrackerClientCertSecret.Id
+
+  ClinicalTrackerClientSandboxKeySecret:
+    Description: ARN of the clinical tracker client key secret for sandbox
+    Value: !GetAtt ClinicalTrackerClientSandboxKeySecret.Id
+
+  ClinicalTrackerClientSandboxCertSecret:
+    Description: ARN of the clinical tracker client cert secret for sandbox
+    Value: !GetAtt ClinicalTrackerClientSandboxCertSecret.Id
 
   ##################################################
   # Spine Secrets Outputs
