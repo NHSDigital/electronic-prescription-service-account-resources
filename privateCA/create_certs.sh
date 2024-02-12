@@ -183,7 +183,7 @@ CLIENT_SANDBOX_CERT_ARN=$(aws cloudformation describe-stacks \
     --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'ClientSandboxCertSecret`].OutputValue' --output text)
 TRUSTSTORE_BUCKET_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'TrustStoreBucket`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`TrustStoreBucket`].OutputValue' --output text)
 TRUSTSTORE_BUCKET_NAME=$(echo ${TRUSTSTORE_BUCKET_ARN} | cut -d ":" -f 6)
 
 echo "Backing up existing secrets to local file"
