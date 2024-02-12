@@ -914,18 +914,36 @@ Outputs:
   ClinicalTrackerClientKeySecret:
     Description: ARN of the clinical tracker client key secret
     Value: !GetAtt ClinicalTrackerClientKeySecret.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerClientKeySecret"]]
 
   ClinicalTrackerClientCertSecret:
     Description: ARN of the clinical tracker client cert secret
     Value: !GetAtt ClinicalTrackerClientCertSecret.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerClientCertSecret"]]
 
   ClinicalTrackerClientSandboxKeySecret:
     Description: ARN of the clinical tracker client key secret for sandbox
     Value: !GetAtt ClinicalTrackerClientSandboxKeySecret.Id
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "ClinicalTrackerClientSandboxKeySecret"],
+        ]
 
   ClinicalTrackerClientSandboxCertSecret:
     Description: ARN of the clinical tracker client cert secret for sandbox
     Value: !GetAtt ClinicalTrackerClientSandboxCertSecret.Id
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "ClinicalTrackerClientSandboxCertSecret"],
+        ]
 
   ##################################################
   # Spine Secrets Outputs
