@@ -589,6 +589,41 @@ Resources:
       SecretString: ChangeMe
 
   ##################################################
+  # Clinical Tracker CA Secrets
+  ##################################################
+  ClinicalTrackerCAKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Clinical tracker CA private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ClinicalTrackerCACertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Clinical tracker CA secret
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ClinicalTrackerSandboxCAKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Clinical tracker sandbox CA private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ClinicalTrackerSandboxCACertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Clinical tracker sandbox CA secret
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
   # Client Secrets
   ##################################################
   ClientKeySecret:
@@ -819,6 +854,25 @@ Outputs:
   CACertSecret:
     Description: ARN of the CA cert secret
     Value: !GetAtt CACertSecret.Id
+
+  ##################################################
+  # Clinical Tracker CA Secrets Outputs
+  ##################################################
+  ClinicalTrackerCAKeySecret:
+    Description: ARN of the clinical tracker CA key secret
+    Value: !GetAtt ClinicalTrackerSandboxCACertSecret.Id
+
+  ClinicalTrackerCACertSecret:
+    Description: ARN of the clinical tracker CA cert secret
+    Value: !GetAtt ClinicalTrackerCACertSecret.Id
+
+  ClinicalTrackerSandboxCAKeySecret:
+    Description: ARN of the clinical tracker CA key secret for sandbox
+    Value: !GetAtt ClinicalTrackerSandboxCAKeySecret.Id
+
+  ClinicalTrackerSandboxCACertSecret:
+    Description: ARN of the clinical tracker CA cert secret for sandbox
+    Value: !GetAtt ClinicalTrackerSandboxCACertSecret.Id
 
   ##################################################
   # Client Secrets Outputs
