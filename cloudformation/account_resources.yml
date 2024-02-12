@@ -786,7 +786,7 @@ Outputs:
   # Trust Store Bucket Outputs
   ##################################################
   TrustStoreBucket:
-    Description: ARN of the truststore bucket
+    Description: ARN of the Truststore bucket
     Value: !GetAtt TrustStoreBucket.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "TrustStoreBucket"]]
