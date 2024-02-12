@@ -24,6 +24,10 @@
       ],
       "PrepareChangesetClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-account-resources:*"
+      ],
+      "TestReportsClaimFilters": [
+        "repo:NHSDigital/eps-test-reports:*",
+        "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
       ]
     },
     "account-resources": {},
