@@ -375,7 +375,7 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
               - kms:Decrypt
-            Resource: !ImportValue account-resources:TestReportsBucketArn
+            Resource: !ImportValue account-resources:TestReportsBucketKMSKey
 
   TestReportsBucketPolicy:
     Type: AWS::S3::BucketPolicy
