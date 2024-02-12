@@ -412,9 +412,9 @@ Resources:
           - certificateChecker/src/certificateChecker.ts
 
 Outputs:
-  ##################################################
+  #################################################
   # Lambda Insights Outputs
-  ##################################################
+  #################################################
   LambdaInsightsLogGroupPolicy:
     Description: "Lambda Insights Policy ARN"
     Value: !GetAtt LambdaInsightsLogGroupPolicy.PolicyArn
