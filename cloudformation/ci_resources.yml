@@ -240,6 +240,7 @@ Resources:
               - secretsmanager:List*
               - secretsmanager:Tag*
               - secretsmanager:Untag*
+              - schedule:GetSchedule
             Resource: "*"
 
   ##################################################
