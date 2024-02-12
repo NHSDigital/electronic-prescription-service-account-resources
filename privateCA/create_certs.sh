@@ -27,6 +27,12 @@ if [ "$app_name" = "" ]; then
     exit 1
 fi
 
+# Convert the app_name to all lowercase
+app_name_lowercase=$(echo "$app_name" | tr '[:upper:]' '[:lower:]')
+
+# Capitalise the first letter of each word and remove spaces
+secret_output_prefix=$(echo "$app_name_lowercase" | sed -e 's/\([[:alpha:]]\)\([[:alpha:]]*\)/\u\1\L\2/g' -e 's/ //g')
+
 readonly BASE_DIR=$(pwd)
 readonly CERTS_DIR="${BASE_DIR}/certs"
 readonly KEYS_DIR="${BASE_DIR}/private"
@@ -42,14 +48,15 @@ readonly CERT_VALIDITY_DAYS="365"
 
 # CA config
 readonly CA_NAME="ca"
-readonly CA_CERTIFICATE_SUBJECT="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=${app_name} private CA/CN=${app_name} Private CA $(date +%Y%m%d_%H%M%S)"
+readonly CA_CERTIFICATE_SUBJECT="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=${app_name_lowercase} private CA/CN=${app_name_lowercase} Private CA $(date +%Y%m%d_%H%M%S)"
 
 readonly CERT_PREFIX="${environment}-"
 readonly CERT_PREFIX_CI="ci"
 readonly CERT_PREFIX_SANDBOX="sandbox"
-readonly BUCKET_PREFIX="${app_name// /_}"
+readonly SECRET_OUTPUT_PREFIX="${secret_output_prefix}"
+readonly BUCKET_PREFIX="${app_name_lowercase// /_}"
 
-readonly CLIENT_CERT_SUBJECT_PREFIX="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=${app_name} private CA/CN=client-cert-"
+readonly CLIENT_CERT_SUBJECT_PREFIX="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=${app_name_lowercase} private CA/CN=client-cert-"
 
 # v3 extensions
 readonly V3_EXT="$BASE_DIR/v3.ext"
@@ -132,9 +139,10 @@ function generate_client_cert {
 
 echo "Going to create mutual TLS certs with these details"
 echo "AWS_PROFILE: ${AWS_PROFILE}"
-echo "CERT_PREFIX ${CERT_PREFIX}"
-echo "BUCKET_PREFIX ${BUCKET_PREFIX}"
-echo "DRY_RUN ${DRY_RUN}"
+echo "CERT_PREFIX: ${CERT_PREFIX}"
+echo "SECRET_OUTPUT_PREFIX: ${SECRET_OUTPUT_PREFIX}"
+echo "BUCKET_PREFIX: ${BUCKET_PREFIX}"
+echo "DRY_RUN: ${DRY_RUN}"
 read -p "Press any key to resume or press ctrl+c to exit ..."
 
 # Recreate output dirs
@@ -157,25 +165,25 @@ generate_client_cert "apigee_client_cert_sandbox"
 
 CA_KEY_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`CAKeySecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'CAKeySecret`].OutputValue' --output text)
 CA_CERT_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`CACertSecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'CACertSecret`].OutputValue' --output text)
 CLIENT_KEY_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`ClientKeySecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'ClientKeySecret`].OutputValue' --output text)
 CLIENT_CERT_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`ClientCertSecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'ClientCertSecret`].OutputValue' --output text)
 CLIENT_SANDBOX_KEY_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`ClientSandboxKeySecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'ClientSandboxKeySecret`].OutputValue' --output text)
 CLIENT_SANDBOX_CERT_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`ClientSandboxCertSecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'ClientSandboxCertSecret`].OutputValue' --output text)
 TRUSTSTORE_BUCKET_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`TrustStoreBucket`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'TrustStoreBucket`].OutputValue' --output text)
 TRUSTSTORE_BUCKET_NAME=$(echo ${TRUSTSTORE_BUCKET_ARN} | cut -d ":" -f 6)
 
 echo "Backing up existing secrets to local file"
