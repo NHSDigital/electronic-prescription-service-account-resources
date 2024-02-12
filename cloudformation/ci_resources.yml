@@ -218,7 +218,9 @@ Resources:
               - s3:PutBucketTagging
               - s3:GetBucketPolicy
               - s3:PutBucketPolicy
+              - s3:PutBucketLogging
               - s3:DeleteBucketPolicy
+              - s3:PutBucketPublicAccessBlock
               - firehose:CreateDeliveryStream
               - firehose:DescribeDeliveryStream
               - firehose:DeleteDeliveryStream
@@ -396,7 +398,7 @@ Resources:
           - Effect: Allow
             Principal:
               AWS:
-                - !Ref TestReportsRole
+                - !GetAtt TestReportsRole.Arn
             Action:
               - s3:GetObject*
               - s3:PutObject*
