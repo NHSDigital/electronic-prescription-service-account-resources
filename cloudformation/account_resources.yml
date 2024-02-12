@@ -852,6 +852,12 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "TestReportsBucketArn"]]
 
+  TestReportsBucketKMSKeyArn:
+    Description: ARN of the test reports bucket kms key
+    Value: !GetAtt TestReportsBucketKMSKey.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "TestReportsBucketKMSKeyArn"]]
+
   ##################################################
   # Secrets KMS Outputs
   ##################################################
