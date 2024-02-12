@@ -383,7 +383,7 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
-
+  
   ##################################################
   # Splunk Delivery Stream Backup Bucket
   ##################################################
