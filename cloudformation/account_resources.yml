@@ -786,16 +786,10 @@ Outputs:
   # Trust Store Bucket Outputs
   ##################################################
   TrustStoreBucket:
-    Description: The Truststore bucket
-    Value: !Ref TrustStoreBucket
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "TrustStoreBucket"]]
-
-  TrustStoreBucketArn:
     Description: ARN of the Truststore bucket
     Value: !GetAtt TrustStoreBucket.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "TrustStoreBucketArn"]]      
+      Name: !Join [":", [!Ref "AWS::StackName", "TrustStoreBucket"]]
 
   ##################################################
   # Audit Logging Bucket Outputs
@@ -847,10 +841,16 @@ Outputs:
   # Test Reports Bucket Outputs
   ##################################################
   TestReportsBucket:
+    Description: The test reports bucket
+    Value: !Ref TestReportsBucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "TestReportsBucket"]]
+
+  TestReportsBucketArn:
     Description: ARN of the test reports bucket
     Value: !GetAtt TestReportsBucket.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "TestReportsBucket"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "TestReportsBucketArn"]]
 
   ##################################################
   # Secrets KMS Outputs
