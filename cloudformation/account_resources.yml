@@ -383,7 +383,25 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
-
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action:
+              - s3:PutObject*
+            Resource:
+              - !Join [
+                  "",
+                  [
+                    !GetAtt AuditLoggingBucket.Arn,
+                    "/testreports/*",
+                  ],
+                ]
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+              ArnLike:
+                aws:SourceArn: !GetAtt TestReportsBucket.Arn
+  
   ##################################################
   # Splunk Delivery Stream Backup Bucket
   ##################################################
