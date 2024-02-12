@@ -401,7 +401,7 @@ Resources:
           Type: ScheduleV2
           Properties:
             ScheduleExpression: "rate(1 day)"
-    Metadata: # Manage esbuild properties
+    Metadata: 
       BuildMethod: esbuild
       BuildProperties:
         Minify: true
