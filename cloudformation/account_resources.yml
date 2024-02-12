@@ -861,18 +861,38 @@ Outputs:
   ClinicalTrackerCAKeySecret:
     Description: ARN of the clinical tracker CA key secret
     Value: !GetAtt ClinicalTrackerSandboxCACertSecret.Id
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "ClinicalTrackerSandboxCACertSecret"],
+        ]
 
   ClinicalTrackerCACertSecret:
     Description: ARN of the clinical tracker CA cert secret
     Value: !GetAtt ClinicalTrackerCACertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerCACertSecret"]]
 
   ClinicalTrackerSandboxCAKeySecret:
     Description: ARN of the clinical tracker CA key secret for sandbox
     Value: !GetAtt ClinicalTrackerSandboxCAKeySecret.Id
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "ClinicalTrackerSandboxCAKeySecret"],
+        ]
 
   ClinicalTrackerSandboxCACertSecret:
     Description: ARN of the clinical tracker CA cert secret for sandbox
     Value: !GetAtt ClinicalTrackerSandboxCACertSecret.Id
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "ClinicalTrackerSandboxCACertSecret"],
+        ]
 
   ##################################################
   # Client Secrets Outputs
