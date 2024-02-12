@@ -383,24 +383,6 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
-          - Effect: Allow
-            Principal:
-              Service: logging.s3.amazonaws.com
-            Action:
-              - s3:PutObject*
-            Resource:
-              - !Join [
-                  "",
-                  [
-                    !GetAtt AuditLoggingBucket.Arn,
-                    "/testreports/*",
-                  ],
-                ]
-            Condition:
-              StringEquals:
-                aws:SourceAccount: !Ref "AWS::AccountId"
-              ArnLike:
-                aws:SourceArn: !GetAtt TestReportsBucket.Arn
   
   ##################################################
   # Splunk Delivery Stream Backup Bucket
@@ -532,50 +514,6 @@ Resources:
                 - ""
                 - - !GetAtt SplunkDeliveryStreamBackupBucket.Arn
                   - "/*"
-
-  ##################################################
-  # Test Reports Bucket
-  ##################################################
-  TestReportsBucketKMSKey:
-    Type: AWS::KMS::Key
-    Properties:
-      EnableKeyRotation: true
-      KeyPolicy:
-        Version: 2012-10-17
-        Id: key-s3
-        Statement:
-          - Sid: Enable IAM User Permissions
-            Effect: Allow
-            Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-            Action:
-              - kms:*
-            Resource: "*"
-
-  TestReportsBucketKMSKeyAlias:
-    Type: AWS::KMS::Alias
-    Properties:
-      AliasName: alias/TestReportsBucketKMSKeyAlias
-      TargetKeyId: !Ref TestReportsBucketKMSKey
-
-  TestReportsBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      LoggingConfiguration:
-        DestinationBucketName: !Ref AuditLoggingBucket
-        LogFilePrefix: testreports/
-      VersioningConfiguration:
-        Status: Enabled
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${TestReportsBucketKMSKeyAlias}"
-              SSEAlgorithm: "aws:kms"
 
   ##################################################
   # Secrets KMS
@@ -854,27 +792,6 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStreamBackupBucket"]]
-
-  ##################################################
-  # Test Reports Bucket Outputs
-  ##################################################
-  TestReportsBucket:
-    Description: The test reports bucket
-    Value: !Ref TestReportsBucket
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "TestReportsBucket"]]
-
-  TestReportsBucketArn:
-    Description: ARN of the test reports bucket
-    Value: !GetAtt TestReportsBucket.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "TestReportsBucketArn"]]
-
-  TestReportsBucketKMSKeyArn:
-    Description: ARN of the test reports bucket kms key
-    Value: !GetAtt TestReportsBucketKMSKey.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "TestReportsBucketKMSKeyArn"]]
 
   ##################################################
   # Secrets KMS Outputs
