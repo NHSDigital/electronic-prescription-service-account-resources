@@ -19,6 +19,9 @@
       ],
       "PrepareChangesetClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-account-resources:*"
+      ],
+      "TestReportsClaimFilters": [
+        "NONE"
       ]
     },
     "account-resources": {},
