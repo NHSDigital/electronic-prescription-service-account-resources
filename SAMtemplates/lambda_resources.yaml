@@ -393,7 +393,7 @@ Resources:
     Properties:
       FunctionName: CertificateChecker
       CodeUri: ../packages/
-      Handler: certficateChecker.handler
+      Handler: certificateChecker.handler
       Runtime: nodejs18.x 
       Role: !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
       Events:
