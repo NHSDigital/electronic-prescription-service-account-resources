@@ -242,7 +242,15 @@ Resources:
               - secretsmanager:List*
               - secretsmanager:Tag*
               - secretsmanager:Untag*
-              - schedule:GetSchedule
+              - scheduler:GetSchedule
+              - scheduler:CreateSchedule
+              - scheduler:DeleteSchedule
+              - scheduler:ListSchedules
+              - scheduler:TagResource
+              - scheduler:UntagResource
+              - scheduler:UpdateSchedule
+              - scheduler:ListTagsForResource
+
             Resource: "*"
 
   ##################################################
