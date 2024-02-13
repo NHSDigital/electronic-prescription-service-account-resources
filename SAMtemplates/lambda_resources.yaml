@@ -400,15 +400,15 @@ Resources:
           Type: ScheduleV2
           Properties:
             ScheduleExpression: "rate(1 day)"
-            Input: 
-              secretARNs:
-              - !ImportValue account-resources:ClinicalTrackerCACertSecret
-              - !ImportValue account-resources:ClinicalTrackerClientCertSecret
-              - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
-              - !ImportValue account-resources:PfpCACertSecret
-              - !ImportValue account-resources:PfpClientCertSecret
-              - !ImportValue account-resources:PfpClientSandboxCertSecret
-              - !ImportValue account-resources:SpinePublicCertificate
+            # Input: 
+            #   secretARNs:
+            #   - !ImportValue account-resources:ClinicalTrackerCACertSecret
+            #   - !ImportValue account-resources:ClinicalTrackerClientCertSecret
+            #   - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
+            #   - !ImportValue account-resources:PfpCACertSecret
+            #   - !ImportValue account-resources:PfpClientCertSecret
+            #   - !ImportValue account-resources:PfpClientSandboxCertSecret
+            #   - !ImportValue account-resources:SpinePublicCertificate
     Metadata: 
       BuildMethod: esbuild
       BuildProperties:
