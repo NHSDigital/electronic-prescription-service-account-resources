@@ -388,7 +388,6 @@ Resources:
           - Effect: Allow
             Action:
               - secretsmanager:GetSecretValue
-              - secretsmanager:BatchGetSecretValue
             Resource:
               - !ImportValue account-resources:ClinicalTrackerCACertSecret
               - !ImportValue account-resources:ClinicalTrackerClientCertSecret
@@ -397,6 +396,9 @@ Resources:
               - !ImportValue account-resources:PfpClientCertSecret
               - !ImportValue account-resources:PfpClientSandboxCertSecret
               - !ImportValue account-resources:SpinePublicCertificate
+          - Effect: Allow 
+            Action:
+             - secretsmanager:BatchGetSecretValue    
   ExpiryFunctionResources:
     Type: AWS::Serverless::Application
     Properties:
