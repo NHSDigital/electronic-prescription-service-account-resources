@@ -377,6 +377,25 @@ Resources:
   ##################################################
   # Certificate Checker
   ##################################################
+  LambdaManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !ImportValue account-resources:ClinicalTrackerCACertSecret
+              - !ImportValue account-resources:ClinicalTrackerClientCertSecret
+              - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
+              - !ImportValue account-resources:PfpCACertSecret
+              - !ImportValue account-resources:PfpClientCertSecret
+              - !ImportValue account-resources:PfpClientSandboxCertSecret
+              - !ImportValue account-resources:SpinePublicCertificate
   ExpiryFunctionResources:
     Type: AWS::Serverless::Application
     Properties:
@@ -391,6 +410,7 @@ Resources:
   CertExpiryCheckFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub "${AWS::StackName}-CertificateChecker"
       CodeUri: ../packages/
       Handler: certificateChecker.handler
       Runtime: nodejs18.x 
@@ -402,13 +422,13 @@ Resources:
             ScheduleExpression: "rate(1 day)"
             # Input: 
             #   secretARNs:
-            #   - !ImportValue account-resources:ClinicalTrackerCACertSecret
-            #   - !ImportValue account-resources:ClinicalTrackerClientCertSecret
-            #   - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
-            #   - !ImportValue account-resources:PfpCACertSecret
-            #   - !ImportValue account-resources:PfpClientCertSecret
-            #   - !ImportValue account-resources:PfpClientSandboxCertSecret
-            #   - !ImportValue account-resources:SpinePublicCertificate
+              # - !ImportValue account-resources:ClinicalTrackerCACertSecret
+              # - !ImportValue account-resources:ClinicalTrackerClientCertSecret
+              # - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
+              # - !ImportValue account-resources:PfpCACertSecret
+              # - !ImportValue account-resources:PfpClientCertSecret
+              # - !ImportValue account-resources:PfpClientSandboxCertSecret
+              # - !ImportValue account-resources:SpinePublicCertificate
     Metadata: 
       BuildMethod: esbuild
       BuildProperties:
