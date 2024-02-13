@@ -381,7 +381,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
+        - !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
