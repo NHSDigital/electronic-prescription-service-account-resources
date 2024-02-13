@@ -1,4 +1,4 @@
-import {SecretsManagerClient, ListSecretsCommand, BatchGetSecretValueCommand} from "@aws-sdk/client-secrets-manager"
+import {SecretsManagerClient, BatchGetSecretValueCommand} from "@aws-sdk/client-secrets-manager"
 import {Logger, injectLambdaContext} from "@aws-lambda-powertools/logger"
 import {checkCertificateExpiry} from "./helpers"
 import {Secret} from "./helpers"
@@ -9,22 +9,10 @@ const secretsClient = new SecretsManagerClient({})
 
 const logger = new Logger({serviceName: "splunkProcessor"})
 
-const getCertificates = async (): Promise<void> => {
+const getCertificates = async (secretARNs: any): Promise<void> => {
   try {
-    const listSecretsCommand = new ListSecretsCommand({})
-    const listSecretsResponse = await secretsClient.send(listSecretsCommand)
-
-    const secretList = listSecretsResponse.SecretList || []
-
-    if (secretList.length === 0) {
-      logger.info("No 'cert' secrets found.")
-      return
-    }
-
-    const secretIds = secretList.map(secret => secret && secret.ARN).filter(Boolean) as string[]
-
     const batchGetSecretValueCommand = new BatchGetSecretValueCommand({
-      SecretIdList: secretIds
+      SecretIdList: secretARNs
     })
 
     const batchGetSecretValueResponse = await secretsClient.send(batchGetSecretValueCommand)
@@ -55,11 +43,11 @@ const getCertificates = async (): Promise<void> => {
   }
 }
 
-const lambdaHandler = async () => {
+const lambdaHandler = async (event: any) => {
   try {
     logger.info("Lambda execution started.")
-
-    await getCertificates()
+    const secretARNs = event.secretARNs
+    await getCertificates(secretARNs)
 
     logger.info("Lambda execution completed.")
   } catch (error) {
