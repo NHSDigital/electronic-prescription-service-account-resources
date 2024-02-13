@@ -1,7 +1,7 @@
 import {SecretsManagerClient, ListSecretsCommand, BatchGetSecretValueCommand} from "@aws-sdk/client-secrets-manager"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {checkCertificateExpiry} from "./helpers"
-import {Secret} from "../src/helpers"
+import {Secret} from "./helpers"
 
 const secretsClient = new SecretsManagerClient({})
 
