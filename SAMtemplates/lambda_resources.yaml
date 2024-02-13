@@ -388,6 +388,7 @@ Resources:
           - Effect: Allow
             Action:
               - secretsmanager:GetSecretValue
+              - secretsmanager:BatchGetSecretValue
             Resource:
               - !ImportValue account-resources:ClinicalTrackerCACertSecret
               - !ImportValue account-resources:ClinicalTrackerClientCertSecret
