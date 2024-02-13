@@ -399,7 +399,7 @@ Resources:
           - Effect: Allow 
             Action:
              - secretsmanager:BatchGetSecretValue    
-            Resource:  
+            Resource: "*"
   ExpiryFunctionResources:
     Type: AWS::Serverless::Application
     Properties:
