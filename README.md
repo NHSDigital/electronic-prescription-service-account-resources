@@ -8,6 +8,7 @@ This is the repo containing infrastructure code that defines resources that are 
 - `.github` Contains github workflows that are used for building and deploying from pull requests and releases
 - `.vscode` Contains vscode workspace file
 - `cloudformation/` Contains cloudformation files used to create resources for CI builds and deployments
+- `privateCA/` Contains script to create self signed CA certificate and a client certificate used for mutual TLS
 - `scripts/` Useful scripts
 
 ## Contributing
