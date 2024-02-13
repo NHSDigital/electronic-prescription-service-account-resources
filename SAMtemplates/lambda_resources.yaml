@@ -399,6 +399,7 @@ Resources:
           - Effect: Allow 
             Action:
              - secretsmanager:BatchGetSecretValue    
+            Resource:  
   ExpiryFunctionResources:
     Type: AWS::Serverless::Application
     Properties:
@@ -409,6 +410,7 @@ Resources:
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-CertificateChecker"
         LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
 
   CertExpiryCheckFunction:
     Type: AWS::Serverless::Function
