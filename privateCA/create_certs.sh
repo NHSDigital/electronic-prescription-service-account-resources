@@ -214,6 +214,7 @@ aws secretsmanager get-secret-value \
     --secret-id ${CLIENT_SANDBOX_KEY_ARN} \
     --query SecretString \
     --output text > ${BACKUP_KEYS_DIR}/apigee_client_cert_sandbox.key
+
 aws secretsmanager get-secret-value \
     --secret-id ${CLIENT_SANDBOX_CERT_ARN} \
     --query SecretString \
