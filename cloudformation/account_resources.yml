@@ -570,7 +570,7 @@ Resources:
               - !GetAtt SecretsKMSKey.Arn
 
   ##################################################
-  # CA Secrets
+  # OLD CA Secrets - to delete after next prod deployment
   ##################################################
   CAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
@@ -589,7 +589,7 @@ Resources:
       SecretString: ChangeMe
 
   ##################################################
-  # Client Secrets
+  # OLD Client Secrets - to delete after next prod deployment
   ##################################################
   ClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
@@ -620,6 +620,60 @@ Resources:
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: Client sandbox cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
+  # PfP CA Secrets
+  ##################################################
+  PfpCAKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: PfP CA private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PfpCACertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: PfP CA certificate
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
+  # PfP Client Secrets
+  ##################################################
+  PfpClientKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: PfP Client private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PfpClientCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: PfP Client cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PfpClientSandboxKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: PfP Client sandbox private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PfpClientSandboxCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: PfP Client sandbox cert
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
@@ -864,7 +918,7 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "LambdaDecryptSecretsKMSPolicy"]]
 
   ##################################################
-  # CA Secrets Outputs
+  # OLD CA Secrets Outputs - to delete after next prod deployment
   ##################################################
   CAKeySecret:
     Description: ARN of the CA key secret
@@ -875,7 +929,7 @@ Outputs:
     Value: !GetAtt CACertSecret.Id
 
   ##################################################
-  # Client Secrets Outputs
+  # OLD Client Secrets Outputs - to delete after next prod deployment
   ##################################################
   ClientKeySecret:
     Description: ARN of the client key secret
@@ -892,6 +946,48 @@ Outputs:
   ClientSandboxCertSecret:
     Description: ARN of the client cert secret for sandbox
     Value: !GetAtt ClientSandboxCertSecret.Id
+
+  ##################################################
+  # PfP CA Secrets Outputs
+  ##################################################
+  PfpCAKeySecret:
+    Description: ARN of the PfP CA key secret
+    Value: !GetAtt PfpCAKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PfpCAKeySecret"]]
+
+  PfpCACertSecret:
+    Description: ARN of the PfP CA cert secret
+    Value: !GetAtt PfpCACertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PfpCACertSecret"]]
+
+  ##################################################
+  # PfP Client Secrets Outputs
+  ##################################################
+  PfpClientKeySecret:
+    Description: ARN of the PfP client key secret
+    Value: !GetAtt PfpClientKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PfpClientKeySecret"]]
+  
+  PfpClientCertSecret:
+    Description: ARN of the PfP client cert secret
+    Value: !GetAtt PfpClientCertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PfpClientCertSecret"]]
+
+  PfpClientSandboxKeySecret:
+    Description: ARN of the PfP client key secret for sandbox
+    Value: !GetAtt PfpClientSandboxKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PfpClientSandboxKeySecret"]]
+
+  PfpClientSandboxCertSecret:
+    Description: ARN of the PfP client cert secret for sandbox
+    Value: !GetAtt PfpClientSandboxCertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PfpClientSandboxCertSecret"]]
 
   ##################################################
   # Clinical Tracker CA Secrets Outputs
