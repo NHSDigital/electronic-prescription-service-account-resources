@@ -1,13 +1,15 @@
 import {SecretsManagerClient, ListSecretsCommand, BatchGetSecretValueCommand} from "@aws-sdk/client-secrets-manager"
-import {Logger} from "@aws-lambda-powertools/logger"
+import {Logger, injectLambdaContext} from "@aws-lambda-powertools/logger"
 import {checkCertificateExpiry} from "./helpers"
 import {Secret} from "./helpers"
+import middy from "@middy/core"
+import inputOutputLogger from "@middy/input-output-logger"
 
 const secretsClient = new SecretsManagerClient({})
 
 const logger = new Logger({serviceName: "splunkProcessor"})
 
-export const getCertificates = async (): Promise<void> => {
+const getCertificates = async (): Promise<void> => {
   try {
     const listSecretsCommand = new ListSecretsCommand({})
     const listSecretsResponse = await secretsClient.send(listSecretsCommand)
@@ -53,7 +55,7 @@ export const getCertificates = async (): Promise<void> => {
   }
 }
 
-export const handler = async () => {
+const lambdaHandler = async () => {
   try {
     logger.info("Lambda execution started.")
 
@@ -65,3 +67,17 @@ export const handler = async () => {
     throw error
   }
 }
+
+export const handler = middy(lambdaHandler)
+  .use(injectLambdaContext(logger, {clearState: true}))
+  .use(
+    inputOutputLogger({
+      logger: (request) => {
+        if (request.response) {
+          logger.debug(request)
+        } else {
+          logger.info(request)
+        }
+      }
+    })
+  )
