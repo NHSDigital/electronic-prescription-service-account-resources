@@ -391,7 +391,6 @@ Resources:
   CertExpiryCheckFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: CertificateChecker
       CodeUri: ../packages/
       Handler: certificateChecker.handler
       Runtime: nodejs18.x 

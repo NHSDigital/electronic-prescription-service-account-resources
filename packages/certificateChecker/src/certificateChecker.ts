@@ -9,6 +9,7 @@ const secretsClient = new SecretsManagerClient({})
 
 const logger = new Logger({serviceName: "splunkProcessor"})
 
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getCertificates = async (secretARNs: any): Promise<void> => {
   try {
     const batchGetSecretValueCommand = new BatchGetSecretValueCommand({
@@ -43,6 +44,7 @@ const getCertificates = async (secretARNs: any): Promise<void> => {
   }
 }
 
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lambdaHandler = async (event: any) => {
   try {
     logger.info("Lambda execution started.")
