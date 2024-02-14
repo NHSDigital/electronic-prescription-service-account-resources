@@ -425,14 +425,22 @@ Resources:
           Type: ScheduleV2
           Properties:
             ScheduleExpression: "rate(5 minutes)"
-            Input: !Sub
-              secretARNs:
-                - !Sub ${ClinicalTrackerCACert} - ClinicalTrackerCACert: !ImportValue clinicalTrackerCACertSecret
-                - !Sub ${ClinicalTrackerClientCert} - ClinicalTrackerClientCert: !ImportValue clinicalTrackerClientCertSecret
-                - !Sub ${ClinicalTrackerClientSandboxCert} - ClinicalTrackerClientSandboxCert: !ImportValue clinicalTrackerClientSandboxCertSecret
-                - !Sub ${PfpCACert} - PfpCACert: !ImportValue pfpCACertSecret
-                - !Sub ${PfpClientCert} - PfpClientCert: !ImportValue pfpClientCertSecret
-                - !Sub ${SpinePublicCertificate} - SpinePublicCertificate: !ImportValue spinePublicCertificate
+            Input: !Sub 
+              - '{"secretARNs": [
+                "${ClinicalTrackerCACertSecret}",
+                "${ClinicalTrackerClientCertSecret}",
+                "${ClinicalTrackerClientSandboxCertSecret}",
+                "${PfpCACertSecret}",
+                "${PfpClientCertSecret}",
+                "${PfpClientSandboxCertSecret}",
+                "${SpinePublicCertificate}" ]}'
+              - ClinicalTrackerCACertSecret: !ImportValue account-resources:ClinicalTrackerCACertSecret
+              - ClinicalTrackerClientCertSecret: !ImportValue account-resources:ClinicalTrackerClientCertSecret
+              - ClinicalTrackerClientSandboxCertSecret: !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
+              - PfpCACertSecret: !ImportValue account-resources:PfpCACertSecret
+              - PfpClientCertSecret: !ImportValue account-resources:PfpClientCertSecret
+              - PfpClientSandboxCertSecret: !ImportValue account-resources:PfpClientSandboxCertSecret
+              - SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
             # Input: !Sub
             #   secretARNs:
             #     - !Sub ${ClinicalTrackerCACert} - ClinicalTrackerCACert: !ImportValue clinicalTrackerCACertSecret
