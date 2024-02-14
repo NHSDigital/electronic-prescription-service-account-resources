@@ -427,19 +427,19 @@ Resources:
             ScheduleExpression: "rate(5 minutes)"
             Input: !Sub
               secretARNs:
-               - !Sub ${ClinicalTrackerCACert} - ClinicalTrackerCACert: !ImportValue clinicalTrackerCACertSecret
+                - !Sub ${ClinicalTrackerCACert} - ClinicalTrackerCACert: !ImportValue clinicalTrackerCACertSecret
     
-               - !Sub ${ClinicalTrackerClientCert} - ClinicalTrackerClientCert: !ImportValue clinicalTrackerClientCertSecret
+                - !Sub ${ClinicalTrackerClientCert} - ClinicalTrackerClientCert: !ImportValue clinicalTrackerClientCertSecret
 
-               - !Sub ${ClinicalTrackerClientSandboxCert} - ClinicalTrackerClientSandboxCert: !ImportValue clinicalTrackerClientSandboxCertSecret
+                - !Sub ${ClinicalTrackerClientSandboxCert} - ClinicalTrackerClientSandboxCert: !ImportValue clinicalTrackerClientSandboxCertSecret
 
-               - !Sub ${PfpCACert} - PfpCACert: !ImportValue pfpCACertSecret
+                - !Sub ${PfpCACert} - PfpCACert: !ImportValue pfpCACertSecret
 
-               - !Sub ${PfpClientCert} - PfpClientCert: !ImportValue pfpClientCertSecret
+                - !Sub ${PfpClientCert} - PfpClientCert: !ImportValue pfpClientCertSecret
 
-               - !Sub ${PfpClientSandboxCert} - PfpClientSandboxCert: !ImportValue pfpClientSandboxCertSecret
+                - !Sub ${PfpClientSandboxCert} - PfpClientSandboxCert: !ImportValue pfpClientSandboxCertSecret
 
-               - !Sub ${SpinePublicCertificate} - SpinePublicCertificate: !ImportValue spinePublicCertificate
+                - !Sub ${SpinePublicCertificate} - SpinePublicCertificate: !ImportValue spinePublicCertificate
             #   secretARNs:
             #   - !ImportValue account-resources:ClinicalTrackerCACertSecret
             #   - !ImportValue account-resources:ClinicalTrackerClientCertSecret
