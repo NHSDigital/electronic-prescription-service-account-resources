@@ -425,7 +425,7 @@ Resources:
           Type: ScheduleV2
           Properties:
             ScheduleExpression: "rate(5 minutes)"
-            Input:
+            Input: !Sub
               secretARNs:
                 - !Sub ${ClinicalTrackerCACert} - ClinicalTrackerCACert: !ImportValue clinicalTrackerCACertSecret
                 - !Sub ${ClinicalTrackerClientCert} - ClinicalTrackerClientCert: !ImportValue clinicalTrackerClientCertSecret
