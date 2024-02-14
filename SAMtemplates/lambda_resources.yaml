@@ -424,7 +424,15 @@ Resources:
         ScheduleEvent:
           Type: ScheduleV2
           Properties:
-            ScheduleExpression: "rate(1 day)"
+            ScheduleExpression: "rate(5 minutes)"
+            Input: !Sub '{"secretARNs": [
+              "${account-resources:ClinicalTrackerCACertSecret}",
+              "${account-resources:ClinicalTrackerClientCertSecret}",
+              "${account-resources:ClinicalTrackerClientSandboxCertSecret}",
+              "${account-resources:PfpCACertSecret}",
+              "${account-resources:PfpClientCertSecret}",
+              "${account-resources:PfpClientSandboxCertSecret}",
+              "${account-resources:SpinePublicCertificate}" ]}'
             # Input: 
             #   secretARNs:
               # - !ImportValue account-resources:ClinicalTrackerCACertSecret
