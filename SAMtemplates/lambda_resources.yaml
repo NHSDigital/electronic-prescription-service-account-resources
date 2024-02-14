@@ -427,20 +427,13 @@ Resources:
             ScheduleExpression: "rate(5 minutes)"
             Input: !Sub
               - secretARNs:
-                - ${clinicalTrackerCACertSecret}
-                - ${clinicalTrackerClientCertSecret}
-                - ${clinicalTrackerClientSandboxCertSecret}
-                - ${pfpCACertSecret}
-                - ${pfpClientCertSecret}
-                - ${pfpClientSandboxCertSecret}
-                - ${spinePublicCertificate}
-                clinicalTrackerCACertSecret: !ImportValue clinicalTrackerCACertSecret
-                clinicalTrackerClientCertSecret: !ImportValue clinicalTrackerClientCertSecret
-                clinicalTrackerClientSandboxCertSecret: !ImportValue clinicalTrackerClientSandboxCertSecret
-                pfpCACertSecret: !ImportValue pfpCACertSecret
-                pfpClientCertSecret: !ImportValue pfpClientCertSecret
-                pfpClientSandboxCertSecret: !ImportValue pfpClientSandboxCertSecret
-                spinePublicCertificate: !ImportValue spinePublicCertificate
+                 - !Sub '${!ImportValue clinicalTrackerCACertSecret}'
+                 - !Sub '${!ImportValue clinicalTrackerClientCertSecret}'
+                 - !Sub '${!ImportValue clinicalTrackerClientSandboxCertSecret}'
+                 - !Sub '${!ImportValue pfpCACertSecret}'
+                 - !Sub '${!ImportValue pfpClientCertSecret}'
+                 - !Sub '${!ImportValue pfpClientSandboxCertSecret}'
+                 - !Sub '${!ImportValue spinePublicCertificate}'
             # Input: 
             #   secretARNs:
             #   - !ImportValue account-resources:ClinicalTrackerCACertSecret
