@@ -426,21 +426,34 @@ Resources:
           Properties:
             ScheduleExpression: "rate(5 minutes)"
             Input: !Sub
-              secretARNs:
-               - !InputValue
-                 ValueName: account-resources:ClinicalTrackerCACertSecret 
-               - !InputValue 
-                 ValueName: account-resources:ClinicalTrackerClientCertSecret
-               - !InputValue
-                 ValueName: account-resources:ClinicalTrackerClientSandboxCertSecret
-               - !InputValue
-                 ValueName: account-resources:PfpCACertSecret
-               - !InputValue
-                 ValueName: account-resources:PfpClientCertSecret
-               - !InputValue
-                 ValueName: account-resources:PfpClientSandboxCertSecret
-               - !InputValue
-                 ValueName: account-resources:SpinePublicCertificate
+              secretARNs:  
+                - !Sub 
+                  - "${ClinicalTrackerCACert}"
+                  - ClinicalTrackerCACert: !ImportValue clinicalTrackerCACertSecret
+                
+                - !Sub
+                  - "${ClinicalTrackerClientCert}"  
+                  - ClinicalTrackerClientCert: !ImportValue clinicalTrackerClientCertSecret
+                
+                - !Sub
+                  - "${ClinicalTrackerClientSandboxCert}"
+                  - ClinicalTrackerClientSandboxCert: !ImportValue clinicalTrackerClientSandboxCertSecret
+                
+                - !Sub
+                  - "${PfpCACert}"
+                  - PfpCACert: !ImportValue pfpCACertSecret
+                
+                - !Sub
+                  - "${PfpClientCert}"
+                  - PfpClientCert: !ImportValue pfpClientCertSecret
+                
+                - !Sub
+                  - "${PfpClientSandboxCert}"
+                  - PfpClientSandboxCert: !ImportValue pfpClientSandboxCertSecret
+                
+                - !Sub
+                  - "${SpinePublicCertificate}"
+                  - SpinePublicCertificate: !ImportValue spinePublicCertificate
             #   secretARNs:
             #   - !ImportValue account-resources:ClinicalTrackerCACertSecret
             #   - !ImportValue account-resources:ClinicalTrackerClientCertSecret
