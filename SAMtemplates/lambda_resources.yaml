@@ -435,12 +435,12 @@ Resources:
                 \"${PfpClientSandboxCertSecret}\", \
                 \"${SpinePublicCertificate}\" ]}"
               - ClinicalTrackerCACertSecret: !ImportValue account-resources:ClinicalTrackerCACertSecret
-              - ClinicalTrackerClientCertSecret: !ImportValue account-resources:ClinicalTrackerClientCertSecret
-              - ClinicalTrackerClientSandboxCertSecret: !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
-              - PfpCACertSecret: !ImportValue account-resources:PfpCACertSecret
-              - PfpClientCertSecret: !ImportValue account-resources:PfpClientCertSecret
-              - PfpClientSandboxCertSecret: !ImportValue account-resources:PfpClientSandboxCertSecret
-              - SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
+                ClinicalTrackerClientCertSecret: !ImportValue account-resources:ClinicalTrackerClientCertSecret
+                ClinicalTrackerClientSandboxCertSecret: !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
+                PfpCACertSecret: !ImportValue account-resources:PfpCACertSecret
+                PfpClientCertSecret: !ImportValue account-resources:PfpClientCertSecret
+                PfpClientSandboxCertSecret: !ImportValue account-resources:PfpClientSandboxCertSecret
+                SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
             # Input: !Sub
             #   secretARNs:
             #     - !Sub ${ClinicalTrackerCACert} - ClinicalTrackerCACert: !ImportValue clinicalTrackerCACertSecret
