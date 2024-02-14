@@ -426,7 +426,14 @@ Resources:
           Properties:
             ScheduleExpression: "rate(5 minutes)"
             Input: !Sub 
-              - '{"secretARNs": [ "${ClinicalTrackerCACertSecret}", "${ClinicalTrackerClientCertSecret}", "${ClinicalTrackerClientSandboxCertSecret}", "${PfpCACertSecret}", "${PfpClientCertSecret}", "${PfpClientSandboxCertSecret}", "${SpinePublicCertificate}" ]}'
+              - "{\"secretARNs\": [ \
+                \"${ClinicalTrackerCACertSecret}\", \
+                \"${ClinicalTrackerClientCertSecret}\", \
+                \"${ClinicalTrackerClientSandboxCertSecret}\", \
+                \"${PfpCACertSecret}\", \
+                \"${PfpClientCertSecret}\", \
+                \"${PfpClientSandboxCertSecret}\", \
+                \"${SpinePublicCertificate}\" ]}"
               - ClinicalTrackerCACertSecret: !ImportValue account-resources:ClinicalTrackerCACertSecret
               - ClinicalTrackerClientCertSecret: !ImportValue account-resources:ClinicalTrackerClientCertSecret
               - ClinicalTrackerClientSandboxCertSecret: !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
