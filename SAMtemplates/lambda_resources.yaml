@@ -54,52 +54,6 @@ Parameters:
     Description: The log level to set in the lambda
 
 Resources:
-  CloudWatchKMSKey:
-    Type: "AWS::KMS::Key"
-    Properties:
-      KeyPolicy:
-        Version: 2012-10-17
-        Id: key-policy-id
-        Statement:
-          - Sid: Enable IAM User Permissions
-            Effect: Allow
-            Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-            Action: "kms:*"
-            Resource: "*"
-          - Sid: Allow Lambda logging
-            Effect: Allow
-            Principal:
-              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
-            Action:
-              - kms:Encrypt*
-              - kms:Decrypt*
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:Describe*
-            Resource: "*"
-            Condition:
-              ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
-          - Sid: Allow Firehose Logging
-            Effect: Allow
-            Principal:
-              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
-            Action:
-              - kms:Encrypt*
-              - kms:Decrypt*
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:Describe*
-            Resource: "*"
-            Condition:
-              ArnEquals:
-                kms:EncryptionContext:aws:logs:arn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*"
-  CloudWatchKMSKeyAlias:
-    Type: "AWS::KMS::Alias"
-    Properties:
-      AliasName: !Sub "alias/${AWS::StackName}-CloudWatchKMSAlias"
-      TargetKeyId: !Ref CloudWatchKMSKey
   ##################################################
   # Lambda Insights
   ##################################################
@@ -405,7 +359,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !GetAtt CloudWatchKMSKey.Arn
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-CertificateChecker"
@@ -420,6 +374,9 @@ Resources:
       Handler: certificateChecker.handler
       Runtime: nodejs18.x 
       Role: !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
+      Environment:
+      Variables:
+        NODE_OPTIONS: --enable-source-maps
       Events:
         ScheduleEvent:
           Type: ScheduleV2
@@ -440,31 +397,7 @@ Resources:
                 PfpCACertSecret: !ImportValue account-resources:PfpCACertSecret
                 PfpClientCertSecret: !ImportValue account-resources:PfpClientCertSecret
                 PfpClientSandboxCertSecret: !ImportValue account-resources:PfpClientSandboxCertSecret
-                SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
-            # Input: !Sub
-            #   secretARNs:
-            #     - !Sub ${ClinicalTrackerCACert} - ClinicalTrackerCACert: !ImportValue clinicalTrackerCACertSecret
-    
-            #     - !Sub ${ClinicalTrackerClientCert} - ClinicalTrackerClientCert: !ImportValue clinicalTrackerClientCertSecret
-
-            #     - !Sub ${ClinicalTrackerClientSandboxCert} - ClinicalTrackerClientSandboxCert: !ImportValue clinicalTrackerClientSandboxCertSecret
-
-            #     - !Sub ${PfpCACert} - PfpCACert: !ImportValue pfpCACertSecret
-
-            #     - !Sub ${PfpClientCert} - PfpClientCert: !ImportValue pfpClientCertSecret
-
-            #     - !Sub ${PfpClientSandboxCert} - PfpClientSandboxCert: !ImportValue pfpClientSandboxCertSecret
-
-            #     - !Sub ${SpinePublicCertificate} - SpinePublicCertificate: !ImportValue spinePublicCertificate
-            #   secretARNs:
-            #   - !ImportValue account-resources:ClinicalTrackerCACertSecret
-            #   - !ImportValue account-resources:ClinicalTrackerClientCertSecret
-            #   - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
-            #   - !ImportValue account-resources:PfpCACertSecret
-            #   - !ImportValue account-resources:PfpClientCertSecret
-            #   - !ImportValue account-resources:PfpClientSandboxCertSecret
-            #   - !ImportValue account-resources:SpinePublicCertificate
-            
+                SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate          
     Metadata: 
       BuildMethod: esbuild
       BuildProperties:

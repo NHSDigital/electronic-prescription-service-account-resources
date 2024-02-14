@@ -7,8 +7,7 @@ import inputOutputLogger from "@middy/input-output-logger"
 
 const secretsClient = new SecretsManagerClient({})
 
-const logger = new Logger({serviceName: "splunkProcessor"})
-
+const logger = new Logger({serviceName: "certificateChecker"})
 //eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getCertificates = async (secretARNs: any): Promise<void> => {
   try {
