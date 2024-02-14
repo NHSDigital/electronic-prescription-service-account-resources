@@ -425,23 +425,23 @@ Resources:
           Type: ScheduleV2
           Properties:
             ScheduleExpression: "rate(5 minutes)"
-            Input: !Sub '{"secretARNs": [
-              "${account-resources:ClinicalTrackerCACertSecret}",
-              "${account-resources:ClinicalTrackerClientCertSecret}",
-              "${account-resources:ClinicalTrackerClientSandboxCertSecret}",
-              "${account-resources:PfpCACertSecret}",
-              "${account-resources:PfpClientCertSecret}",
-              "${account-resources:PfpClientSandboxCertSecret}",
-              "${account-resources:SpinePublicCertificate}" ]}'
-            # Input: 
-            #   secretARNs:
-              # - !ImportValue account-resources:ClinicalTrackerCACertSecret
-              # - !ImportValue account-resources:ClinicalTrackerClientCertSecret
-              # - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
-              # - !ImportValue account-resources:PfpCACertSecret
-              # - !ImportValue account-resources:PfpClientCertSecret
-              # - !ImportValue account-resources:PfpClientSandboxCertSecret
-              # - !ImportValue account-resources:SpinePublicCertificate
+            # Input: !Sub '{"secretARNs": [
+            #   "${account-resources:ClinicalTrackerCACertSecret}",
+            #   "${account-resources:ClinicalTrackerClientCertSecret}",
+            #   "${account-resources:ClinicalTrackerClientSandboxCertSecret}",
+            #   "${account-resources:PfpCACertSecret}",
+            #   "${account-resources:PfpClientCertSecret}",
+            #   "${account-resources:PfpClientSandboxCertSecret}",
+            #   "${account-resources:SpinePublicCertificate}" ]}'
+            Input: 
+              secretARNs:
+              - !ImportValue account-resources:ClinicalTrackerCACertSecret
+              - !ImportValue account-resources:ClinicalTrackerClientCertSecret
+              - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
+              - !ImportValue account-resources:PfpCACertSecret
+              - !ImportValue account-resources:PfpClientCertSecret
+              - !ImportValue account-resources:PfpClientSandboxCertSecret
+              - !ImportValue account-resources:SpinePublicCertificate
     Metadata: 
       BuildMethod: esbuild
       BuildProperties:
