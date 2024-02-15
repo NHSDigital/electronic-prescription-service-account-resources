@@ -120,6 +120,7 @@ jobs:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       SPLUNK_HEC_TOKEN: ${{ secrets.DEV_SPLUNK_HEC_TOKEN }}
 
+
   create_release_notes_post_dev:
     needs: [tag_release, deploy_dev_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
