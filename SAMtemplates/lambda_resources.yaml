@@ -383,7 +383,7 @@ Resources:
         ScheduleEvent:
           Type: ScheduleV2
           Properties:
-            Name: ${AWS::StackName}-CertExpirySchedule
+            Name: !Sub ${AWS::StackName}-CertExpirySchedule
             ScheduleExpression: "rate(1 day)"
             Input: !Sub 
               - "{\"secretARNs\": [ \
