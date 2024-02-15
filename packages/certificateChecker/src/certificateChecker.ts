@@ -49,7 +49,6 @@ const lambdaHandler = async (event: any) => {
     logger.info("Lambda execution started.")
     const secretARNs = event.secretARNs
     await getCertificates(secretARNs)
-
     logger.info("Lambda execution completed.")
   } catch (error) {
     logger.error("Lambda execution failed:", {error})
