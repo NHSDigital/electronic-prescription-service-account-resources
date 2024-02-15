@@ -23,4 +23,4 @@ lib/
 *.zip
 node_modules
 *-params.json
-packages/certificateChecker/tests/mock-certs/
+# packages/certificateChecker/tests/mock-certs/
