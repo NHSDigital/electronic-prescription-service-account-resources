@@ -122,7 +122,7 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - kms:GenerateDataKey
+              - kms:GenerateDataKey 
             Resource:
               - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
@@ -356,6 +356,8 @@ Resources:
             Resource: "*"
   ExpiryFunctionResources:
     Type: AWS::Serverless::Application
+    DependsOn:
+      - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
