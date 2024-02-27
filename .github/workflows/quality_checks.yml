@@ -35,7 +35,7 @@ jobs:
             PYTHON_CONFIGURE_OPTS: --enable-shared
 
       - name: Install Dependencies
-        run: make install
+        run: make install && sudo apt install faketime
 
       - name: Check Licenses
         run: make check-licenses

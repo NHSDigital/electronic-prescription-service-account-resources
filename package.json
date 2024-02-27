@@ -14,9 +14,12 @@
   "author": "NHS Digital",
   "license": "MIT",
   "workspaces": [
-    "packages/splunkProcessor"
+    "packages/splunkProcessor",
+    "packages/certificateChecker"
   ],
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "aws-lambda": "^1.0.7",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
@@ -25,10 +28,14 @@
     "jest": "^29.7.0",
     "jest-junit": "^16.0.0",
     "license-checker": "^25.0.1",
-    "prettier": "^3.1.0"
+    "prettier": "^3.1.0",
+    "@types/jest": "^29.5.11"
   },
   "dependencies": {
     "archiver": "^6.0.1",
-    "esbuild": "^0.19.8"
+    "esbuild": "^0.19.8",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }

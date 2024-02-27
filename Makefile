@@ -27,10 +27,12 @@ check-licenses-python:
 check-licenses-node:
 	npm run check-licenses --workspace packages/splunkProcessor
 
-lint: lint-cloudformation lint-githubactions lint-githubaction-scripts
-
+lint: lint-cloudformation lint-node lint-githubactions lint-githubaction-scripts
 lint-cloudformation:
 	poetry run cfn-lint -t cloudformation/*.yml
+
+lint-node:
+	npm run lint --workspace packages/certificateChecker
 
 lint-githubactions:
 	actionlint
@@ -38,8 +40,12 @@ lint-githubactions:
 lint-githubaction-scripts:
 	shellcheck .github/scripts/*.sh
 
-test:
+test: generate-mock-certs
 	npm run test --workspace packages/splunkProcessor
+	npm run test --workspace packages/certificateChecker
+
+generate-mock-certs:
+	cd packages/certificateChecker/tests && bash ./generate_mock_certs.sh
 
 package-code:
 	npm run build
@@ -79,6 +85,7 @@ sam-deploy-package: guard-artifact_bucket guard-ARTIFACT_BUCKET_PREFIX guard-STA
 		--force-upload \
 		--tags "version=$$VERSION_NUMBER" \
 		--parameter-overrides $$PARAMETERS
+
 
 prepare-eps-route-53-changeset-management:
 	@echo -e "\nChecking if stack exists in management ...";

@@ -212,7 +212,9 @@ Resources:
               - s3:PutBucketTagging
               - s3:GetBucketPolicy
               - s3:PutBucketPolicy
+              - s3:PutBucketLogging
               - s3:DeleteBucketPolicy
+              - s3:PutBucketPublicAccessBlock
               - firehose:CreateDeliveryStream
               - firehose:DescribeDeliveryStream
               - firehose:DeleteDeliveryStream
@@ -240,6 +242,15 @@ Resources:
               - secretsmanager:List*
               - secretsmanager:Tag*
               - secretsmanager:Untag*
+              - scheduler:GetSchedule
+              - scheduler:CreateSchedule
+              - scheduler:DeleteSchedule
+              - scheduler:ListSchedules
+              - scheduler:TagResource
+              - scheduler:UntagResource
+              - scheduler:UpdateSchedule
+              - scheduler:ListTagsForResource
+
             Resource: "*"
 
   ##################################################
