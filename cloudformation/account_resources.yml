@@ -712,6 +712,14 @@ Resources:
               - !Ref SpineCAChain
               - !Ref ServiceSearchApiKey
 
+  SplunkHECToken:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Splunk HEC token
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
 Outputs:
   ##################################################
   # Cloudwatch Outputs
@@ -898,3 +906,9 @@ Outputs:
     Value: !GetAtt LambdaAccessSecretsPolicy.PolicyArn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "LambdaAccessSecretsPolicy"]]
+
+  SplunkHECToken:
+    Description: SplunkHECToken
+    Value: !GetAtt SplunkHECToken.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SplunkHECToken"]]
