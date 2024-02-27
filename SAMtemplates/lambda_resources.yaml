@@ -135,7 +135,7 @@ Resources:
       SplunkDestinationConfiguration:
         HECEndpoint: !Ref SplunkHECEndpoint
         HECEndpointType: "Event"
-        HECToken: {{resolve:secretsmanager:account-resources-SplunkHECToken}}
+        HECToken: {{resolve:secretsmanager:account-resources-SplunkHECToken:SecretString}}
         ProcessingConfiguration:
           Enabled: true
           Processors:
