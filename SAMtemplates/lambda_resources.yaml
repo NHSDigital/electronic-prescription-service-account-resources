@@ -48,10 +48,6 @@ Parameters:
   LambdaInsightsLogGroupName:
     Type: String
     Description: The log level to set in the lambda
-  HEC_TOKEN:
-    Type: String
-    Description: The HEC token for the Splunk Firehose
-    Default: '{{resolve:secretsmanager:account-resources-SplunkHECToken:SecretString}}'
 
 Resources:
   ##################################################
@@ -139,7 +135,7 @@ Resources:
       SplunkDestinationConfiguration:
         HECEndpoint: !Ref SplunkHECEndpoint
         HECEndpointType: "Event"
-        HECToken: !Ref HEC_TOKEN
+        HECToken: '{{resolve:secretsmanager:account-resources-SplunkHECToken:SecretString}}'
         ProcessingConfiguration:
           Enabled: true
           Processors:
