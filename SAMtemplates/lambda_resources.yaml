@@ -49,6 +49,10 @@ Parameters:
     Type: String
     Description: The log level to set in the lambda
 
+Environment:
+  Variables:
+    HEC_TOKEN: '{{resolve:secretsmanager:account-resources-SplunkHECToken:SecretString}}'
+
 Resources:
   ##################################################
   # Lambda Insights
@@ -135,7 +139,7 @@ Resources:
       SplunkDestinationConfiguration:
         HECEndpoint: !Ref SplunkHECEndpoint
         HECEndpointType: "Event"
-        HECToken: {{resolve:secretsmanager:account-resources-SplunkHECToken:SecretString}}
+        HECToken: !Ref HEC_TOKEN
         ProcessingConfiguration:
           Enabled: true
           Processors:
