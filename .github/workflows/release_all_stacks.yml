@@ -35,8 +35,6 @@ on:
           required: false
         cf_deploy_role:
           required: false
-        SPLUNK_HEC_TOKEN:
-          required: false
   
 env:
   BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
@@ -89,4 +87,3 @@ jobs:
       dynamic_vars: '{"CommitId": "${{ inputs.commit_id }}", "VersionNumber": "${{ inputs.version_number }}", "lambda_insights_log_group_name": "${{ inputs.lambda_insights_log_group_name }}"}'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
-      parameter_secrets: '{"splunk_hec_token": "${{ secrets.SPLUNK_HEC_TOKEN }}"}'
