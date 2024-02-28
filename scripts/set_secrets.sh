@@ -388,3 +388,7 @@ set_secrets "NHSDigital/electronic-prescription-service-release-notes"
 echo
 set_secrets "NHSDigital/electronic-prescription-service-account-resources"
 echo
+set_secrets "NHSDigital/eps-prescription-status-update-api"
+echo
+set_secrets "NHSDigital/eps-FHIR-validator-lambda"
+echo

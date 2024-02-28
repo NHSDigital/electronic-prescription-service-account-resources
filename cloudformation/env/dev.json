@@ -6,13 +6,17 @@
         "repo:NHSDigital/prescriptionsforpatients:*",
         "repo:NHSDigital/electronic-prescription-service-account-resources:*",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
-        "repo:NHSDigital/electronic-prescription-service-release-notes:*"
+        "repo:NHSDigital/electronic-prescription-service-release-notes:*",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:*",
+        "repo:NHSDigital/eps-prescription-status-update-api:*"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
         "repo:NHSDigital/electronic-prescription-service-release-notes:*",
         "repo:NHSDigital/electronic-prescription-service-account-resources:*",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:*",
+        "repo:NHSDigital/eps-prescription-status-update-api:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -20,7 +24,9 @@
         "repo:NHSDigital/electronic-prescription-service-account-resources:*",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
         "repo:NHSDigital/prescriptions-for-patients:*",
-        "repo:NHSDigital/electronic-prescription-service-api:*"
+        "repo:NHSDigital/electronic-prescription-service-api:*",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:*",
+        "repo:NHSDigital/eps-prescription-status-update-api:*"
       ],
       "PrepareChangesetClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-account-resources:*"
