@@ -827,6 +827,7 @@ Resources:
       Description: Splunk HEC token
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-SplunkHECToken"
 
 Outputs:
   ##################################################
