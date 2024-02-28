@@ -7,13 +7,17 @@
         "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-account",
         "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-ci",
         "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-lambda",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod"
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:prod",
+        "repo:NHSDigital/eps-prescription-status-update-api:prod"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
         "repo:NHSDigital/electronic-prescription-service-release-notes:*",
         "repo:NHSDigital/electronic-prescription-service-account-resources:*",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:*",
+        "repo:NHSDigital/eps-prescription-status-update-api:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "NONE"
