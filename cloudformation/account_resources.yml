@@ -732,6 +732,60 @@ Resources:
       SecretString: ChangeMe
 
   ##################################################
+  # PSU CA Secrets
+  ##################################################
+  PsuCAKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update CA private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PsuCACertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update CA secret
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
+  # PSU Client Secrets
+  ##################################################
+  PsuClientKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update client private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PsuClientCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update client cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PsuClientSandboxKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update client sandbox private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PsuClientSandboxCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update client sandbox cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
   # Spine Secrets
   ##################################################
   SpinePrivateKey:
@@ -1048,6 +1102,58 @@ Outputs:
         !Join [
           ":",
           [!Ref "AWS::StackName", "ClinicalTrackerClientSandboxCertSecret"],
+        ]
+
+  ##################################################
+  # PSU CA Secrets Outputs
+  ##################################################
+  PsuCAKeySecret:
+    Description: ARN of the prescription status update CA key secret
+    Value: !GetAtt PsuCAKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PsuCAKeySecret"]]
+
+  PsuCACertSecret:
+    Description: ARN of the prescription status update CA cert secret
+    Value: !GetAtt PsuCACertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PsuCACertSecret"]]
+
+  ##################################################
+  # PSU Client Secrets Outputs
+  ##################################################
+  PsuClientKeySecret:
+    Description: ARN of the prescription status update client key secret
+    Value: !GetAtt PsuClientKeySecret.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PsuClientKeySecret"]]
+
+  PsuClientCertSecret:
+    Description: ARN of the prescription status update client cert secret
+    Value: !GetAtt PsuClientCertSecret.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PsuClientCertSecret"]]
+
+  PsuClientSandboxKeySecret:
+    Description: ARN of the prescription status update client key secret for sandbox
+    Value: !GetAtt PsuClientSandboxKeySecret.Id
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "PsuClientSandboxKeySecret"],
+        ]
+
+  PsuClientSandboxCertSecret:
+    Description: ARN of the prescription status update client cert secret for sandbox
+    Value: !GetAtt PsuClientSandboxCertSecret.Id
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"],
         ]
 
   ##################################################
