@@ -1126,35 +1126,25 @@ Outputs:
     Description: ARN of the prescription status update client key secret
     Value: !GetAtt PsuClientKeySecret.Id
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "PsuClientKeySecret"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "PsuClientKeySecret"]]
 
   PsuClientCertSecret:
     Description: ARN of the prescription status update client cert secret
     Value: !GetAtt PsuClientCertSecret.Id
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "PsuClientCertSecret"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "PsuClientCertSecret"]]
 
   PsuClientSandboxKeySecret:
     Description: ARN of the prescription status update client key secret for sandbox
     Value: !GetAtt PsuClientSandboxKeySecret.Id
     Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "PsuClientSandboxKeySecret"],
-        ]
+      Name: !Join [":", [!Ref "AWS::StackName", "PsuClientSandboxKeySecret"]]
 
   PsuClientSandboxCertSecret:
     Description: ARN of the prescription status update client cert secret for sandbox
     Value: !GetAtt PsuClientSandboxCertSecret.Id
     Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"],
-        ]
+      Name: !Join [":", [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"]]
 
   ##################################################
   # Spine Secrets Outputs
