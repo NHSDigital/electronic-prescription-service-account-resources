@@ -732,6 +732,60 @@ Resources:
       SecretString: ChangeMe
 
   ##################################################
+  # Prescription Status Update CA Secrets
+  ##################################################
+  PrescriptionStatusUpdateCAKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update CA private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PrescriptionStatusUpdateCACertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update CA secret
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
+  # Prescription Status Update Client Secrets
+  ##################################################
+  PrescriptionStatusUpdateClientKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update client private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PrescriptionStatusUpdateClientCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update client cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PrescriptionStatusUpdateClientSandboxKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update client sandbox private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  PrescriptionStatusUpdateClientSandboxCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Prescription status update client sandbox cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
   # Spine Secrets
   ##################################################
   SpinePrivateKey:
@@ -1048,6 +1102,58 @@ Outputs:
         !Join [
           ":",
           [!Ref "AWS::StackName", "ClinicalTrackerClientSandboxCertSecret"],
+        ]
+
+  ##################################################
+  # Prescription Status Update CA Secrets Outputs
+  ##################################################
+  PrescriptionStatusUpdateCAKeySecret:
+    Description: ARN of the prescription status update CA key secret
+    Value: !GetAtt PrescriptionStatusUpdateCAKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PrescriptionStatusUpdateCAKeySecret"]]
+
+  PrescriptionStatusUpdateCACertSecret:
+    Description: ARN of the prescription status update CA cert secret
+    Value: !GetAtt PrescriptionStatusUpdateCACertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PrescriptionStatusUpdateCACertSecret"]]
+
+  ##################################################
+  # Prescription Status Update Client Secrets Outputs
+  ##################################################
+  PrescriptionStatusUpdateClientKeySecret:
+    Description: ARN of the prescription status update client key secret
+    Value: !GetAtt PrescriptionStatusUpdateClientKeySecret.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PrescriptionStatusUpdateClientKeySecret"]]
+
+  PrescriptionStatusUpdateClientCertSecret:
+    Description: ARN of the prescription status update client cert secret
+    Value: !GetAtt PrescriptionStatusUpdateClientCertSecret.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PrescriptionStatusUpdateClientCertSecret"]]
+
+  PrescriptionStatusUpdateClientSandboxKeySecret:
+    Description: ARN of the prescription status update client key secret for sandbox
+    Value: !GetAtt PrescriptionStatusUpdateClientSandboxKeySecret.Id
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "PrescriptionStatusUpdateClientSandboxKeySecret"],
+        ]
+
+  PrescriptionStatusUpdateClientSandboxCertSecret:
+    Description: ARN of the prescription status update client cert secret for sandbox
+    Value: !GetAtt PrescriptionStatusUpdateClientSandboxCertSecret.Id
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "PrescriptionStatusUpdateClientSandboxCertSecret"],
         ]
 
   ##################################################
