@@ -857,6 +857,24 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-confluenceToken"
 
+  ProxgenPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-ProxgenPrivateKey"
+
+  ProxgenPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-ProxgenPublicKey"
+
   LambdaAccessSecretsPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -1221,3 +1239,15 @@ Outputs:
     Value: !GetAtt SplunkHECToken.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SplunkHECToken"]]
+
+  ProxgenPrivateKey:
+    Description: ProxgenPrivateKey
+    Value: !GetAtt ProxgenPrivateKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ProxgenPrivateKey"]]
+
+  ProxgenPublicKey:
+    Description: ProxgenPublicKey
+    Value: !GetAtt ProxgenPublicKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ProxgenPublicKey"]]
