@@ -252,17 +252,13 @@ Resources:
               - scheduler:UntagResource
               - scheduler:UpdateSchedule
               - scheduler:ListTagsForResource
-              - dynamodb:GetItem
-              - dynamodb:Scan
-              - dynamodb:Query
-              - dynamodb:BatchGetItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteTable
               - dynamodb:DescribeTable
-              - dynamodb:GetRecords
+              - dynamodb:UpdateTable
+              - dynamodb:TagResource
+              - dynamodb:UntagResource
               - dynamodb:ListTables
-              - dynamodb:BatchWriteItem
-              - dynamodb:DeleteItem
-              - dynamodb:PutItem
-              - dynamodb:UpdateItem
 
             Resource: "*"
 
