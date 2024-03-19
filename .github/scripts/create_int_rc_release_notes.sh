@@ -10,7 +10,8 @@ cat <<EOF > payload.json
   "releaseNotesPageId": "$PAGE_ID", 
   "releaseNotesPageTitle": "AWS-account-resources-$RELEASE_TAG - Deployed to [INT] on $(date +'%d-%m-%y')",
   "createReleaseCandidate": "true",
-  "releasePrefix": "AWS-account-resources-"
+  "releasePrefix": "AWS-account-resources-",
+  "releaseURL": "$RELEASE_URL"
 }
 EOF
 cat payload.json
