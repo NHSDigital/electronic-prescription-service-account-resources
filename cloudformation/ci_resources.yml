@@ -252,6 +252,13 @@ Resources:
               - scheduler:UntagResource
               - scheduler:UpdateSchedule
               - scheduler:ListTagsForResource
+              - dynamodb:CreateTable
+              - dynamodb:DeleteTable
+              - dynamodb:DescribeTable
+              - dynamodb:UpdateTable
+              - dynamodb:TagResource
+              - dynamodb:UntagResource
+              - dynamodb:ListTables
 
             Resource: "*"
 
