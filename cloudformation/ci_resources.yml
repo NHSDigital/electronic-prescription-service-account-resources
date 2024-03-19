@@ -259,6 +259,7 @@ Resources:
               - dynamodb:TagResource
               - dynamodb:UntagResource
               - dynamodb:ListTables
+              - dynamodb:ListTagsOfResource
 
             Resource: "*"
 
