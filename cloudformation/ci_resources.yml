@@ -260,7 +260,30 @@ Resources:
               - dynamodb:UntagResource
               - dynamodb:ListTables
               - dynamodb:ListTagsOfResource
-
+              - states:CreateActivity
+              - states:CreateStateMachine
+              - states:CreateStateMachineAlias
+              - states:DeleteActivity
+              - states:DeleteStateMachine
+              - states:DeleteStateMachineAlias
+              - states:DeleteStateMachineVersion
+              - states:DescribeActivity
+              - states:DescribeExecution
+              - states:DescribeMapRun
+              - states:DescribeStateMachine
+              - states:DescribeStateMachineAlias
+              - states:DescribeStateMachineForExecution
+              - states:ListActivities
+              - states:ListStateMachineAliases
+              - states:ListStateMachineVersions
+              - states:ListStateMachines
+              - states:ListTagsForResource
+              - states:PublishStateMachineVersion
+              - states:TagResource
+              - states:UntagResource
+              - states:UpdateMapRun
+              - states:UpdateStateMachine
+              - states:UpdateStateMachineAlias
             Resource: "*"
 
   ##################################################

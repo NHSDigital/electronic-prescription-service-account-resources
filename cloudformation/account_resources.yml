@@ -124,6 +124,21 @@ Resources:
               - kms:ReEncrypt*
             Resource:
               - !GetAtt CloudwatchLogsKmsKey.Arn
+  
+  CloudwatchEncryptionKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt
+              - kms:ReEncrypt*
+            Resource:
+              - !GetAtt CloudwatchLogsKmsKey.Arn
 
   ##################################################
   # Artifacts Bucket
@@ -917,6 +932,13 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "LambdaEncryptCloudwatchKMSPolicy"]]
+  
+  CloudwatchEncryptionKMSPolicyArn:
+    Description: "Cloudwatch Encryption KMS Policy ARN"
+    Value: !GetAtt CloudwatchEncryptionKMSPolicy.PolicyArn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CloudwatchEncryptionKMSPolicyArn"]]
 
   ##################################################
   # Artifacts Bucket Outputs
