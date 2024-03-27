@@ -93,6 +93,7 @@ Resources:
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda-insights*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/stepfunctions/*"
           - Sid: Allow API Gateway Role
             Effect: Allow
             Principal:
@@ -124,7 +125,7 @@ Resources:
               - kms:ReEncrypt*
             Resource:
               - !GetAtt CloudwatchLogsKmsKey.Arn
-  
+
   CloudwatchEncryptionKMSPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -932,7 +933,7 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "LambdaEncryptCloudwatchKMSPolicy"]]
-  
+
   CloudwatchEncryptionKMSPolicyArn:
     Description: "Cloudwatch Encryption KMS Policy ARN"
     Value: !GetAtt CloudwatchEncryptionKMSPolicy.PolicyArn
@@ -1073,7 +1074,7 @@ Outputs:
     Value: !GetAtt PfpClientKeySecret.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PfpClientKeySecret"]]
-  
+
   PfpClientCertSecret:
     Description: ARN of the PfP client cert secret
     Value: !GetAtt PfpClientCertSecret.Id
@@ -1166,35 +1167,25 @@ Outputs:
     Description: ARN of the prescription status update client key secret
     Value: !GetAtt PsuClientKeySecret.Id
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "PsuClientKeySecret"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "PsuClientKeySecret"]]
 
   PsuClientCertSecret:
     Description: ARN of the prescription status update client cert secret
     Value: !GetAtt PsuClientCertSecret.Id
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "PsuClientCertSecret"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "PsuClientCertSecret"]]
 
   PsuClientSandboxKeySecret:
     Description: ARN of the prescription status update client key secret for sandbox
     Value: !GetAtt PsuClientSandboxKeySecret.Id
     Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "PsuClientSandboxKeySecret"],
-        ]
+      Name: !Join [":", [!Ref "AWS::StackName", "PsuClientSandboxKeySecret"]]
 
   PsuClientSandboxCertSecret:
     Description: ARN of the prescription status update client cert secret for sandbox
     Value: !GetAtt PsuClientSandboxCertSecret.Id
     Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"],
-        ]
+      Name: !Join [":", [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"]]
 
   ##################################################
   # Spine Secrets Outputs
