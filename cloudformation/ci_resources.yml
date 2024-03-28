@@ -95,6 +95,27 @@ Resources:
               - cloudformation:DeleteChangeSet
             Resource: "*"
 
+  CreateCloudFormationSecretPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationDeployRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudformation:GetSecretValue
+            Resource:
+              - !ImportValue account-resources:ProxgenPrivateKey
+              - !ImportValue account-resources:ProxgenPublicKey
+              - !ImportValue account-resources:PsuClientKeySecret
+              - !ImportValue account-resources:PsuClientSandboxKeySecret
+              - !ImportValue account-resources:PsuCACertSecret
+              - !ImportValue account-resources:PsuCAKeySecret
+              - !ImportValue account-resources:PsuClientCertSecret
+              - !ImportValue account-resources:PsuClientSandboxCertSecret
+
   ##################################################
   # Cloudformation Execution Role
   ##################################################
