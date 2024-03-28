@@ -95,7 +95,7 @@ Resources:
               - cloudformation:DeleteChangeSet
             Resource: "*"
 
-  CreateCloudFormationSecretPolicy:
+  AllowCloudFormationSecretsAccessManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
