@@ -115,6 +115,11 @@ Resources:
               - !ImportValue account-resources:PsuCAKeySecret
               - !ImportValue account-resources:PsuClientCertSecret
               - !ImportValue account-resources:PsuClientSandboxCertSecret
+          - Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/*"
 
   ##################################################
   # Cloudformation Execution Role
