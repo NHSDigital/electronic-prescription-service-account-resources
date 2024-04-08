@@ -104,25 +104,39 @@ function transformLambdaLogEvent(logEvent) {
 function transformLogEvent(logEvent, logGroup, accountNumber) {
   // Try and parse message as JSON
   let eventMessage = ""
+  if (logGroup.startsWith("/aws/lambda/")) {
+    try {
+      eventMessage = JSON.parse(logEvent.message)
+    } catch (_) {
+      /*
+      if its a lambda log that we could not parse to json object
+      then we want to try and extract the function_request_id to easier search and link in splunk
+      possible messages are
+      REPORT RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd	....
+      END RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd ...
+      START RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd ...
+      2023-08-22T09:52:29.585Z 720f4d20-ffd3-4a06-924a-0a61c9c594c8 <message>
+      */
+     eventMessage = transformLambdaLogEvent(logEvent)
+    }
+ } else if (logGroup.startsWith("/aws/stepfunctions/")) {
+  try {
+    eventMessage = JSON.parse(logEvent.message)
+    input = JSON.parse(eventMessage.details.input)
+    eventMessage["apigw-request-id"] = input["headers"]["apigw-request-id"]
+    eventMessage["X-Amzn-Trace-Id"] = input["headers"]["X-Amzn-Trace-Id"]
+    eventMessage["x-correlation-id"] = input["headers"]["x-correlation-id"]
+    eventMessage["x-request-id"] = input["headers"]["x-request-id"]
+  } catch (_) {
+      eventMessage = logEvent.message
+    }
+ } else {
   try {
     eventMessage = JSON.parse(logEvent.message)
   } catch (_) {
-    /*
-    if its a lambda log that we could not parse to json object
-    then we want to try and extract the function_request_id to easier search and link in splunk
-    possible messages are
-    REPORT RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd	....
-    END RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd ...
-    START RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd ...
-    2023-08-22T09:52:29.585Z 720f4d20-ffd3-4a06-924a-0a61c9c594c8 <message>
-    */
-    if (logGroup.startsWith("/aws/lambda/")) {
-      eventMessage = transformLambdaLogEvent(logEvent)
-    } else {
-      // not a lambda log and can not parse as json so just log message as a string
-      eventMessage = logEvent.message
-    }
+    eventMessage = logEvent.message
   }
+ }
 
   const event = {
     time: logEvent.timestamp,

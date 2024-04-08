@@ -22,6 +22,7 @@
         "ms-python.flake8",
         "eamodio.gitlens",
         "github.vscode-pull-request-github",
+        "orta.vscode-jest",
         "lfm.vscode-makefile-term",
         "GrapeCity.gc-excelviewer",
         "redhat.vscode-xml",
