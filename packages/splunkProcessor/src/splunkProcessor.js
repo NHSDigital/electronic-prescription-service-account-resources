@@ -126,7 +126,7 @@ function transformLogEvent(logEvent, logGroup, accountNumber) {
     not all events will have these correlation ids though
     */
     eventMessage = JSON.parse(logEvent.message)
-    input = JSON.parse(eventMessage.details.input)
+    const input = JSON.parse(eventMessage.details.input)
     eventMessage["apigw-request-id"] = input["headers"]["apigw-request-id"]
     eventMessage["X-Amzn-Trace-Id"] = input["headers"]["X-Amzn-Trace-Id"]
     eventMessage["x-correlation-id"] = input["headers"]["x-correlation-id"]
@@ -139,6 +139,10 @@ function transformLogEvent(logEvent, logGroup, accountNumber) {
       }
     }
  } else {
+  /* 
+  its not a lambda or stepfunction log so try to parse it to JSON,
+  but if it cant then just return the string
+  */
   try {
     eventMessage = JSON.parse(logEvent.message)
   } catch (_) {
