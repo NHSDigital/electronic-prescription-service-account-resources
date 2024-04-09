@@ -128,7 +128,11 @@ function transformLogEvent(logEvent, logGroup, accountNumber) {
     eventMessage["x-correlation-id"] = input["headers"]["x-correlation-id"]
     eventMessage["x-request-id"] = input["headers"]["x-request-id"]
   } catch (_) {
-      eventMessage = logEvent.message
+      try {
+        eventMessage = JSON.parse(logEvent.message)
+      } catch(_) {
+        eventMessage = logEvent.message
+      }
     }
  } else {
   try {
