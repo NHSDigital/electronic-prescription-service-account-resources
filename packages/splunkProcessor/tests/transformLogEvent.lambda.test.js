@@ -3,8 +3,8 @@ const {expect, describe, it} = require("@jest/globals")
 
 /* eslint-disable  max-len */
 
-describe("transformLogEvent", () => {
-  it("should parse a json log event", async () => {
+describe("transformLogEvent tests for lambda log groups", () => {
+  it("should parse a simple json log event", async () => {
     const logEvent = {
       message: JSON.stringify({
         field1: "foo",
@@ -165,59 +165,6 @@ describe("transformLogEvent", () => {
       event: {
         id: 1,
         message: "END RequestId: 720f4d20-ffd3-4a06-924a-0a61c9c594c8"
-      }
-    }
-
-    expect(transformedLogEvent).toEqual(JSON.stringify(expectedResult))
-  })
-
-  it("should get fields from stepfunctions", async () => {
-    const logEvent = {
-      message: JSON.stringify({
-        field1: "foo",
-        field2: "bar",
-        details: {
-          input: JSON.stringify({
-            body: "foo",
-            headers: {
-              "apigw-request-id": "ac9ddfe0-030a-4bcd-b63b-d4d1a32381a0",
-              "X-Amzn-Trace-Id": "Root=1-6613feca-23ef52160d128597232a4c97",
-              "x-correlation-id": "b9156b99-13cc-4719-b832-73905e07e760",
-              "x-request-id": "a22cc83d-b40b-43a1-b5f7-71944cd498bc"
-            }
-          })
-        }
-      }),
-      id: 1
-    }
-    const logGroup = "/aws/stepfunctions/foo"
-    const accountNumber = 1234
-    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, accountNumber)
-    const expectedResult = {
-      host: "AWS:AccountNumber:1234",
-      source: "AWS:LogGroup:/aws/stepfunctions/foo",
-      sourcetype: "aws:cloudwatch",
-      event: {
-        id: 1,
-        message: {
-          field1: "foo",
-          field2: "bar",
-          details: {
-            input: JSON.stringify({
-              body: "foo",
-              headers: {
-                "apigw-request-id": "ac9ddfe0-030a-4bcd-b63b-d4d1a32381a0",
-                "X-Amzn-Trace-Id": "Root=1-6613feca-23ef52160d128597232a4c97",
-                "x-correlation-id": "b9156b99-13cc-4719-b832-73905e07e760",
-                "x-request-id": "a22cc83d-b40b-43a1-b5f7-71944cd498bc"
-              }
-            })
-          },
-          "apigw-request-id": "ac9ddfe0-030a-4bcd-b63b-d4d1a32381a0",
-          "X-Amzn-Trace-Id": "Root=1-6613feca-23ef52160d128597232a4c97",
-          "x-correlation-id": "b9156b99-13cc-4719-b832-73905e07e760",
-          "x-request-id": "a22cc83d-b40b-43a1-b5f7-71944cd498bc",
-        }
       }
     }
 

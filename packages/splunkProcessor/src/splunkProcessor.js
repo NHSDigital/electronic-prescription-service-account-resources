@@ -121,6 +121,10 @@ function transformLogEvent(logEvent, logGroup, accountNumber) {
     }
  } else if (logGroup.startsWith("/aws/stepfunctions/")) {
   try {
+    /*
+    if its a stepfunctions log event then we want to try and get some correlation ids from the message
+    not all events will have these correlation ids though
+    */
     eventMessage = JSON.parse(logEvent.message)
     input = JSON.parse(eventMessage.details.input)
     eventMessage["apigw-request-id"] = input["headers"]["apigw-request-id"]
