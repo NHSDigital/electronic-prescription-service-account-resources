@@ -2,7 +2,9 @@ name: Quality Checks
 
 on:
   workflow_call:
-
+    secrets:
+      SONAR_TOKEN:
+        required: true
 jobs:
   quality_checks:
     runs-on: ubuntu-latest
