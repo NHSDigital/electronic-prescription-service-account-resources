@@ -3,8 +3,8 @@ const {expect, describe, it} = require("@jest/globals")
 
 /* eslint-disable  max-len */
 
-describe("transformLogEvent", () => {
-  it("should parse a json log event", async () => {
+describe("transformLogEvent tests for lambda log groups", () => {
+  it("should parse a simple json log event", async () => {
     const logEvent = {
       message: JSON.stringify({
         field1: "foo",
