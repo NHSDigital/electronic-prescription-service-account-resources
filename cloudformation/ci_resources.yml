@@ -312,6 +312,10 @@ Resources:
               - states:UpdateStateMachineAlias
               - ssm:PutParameter
               - ssm:DeleteParameter
+              - ssm:AddTagsToResource
+              - ssm:DescribeParameters
+              - ssm:ListTagsForResource
+              - ssm:RemoveTagsFromResource
             Resource: "*"
 
   ##################################################
