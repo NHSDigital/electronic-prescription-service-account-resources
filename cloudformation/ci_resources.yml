@@ -310,6 +310,8 @@ Resources:
               - states:UpdateMapRun
               - states:UpdateStateMachine
               - states:UpdateStateMachineAlias
+              - ssm:PutParameter
+              - ssm:DeleteParameter
             Resource: "*"
 
   ##################################################
