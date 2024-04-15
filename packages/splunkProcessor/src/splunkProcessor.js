@@ -77,49 +77,46 @@ const SPLUNK_SOURCE_TYPE = "aws:cloudwatch"
 
 function transformLambdaLogEvent(logEvent) {
   let eventMessage
-  let functionRequestId = ""
-  const summaryPattern = /RequestId:\s*([a-fA-F0-9-]+)/
-  const match = logEvent.message.match(summaryPattern)
-  if (match) {
-    functionRequestId = match[1]
-  } else {
-    const noSummaryPattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\s+([a-fA-F0-9-]+)/
-    const match = logEvent.message.match(noSummaryPattern)
+  try {
+    // First try and parse message as JSON
+    eventMessage = JSON.parse(logEvent.message)
+  } catch (_) {
+    /*
+    if its a lambda log that we could not parse to json object
+    then we want to try and extract the function_request_id to easier search and link in splunk
+    possible messages are
+    REPORT RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd	....
+    END RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd ...
+    START RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd ...
+    2023-08-22T09:52:29.585Z 720f4d20-ffd3-4a06-924a-0a61c9c594c8 <message>
+    */
+    let functionRequestId = ""
+    const summaryPattern = /RequestId:\s*([a-fA-F0-9-]+)/
+    const match = logEvent.message.match(summaryPattern)
     if (match) {
       functionRequestId = match[1]
+    } else {
+      const noSummaryPattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\s+([a-fA-F0-9-]+)/
+      const match = logEvent.message.match(noSummaryPattern)
+      if (match) {
+        functionRequestId = match[1]
+      }
     }
-  }
-  if (functionRequestId === "") {
-    // could not get function request id so just log message as a string
-    eventMessage = logEvent.message
-  } else {
-    eventMessage = {
-      message: logEvent.message,
-      function_request_id: functionRequestId
+    if (functionRequestId === "") {
+      // could not get function request id so just log message as a string
+      eventMessage = logEvent.message
+    } else {
+      eventMessage = {
+        message: logEvent.message,
+        function_request_id: functionRequestId
+      }
     }
   }
   return eventMessage
 }
 
-function transformLogEvent(logEvent, logGroup, accountNumber) {
-  // Try and parse message as JSON
-  let eventMessage = ""
-  if (logGroup.startsWith("/aws/lambda/")) {
-    try {
-      eventMessage = JSON.parse(logEvent.message)
-    } catch (_) {
-      /*
-      if its a lambda log that we could not parse to json object
-      then we want to try and extract the function_request_id to easier search and link in splunk
-      possible messages are
-      REPORT RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd	....
-      END RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd ...
-      START RequestId: ff7fe271-9934-4688-b9f9-f2c0cd9857cd ...
-      2023-08-22T09:52:29.585Z 720f4d20-ffd3-4a06-924a-0a61c9c594c8 <message>
-      */
-     eventMessage = transformLambdaLogEvent(logEvent)
-    }
- } else if (logGroup.startsWith("/aws/stepfunctions/")) {
+function transformStepFunctionsLogEvent(logEvent) {
+  let eventMessage
   try {
     /*
     if its a stepfunctions log event then we want to try and get some correlation ids from the message
@@ -132,23 +129,34 @@ function transformLogEvent(logEvent, logGroup, accountNumber) {
     eventMessage["x-correlation-id"] = input["headers"]["x-correlation-id"]
     eventMessage["x-request-id"] = input["headers"]["x-request-id"]
   } catch (_) {
-      try {
-        eventMessage = JSON.parse(logEvent.message)
-      } catch(_) {
-        eventMessage = logEvent.message
-      }
+    try {
+      // something went wrong in the above so try and parse it to JSON
+      eventMessage = JSON.parse(logEvent.message)
+    } catch (_) {
+      // we cant parse it to JSON so just return the raw message
+      eventMessage = logEvent.message
     }
- } else {
-  /* 
-  its not a lambda or stepfunction log so try to parse it to JSON,
-  but if it cant then just return the string
-  */
-  try {
-    eventMessage = JSON.parse(logEvent.message)
-  } catch (_) {
-    eventMessage = logEvent.message
   }
- }
+  return eventMessage
+}
+
+function transformLogEvent(logEvent, logGroup, accountNumber) {
+  let eventMessage = ""
+  if (logGroup.startsWith("/aws/lambda/")) {
+    eventMessage = transformLambdaLogEvent(logEvent)
+  } else if (logGroup.startsWith("/aws/stepfunctions/")) {
+    eventMessage = transformStepFunctionsLogEvent(logEvent)
+  } else {
+    /*
+    its not a lambda or stepfunction log so try to parse it to JSON,
+    but if it cant then just use the raw message
+    */
+    try {
+      eventMessage = JSON.parse(logEvent.message)
+    } catch (_) {
+      eventMessage = logEvent.message
+    }
+  }
 
   const event = {
     time: logEvent.timestamp,

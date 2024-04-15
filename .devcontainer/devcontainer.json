@@ -29,7 +29,8 @@
         "streetsidesoftware.code-spell-checker",
         "timonwong.shellcheck",
         "mkhl.direnv",
-        "github.vscode-github-actions"
+        "github.vscode-github-actions",
+        "rvest.vs-code-prettier-eslint"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/workspaces/electronic-prescription-service-account-resources/.venv/bin/python",

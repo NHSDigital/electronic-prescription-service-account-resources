@@ -18,6 +18,7 @@
     "packages/certificateChecker"
   ],
   "devDependencies": {
+    "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "aws-lambda": "^1.0.7",
@@ -29,7 +30,7 @@
     "jest-junit": "^16.0.0",
     "license-checker": "^25.0.1",
     "prettier": "^3.1.0",
-    "@types/jest": "^29.5.11"
+    "prettier-eslint": "^16.3.0"
   },
   "dependencies": {
     "archiver": "^6.0.1",
