@@ -33,7 +33,7 @@ cfn-lint = "^0.86.3"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^5.0.4"
-black = "^24.3"
+black = "^24.4"
 pip-licenses = "^4.4.0"
 
 [tool.poetry.scripts]
