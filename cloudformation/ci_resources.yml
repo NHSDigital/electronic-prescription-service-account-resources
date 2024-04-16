@@ -150,7 +150,8 @@ Resources:
             Action:
               - iam:PassRole
             Resource: !GetAtt CloudFormationExecutionRole.Arn
-
+  
+  # Handy reference for AWS permissions:
   # https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html
   GrantCloudFormationDeployAccessPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -310,6 +311,12 @@ Resources:
               - states:UpdateMapRun
               - states:UpdateStateMachine
               - states:UpdateStateMachineAlias
+              - ssm:PutParameter
+              - ssm:DeleteParameter
+              - ssm:AddTagsToResource
+              - ssm:DescribeParameters
+              - ssm:ListTagsForResource
+              - ssm:RemoveTagsFromResource
             Resource: "*"
 
   ##################################################
