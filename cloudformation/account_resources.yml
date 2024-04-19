@@ -40,7 +40,9 @@ Resources:
               - logs:DescribeResourcePolicies
               - logs:GetLogDelivery
               - logs:ListLogDeliveries
-            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+            Resource: 
+              - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+              - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/API-Gateway-Execution-Logs_*"
 
   ##################################################
   # Account
