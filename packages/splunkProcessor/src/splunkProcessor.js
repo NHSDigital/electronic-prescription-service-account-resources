@@ -340,7 +340,7 @@ exports.handler = (event, context, callback) => {
       if (putRecordBatches.length > 0) {
         reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, callback, result)
       } else {
-        logger.info("No records need to be reingested.", {transformationResult: result})
+        logger.info("No records need to be reingested.")
         callback(null, result)
       }
     })
