@@ -293,7 +293,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/lambda/${SplunkDeliveryStreamProcessor}"
-      RetentionInDays: 7
+      RetentionInDays: !Ref LogRetentionDays
       KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   ##################################################
