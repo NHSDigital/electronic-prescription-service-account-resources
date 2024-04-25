@@ -273,7 +273,7 @@ function reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingest
 
 exports.handler = (event, context, callback) => {
   logger.addContext(context)
-  logger.info("Processor received event", {event: event, env: ENV})
+  logger.info("Processor received event")
   Promise.all(
     event.records.map((r) => {
       const buffer = Buffer.from(r.data, "base64")
@@ -340,7 +340,7 @@ exports.handler = (event, context, callback) => {
       if (putRecordBatches.length > 0) {
         reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, callback, result)
       } else {
-        logger.info("No records need to be reingested.", {transformationResult: result})
+        logger.info("No records need to be reingested.")
         callback(null, result)
       }
     })
