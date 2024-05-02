@@ -10,7 +10,7 @@
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:int",
         "repo:NHSDigital/eps-FHIR-validator-lambda:environment:int",
         "repo:NHSDigital/eps-prescription-status-update-api:environment:int",
-        "repo:NHSDigital/electronic-prescription-service-api:environment:int-account"
+        "repo:NHSDigital/electronic-prescription-service-api:environment:int"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
