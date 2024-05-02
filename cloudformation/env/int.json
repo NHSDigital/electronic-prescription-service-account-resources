@@ -18,7 +18,7 @@
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
         "repo:NHSDigital/eps-FHIR-validator-lambda:*",
         "repo:NHSDigital/eps-prescription-status-update-api:*",
-        "repo:NHSDigital/electronic-prescription-service-api:environment:int"
+        "repo:NHSDigital/electronic-prescription-service-api:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "NONE"
