@@ -345,6 +345,7 @@ Resources:
               - states:UpdateMapRun
               - states:UpdateStateMachine
               - states:UpdateStateMachineAlias
+              - ssm:GetParameters
               - ssm:PutParameter
               - ssm:DeleteParameter
               - ssm:AddTagsToResource
