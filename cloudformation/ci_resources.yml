@@ -321,6 +321,11 @@ Resources:
               - dynamodb:DescribeContinuousBackups
               - dynamodb:DescribeKinesisStreamingDestination
               - dynamodb:DescribeTimeToLive
+              - application-autoscaling:RegisterScalableTarget
+              - application-autoscaling:DeregisterScalableTarget
+              - application-autoscaling:PutScalingPolicy
+              - application-autoscaling:DescribeScalableTargets
+              - application-autoscaling:DescribeScalingPolicies
               - states:CreateActivity
               - states:CreateStateMachine
               - states:CreateStateMachineAlias
