@@ -325,7 +325,10 @@ Resources:
               - application-autoscaling:DeregisterScalableTarget
               - application-autoscaling:PutScalingPolicy
               - application-autoscaling:DescribeScalableTargets
-              - application-autoscaling:DescribeScalingPolicies
+              - application-autoscaling:DeleteScalingPolicy
+              - application-autoscaling:ListTagsForResource
+              - application-autoscaling:TagResource
+              - application-autoscaling:UntagResource
               - states:CreateActivity
               - states:CreateStateMachine
               - states:CreateStateMachineAlias
