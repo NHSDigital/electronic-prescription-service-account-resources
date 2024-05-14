@@ -124,10 +124,14 @@ function transformStepFunctionsLogEvent(logEvent) {
     */
     eventMessage = JSON.parse(logEvent.message)
     const input = JSON.parse(eventMessage.details.input)
-    eventMessage["apigw-request-id"] = input["headers"]["apigw-request-id"]
-    eventMessage["X-Amzn-Trace-Id"] = input["headers"]["X-Amzn-Trace-Id"]
-    eventMessage["x-correlation-id"] = input["headers"]["x-correlation-id"]
-    eventMessage["x-request-id"] = input["headers"]["x-request-id"]
+    const normalizedHeaders = {}
+    for (const key of Object.keys(input.headers)) {
+      normalizedHeaders[key.toLowerCase()] = input.headers[key]
+    }
+    eventMessage["apigw-request-id"] = normalizedHeaders["apigw-request-id"]
+    eventMessage["X-Amzn-Trace-Id"] = normalizedHeaders["x-amzn-trace-id"]
+    eventMessage["x-correlation-id"] = normalizedHeaders["x-correlation-id"]
+    eventMessage["x-request-id"] = normalizedHeaders["x-request-id"]
   } catch (_) {
     try {
       // something went wrong in the above so try and parse it to JSON
