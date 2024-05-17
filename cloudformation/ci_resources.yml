@@ -361,6 +361,9 @@ Resources:
               - ssm:DescribeParameters
               - ssm:ListTagsForResource
               - ssm:RemoveTagsFromResource
+              - cloudwatch:DescribeAlarms
+              - cloudwatch:PutMetricAlarm
+              - cloudwatch:DeleteAlarms
             Resource: "*"
 
 
