@@ -568,7 +568,7 @@ Resources:
             Action:
               - kms:DescribeKey
               - kms:GenerateDataKey*
-              - kms:Encrypt"
+              - kms:Encrypt*
               - kms:ReEncrypt*
               - kms:Decrypt
             Resource: !GetAtt SecretsKMSKey.Arn
