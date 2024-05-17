@@ -243,6 +243,7 @@ Resources:
               - apigateway:AddCertificateToDomain
               - apigateway:RemoveCertificateFromDomain
               - apigateway:UpdateRestApiPolicy
+              - apigateway:TagResource
               - s3:CreateBucket
               - s3:DeleteBucket
               - s3:PutBucketAcl
