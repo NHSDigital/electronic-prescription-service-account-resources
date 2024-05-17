@@ -211,7 +211,7 @@ Resources:
               - logs:UntagLogGroup
               - logs:ListTagsForResource
               - logs:TagResource
-              - logs:DescribeLogStream
+              - logs:DescribeLogStreams
               - lambda:Add*
               - lambda:CreateFunction
               - lambda:CreateAlias
@@ -242,11 +242,10 @@ Resources:
               - apigateway:PUT
               - apigateway:AddCertificateToDomain
               - apigateway:RemoveCertificateFromDomain
-              - apigateway:TagResource
               - apigateway:UpdateRestApiPolicy
               - s3:CreateBucket
               - s3:DeleteBucket
-              - s3:SetBucketEncryption
+              - s3:PutBucketAcl
               - s3:PutEncryptionConfiguration
               - s3:PutBucketVersioning
               - s3:GetBucketTagging
@@ -256,16 +255,16 @@ Resources:
               - s3:PutBucketLogging
               - s3:DeleteBucketPolicy
               - s3:PutBucketPublicAccessBlock
-              - s3:GetBucketReplication
+              - s3:GetReplicationConfiguration
               - s3:GetBucketOwnershipControls
               - s3:GetBucketPublicAccessBlock
-              - s3:GetBucketEncryption
+              - s3:GetEncryptionConfiguration
               - s3:GetAccelerateConfiguration
-              - s3:GetBucketAnalyticsConfiguration
-              - s3:GetBucketLifecycle
-              - s3:GetBucketMetricsConfiguration
-              - s3:GetBucketInventoryConfiguration
-              - s3:GetBucketIntelligentTieringConfiguration
+              - s3:GetAnalyticsConfiguration
+              - s3:GetLifecycleConfiguration
+              - s3:GetMetricsConfiguration
+              - s3:GetInventoryConfiguration
+              - s3:GetIntelligentTieringConfiguration
               - s3:GetBucketCors
               - s3:GetBucketLogging
               - s3:GetBucketNotification
@@ -330,6 +329,7 @@ Resources:
               - application-autoscaling:TagResource
               - application-autoscaling:UntagResource
               - application-autoscaling:ListTagsForResource
+              - application-autoscaling:DescribeScheduledActions
               - states:CreateActivity
               - states:CreateStateMachine
               - states:CreateStateMachineAlias
@@ -361,7 +361,11 @@ Resources:
               - ssm:DescribeParameters
               - ssm:ListTagsForResource
               - ssm:RemoveTagsFromResource
+              - cloudwatch:DescribeAlarms
+              - cloudwatch:PutMetricAlarm
+              - cloudwatch:DeleteAlarms
             Resource: "*"
+
 
   ##################################################
   # Cloudformation Check Version Role
