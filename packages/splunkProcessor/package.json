@@ -14,7 +14,7 @@
     "@aws-sdk/client-firehose": "^3.592.0",
     "@aws-sdk/client-kinesis": "^3.468.0",
     "@aws-lambda-powertools/logger": "^1.17.0",
-    "aws-sdk": "^2.1513.0",
+    "aws-sdk": "^2.1636.0",
     "zlib": "^1.0.5"
   }
 }
