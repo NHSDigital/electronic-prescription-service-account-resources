@@ -37,6 +37,6 @@
     "esbuild": "^0.21.4",
     "ts-jest": "^29.1.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.5"
   }
 }
