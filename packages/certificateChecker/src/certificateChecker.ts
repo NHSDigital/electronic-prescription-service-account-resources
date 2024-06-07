@@ -1,5 +1,6 @@
 import {SecretsManagerClient, BatchGetSecretValueCommand} from "@aws-sdk/client-secrets-manager"
-import {Logger, injectLambdaContext} from "@aws-lambda-powertools/logger"
+import {Logger} from "@aws-lambda-powertools/logger"
+import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
 import {checkCertificateExpiry} from "./helpers"
 import {Secret} from "./helpers"
 import middy from "@middy/core"
