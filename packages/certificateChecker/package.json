@@ -14,7 +14,10 @@
     "scripts": {
         "compile": "tsc",
         "test": "npm run compile && npm run unit",
-        "unit": "jest",
+        "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
         "lint": "eslint . --ext .ts --max-warnings 0 --debug"
+    },
+    "devDependencies": {
+        "aws-sdk-client-mock": "^4.0.1"
     }
 }

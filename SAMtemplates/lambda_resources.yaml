@@ -184,15 +184,6 @@ Resources:
             Resource:
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${SplunkDeliveryStreamLogGroup}"
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${SplunkDeliveryStreamLogGroup}:log-stream:*"
-
-  SplunkDeliveryStreamKMSManagedPolicy:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      Roles:
-        - !ImportValue account-resources:SplunkDeliveryStreamBackupBucketRole
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
           - Effect: Allow
             Action:
               - kms:DescribeKey
