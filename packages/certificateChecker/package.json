@@ -16,5 +16,8 @@
         "test": "npm run compile && npm run unit",
         "unit": "jest",
         "lint": "eslint . --ext .ts --max-warnings 0 --debug"
+    },
+    "devDependencies": {
+        "aws-sdk-client-mock": "^4.0.1"
     }
 }

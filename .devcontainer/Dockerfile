@@ -40,7 +40,7 @@ RUN asdf plugin add python; \
     asdf plugin add direnv; \
     asdf plugin add actionlint;
 
-WORKDIR /workspaces/prescriptionsforpatients
+WORKDIR /workspaces/electronic-prescription-service-account-resources
 ADD .tool-versions /workspaces/electronic-prescription-service-account-resources/.tool-versions
 ADD .tool-versions /home/vscode/.tool-versions
 

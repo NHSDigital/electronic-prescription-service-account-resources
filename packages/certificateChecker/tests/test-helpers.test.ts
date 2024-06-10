@@ -3,6 +3,12 @@ import * as path from "path"
 import {checkCertificateExpiry} from "../src/helpers"
 import {Secret} from "../src/helpers"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {jest} from "@jest/globals"
+import {fileURLToPath} from "url"
+import {dirname} from "path"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 describe("checkCertificateExpiry", () => {
   const logger = new Logger({serviceName: "test"})
