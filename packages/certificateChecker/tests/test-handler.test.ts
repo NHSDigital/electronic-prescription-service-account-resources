@@ -17,7 +17,7 @@ const mockEvent = {
   secretARNs: ["foo"]
 }
 
-it("calls to handler do the right thing", async () => {
+it("Unit test for app handler", async () => {
   const smMock = mockClient(SecretsManagerClient)
   const validCertificateContents = fs.readFileSync(path.resolve(__dirname, "./mock-certs/valid-cert.pem"), "utf-8")
 
