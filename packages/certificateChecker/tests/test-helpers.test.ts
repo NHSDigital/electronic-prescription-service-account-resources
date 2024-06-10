@@ -1,7 +1,6 @@
 import * as fs from "fs"
 import * as path from "path"
-import {checkCertificateExpiry} from "../src/helpers"
-import {Secret} from "../src/helpers"
+import {checkCertificateExpiry, Secret} from "../src/helpers"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {jest} from "@jest/globals"
 import {fileURLToPath} from "url"
