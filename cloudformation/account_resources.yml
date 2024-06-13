@@ -1305,22 +1305,22 @@ Outputs:
     Description: PSUProxygenPrivateKey
     Value: !GetAtt PSUProxygenPrivateKey.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "PSUProxgenPrivateKey"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "PSUProxygenPrivateKey"]]
 
   PSUProxygenPublicKey:
     Description: PSUProxygenPublicKey
     Value: !GetAtt PSUProxygenPublicKey.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "PSUProxgenPublicKey"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "PSUProxygenPublicKey"]]
 
   CPSUProxygenPrivateKey:
     Description: CPSUProxygenPrivateKey
     Value: !GetAtt CPSUProxygenPrivateKey.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CPSUProxgenPrivateKey"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "CPSUProxygenPrivateKey"]]
 
   CPSUProxygenPublicKey:
     Description: CPSUProxygenPublicKey
     Value: !GetAtt CPSUProxygenPublicKey.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CPSUProxgenPublicKey"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "CPSUProxygenPublicKey"]]
