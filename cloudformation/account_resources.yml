@@ -891,6 +891,42 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-ProxgenPublicKey"
 
+  PSUProxygenPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for psu proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-PSU-ProxygenPrivateKey"
+
+  PSUProxygenPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for psu proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-PSU-ProxygenPublicKey"
+
+  CPSUProxygenPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for cpsu proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-CPSU-ProxygenPrivateKey"
+
+  CPSUProxygenPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for cpsu proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-CPSU-ProxygenPublicKey"
+
   LambdaAccessSecretsPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -1264,3 +1300,27 @@ Outputs:
     Value: !GetAtt ProxgenPublicKey.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ProxgenPublicKey"]]
+
+  PSUProxygenPrivateKey:
+    Description: PSUProxgenPrivateKey
+    Value: !GetAtt PSUProxygenPrivateKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PSUProxgenPrivateKey"]]
+
+  PSUProxgenPublicKey:
+    Description: PSUProxgenPublicKey
+    Value: !GetAtt ProxgenPublicKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PSUProxgenPublicKey"]]
+
+  CPSUProxygenPrivateKey:
+    Description: CPSUProxgenPrivateKey
+    Value: !GetAtt PSUProxygenPrivateKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CPSUProxgenPrivateKey"]]
+
+  CPSUProxygenPublicKey:
+    Description: CPSUProxgenPublicKey
+    Value: !GetAtt ProxgenPublicKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CPSUProxgenPublicKey"]]

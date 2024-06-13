@@ -115,6 +115,10 @@ Resources:
               - !ImportValue account-resources:PsuCAKeySecret
               - !ImportValue account-resources:PsuClientCertSecret
               - !ImportValue account-resources:PsuClientSandboxCertSecret
+              - !ImportValue account-resources:PSUProxygenPrivateKey
+              - !ImportValue account-resources:PSUProxygenPublicKey
+              - !ImportValue account-resources:CPSUProxygenPrivateKey
+              - !ImportValue account-resources:CPSUProxygenPublicKey
           - Effect: Allow
             Action:
               - kms:Decrypt
