@@ -12,3 +12,5 @@ Resources:
   NonResource:
     Type: Custom::NonResource
     Condition: Never
+    Properties:
+      ServiceToken: 'arn:aws:sns:us-east-1:84969EXAMPLE:CRTest'
