@@ -169,7 +169,7 @@ Resources:
   # | display eventSource, eventName
   # | dedup eventSource, eventName
   #
-  GrantCloudFormationDeployAccessPolicy:
+  GrantCloudFormationExecutionCloudFormationAccessPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -180,6 +180,18 @@ Resources:
           - Effect: Allow
             Action:
               - cloudformation:CreateChangeSet
+            Resource: "*"
+  
+  GrantCloudFormationExecutionIamAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - iam:AddClientIDToOpenIDConnectProvider
               - iam:Attach*
               - iam:Create*
@@ -193,6 +205,18 @@ Resources:
               - iam:Untag*
               - iam:Update*
               - iam:PassRole
+            Resource: "*"
+
+  GrantCloudFormationExecutionLogsAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - logs:AssociateKmsKey
               - logs:DisassociateKmsKey
               - logs:CreateLogGroup
@@ -216,6 +240,18 @@ Resources:
               - logs:ListTagsForResource
               - logs:TagResource
               - logs:DescribeLogStreams
+            Resource: "*"
+
+  GrantCloudFormationExecutionLambdaAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - lambda:Add*
               - lambda:CreateFunction
               - lambda:CreateAlias
@@ -228,6 +264,18 @@ Resources:
               - lambda:Tag*
               - lambda:Untag*
               - lambda:Update*
+            Resource: "*"
+
+  GrantCloudFormationExecutionKmsAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - kms:Create*
               - kms:Delete*
               - kms:Describe*
@@ -239,6 +287,18 @@ Resources:
               - kms:Tag*
               - kms:Untag*
               - kms:Update*
+            Resource: "*"
+
+  GrantCloudFormationExecutionApiGwAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - apigateway:DELETE
               - apigateway:GET
               - apigateway:POST
@@ -248,6 +308,18 @@ Resources:
               - apigateway:RemoveCertificateFromDomain
               - apigateway:UpdateRestApiPolicy
               - apigateway:TagResource
+            Resource: "*"
+  
+  GrantCloudFormationExecutionS3AccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - s3:CreateBucket
               - s3:DeleteBucket
               - s3:PutBucketAcl
@@ -276,6 +348,18 @@ Resources:
               - s3:GetBucketObjectLockConfiguration
               - s3:GetBucketVersioning
               - s3:GetBucketWebsite
+            Resource: "*"
+  
+  GrantCloudFormationExecutionFirehoseAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - firehose:CreateDeliveryStream
               - firehose:DescribeDeliveryStream
               - firehose:DeleteDeliveryStream
@@ -283,6 +367,18 @@ Resources:
               - firehose:ListTagsForDeliveryStream
               - firehose:TagDeliveryStream
               - firehose:UntagDeliveryStream
+            Resource: "*"
+
+  GrantCloudFormationExecutionAcmAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - acm:AddTagsToCertificate
               - acm:DeleteCertificate
               - acm:DescribeCertificate
@@ -292,10 +388,34 @@ Resources:
               - acm:RemoveTagsFromCertificate
               - acm:RenewCertificate
               - acm:RequestCertificate
+            Resource: "*"
+
+  GrantCloudFormationExecutionRoute53AccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - route53:ChangeResourceRecordSets
               - route53:GetHostedZone
               - route53:ListResourceRecordSets
               - route53:GetChange
+            Resource: "*"
+  
+  GrantCloudFormationExecutionSecretsManagerAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - secretsmanager:Create*
               - secretsmanager:Update*
               - secretsmanager:Delete*
@@ -304,6 +424,18 @@ Resources:
               - secretsmanager:Tag*
               - secretsmanager:Untag*
               - secretsmanager:GetSecretValue
+            Resource: "*"
+
+  GrantCloudFormationExecutionSchedulerAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - scheduler:GetSchedule
               - scheduler:CreateSchedule
               - scheduler:DeleteSchedule
@@ -312,6 +444,18 @@ Resources:
               - scheduler:UntagResource
               - scheduler:UpdateSchedule
               - scheduler:ListTagsForResource
+            Resource: "*"
+  
+  GrantCloudFormationExecutionDynamoDbAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - dynamodb:CreateTable
               - dynamodb:DeleteTable
               - dynamodb:DescribeTable
@@ -325,6 +469,18 @@ Resources:
               - dynamodb:DescribeContinuousBackups
               - dynamodb:DescribeKinesisStreamingDestination
               - dynamodb:DescribeTimeToLive
+            Resource: "*"
+
+  GrantCloudFormationExecutionApplicationAutoscalingAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - application-autoscaling:PutScalingPolicy
               - application-autoscaling:DeleteScalingPolicy
               - application-autoscaling:DescribeScalingPolicies
@@ -335,6 +491,18 @@ Resources:
               - application-autoscaling:UntagResource
               - application-autoscaling:ListTagsForResource
               - application-autoscaling:DescribeScheduledActions
+            Resource: "*"
+  
+  GrantCloudFormationExecutionStatesAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - states:CreateActivity
               - states:CreateStateMachine
               - states:CreateStateMachineAlias
@@ -359,6 +527,18 @@ Resources:
               - states:UpdateMapRun
               - states:UpdateStateMachine
               - states:UpdateStateMachineAlias
+            Resource: "*"
+
+  GrantCloudFormationExecutionSsmAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - ssm:GetParameters
               - ssm:PutParameter
               - ssm:DeleteParameter
@@ -366,9 +546,33 @@ Resources:
               - ssm:DescribeParameters
               - ssm:ListTagsForResource
               - ssm:RemoveTagsFromResource
+            Resource: "*"
+
+  GrantCloudFormationExecutionCloudwatchAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - cloudwatch:DescribeAlarms
               - cloudwatch:PutMetricAlarm
               - cloudwatch:DeleteAlarms
+            Resource: "*"
+  
+  GrantCloudFormationExecutionEc2AccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
               - ec2:CreateVpc
               - ec2:DeleteVpc
               - ec2:DescribeVpcs
@@ -442,7 +646,6 @@ Resources:
               - ec2:DescribeAvailabilityZones
               - ec2:DescribeRegions
             Resource: "*"
-
 
   ##################################################
   # Cloudformation Check Version Role
