@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: 'AWS::LanguageExtensions'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: Dev
+  
+  VpcCidrBlock:
+    Type: String
+    Default: 10.192.0.0/16
+  
+  PublicSubnetCidrBlocks:
+    Type: CommaDelimitedList
+    # Default: '10.192.0.0/19, 10.192.32.0/19, 10.192.64/19'
+  
+  PrivateSubnetCidrBlocks:
+    Type: CommaDelimitedList
+    # Default: '10.192.96.0/19, 10.192.128.0/19, 10.192.160.0/19'
+
+
+Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidrBlock
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}:VPC
+  
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}:${Vpc}:InternetGateway
+        - Key: Region
+          Value: !Ref AWS::Region
+        - Key: Environment
+          Value: !Ref Environment
+
+  Fn::ForEach::PublicSubnet:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - PublicSubnet${Identifier}:
+        Type: AWS::EC2::Subnet
+        Properties:
+          VpcId: !Ref Vpc
+          AvailabilityZone: !Select [!Ref Identifier, !GetAZs ""]
+          CidrBlock: !Select [!Ref Identifier, !Ref PublicSubnetCidrBlocks]
+          MapPublicIpOnLaunch: true
+          Tags:
+            - Key: Name
+              Value: !Sub ${AWS::StackName}:${Vpc}:PublicSubnet${Identifier}
+            - Key: Availability Zone
+              Value: !Select [!Ref Identifier, !GetAZs ""]
+            - Key: Region
+              Value: !Ref AWS::Region
+            - Key: Environment
+              Value: !Ref Environment
+
+  Fn::ForEach::PrivateSubnet:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - PrivateSubnet${Identifier}:
+        Type: AWS::EC2::Subnet
+        Properties:
+          VpcId: !Ref Vpc
+          AvailabilityZone: !Select [!Ref Identifier, !GetAZs ""]
+          CidrBlock: !Select [!Ref Identifier, !Ref PrivateSubnetCidrBlocks]
+          MapPublicIpOnLaunch: true
+          Tags:
+            - Key: Name
+              Value: !Sub ${AWS::StackName}:${Vpc}:PrivateSubnet${Identifier}
+            - Key: Availability Zone
+              Value: !Select [!Ref Identifier, !GetAZs ""]
+            - Key: Region
+              Value: !Ref AWS::Region
+            - Key: Environment
+              Value: !Ref Environment
