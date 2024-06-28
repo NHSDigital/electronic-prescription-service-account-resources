@@ -1,0 +1,227 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: 'AWS::LanguageExtensions'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: Dev
+  
+  VpcCidrBlock:
+    Type: String
+    Default: 10.192.0.0/16
+  
+  PublicSubnetCidrBlocks:
+    Type: CommaDelimitedList
+    Default: 10.192.0.0/19, 10.192.32.0/19, 10.192.64/19
+  
+  PrivateSubnetCidrBlocks:
+    Type: CommaDelimitedList
+    Default: 10.192.96.0/19, 10.192.128.0/19, 10.192.160.0/19
+
+Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidrBlock
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}:VPC
+  
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}:${Vpc}:InternetGateway
+        - Key: Region
+          Value: !Ref AWS::Region
+        - Key: Environment
+          Value: !Ref Environment
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref Vpc
+
+  Fn::ForEach::PublicSubnet:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - PublicSubnet${Identifier}:
+        Type: AWS::EC2::Subnet
+        Properties:
+          VpcId: !Ref Vpc
+          AvailabilityZone: !Select [!Ref Identifier, !GetAZs ""]
+          CidrBlock: !Select [!Ref Identifier, !Ref PublicSubnetCidrBlocks]
+          MapPublicIpOnLaunch: true
+          Tags:
+            - Key: Name
+              Value: !Sub ${AWS::StackName}:${Vpc}:PublicSubnet${Identifier}
+            - Key: Availability Zone
+              Value: !Select [!Ref Identifier, !GetAZs ""]
+            - Key: Region
+              Value: !Ref AWS::Region
+            - Key: Environment
+              Value: !Ref Environment
+
+  Fn::ForEach::PrivateSubnet:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - PrivateSubnet${Identifier}:
+        Type: AWS::EC2::Subnet
+        Properties:
+          VpcId: !Ref Vpc
+          AvailabilityZone: !Select [!Ref Identifier, !GetAZs ""]
+          CidrBlock: !Select [!Ref Identifier, !Ref PrivateSubnetCidrBlocks]
+          MapPublicIpOnLaunch: true
+          Tags:
+            - Key: Name
+              Value: !Sub ${AWS::StackName}:${Vpc}:PrivateSubnet${Identifier}
+            - Key: Availability Zone
+              Value: !Select [!Ref Identifier, !GetAZs ""]
+            - Key: Region
+              Value: !Ref AWS::Region
+            - Key: Environment
+              Value: !Ref Environment
+
+  Fn::ForEach::NatGwEip:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - NatGatewayEip${Identifier}:
+        Type: AWS::EC2::EIP
+        DependsOn: InternetGatewayAttachment
+        Properties:
+          Domain: vpc
+
+  Fn::ForEach::NatGw:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - NatGateway${Identifier}:
+        Type: AWS::EC2::NatGateway
+        Properties:
+          AllocationId: !GetAtt
+              - !Sub NatGatewayEip${Identifier}
+              - AllocationId
+          SubnetId: !Ref 
+            Fn::Sub: PublicSubnet${Identifier}
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+         VpcId: !Ref Vpc
+         Tags:
+          - Key: Name
+            Value: !Sub ${AWS::StackName}:${Vpc}:PublicRouteTable
+          - Key: Region
+            Value: !Ref AWS::Region
+          - Key: Environment
+            Value: !Ref Environment
+  
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+         RouteTableId: !Ref PublicRouteTable
+         DestinationCidrBlock: 0.0.0.0/0
+         GatewayId: !Ref InternetGateway
+  
+  Fn::ForEach::PublicSubnetRouteAssociation:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - PublicSubnet${Identifier}RouteTableAssociation:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+          RouteTableId: !Ref PublicRouteTable
+          SubnetId: !Ref
+            Fn::Sub: PublicSubnet${Identifier}
+  
+  Fn::ForEach::PrivateRouteTable:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - PrivateRouteTable${Identifier}:
+        Type: AWS::EC2::RouteTable
+        Properties:
+          VpcId: !Ref Vpc
+          Tags:
+            - Key: Name
+              Value: !Sub ${AWS::StackName}:${Vpc}:PrivateRouteTable${Identifier}
+            - Key: Availability Zone
+              Value: !Select [!Ref Identifier, !GetAZs ""]
+            - Key: Region
+              Value: !Ref AWS::Region
+            - Key: Environment
+              Value: !Ref Environment
+  
+  Fn::ForEach::DefaultPrivateRoute:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - DefaultPrivateRoute${Identifier}:
+        Type: AWS::EC2::Route
+        Properties:
+          RouteTableId: !Ref
+            Fn::Sub: PrivateRouteTable${Identifier}
+          DestinationCidrBlock: 0.0.0.0/0
+          NatGatewayId: !Ref
+            Fn::Sub: NatGateway${Identifier}
+
+  Fn::ForEach::PrivateSubnetRouteTableAssociation:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - PrivateSubnet${Identifier}RouteTableAssociation:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+          RouteTableId: !Ref
+            Fn::Sub: PrivateRouteTable${Identifier}
+          SubnetId: !Ref
+            Fn::Sub: PrivateSubnet${Identifier}
+
+Outputs:
+  VpcId:
+    Description: VPC ID
+    Value: !Ref Vpc
+  
+  PublicSubnets:
+    Description: A list of the VPC's public subnets
+    Value: !Join [",", [!Ref PublicSubnet1, !Ref PublicSubnet2, !Ref PublicSubnet3]]
+  
+  PrivateSubnets:
+    Description:
+    Value: !Join [",", [!Ref PrivateSubnet1, !Ref PrivateSubnet2, !Ref PrivateSubnet3]]
+  
+  Fn::ForEach::PublicSubnetOutput:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - PublicSubnet${Identifier}:
+        Description: !Sub Public Subnet ${Identifier}
+        Value: !Ref
+          Fn::Sub: PublicSubnet${Identifier}
+  
+  Fn::ForEach::PrivateSubnetOutput:
+    - Identifier
+    - - "1"
+      - "2"
+      - "3"
+    - PrivateSubnet${Identifier}:
+        Description: !Sub Private Subnet ${Identifier}
+        Value: !Ref
+          Fn::Sub: PrivateSubnet${Identifier}
