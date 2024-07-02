@@ -35,6 +35,9 @@
       "Env": "prod",
       "CommitId": "VAR.commit_id",
       "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name"
+    },
+    "vpc-resources": {
+      "Environment": "prod"
     }
   }
 }

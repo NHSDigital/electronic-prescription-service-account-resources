@@ -1,28 +1,31 @@
-AWSTemplateFormatVersion: 2010-09-09
-Transform: 'AWS::LanguageExtensions'
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::LanguageExtensions"
 
 Parameters:
   Environment:
     Type: String
     Default: Dev
-  
-  VpcCidrBlock:
-    Type: String
-    Default: 10.192.0.0/16
-  
-  PublicSubnetCidrBlocks:
-    Type: CommaDelimitedList
-    Default: 10.192.0.0/19, 10.192.32.0/19, 10.192.64/19
-  
-  PrivateSubnetCidrBlocks:
-    Type: CommaDelimitedList
-    Default: 10.192.96.0/19, 10.192.128.0/19, 10.192.160.0/19
+
+Mappings: 
+  vpc: 
+    A:
+      az: a
+      publicCidrBlock: 10.192.0.0/19
+      privateCidrBlock: 10.192.96.0/19
+    B:
+      az: b
+      publicCidrBlock: 10.192.32.0/19
+      privateCidrBlock: 10.192.128.0/19
+    C:
+      az: c
+      publicCidrBlock: 10.192.64.0/19
+      privateCidrBlock: 10.192.160.0/19
 
 Resources:
   Vpc:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref VpcCidrBlock
+      CidrBlock: 10.192.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -48,21 +51,25 @@ Resources:
 
   Fn::ForEach::PublicSubnet:
     - Identifier
-    - - "1"
-      - "2"
-      - "3"
+    - - "A"
+      - "B"
+      - "C"
     - PublicSubnet${Identifier}:
         Type: AWS::EC2::Subnet
         Properties:
           VpcId: !Ref Vpc
-          AvailabilityZone: !Select [!Ref Identifier, !GetAZs ""]
-          CidrBlock: !Select [!Ref Identifier, !Ref PublicSubnetCidrBlocks]
+          AvailabilityZone: !Sub
+            - ${AWS::Region}${az}
+            - az: !FindInMap [vpc, !Ref Identifier, az]
+          CidrBlock: !FindInMap [vpc, !Ref Identifier, publicCidrBlock]
           MapPublicIpOnLaunch: true
           Tags:
             - Key: Name
               Value: !Sub ${AWS::StackName}:${Vpc}:PublicSubnet${Identifier}
             - Key: Availability Zone
-              Value: !Select [!Ref Identifier, !GetAZs ""]
+              Value: !Sub
+                - ${AWS::Region}${az}
+                - az: !FindInMap [vpc, !Ref Identifier, az]
             - Key: Region
               Value: !Ref AWS::Region
             - Key: Environment
@@ -70,21 +77,25 @@ Resources:
 
   Fn::ForEach::PrivateSubnet:
     - Identifier
-    - - "1"
-      - "2"
-      - "3"
+    - - "A"
+      - "B"
+      - "C"
     - PrivateSubnet${Identifier}:
         Type: AWS::EC2::Subnet
         Properties:
           VpcId: !Ref Vpc
-          AvailabilityZone: !Select [!Ref Identifier, !GetAZs ""]
-          CidrBlock: !Select [!Ref Identifier, !Ref PrivateSubnetCidrBlocks]
+          AvailabilityZone: !Sub
+            - ${AWS::Region}${az}
+            - az: !FindInMap [vpc, !Ref Identifier, az]
+          CidrBlock: !FindInMap [vpc, !Ref Identifier, privateCidrBlock]
           MapPublicIpOnLaunch: true
           Tags:
             - Key: Name
               Value: !Sub ${AWS::StackName}:${Vpc}:PrivateSubnet${Identifier}
             - Key: Availability Zone
-              Value: !Select [!Ref Identifier, !GetAZs ""]
+              Value: !Sub
+                - ${AWS::Region}${az}
+                - az: !FindInMap [vpc, !Ref Identifier, az]
             - Key: Region
               Value: !Ref AWS::Region
             - Key: Environment
@@ -92,9 +103,9 @@ Resources:
 
   Fn::ForEach::NatGwEip:
     - Identifier
-    - - "1"
-      - "2"
-      - "3"
+    - - "A"
+      - "B"
+      - "C"
     - NatGatewayEip${Identifier}:
         Type: AWS::EC2::EIP
         DependsOn: InternetGatewayAttachment
@@ -103,9 +114,9 @@ Resources:
 
   Fn::ForEach::NatGw:
     - Identifier
-    - - "1"
-      - "2"
-      - "3"
+    - - "A"
+      - "B"
+      - "C"
     - NatGateway${Identifier}:
         Type: AWS::EC2::NatGateway
         Properties:
@@ -137,9 +148,9 @@ Resources:
   
   Fn::ForEach::PublicSubnetRouteAssociation:
     - Identifier
-    - - "1"
-      - "2"
-      - "3"
+    - - "A"
+      - "B"
+      - "C"
     - PublicSubnet${Identifier}RouteTableAssociation:
         Type: AWS::EC2::SubnetRouteTableAssociation
         Properties:
@@ -149,9 +160,9 @@ Resources:
   
   Fn::ForEach::PrivateRouteTable:
     - Identifier
-    - - "1"
-      - "2"
-      - "3"
+    - - "A"
+      - "B"
+      - "C"
     - PrivateRouteTable${Identifier}:
         Type: AWS::EC2::RouteTable
         Properties:
@@ -160,7 +171,9 @@ Resources:
             - Key: Name
               Value: !Sub ${AWS::StackName}:${Vpc}:PrivateRouteTable${Identifier}
             - Key: Availability Zone
-              Value: !Select [!Ref Identifier, !GetAZs ""]
+              Value: !Sub
+                - ${AWS::Region}${az}
+                - az: !FindInMap [vpc, !Ref Identifier, az]
             - Key: Region
               Value: !Ref AWS::Region
             - Key: Environment
@@ -168,9 +181,9 @@ Resources:
   
   Fn::ForEach::DefaultPrivateRoute:
     - Identifier
-    - - "1"
-      - "2"
-      - "3"
+    - - "A"
+      - "B"
+      - "C"
     - DefaultPrivateRoute${Identifier}:
         Type: AWS::EC2::Route
         Properties:
@@ -182,9 +195,9 @@ Resources:
 
   Fn::ForEach::PrivateSubnetRouteTableAssociation:
     - Identifier
-    - - "1"
-      - "2"
-      - "3"
+    - - "A"
+      - "B"
+      - "C"
     - PrivateSubnet${Identifier}RouteTableAssociation:
         Type: AWS::EC2::SubnetRouteTableAssociation
         Properties:
@@ -200,17 +213,17 @@ Outputs:
   
   PublicSubnets:
     Description: A list of the VPC's public subnets
-    Value: !Join [",", [!Ref PublicSubnet1, !Ref PublicSubnet2, !Ref PublicSubnet3]]
+    Value: !Join [",", [!Ref PublicSubnetA, !Ref PublicSubnetB, !Ref PublicSubnetC]]
   
   PrivateSubnets:
     Description:
-    Value: !Join [",", [!Ref PrivateSubnet1, !Ref PrivateSubnet2, !Ref PrivateSubnet3]]
+    Value: !Join [",", [!Ref PrivateSubnetA, !Ref PrivateSubnetB, !Ref PrivateSubnetC]]
   
   Fn::ForEach::PublicSubnetOutput:
     - Identifier
-    - - "1"
-      - "2"
-      - "3"
+    - - "A"
+      - "B"
+      - "C"
     - PublicSubnet${Identifier}:
         Description: !Sub Public Subnet ${Identifier}
         Value: !Ref
@@ -218,9 +231,9 @@ Outputs:
   
   Fn::ForEach::PrivateSubnetOutput:
     - Identifier
-    - - "1"
-      - "2"
-      - "3"
+    - - "A"
+      - "B"
+      - "C"
     - PrivateSubnet${Identifier}:
         Description: !Sub Private Subnet ${Identifier}
         Value: !Ref

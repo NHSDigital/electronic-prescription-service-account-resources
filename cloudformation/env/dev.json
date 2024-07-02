@@ -42,6 +42,9 @@
       "CommitId": "VAR.commit_id",
       "VersionNumber": "VAR.VersionNumber",
       "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name"
+    },
+    "vpc-resources": {
+      "Environment": "dev"
     }
   }
 }
