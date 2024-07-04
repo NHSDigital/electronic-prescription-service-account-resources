@@ -8,8 +8,13 @@ ROLE=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | selec
 # wait for stack to finish creating or updating
 echo "waiting for create"
 aws cloudformation wait stack-create-complete --stack-name "$STACK_NAME" 
-echo "waiting for update"
-aws cloudformation wait stack-update-complete --stack-name "$STACK_NAME" 
+
+# if stack status is CREATE_COMPLETE then stack-update-complete will time out
+status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query Stacks[0].StackStatus)
+if [ "${status}" != "CREATE_COMPLETE" ]; then
+  echo "waiting for update"
+  aws cloudformation wait stack-update-complete --stack-name "$STACK_NAME" 
+fi
 
 echo "create changeset"
 aws cloudformation create-change-set \
