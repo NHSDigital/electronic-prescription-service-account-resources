@@ -217,13 +217,13 @@ Outputs:
     Description: A list of the VPC's public subnets
     Value: !Join [",", [!Ref PublicSubnetA, !Ref PublicSubnetB, !Ref PublicSubnetC]]
     Export:
-      Name: !Sub ${AWS::StackName}:${Vpc}:PublicSubnets
+      Name: !Sub ${AWS::StackName}:PublicSubnets
   
   PrivateSubnets:
     Description:
     Value: !Join [",", [!Ref PrivateSubnetA, !Ref PrivateSubnetB, !Ref PrivateSubnetC]]
     Export:
-      Name: !Sub ${AWS::StackName}:${Vpc}:PrivateSubnets
+      Name: !Sub ${AWS::StackName}:PrivateSubnets
   
   Fn::ForEach::PublicSubnetOutput:
     - Identifier
@@ -235,7 +235,7 @@ Outputs:
         Value: !Ref
           Fn::Sub: PublicSubnet${Identifier}
         Export:
-          Name: !Sub ${AWS::StackName}:${Vpc}:PublicSubnet${Identifier}
+          Name: !Sub ${AWS::StackName}:PublicSubnet${Identifier}
   
   Fn::ForEach::PrivateSubnetOutput:
     - Identifier
@@ -247,4 +247,4 @@ Outputs:
         Value: !Ref
           Fn::Sub: PrivateSubnet${Identifier}
         Export:
-          Name: !Sub ${AWS::StackName}:${Vpc}:PrivateSubnet${Identifier}
+          Name: !Sub ${AWS::StackName}:PrivateSubnet${Identifier}
