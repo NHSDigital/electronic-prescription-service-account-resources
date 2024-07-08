@@ -432,6 +432,7 @@ Resources:
               - ec2:AuthorizeSecurityGroupEgress
               - ec2:AuthorizeSecurityGroupIngress
               - ec2:RevokeSecurityGroupEgress
+              - ec2:RevokeSecurityGroupIngress
               - ec2:UpdateSecurityGroupRuleDescriptionsEgress
               - ec2:UpdateSecurityGroupRuleDescriptionsIngress
               - ec2:DescribeSecurityGroupReferences
@@ -452,7 +453,9 @@ Resources:
               - ec2:AttachNetworkInterface
               - ec2:DetachNetworkInterface
               - ec2:DescribeNetworkInterfaces
+              - ec2:ModifyNetworkInterfaceAttribute
               - ec2:ResetNetworkInterfaceAttribute
+              - ec2:DescribeNetworkInterfaceAttribute
               - ec2:CreateNatGateway
               - ec2:DeleteNatGateway
               - ec2:DescribeNatGateways
@@ -468,6 +471,7 @@ Resources:
               - ec2:DescribeEgressOnlyInternetGateways
               - ec2:AssignIpv6Address
               - ec2:UnassignIpv6Address
+              - ec2:AllocateAddress
               - ec2:AssociateAddress
               - ec2:DisassociateAddress
               - ec2:ReleaseAddress
@@ -477,6 +481,9 @@ Resources:
               - ec2:DescribeAddressesAttribute
               - ec2:DescribeAvailabilityZones
               - ec2:DescribeRegions
+              - ec2:CreateFlowLogs
+              - ec2:DeleteFlowLogs
+              - ec2:DescribeFlowLogs
             Resource: "*"
 
   ##################################################
