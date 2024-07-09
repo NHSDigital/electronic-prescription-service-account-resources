@@ -192,7 +192,6 @@ Resources:
               - iam:Tag*
               - iam:Untag*
               - iam:Update*
-              - iam:PassRole
               - logs:AssociateKmsKey
               - logs:DisassociateKmsKey
               - logs:CreateLogGroup
