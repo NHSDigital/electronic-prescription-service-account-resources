@@ -169,7 +169,11 @@ Resources:
   # | display eventSource, eventName
   # | dedup eventSource, eventName
   #
-  GrantCloudFormationExecutionAccessPolicyA:
+
+  # there are multiple policies to prevent each one becoming too large
+
+  # iam permissions are restricted to just act on this account so are in a separate policy
+  GrantCloudFormationExecutionAccessIAMPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -179,7 +183,6 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - cloudformation:CreateChangeSet
               - iam:AddClientIDToOpenIDConnectProvider
               - iam:Attach*
               - iam:Create*
@@ -192,6 +195,21 @@ Resources:
               - iam:Tag*
               - iam:Untag*
               - iam:Update*
+              - iam:PassRole
+            Resource: !Sub "arn:aws:iam::${AWS::AccountId}:*"
+
+  GrantCloudFormationExecutionAccessPolicyA:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudformation:CreateChangeSet
+              - iam:AddClientIDToOpenIDConnectProvider
               - logs:AssociateKmsKey
               - logs:DisassociateKmsKey
               - logs:CreateLogGroup
