@@ -1,0 +1,129 @@
+{
+	"blocks": [
+		{
+			"type": "header",
+			"text": {
+				"type": "plain_text",
+				"text": ":red_circle: Alarm Name",
+				"emoji": true
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "section",
+			"fields": [
+				{
+					"type": "mrkdwn",
+					"text": "*Environment*"
+				},
+				{
+					"type": "mrkdwn",
+					"text": "*Region*"
+				},
+				{
+					"type": "plain_text",
+					"text": "dev",
+					"emoji": true
+				},
+				{
+					"type": "plain_text",
+					"text": "eu-west-2",
+					"emoji": true
+				}
+			]
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "rich_text",
+			"elements": [
+				{
+					"type": "rich_text_section",
+					"elements": [
+						{
+							"type": "text",
+							"text": "Description: ",
+							"style": {
+								"bold": true
+							}
+						},
+						{
+							"type": "text",
+							"text": "The alert monitors No. of Invocations for the X Lmabda \n\n"
+						},
+						{
+							"type": "text",
+							"text": "Reason: ",
+							"style": {
+								"bold": true
+							}
+						},
+						{
+							"type": "text",
+							"text": "Threshold Crossed: 1 out of the last 1 datapoints [2.0 (09/07/24 11:51:00)] was greater than the threshold (1.0) (minimum 1 datapoint for OK -> ALARM transition).\n\n"
+						},
+						{
+							"type": "text",
+							"text": "Trigger: ",
+							"style": {
+								"bold": true
+							}
+						},
+						{
+							"type": "text",
+							"text": "SUM Invocations GreaterThanThreshold 1.0 for 1 period(s) of 300 seconds"
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "section",
+			"fields": [
+				{
+					"type": "mrkdwn",
+					"text": "*Old State*"
+				},
+				{
+					"type": "mrkdwn",
+					"text": "*Current State*"
+				},
+				{
+					"type": "plain_text",
+					"text": ":black_circle: INSUFFICIENT_DATA",
+					"emoji": true
+				},
+				{
+					"type": "plain_text",
+					"text": ":red_circle: ALARM",
+					"emoji": true
+				}
+			]
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "actions",
+			"elements": [
+				{
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "View Alert",
+						"emoji": true
+					},
+                    "style": "primary",
+					"value": "click_me",
+					"url": "https://www.google.com"
+				}
+			]
+		}
+	]
+}
