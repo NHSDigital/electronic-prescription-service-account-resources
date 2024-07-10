@@ -209,7 +209,6 @@ Resources:
           - Effect: Allow
             Action:
               - cloudformation:CreateChangeSet
-              - iam:AddClientIDToOpenIDConnectProvider
               - logs:AssociateKmsKey
               - logs:DisassociateKmsKey
               - logs:CreateLogGroup
