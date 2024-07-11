@@ -24,8 +24,7 @@
         "NONE"
       ],
       "PrepareChangesetClaimFilters": [
-        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-account",
-        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-ci"
+        "repo:NHSDigital/electronic-prescription-service-account-resources:ref:refs/heads/main"
       ]
     },
     "account-resources": {},
