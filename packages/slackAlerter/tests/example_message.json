@@ -16,6 +16,29 @@
 			"fields": [
 				{
 					"type": "mrkdwn",
+					"text": "*Timestamp*"
+				},
+				{
+					"type": "mrkdwn",
+					"text": "*Stack*"
+				},
+				{
+					"type": "plain_text",
+					"text": "2024-07-09T12:01:37.700+0000",
+					"emoji": true
+				},
+				{
+					"type": "plain_text",
+					"text": "psu",
+					"emoji": true
+				}
+			]
+		},
+		{
+			"type": "section",
+			"fields": [
+				{
+					"type": "mrkdwn",
 					"text": "*Environment*"
 				},
 				{
@@ -116,10 +139,10 @@
 					"type": "button",
 					"text": {
 						"type": "plain_text",
-						"text": "View Alert",
+						"text": "More info",
 						"emoji": true
 					},
-                    "style": "primary",
+					"style": "primary",
 					"value": "click_me",
 					"url": "https://www.google.com"
 				}

@@ -1,15 +1,20 @@
-const statusToEmojiMap = {
+import { StateToEmojiMap as StateToEmojiMap, Trigger} from "./types"
+
+const stateToEmojiMap: StateToEmojiMap = {
     INSUFFICIENT_DATA: ":black_circle:",
     ALARM: ":red_circle:",
     OK: ":green_circle:"
 }
 
-export const formatTitle = (alarmName: string, status: string): string => {
-    const formattedTitle = ""
-    return formattedTitle
+export const formatHeader = (alarmName: string, state: string): string => {
+    const stateEmoji: string = stateToEmojiMap[state as keyof typeof stateToEmojiMap]
+    const headerContent: string = alarmName.split("-")[1].trim()
+    const formattedHeader = `${stateEmoji} ${headerContent}`
+    
+    return formattedHeader
 }
 
-export const formatPeriod = (periodInSeconds: number): string => {
+const formatPeriod = (periodInSeconds: number): string => {
     const minInSeconds: number = 60
     const hourInSeconds: number = minInSeconds * 60
     const dayInSeconds: number = hourInSeconds * 24
@@ -29,4 +34,25 @@ export const formatPeriod = (periodInSeconds: number): string => {
         formattedPeriod = formattedPeriod && formattedUnit ? `${formattedPeriod}, ${formattedUnit}` : `${formattedPeriod}${formattedUnit}`
     }
     return formattedPeriod
+}
+
+export const formatTrigger = (trigger: Trigger): string => {
+    const period: string = formatPeriod(trigger.Period)
+    const formattedTrigger: string = `${trigger.Statistic} ${trigger.MetricName} ${trigger.ComparisonOperator} ${trigger.Threshold} for ${trigger.EvaluationPeriods} period(s) of ${period}.`
+    
+    return formattedTrigger
+}
+
+export const formatState = (state: string): string => {
+    const stateEmoji: string = stateToEmojiMap[state as keyof typeof stateToEmojiMap]
+    const formattedState = `${stateEmoji} ${state}`
+
+    return formattedState
+}
+
+export const formatMoreInfoUrl = (region: string, alarmName: string): string => {
+    const encodedAlarmName = encodeURIComponent(alarmName)
+    const formattedUrl =  `https://console.aws.amazon.com/cloudwatch/home?region=${region}#alarm:alarmFilter=ANY;name=${encodedAlarmName}`
+
+    return formattedUrl
 }
