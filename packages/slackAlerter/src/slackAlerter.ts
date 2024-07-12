@@ -2,41 +2,44 @@ import { Logger } from "@aws-lambda-powertools/logger"
 import { SNSEvent, Context, SNSHandler, SNSEventRecord } from "aws-lambda"
 import { formatHeader, formatTrigger,  formatState, formatMoreInfoUrl } from "./contentFormatting"
 import { populateCloudWatchAlertMessageContent } from "./slackMessageTemplates"
-import { CloudWatchMessage, CloudWatchAlertContentValues, CloudWatchAlertMessageContent } from "./types"
+import { getSecrets } from "./secrets"
+import { CloudWatchAlarm, CloudWatchAlertContentValues, CloudWatchAlertMessageContent } from "./types"
 
 const ENV: string = process.env.ENV || "not-set"
-let SLACK_WEBHOOK_URL: string
 
-const logger = new Logger({serviceName: "slackAlerter"})
+const logger: Logger = new Logger({serviceName: "slackAlerter"})
 
-export const handler: SNSHandler = async(event: SNSEvent, context: Context): Promise<void> => {
-    // log start up
-    // log received message
-    SLACK_WEBHOOK_URL = "" // go get secret
-    for (const record of event.Records){
-        await processMessage(record)
+export const handler: SNSHandler = async(event: SNSEvent, _context: Context): Promise<void> => {
+    logger.info("Received SNS message...")
+    
+    const totalRecords: number = event.Records.length
+    logger.info(`£{totalRecords} records to process...`)
+    for (let [index, record] of event.Records.entries()){
+        logger.info(`Processing record...`, {recordNo: index, totalRecords: totalRecords})
+        await processRecord(record)
+        logger.info(`Processing complete.`, {recordNo: index, totalRecords: totalRecords})
     }
-    // log complete
+    logger.info("Processing SNS message complete.")
 }
 
-const processMessage = async (record: SNSEventRecord): Promise<void> => {
-    // log processing message
-    let cloudWatchMessage: CloudWatchMessage
+const processRecord = async (record: SNSEventRecord): Promise<void> => {
+    let cloudWatchAlarm: CloudWatchAlarm
     try {
-        cloudWatchMessage = JSON.parse(record.Sns.Message)
+        cloudWatchAlarm = JSON.parse(record.Sns.Message)
     } catch (err) {
-        // log error
+        logger.info("Invalid JSON in SNS Message", {error: err})
         throw err
     }
-    // log generating message
-    const slackMessageContent = generateSlackMessageContent(cloudWatchMessage)
+    
+    logger.info("Generating slack message content for alert...")
+    const slackMessageContent = generateSlackMessageContent(cloudWatchAlarm)
 
-    // log sending message
+    logger.info("Posting slack message...")
     await postSlackMessage(slackMessageContent)
-    //log complete
+    logger.info("Message successfully posted.")
 }
 
-const generateSlackMessageContent = (cloudWatchMessage: CloudWatchMessage): CloudWatchAlertMessageContent => {
+const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudWatchAlertMessageContent => {
     const header: string = formatHeader(cloudWatchMessage.AlarmArn, cloudWatchMessage.NewStateValue)
     const region: string = cloudWatchMessage.AlarmArn.split(":")[3]
     const trigger: string = formatTrigger(cloudWatchMessage.Trigger)
@@ -63,21 +66,22 @@ const generateSlackMessageContent = (cloudWatchMessage: CloudWatchMessage): Clou
 }
 
 const postSlackMessage = async (slackMessageContent: CloudWatchAlertMessageContent): Promise<void> => {
-    const headers = new Headers()
-    headers.append("Content-Type", "application/json")
-    
     const options: RequestInit = {
         method: "POST",
         body: JSON.stringify(slackMessageContent),
-        headers: headers
+        headers: {
+            "Content-Type": "application/json"
+        }
     }
 
+    const secrets = await getSecrets(["slack-webhook-url"], "parameterStore")
+    const url = secrets["slack-webhook-url"]
     try {
         // log posting message
-        const response: Response = await fetch(SLACK_WEBHOOK_URL, options)
+        const response: Response = await fetch(url, options)
         if (!response.ok) {
             // log response
-            throw new Error("some message")
+            throw new Error("Failed to post message to slack")
         }
     } catch (err) {
         //log error

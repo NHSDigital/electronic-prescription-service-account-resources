@@ -1,3 +1,34 @@
+// #region Secrets
+export interface LambdaSecrets {
+    [key: string]: string
+}
+
+export type SecretsStore = "parameterStore" | "secretsManager"
+
+export interface ParameterStoreParameter {
+    Parameter: {
+        Name: string
+        Type: "String" | "StringList" | "SecureString"
+        Value: string
+        Version: number
+        Selector: string
+        LastModifiedDate: string
+        ARN: string
+        DataType: string
+    }
+}
+
+export interface SecretsManagerSecret {
+    ARN: string
+    Name: string
+    VersionId: string
+    SecretString: string
+    VersionStages: string[]
+    CreatedDate: EpochTimeStamp
+}
+// #endregion
+
+// #region CloudWatch
 export interface Trigger {
     MetricName: string
     Namespace: string
@@ -19,7 +50,7 @@ export interface Trigger {
     EvaluateLowSampleCountPercentile: string
 }
 
-export interface CloudWatchMessage {
+export interface CloudWatchAlarm {
     AlarmName: string
     AlarmDescription: string | null
     AWSAccountId: string
@@ -35,7 +66,9 @@ export interface CloudWatchMessage {
     InsufficientDataActions: []
     Trigger: Trigger
 }
+// #endregion
 
+// #region Slack
 export interface StateToEmojiMap {
     INSUFFICIENT_DATA: string
     ALARM: string
@@ -130,3 +163,4 @@ export interface CloudWatchAlertMessageContent {
         ActionBlock
     ]
 }
+// #end region
