@@ -506,6 +506,12 @@ Resources:
               - ec2:CreateFlowLogs
               - ec2:DeleteFlowLogs
               - ec2:DescribeFlowLogs
+              - ecs:DescribeClusters
+              - ecs:CreateCluster
+              - ecs:TagResource
+              - ecs:UntagResource
+              - ecs:ListTagsForResource
+              - ecs:DeleteCluster
             Resource: "*"
 
   ##################################################
