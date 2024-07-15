@@ -25,7 +25,7 @@
         "NONE"
       ],
       "PrepareChangesetClaimFilters": [
-        "repo:NHSDigital/electronic-prescription-service-account-resources:*"
+        "repo:NHSDigital/electronic-prescription-service-account-resources:ref:refs/heads/main"
       ],
       "ArtilleryLoadTestRoleClaimFilters": [
         "NONE"

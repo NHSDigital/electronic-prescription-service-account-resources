@@ -152,13 +152,13 @@ files = [
 
 [[package]]
 name = "cfn-lint"
-version = "1.5.2"
+version = "1.6.1"
 description = "Checks CloudFormation templates for practices and behaviour that could potentially be improved"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "cfn_lint-1.5.2-py3-none-any.whl", hash = "sha256:a2da6b02da5316fd451a280271a226d6b1cdaefab8a92b51b11c0e5e0dc129b2"},
-    {file = "cfn_lint-1.5.2.tar.gz", hash = "sha256:a2d15bf02727233fb6dd8d813fa0cbe5cce8a1b42d133e65e2fa0534b17c4f72"},
+    {file = "cfn_lint-1.6.1-py3-none-any.whl", hash = "sha256:0fb3905251f5d7befcea91934c72551b83bf1687cac398ea7370b41661c61cf6"},
+    {file = "cfn_lint-1.6.1.tar.gz", hash = "sha256:3698d332b8ea190c3b97e01c658b85ed962a6665b1185784f97774770a950edd"},
 ]
 
 [package.dependencies]
@@ -513,20 +513,21 @@ files = [
 
 [[package]]
 name = "pip-licenses"
-version = "4.4.0"
+version = "4.5.1"
 description = "Dump the software license list of Python packages installed with pip."
 optional = false
 python-versions = "~=3.8"
 files = [
-    {file = "pip-licenses-4.4.0.tar.gz", hash = "sha256:996817118375445243a34faafe23c06f6b2d250247c4046571b5a6722d45be69"},
-    {file = "pip_licenses-4.4.0-py3-none-any.whl", hash = "sha256:dbad2ac5a25f574cabe2716f2f031a0c5fa359bed9b3ef615301f4e546893b46"},
+    {file = "pip-licenses-4.5.1.tar.gz", hash = "sha256:fad5f56fbaa56b8e414434e36c32394a9412ff10ddf2cef92b51951bdf193869"},
+    {file = "pip_licenses-4.5.1-py3-none-any.whl", hash = "sha256:7c982bc6837f47d32d4016b43d9174c0ce723b450710a2111a3ebbb910f152b7"},
 ]
 
 [package.dependencies]
 prettytable = ">=2.3.0"
+tomli = ">=2"
 
 [package.extras]
-test = ["docutils", "mypy", "pytest-cov", "pytest-pycodestyle", "pytest-runner"]
+test = ["docutils", "mypy", "pytest-cov", "pytest-pycodestyle", "pytest-runner", "tomli-w"]
 
 [[package]]
 name = "pkgutil-resolve-name"
@@ -1219,4 +1220,4 @@ test = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-it
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "ce8b0603972bdf9843273e61716b259c2dc0a4412d506c6699420b3501cffacb"
+content-hash = "402d8e9383f915919c46f86fd2645ebf81230829f65739144d8a99863d2502de"
