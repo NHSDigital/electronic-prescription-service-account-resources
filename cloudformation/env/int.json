@@ -40,6 +40,7 @@
     },
     "vpc-resources": {
       "Environment": "int"
-    }
+    },
+    "artillery-resources": {}
   }
 }

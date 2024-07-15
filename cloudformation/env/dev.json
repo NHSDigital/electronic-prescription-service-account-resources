@@ -48,6 +48,7 @@
     },
     "vpc-resources": {
       "Environment": "dev"
-    }
+    },
+    "artillery-resources": {}
   }
 }
