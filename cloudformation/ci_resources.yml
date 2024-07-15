@@ -238,6 +238,7 @@ Resources:
               - logs:ListTagsForResource
               - logs:TagResource
               - logs:DescribeLogStreams
+              - logs:DescribeResourcePolicies
               - lambda:Add*
               - lambda:CreateFunction
               - lambda:CreateAlias
