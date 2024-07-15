@@ -721,6 +721,10 @@ Resources:
               - "ec2:DescribeSubnets"
             Resource: 
               - "*"
+          - Effect: Allow
+            Action:
+              - cloudformation:ListExports
+            Resource: "*"
 
 Outputs:
   ##################################################
