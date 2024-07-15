@@ -636,6 +636,7 @@ Resources:
           - Effect: "Allow"
             Action:
               - "iam:PassRole"
+              - "iam:CreateRole"
             Resource: 
               - !Sub "arn:aws:iam::${AWS::AccountId}:role/artilleryio-ecs-worker-role"
           - Sid: "SQSPermissions"
