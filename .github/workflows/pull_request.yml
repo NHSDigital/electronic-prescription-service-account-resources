@@ -62,7 +62,7 @@ jobs:
       target_environment: dev
       version: pr-${{github.event.number}}
       change_set_version: pr-${{github.event.number}}
-      execute_change_set: false
+      execute_change_set: true
       lambda_stack_suffix: -pr-${{needs.get_issue_number.outputs.issue_number}}
       artifact_bucket_prefix: PR-${{needs.get_issue_number.outputs.issue_number}}
       version_number: PR-${{ needs.get_issue_number.outputs.issue_number }}
