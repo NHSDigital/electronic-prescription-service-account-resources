@@ -646,7 +646,6 @@ Resources:
             Effect: "Allow"
             Action: 
             - "ecs:ListClusters"
-            - "ecs:CreateCluster"
             - "ecs:RegisterTaskDefinition"
             - "ecs:DeregisterTaskDefinition"
             Resource: "*"
