@@ -677,6 +677,11 @@ Resources:
               ArnEquals: 
                 ecs:cluster: !Sub "arn:aws:ecs:*:${AWS::AccountId}:cluster/*"
             Resource: "*"
+          - Sid: "ECSPermissions"
+            Effect: "Allow"
+            Action: 
+              - "ecs:DescribeTaskDefinition"
+            Resource: "*"
           - Sid: "S3Permissions"
             Effect: "Allow"
             Action:
