@@ -726,6 +726,11 @@ Resources:
             Action:
               - cloudformation:ListExports
             Resource: "*"
+          - Effect: Allow
+            Action:
+              - logs:PutRetentionPolicy
+            Resource: 
+              - !Sub "arn:aws:logs:eu-west-2:${AWS::AccountId}:log-group:artilleryio-log-group/*"
 
 Outputs:
   ##################################################
