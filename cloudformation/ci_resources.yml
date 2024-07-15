@@ -819,3 +819,21 @@ Outputs:
           ":",
           [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRoleName"],
         ]
+  ##################################################
+  # Artillery Runner Role Outputs
+  ##################################################
+  ArtilleryRunnerRole:
+    Description: ARN of the IAM Role(ArtilleryRunnerRole)
+    Value: !GetAtt ArtilleryRunnerRole.Arn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ArtilleryRunnerRole"]]
+  ArtilleryRunnerRoleName:
+    Description: Name of the IAM Role(ArtilleryRunnerRole)
+    Value: !Ref ArtilleryRunnerRole
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "ArtilleryRunnerRoleName"],
+        ]
