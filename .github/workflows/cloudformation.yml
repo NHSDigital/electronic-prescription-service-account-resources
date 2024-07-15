@@ -144,13 +144,6 @@ jobs:
         SUMMARY: "[${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }} with existing tag"
       run: ./describe_changeset.sh
 
-    - name: Delete Change Set for new tag
-      if: ${{ inputs.execute_change_set == false }}
-      shell: bash
-      run: |
-        aws cloudformation delete-change-set \
-        --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
 
     - name: Delete Change Set for existing tag
       shell: bash

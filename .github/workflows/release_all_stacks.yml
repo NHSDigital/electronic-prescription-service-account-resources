@@ -30,6 +30,9 @@ on:
         lambda_insights_log_group_name:
           required: true
           type: string
+        deploy_artillery:
+          required: true
+          type: boolean
       secrets:
         cf_create_changeset_role:
           required: false
@@ -89,6 +92,7 @@ jobs:
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
 
   list_artillery_resources_cf_changes:
+    if: ${{ inputs.deploy_artillery == true }}
     uses: ./.github/workflows/cloudformation.yml
     with:
       env: ${{ inputs.target_environment }}
