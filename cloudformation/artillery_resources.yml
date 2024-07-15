@@ -197,3 +197,43 @@ Resources:
     Type: 'AWS::ECS::Cluster'
     Properties:
       ClusterName: artilleryio-cluster
+
+  ArtilleryPSUApiKey:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: API key used for PSU load testing
+      Type: String
+      Value: ChangeMe
+
+  ArtilleryPSUPrivateKey:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: Private key used for PSU load testing
+      Type: String
+      Value: ChangeMe
+
+  ArtilleryPSUKid:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: KID used for PSU load testing
+      Type: String
+      Value: ChangeMe
+
+Outputs:
+  ArtilleryPSUApiKey:
+    Description: ArtilleryPSUApiKey
+    Value: !Ref ArtilleryPSUApiKey
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryPSUApiKey"]]
+
+  ArtilleryPSUPrivateKey:
+    Description: ArtilleryPSUPrivateKey
+    Value: !Ref ArtilleryPSUPrivateKey
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryPSUPrivateKey"]]
+
+  ArtilleryPSUKid:
+    Description: ArtilleryPSUKid
+    Value: !Ref ArtilleryPSUKid
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryPSUKid"]]
