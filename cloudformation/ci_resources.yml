@@ -656,6 +656,7 @@ Resources:
               - "ecs:ListClusters"
               - "ecs:RegisterTaskDefinition"
               - "ecs:DeregisterTaskDefinition"
+              - "ecs:DescribeTaskDefinition"
             Resource: "*"
           - Sid: "ECSPermissionsScopedToCluster"
             Effect: "Allow"
@@ -677,11 +678,6 @@ Resources:
             Condition: 
               ArnEquals: 
                 ecs:cluster: !Sub "arn:aws:ecs:*:${AWS::AccountId}:cluster/*"
-            Resource: "*"
-          - Sid: "ECSPermissions"
-            Effect: "Allow"
-            Action: 
-              - "ecs:DescribeTaskDefinition"
             Resource: "*"
           - Sid: "S3Permissions"
             Effect: "Allow"
