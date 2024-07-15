@@ -47,7 +47,7 @@ Resources:
         - Ref: CloudFormationCheckVersionRole
         - Ref: ReleaseNotesExecuteLambdaRole
         - Ref: CloudFormationPrepareChangesetRole
-        - Ref: ArtilleryLoadTestRole
+        - Ref: ArtilleryRunnerRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -609,7 +609,7 @@ Resources:
   ##################################################
   # Artillery.io runner Role
   ##################################################
-  ArtilleryLoadTestRole:
+  ArtilleryRunnerRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -625,11 +625,11 @@ Resources:
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref ArtilleryLoadTestRoleClaimFilters
 
-  ArtilleryLoadTestPolicy:
+  ArtilleryRunnerPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - Ref: ArtilleryLoadTestRole
+        - Ref: ArtilleryRunnerRole
       PolicyDocument:
         Version: "2012-10-17"
         Statement: 
