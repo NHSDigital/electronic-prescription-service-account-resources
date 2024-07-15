@@ -84,6 +84,7 @@ Resources:
             Principal:
               AWS:
                 - !GetAtt ArtilleryWorkerRole.Arn
+                - !ImportValue ci-resources:ArtilleryRunnerRoleName
             Action:
               - s3:GetObject*
               - s3:PutObject*
