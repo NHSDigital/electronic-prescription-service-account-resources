@@ -1,10 +1,11 @@
 // Uses AWS Parameters & Secrets Lambda Extension: 
 // https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html
 // https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html
+import { StringLiteralLike } from "typescript"
 import { LambdaSecrets, SecretsStore, ParameterStoreParameter, SecretsManagerSecret } from "./types"
 
-const AWS_SESSION_TOKEN: string  = process.env.AWS_SESSION_TOKEN || ""
-const EXTENSION_HTTP_PORT: string = process.env.PARAMETERS_SECRETS_EXTENSION_HTTP_PORT || ""
+let AWS_SESSION_TOKEN: string
+let EXTENSION_HTTP_PORT: string
 
 export const getSecrets = async (secretNames: string[], secretsStore: SecretsStore): Promise<LambdaSecrets> => {
     checkSecretsExtensionConfig()
@@ -20,10 +21,12 @@ export const getSecrets = async (secretNames: string[], secretsStore: SecretsSto
 }
 
 const checkSecretsExtensionConfig = (): void => {
+    AWS_SESSION_TOKEN = process.env.AWS_SESSION_TOKEN as string
     if (!AWS_SESSION_TOKEN){
         throw new Error("AWS_SESSION_TOKEN not set")
     }
 
+    EXTENSION_HTTP_PORT = process.env.PARAMETERS_SECRETS_EXTENSION_HTTP_PORT as string
     if (!EXTENSION_HTTP_PORT){
         throw new Error("EXTENSION_HTTP_PORT not set")
     }
