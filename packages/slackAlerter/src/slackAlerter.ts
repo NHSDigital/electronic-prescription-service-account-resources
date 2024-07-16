@@ -13,7 +13,7 @@ export const handler: SNSHandler = async(event: SNSEvent, _context: Context): Pr
     logger.info("Received SNS message...")
     
     const totalRecords: number = event.Records.length
-    logger.info(`£{totalRecords} records to process...`)
+    logger.info(`${totalRecords} record(s) to process...`)
     for (let [index, record] of event.Records.entries()){
         logger.info(`Processing record...`, {recordNo: index, totalRecords: totalRecords})
         await processRecord(record)
@@ -40,7 +40,7 @@ const processRecord = async (record: SNSEventRecord): Promise<void> => {
 }
 
 const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudWatchAlertMessageContent => {
-    const header: string = formatHeader(cloudWatchMessage.AlarmArn, cloudWatchMessage.NewStateValue)
+    const header: string = formatHeader(cloudWatchMessage.AlarmName, cloudWatchMessage.NewStateValue)
     const region: string = cloudWatchMessage.AlarmArn.split(":")[3]
     const trigger: string = formatTrigger(cloudWatchMessage.Trigger)
     const oldState: string = formatState(cloudWatchMessage.OldStateValue)
@@ -61,6 +61,7 @@ const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudW
         moreInfoUrl: moreInfoUrl
     }
 
+    logger.info("Populating content for CloudWatch Alert message...")
     const slackMessageContent: CloudWatchAlertMessageContent = populateCloudWatchAlertMessageContent(contentValues)
     return slackMessageContent
 }
@@ -74,18 +75,19 @@ const postSlackMessage = async (slackMessageContent: CloudWatchAlertMessageConte
         }
     }
 
-    const secrets = await getSecrets(["slack-webhook-url"], "parameterStore")
-    const url = secrets["slack-webhook-url"]
+    logger.info("Getting slack web hook url...")
+    const secrets = await getSecrets(["slackWebhookUrl"], "parameterStore")
+    const url = secrets["slackWebhookUrl"]
+    
+    logger.info("Sending request to slack webhook url...")
     try {
-        // log posting message
         const response: Response = await fetch(url, options)
         if (!response.ok) {
-            // log response
-            throw new Error("Failed to post message to slack")
+            logger.error("Error response received from slack", {statusCode: response.status, res: response.body})
+            throw new Error("Error response received from slack")
         }
     } catch (err) {
-        //log error
+        logger.error("Failed to post message to slack", {error: err})
         throw err
     }
-    // log ok
 }

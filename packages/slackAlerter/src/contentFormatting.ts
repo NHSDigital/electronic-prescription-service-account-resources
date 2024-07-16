@@ -10,7 +10,6 @@ export const formatHeader = (alarmName: string, state: string): string => {
     const stateEmoji: string = stateToEmojiMap[state as keyof typeof stateToEmojiMap]
     const headerContent: string = alarmName.split("-")[1].trim()
     const formattedHeader = `${stateEmoji} ${headerContent}`
-    
     return formattedHeader
 }
 

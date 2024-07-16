@@ -62,7 +62,7 @@ export interface CloudWatchAlarm {
     AlarmArn: string
     OldStateValue: string
     OKActions: []
-    AlarmActions: []
+    AlarmActions: string[]
     InsufficientDataActions: []
     Trigger: Trigger
 }
