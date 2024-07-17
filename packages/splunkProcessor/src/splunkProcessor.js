@@ -132,7 +132,7 @@ function transformStepFunctionsLogEvent(logEvent) {
     eventMessage["X-Amzn-Trace-Id"] = normalizedHeaders["x-amzn-trace-id"]
     eventMessage["x-correlation-id"] = normalizedHeaders["x-correlation-id"]
     eventMessage["x-request-id"] = normalizedHeaders["x-request-id"]
-  } catch (_) {
+} catch (_) {
     try {
       // something went wrong in the above so try and parse it to JSON
       eventMessage = JSON.parse(logEvent.message)
@@ -140,6 +140,15 @@ function transformStepFunctionsLogEvent(logEvent) {
       // we cant parse it to JSON so just return the raw message
       eventMessage = logEvent.message
     }
+  }
+  if (typeof eventMessage.details?.output != "undefined") {
+    eventMessage.details.output = "redacted"
+  }
+  if (typeof eventMessage.details?.parameters != "undefined") {
+    eventMessage.details.parameters = "redacted"
+  }
+  if (typeof eventMessage.details?.input != "undefined") {
+    eventMessage.details.input = "redacted"
   }
   return eventMessage
 }
