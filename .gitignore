@@ -20,3 +20,7 @@ release_notes
 .aws-sam
 lib/
 *.tsbuildinfo
+*.zip
+node_modules
+*-params.json
+packages/certificateChecker/tests/mock-certs/

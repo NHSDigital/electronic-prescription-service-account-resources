@@ -11,11 +11,6 @@
     "source=${env:HOME}${env:USERPROFILE}/.gnupg,target=/home/vscode/.gnupg,type=bind"
   ],
   "features": {
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
-      "version": "latest",
-      "moby": "true",
-      "installDockerBuildx": "true"
-    },
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "customizations": {
@@ -27,13 +22,15 @@
         "ms-python.flake8",
         "eamodio.gitlens",
         "github.vscode-pull-request-github",
+        "orta.vscode-jest",
         "lfm.vscode-makefile-term",
         "GrapeCity.gc-excelviewer",
         "redhat.vscode-xml",
         "streetsidesoftware.code-spell-checker",
         "timonwong.shellcheck",
         "mkhl.direnv",
-        "github.vscode-github-actions"
+        "github.vscode-github-actions",
+        "rvest.vs-code-prettier-eslint"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/workspaces/electronic-prescription-service-account-resources/.venv/bin/python",
@@ -43,10 +40,10 @@
         "python.testing.pytestEnabled": true,
         "python.linting.pylintEnabled": false,
         "python.linting.flake8Enabled": true,
-        "python.linting.enabled": true, // required to format on save
-        "editor.formatOnPaste": false, // required
-        "editor.formatOnType": false, // required
-        "editor.formatOnSave": true, // optional
+        "python.linting.enabled": true,
+        "editor.formatOnPaste": false,
+        "editor.formatOnType": false,
+        "editor.formatOnSave": false,
         "editor.formatOnSaveMode": "file",
         "cSpell.words": [
           "fhir",

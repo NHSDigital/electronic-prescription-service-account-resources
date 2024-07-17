@@ -12,20 +12,48 @@
 
 Add any summary information of what is in the change. **Remove this line if you have nothing to add.**
 
-## Reviews Required
+## Pull Request Naming
 
-**Check who should review this. Remove this line once this has been done**
+Pull requests should be named using the following format:
 
-- [x] Dev
-- [ ] Test
-- [ ] Tech Author
-- [ ] Product Owner
+```text
+Tag: [AEA-NNNN] - Short description
+```
 
-## Review Checklist
+Tag can be one of:
 
-:information_source: This section is to be filled in by the **reviewer**.
+- `Fix` - for a bug fix. (Patch release)
+- `Update` - either for a backwards-compatible enhancement or for a rule change that adds reported problems. (Patch release)
+- `New` - implemented a new feature. (Minor release)
+- `Breaking` - for a backwards-incompatible enhancement or feature. (Major release)
+- `Docs` - changes to documentation only. (Patch release)
+- `Build` - changes to build process only. (No release)
+- `Upgrade` - for a dependency upgrade. (Patch release)
+- `Chore` - for refactoring, adding tests, etc. (anything that isn't user-facing). (Patch release)
 
-- [ ] I have reviewed the changes in this PR and they fill all or part of the acceptance criteria of the ticket, and the code is in a mergeable state.
-- [ ] I have reviewed any infrastructure changes listed in the workflow summary.
-- [ ] If there were infrastructure, operational, or build changes, I have made sure there is sufficient evidence that the changes will work.
-- [ ] I have ensured the jira ticket has been updated with the github pull request link
+If the current release is x.y.z then
+- a patch release increases z by 1
+- a minor release increases y by 1
+- a major release increases x by 1
+
+Correct tagging is necessary for our automated versioning and release process.
+
+The description of your pull request will be used as the commit message for the merge, and also be included in the changelog. Please ensure that your title is sufficiently descriptive.
+
+### Rerunning Checks
+
+If you need to rename your pull request, you can restart the checks by either:
+
+- Closing and reopening the pull request
+- pushing an empty commit 
+  ```bash
+  git commit --allow-empty -m 'trigger build'
+  git push
+  ```
+- Amend your last commit and force push to the branch
+  ```bash
+  git commit --amend --no-edit
+  git push --force
+  ```
+
+Rerunning the checks from within the pull request will not use the updated title.

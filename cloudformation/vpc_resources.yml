@@ -1,0 +1,250 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::LanguageExtensions"
+
+Parameters:
+  Environment:
+    Type: String
+    Default: Dev
+
+Mappings: 
+  vpc: 
+    A:
+      az: a
+      publicCidrBlock: 10.192.0.0/19
+      privateCidrBlock: 10.192.96.0/19
+    B:
+      az: b
+      publicCidrBlock: 10.192.32.0/19
+      privateCidrBlock: 10.192.128.0/19
+    C:
+      az: c
+      publicCidrBlock: 10.192.64.0/19
+      privateCidrBlock: 10.192.160.0/19
+
+Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.192.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}:VPC
+  
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}:${Vpc}:InternetGateway
+        - Key: Region
+          Value: !Ref AWS::Region
+        - Key: Environment
+          Value: !Ref Environment
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref Vpc
+
+  Fn::ForEach::PublicSubnet:
+    - Identifier
+    - - "A"
+      - "B"
+      - "C"
+    - PublicSubnet${Identifier}:
+        Type: AWS::EC2::Subnet
+        Properties:
+          VpcId: !Ref Vpc
+          AvailabilityZone: !Sub
+            - ${AWS::Region}${az}
+            - az: !FindInMap [vpc, !Ref Identifier, az]
+          CidrBlock: !FindInMap [vpc, !Ref Identifier, publicCidrBlock]
+          MapPublicIpOnLaunch: true
+          Tags:
+            - Key: Name
+              Value: !Sub ${AWS::StackName}:${Vpc}:PublicSubnet${Identifier}
+            - Key: Availability Zone
+              Value: !Sub
+                - ${AWS::Region}${az}
+                - az: !FindInMap [vpc, !Ref Identifier, az]
+            - Key: Region
+              Value: !Ref AWS::Region
+            - Key: Environment
+              Value: !Ref Environment
+
+  Fn::ForEach::PrivateSubnet:
+    - Identifier
+    - - "A"
+      - "B"
+      - "C"
+    - PrivateSubnet${Identifier}:
+        Type: AWS::EC2::Subnet
+        Properties:
+          VpcId: !Ref Vpc
+          AvailabilityZone: !Sub
+            - ${AWS::Region}${az}
+            - az: !FindInMap [vpc, !Ref Identifier, az]
+          CidrBlock: !FindInMap [vpc, !Ref Identifier, privateCidrBlock]
+          MapPublicIpOnLaunch: true
+          Tags:
+            - Key: Name
+              Value: !Sub ${AWS::StackName}:${Vpc}:PrivateSubnet${Identifier}
+            - Key: Availability Zone
+              Value: !Sub
+                - ${AWS::Region}${az}
+                - az: !FindInMap [vpc, !Ref Identifier, az]
+            - Key: Region
+              Value: !Ref AWS::Region
+            - Key: Environment
+              Value: !Ref Environment
+
+  Fn::ForEach::NatGwEip:
+    - Identifier
+    - - "A"
+      - "B"
+      - "C"
+    - NatGatewayEip${Identifier}:
+        Type: AWS::EC2::EIP
+        DependsOn: InternetGatewayAttachment
+        Properties:
+          Domain: vpc
+
+  Fn::ForEach::NatGw:
+    - Identifier
+    - - "A"
+      - "B"
+      - "C"
+    - NatGateway${Identifier}:
+        Type: AWS::EC2::NatGateway
+        Properties:
+          AllocationId: !GetAtt
+              - !Sub NatGatewayEip${Identifier}
+              - AllocationId
+          SubnetId: !Ref 
+            Fn::Sub: PublicSubnet${Identifier}
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+         VpcId: !Ref Vpc
+         Tags:
+          - Key: Name
+            Value: !Sub ${AWS::StackName}:${Vpc}:PublicRouteTable
+          - Key: Region
+            Value: !Ref AWS::Region
+          - Key: Environment
+            Value: !Ref Environment
+  
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+         RouteTableId: !Ref PublicRouteTable
+         DestinationCidrBlock: 0.0.0.0/0
+         GatewayId: !Ref InternetGateway
+  
+  Fn::ForEach::PublicSubnetRouteAssociation:
+    - Identifier
+    - - "A"
+      - "B"
+      - "C"
+    - PublicSubnet${Identifier}RouteTableAssociation:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+          RouteTableId: !Ref PublicRouteTable
+          SubnetId: !Ref
+            Fn::Sub: PublicSubnet${Identifier}
+  
+  Fn::ForEach::PrivateRouteTable:
+    - Identifier
+    - - "A"
+      - "B"
+      - "C"
+    - PrivateRouteTable${Identifier}:
+        Type: AWS::EC2::RouteTable
+        Properties:
+          VpcId: !Ref Vpc
+          Tags:
+            - Key: Name
+              Value: !Sub ${AWS::StackName}:${Vpc}:PrivateRouteTable${Identifier}
+            - Key: Availability Zone
+              Value: !Sub
+                - ${AWS::Region}${az}
+                - az: !FindInMap [vpc, !Ref Identifier, az]
+            - Key: Region
+              Value: !Ref AWS::Region
+            - Key: Environment
+              Value: !Ref Environment
+  
+  Fn::ForEach::DefaultPrivateRoute:
+    - Identifier
+    - - "A"
+      - "B"
+      - "C"
+    - DefaultPrivateRoute${Identifier}:
+        Type: AWS::EC2::Route
+        Properties:
+          RouteTableId: !Ref
+            Fn::Sub: PrivateRouteTable${Identifier}
+          DestinationCidrBlock: 0.0.0.0/0
+          NatGatewayId: !Ref
+            Fn::Sub: NatGateway${Identifier}
+
+  Fn::ForEach::PrivateSubnetRouteTableAssociation:
+    - Identifier
+    - - "A"
+      - "B"
+      - "C"
+    - PrivateSubnet${Identifier}RouteTableAssociation:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+          RouteTableId: !Ref
+            Fn::Sub: PrivateRouteTable${Identifier}
+          SubnetId: !Ref
+            Fn::Sub: PrivateSubnet${Identifier}
+
+Outputs:
+  VpcId:
+    Description: VPC ID
+    Value: !Ref Vpc
+    Export: 
+      Name: !Sub ${AWS::StackName}:VpcId
+  
+  PublicSubnets:
+    Description: A list of the VPC's public subnets
+    Value: !Join [",", [!Ref PublicSubnetA, !Ref PublicSubnetB, !Ref PublicSubnetC]]
+    Export:
+      Name: !Sub ${AWS::StackName}:PublicSubnets
+  
+  PrivateSubnets:
+    Description:
+    Value: !Join [",", [!Ref PrivateSubnetA, !Ref PrivateSubnetB, !Ref PrivateSubnetC]]
+    Export:
+      Name: !Sub ${AWS::StackName}:PrivateSubnets
+  
+  Fn::ForEach::PublicSubnetOutput:
+    - Identifier
+    - - "A"
+      - "B"
+      - "C"
+    - PublicSubnet${Identifier}:
+        Description: !Sub Public Subnet ${Identifier}
+        Value: !Ref
+          Fn::Sub: PublicSubnet${Identifier}
+        Export:
+          Name: !Sub ${AWS::StackName}:PublicSubnet${Identifier}
+  
+  Fn::ForEach::PrivateSubnetOutput:
+    - Identifier
+    - - "A"
+      - "B"
+      - "C"
+    - PrivateSubnet${Identifier}:
+        Description: !Sub Private Subnet ${Identifier}
+        Value: !Ref
+          Fn::Sub: PrivateSubnet${Identifier}
+        Export:
+          Name: !Sub ${AWS::StackName}:PrivateSubnet${Identifier}

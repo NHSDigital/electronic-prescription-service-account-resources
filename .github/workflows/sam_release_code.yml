@@ -1,0 +1,94 @@
+name: sam release code
+
+on:
+  workflow_call:
+    inputs:
+      STACK_NAME:
+        required: true
+        type: string
+      ARTIFACT_BUCKET_PREFIX:
+        required: true
+        type: string
+      env:
+        required: true
+        type: string
+      TARGET_ENVIRONMENT:
+        required: true
+        type: string
+      BUILD_ARTIFACT:
+        required: true
+        type: string
+      VERSION_NUMBER:
+        required: true
+        type: string
+      COMMIT_ID:
+        required: true
+        type: string
+      LOG_LEVEL:
+        required: true
+        type: string
+      LOG_RETENTION_DAYS:
+        required: true
+        type: string
+      dynamic_vars:
+        required: false
+        type: string
+        default: "{}"
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE:
+        required: true
+      parameter_secrets:
+        required: false
+
+jobs:
+  sam_release_code:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.TARGET_ENVIRONMENT }}
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
+    steps:
+      - name: Checkout scripts
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          sparse-checkout: |
+            .github/scripts
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
+          role-session-name: github-actions
+
+      - name: download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.BUILD_ARTIFACT }}
+          path: .
+
+      - name: Parse Parameters
+        env:
+          parameter_secrets: ${{ secrets.parameter_secrets }}
+          dynamic_vars: ${{ inputs.dynamic_vars }}
+          output_format: "raw"
+        id: parse_parameters
+        shell: bash
+        run: |
+          PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }} )
+          echo "PARAMETERS=${PARAMETERS}" >> "$GITHUB_OUTPUT"
+
+      - name: release code
+        shell: bash
+        working-directory: .github/scripts
+        env:
+          ARTIFACT_BUCKET_PREFIX: lambda_resources/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
+          COMMIT_ID: ${{ inputs.COMMIT_ID }}
+          PARAMETERS: ${{ steps.parse_parameters.outputs.PARAMETERS }}
+          STACK_NAME: ${{ inputs.STACK_NAME }}
+          TEMPLATE_FILE: template.yaml
+          VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
+        run: ./release_code.sh

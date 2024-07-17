@@ -15,6 +15,9 @@ on:
       execute_change_set:
         required: true
         type: boolean
+      env:
+        required: true
+        type: string
       target_environment:
         required: true
         type: string
@@ -24,8 +27,14 @@ on:
       change_set_version:
         required: true
         type: string
+      dynamic_vars:
+        required: false
+        type: string
+        default: "{}"
     secrets:
       cf_deploy_role:
+        required: false
+      parameter_secrets:
         required: false
       cf_create_changeset_role:
         required: true
@@ -37,188 +46,105 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      CAPABILITIES: ${{ inputs.capabilities }}
+      CHANGE_SET_VERSION: ${{ inputs.change_set_version }}
+      STACK_NAME: ${{ inputs.stack_name }}
+      TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
+      TEMPLATE: ${{ inputs.template }}
+      VERSION: ${{ inputs.version }}
     outputs:
-      parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
+      parameters_file_name: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
     steps:
     - name: checkout code
       uses: actions/checkout@v4
       with:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
-    
+
     - name: Assume create changeset role
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_create_changeset_role}}
         role-session-name: github-actions
-    
+
+    - name: check stack exists
+      id: check_stack_exists
+      shell: bash
+      working-directory: .github/scripts
+      run: ./check_stack_exists.sh
+
+    - name: Assume create deploy stack role
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_deploy_role}}
+        role-session-name: github-actions
+
+    - name: create stack
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
+      shell: bash
+      run: |
+        aws cloudformation create-stack --stack-name ${{ inputs.stack_name }} \
+        --template-body file://./cloudformation/empty_stack.yml
+
+    - name: Assume create changeset role
+      if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.cf_create_changeset_role}}
+        role-session-name: github-actions
+        
     - name: Parse Parameters
+      env:
+        parameter_secrets: ${{ secrets.parameter_secrets }}
+        dynamic_vars: ${{ inputs.dynamic_vars }}
       id: parse_parameters
       shell: bash
       run: |
-        echo PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }}) >> $GITHUB_OUTPUT
+        PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }})
+        cat "$PARAMETERS_FILE_NAME"
+        echo "PARAMETERS_FILE_NAME=${PARAMETERS_FILE_NAME}" >> "$GITHUB_OUTPUT"
 
     - name: Create Change Set with new tags
       shell: bash
-      run: |
-        ROLE=$(aws cloudformation list-exports --output json | \
-        jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
-        aws cloudformation create-change-set \
-        --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }} \
-        --change-set-type UPDATE \
-        --template-body file://${{ inputs.template }} \
-        --capabilities ${{ inputs.capabilities }} \
-        --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
-        --tags Key="version",Value="${{ inputs.version }}" \
-        --role-arn="$ROLE"
+      working-directory: .github/scripts
+      env:
+        PARAMETERS: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
+      run: ./create_changeset_new_tags.sh
 
     - name: Create Change Set with existing tags
       shell: bash
-      run: |
-        current_deployed_tag=$(aws cloudformation describe-stacks --stack-name  ${{ inputs.stack_name }} --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
-        if [ "${current_deployed_tag}" == "" ]; then
-          echo "Can not find target tag. Using initial tag in repo"
-          export current_deployed_tag="v1.0.4-alpha"
-          fi
-        ROLE=$(aws cloudformation list-exports --output json | \
-        jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
-        aws cloudformation create-change-set \
-        --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}-current-tag \
-        --change-set-type UPDATE \
-        --template-body file://${{ inputs.template }} \
-        --capabilities ${{ inputs.capabilities }} \
-        --parameters ${{ steps.parse_parameters.outputs.PARAMETERS }} \
-        --tags Key="version",Value="${current_deployed_tag}" \
-        --role-arn="$ROLE"
+      working-directory: .github/scripts
+      env:
+        PARAMETERS: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
+      run: ./create_changeset_existing_tags.sh
 
     - name: Header output
       shell: bash
-      run: |
-        echo "## [${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Stack Name:** ${{ inputs.stack_name }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Version Tag:** ${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "The FULL change set below shows all changes including tag changes" >> $GITHUB_STEP_SUMMARY
-        echo "The change set with existing tag below shows all changes using the current tag and may be easier to identify changes" >> $GITHUB_STEP_SUMMARY
-        
+      working-directory: .github/scripts
+      run: ./header_output.sh
+
     - name: Describe Full Change Set
       shell: bash
-      run: |
-        STATUS="CREATE_IN_PROGRESS"
-        while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
-        do
-          echo "Getting change set..."
-          CHANGE_SET=$(aws cloudformation describe-change-set \
-          --stack-name ${{ inputs.stack_name }} \
-          --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }})
-          STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
-          if [ "$STATUS" == "CREATE_IN_PROGRESS" ]; then
-            echo "sleeping 1..."
-            sleep 1
-          fi
-        done
-        echo $CHANGE_SET
-        STACK_NAME=$(jq -r '.["StackName"]' <<< "$CHANGE_SET")
-        STACK_ID=$(jq -r '.["StackId"]' <<< "$CHANGE_SET")
-        CHANGE_SET_NAME=$(jq -r '.["ChangeSetName"]' <<< "$CHANGE_SET")
-        CHANGE_SET_ID=$(jq -r '.["ChangeSetId"]' <<< "$CHANGE_SET")
-        STATUS_REASON=$(jq -r '.["StatusReason"]' <<< "$CHANGE_SET")
-        PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
-        CAPABILITIES=$(jq '.["Capabilities"]' <<< "$CHANGE_SET")
-        CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
-        TAGS=$(jq '.["Tags"]' <<< "$CHANGE_SET")
-        TAGS="${TAGS//[$'\t\r\n ']}"
-        if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information didn't contain changes. Submit different information to create a change set." ]; then
-          echo "Failed to create change set."
-          exit 1
-        fi
-        echo "<details><summary>[${{ inputs.target_environment }}] FULL Change Set for ${{ inputs.stack_name }}</summary>" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
-        echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
-        echo "- **Tags:** $TAGS"  >> $GITHUB_STEP_SUMMARY
-        echo "- **Stack ID:** $STACK_ID" >> $GITHUB_STEP_SUMMARY
-        echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "#### Parameters:" >> $GITHUB_STEP_SUMMARY
-        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
-        echo "$PARAMETERS" >> $GITHUB_STEP_SUMMARY
-        echo "~~~"  >> $GITHUB_STEP_SUMMARY
-        echo "#### Capabilities:" >> $GITHUB_STEP_SUMMARY
-        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
-        echo "$CAPABILITIES" >> $GITHUB_STEP_SUMMARY
-        echo "~~~"  >> $GITHUB_STEP_SUMMARY
-        echo "#### Changes:" >> $GITHUB_STEP_SUMMARY
-        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
-        if [ "$STATUS" == "FAILED" ]; then
-          echo "$STATUS_REASON" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "$CHANGES" >> $GITHUB_STEP_SUMMARY
-        fi
-        echo "~~~"  >> $GITHUB_STEP_SUMMARY
-        echo "</details>" >> $GITHUB_STEP_SUMMARY
+      working-directory: .github/scripts
+      env:
+        CHANGESET_NAME: ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
+        SUMMARY: "[${{ inputs.target_environment }}] FULL Change Set for ${{ inputs.stack_name }}"
+      run: ./describe_changeset.sh
 
     - name: Describe Change Set for existing tag
       shell: bash
-      run: |
-        STATUS="CREATE_IN_PROGRESS"
-        while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
-        do
-          echo "Getting change set..."
-          CHANGE_SET=$(aws cloudformation describe-change-set \
-          --stack-name ${{ inputs.stack_name }} \
-          --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}-current-tag)
-          STATUS=$(jq -r '.["Status"]' <<< "$CHANGE_SET")
-          if [ "$STATUS" == "CREATE_IN_PROGRESS" ]; then
-            echo "sleeping 1..."
-            sleep 1
-          fi
-        done
-        echo $CHANGE_SET
-        STACK_NAME=$(jq -r '.["StackName"]' <<< "$CHANGE_SET")
-        STACK_ID=$(jq -r '.["StackId"]' <<< "$CHANGE_SET")
-        CHANGE_SET_NAME=$(jq -r '.["ChangeSetName"]' <<< "$CHANGE_SET")
-        CHANGE_SET_ID=$(jq -r '.["ChangeSetId"]' <<< "$CHANGE_SET")
-        STATUS_REASON=$(jq -r '.["StatusReason"]' <<< "$CHANGE_SET")
-        PARAMETERS=$(jq '.["Parameters"]' <<< "$CHANGE_SET")
-        CAPABILITIES=$(jq '.["Capabilities"]' <<< "$CHANGE_SET")
-        CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
-        TAGS=$(jq '.["Tags"]' <<< "$CHANGE_SET")
-        TAGS="${TAGS//[$'\t\r\n ']}"
-        if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information didn't contain changes. Submit different information to create a change set." ]; then
-          echo "Failed to create change set."
-          exit 1
-        fi
-        echo "<details><summary>[${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }} with existing tag</summary>" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "- **Stack Name:** $STACK_NAME" >> $GITHUB_STEP_SUMMARY
-        echo "- **Change Set Name:** $CHANGE_SET_NAME" >> $GITHUB_STEP_SUMMARY
-        echo "- **Tags:** $TAGS"  >> $GITHUB_STEP_SUMMARY
-        echo "- **Stack ID:** $STACK_ID" >> $GITHUB_STEP_SUMMARY
-        echo "- **Change Set ID:** $CHANGE_SET_ID" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "#### Parameters:" >> $GITHUB_STEP_SUMMARY
-        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
-        echo "$PARAMETERS" >> $GITHUB_STEP_SUMMARY
-        echo "~~~"  >> $GITHUB_STEP_SUMMARY
-        echo "#### Capabilities:" >> $GITHUB_STEP_SUMMARY
-        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
-        echo "$CAPABILITIES" >> $GITHUB_STEP_SUMMARY
-        echo "~~~"  >> $GITHUB_STEP_SUMMARY
-        echo "#### Changes:" >> $GITHUB_STEP_SUMMARY
-        echo "~~~ json"  >> $GITHUB_STEP_SUMMARY
-        if [ "$STATUS" == "FAILED" ]; then
-          echo "$STATUS_REASON" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "$CHANGES" >> $GITHUB_STEP_SUMMARY
-        fi
-        echo "~~~"  >> $GITHUB_STEP_SUMMARY
-        echo "</details>" >> $GITHUB_STEP_SUMMARY
+      working-directory: .github/scripts
+      env:
+        CHANGESET_NAME: ${{ inputs.stack_name }}-${{ inputs.change_set_version }}-current-tag
+        SUMMARY: "[${{ inputs.target_environment }}] Change Set for ${{ inputs.stack_name }} with existing tag"
+      run: ./describe_changeset.sh
 
-    - name: Delete Change Set
+    - name: Delete Change Set for new tag
       if: ${{ inputs.execute_change_set == false }}
       shell: bash
       run: |
@@ -226,7 +152,7 @@ jobs:
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
 
-    - name: Delete Change Set
+    - name: Delete Change Set for existing tag
       shell: bash
       run: |
         aws cloudformation delete-change-set \
@@ -242,7 +168,17 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      CHANGE_SET_VERSION: ${{ inputs.change_set_version }}
+      STACK_NAME: ${{ inputs.stack_name }}
     steps:
+      - name: Checkout scripts
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          sparse-checkout: |
+            .github/scripts
+
       - name: Assume deploy changeset role
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -252,40 +188,5 @@ jobs:
 
       - name: Execute Change Set
         shell: bash
-        run: |
-          aws cloudformation execute-change-set \
-          --stack-name ${{ inputs.stack_name }} \
-          --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
-          STATUS="UPDATE_IN_PROGRESS"
-          while [ "$STATUS" == "UPDATE_IN_PROGRESS" ]
-          do
-            echo "Checking stack status..."
-            STACKS=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }})
-            STATUS=$(jq -r '.["Stacks"][0]["StackStatus"]' <<< "$STACKS")
-            if [ "$STATUS" == "UPDATE_IN_PROGRESS" ]; then
-              echo "sleeping 5..."
-              sleep 5
-            fi
-          done
-          if [ "$STATUS" == "ROLLBACK_IN_PROGRESS " ]; then
-            echo "Failed to execute change set, rollback in progress..."
-            echo "$STACKS"
-            exit 1
-          elif [ "$STATUS" == "ROLLBACK_COMPLETE  " ]; then
-            echo "Failed to execute change set, rollback complete."
-            echo "$STACKS"
-            exit 1
-          elif [ "$STATUS" == "UPDATE_FAILED   " ]; then
-            echo "Failed to execute change set."
-            echo "$STACKS"
-            exit 1
-          elif [ "$STATUS" == "UPDATE_ROLLBACK_IN_PROGRESS" ]; then
-            echo "Failed to execute change set, rollback in progress..."
-            echo "$STACKS"
-            exit 1
-          elif [ "$STATUS" == "UPDATE_ROLLBACK_FAILED" ]; then
-            echo "Failed to execute change set, rollback failed."
-            echo "$STACKS"
-            exit 1
-          fi
-          echo "Execute change set comeplete."
+        working-directory: .github/scripts
+        run: ./execute_changeset.sh

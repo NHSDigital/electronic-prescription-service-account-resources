@@ -2,7 +2,9 @@ name: Quality Checks
 
 on:
   workflow_call:
-
+    secrets:
+      SONAR_TOKEN:
+        required: true
 jobs:
   quality_checks:
     runs-on: ubuntu-latest
@@ -19,7 +21,7 @@ jobs:
           asdf_branch: v0.11.3
       
       - name: Cache asdf
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.asdf
@@ -35,10 +37,19 @@ jobs:
             PYTHON_CONFIGURE_OPTS: --enable-shared
 
       - name: Install Dependencies
-        run: make install
-      
+        run: make install && sudo apt install faketime
+
       - name: Check Licenses
         run: make check-licenses
-      
+
       - name: Lint
         run: make lint
+
+      - name: Run Unit Tests
+        run: make test
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

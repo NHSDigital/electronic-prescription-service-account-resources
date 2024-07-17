@@ -3,23 +3,41 @@
   "parameters": {
     "ci-resources": {
       "DeploySubjectClaimFilters": [
-        "repo:NHSDigital/prescriptionsforpatients:*",
-        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
+        "repo:NHSDigital/prescriptionsforpatients:environment:prod",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-account",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-ci",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-lambda",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:environment:prod",
+        "repo:NHSDigital/eps-prescription-status-update-api:environment:prod",
+        "repo:NHSDigital/electronic-prescription-service-api:environment:prod"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
         "repo:NHSDigital/electronic-prescription-service-release-notes:*",
         "repo:NHSDigital/electronic-prescription-service-account-resources:*",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:*",
+        "repo:NHSDigital/eps-prescription-status-update-api:*",
+        "repo:NHSDigital/electronic-prescription-service-api:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "NONE"
       ],
       "PrepareChangesetClaimFilters": [
-        "repo:NHSDigital/electronic-prescription-service-account-resources:*"
+        "repo:NHSDigital/electronic-prescription-service-account-resources:ref:refs/heads/main"
       ]
     },
-    "account-resources": {}
+    "account-resources": {},
+    "lambda-resources": {
+      "SplunkHECEndpoint": "https://firehose.inputs.splunk.aws.digital.nhs.uk/services/collector/event",
+      "LogRetentionDays": "30",
+      "Env": "prod",
+      "CommitId": "VAR.commit_id",
+      "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name"
+    },
+    "vpc-resources": {
+      "Environment": "prod"
+    }
   }
 }
