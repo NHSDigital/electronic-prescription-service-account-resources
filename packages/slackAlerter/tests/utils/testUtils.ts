@@ -1,5 +1,5 @@
 import { SNSEvent, SNSEventRecord, SNSMessage } from "aws-lambda"
-import { CloudWatchAlarm } from "../../src/types"
+import { CloudWatchAlarm, Trigger } from "../../src/types"
 
 interface Alarm {
     name: string
@@ -44,25 +44,29 @@ const generateMockAlarm = (alarmDetails: Alarm): CloudWatchAlarm => {
         "InsufficientDataActions": [
         
         ],
-        "Trigger": {
-            "MetricName": "Invocations",
-            "Namespace": "AWS/Lambda",
-            "StatisticType": "Statistic",
-            "Statistic": "SUM",
-            "Unit": null,
-            "Dimensions": [
-                {
-                "value": "snsTest",
-                "name": "FunctionName"
-                }
-            ],
-            "Period": 300,
-            "EvaluationPeriods": 1,
-            "DatapointsToAlarm": 1,
-            "ComparisonOperator": "GreaterThanThreshold",
-            "Threshold": 1.0,
-            "TreatMissingData": "missing",
-            "EvaluateLowSampleCountPercentile": ""
-        }
+        "Trigger": generateMockTrigger(300)
+    }
+}
+
+export const generateMockTrigger = (period: number): Trigger => {
+    return {
+        "MetricName": "Invocations",
+        "Namespace": "AWS/Lambda",
+        "StatisticType": "Statistic",
+        "Statistic": "SUM",
+        "Unit": null,
+        "Dimensions": [
+            {
+            "value": "snsTest",
+            "name": "FunctionName"
+            }
+        ],
+        "Period": period,
+        "EvaluationPeriods": 1,
+        "DatapointsToAlarm": 1,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "Threshold": 1.0,
+        "TreatMissingData": "missing",
+        "EvaluateLowSampleCountPercentile": ""
     }
 }
