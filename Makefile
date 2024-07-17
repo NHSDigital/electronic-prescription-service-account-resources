@@ -33,6 +33,7 @@ lint-cloudformation:
 
 lint-node:
 	npm run lint --workspace packages/certificateChecker
+	npm run lint --workspace packages/slackAlerter
 
 lint-githubactions:
 	actionlint
@@ -43,6 +44,7 @@ lint-githubaction-scripts:
 test: generate-mock-certs
 	npm run test --workspace packages/splunkProcessor
 	npm run test --workspace packages/certificateChecker
+	npm run test --workspace packages/slackAlerter
 
 generate-mock-certs:
 	cd packages/certificateChecker/tests && bash ./generate_mock_certs.sh

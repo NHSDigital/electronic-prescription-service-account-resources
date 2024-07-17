@@ -15,7 +15,8 @@
   "license": "MIT",
   "workspaces": [
     "packages/splunkProcessor",
-    "packages/certificateChecker"
+    "packages/certificateChecker",
+    "packages/slackAlerter"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.11",

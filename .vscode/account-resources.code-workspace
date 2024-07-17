@@ -11,6 +11,10 @@
 		{
 			"name": "packages/splunkProcessor",
 			"path": "../packages/splunkProcessor"
+		},
+    {
+			"name": "packages/slackAlerter",
+			"path": "../packages/slackAlerter"
 		}
 	],
 	"settings": {
