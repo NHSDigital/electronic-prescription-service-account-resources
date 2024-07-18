@@ -25,11 +25,6 @@ Parameters:
   LambdaName:
     Type: String
     Description: Name of lambda we are creating for
-  AccessToSpine:
-    Type: String
-    Description: Whether to use splunk
-    Default: false
-    AllowedValues: [true, false]
   LogRetentionDays:
     Type: Number
     Description: How long to keep logs for
@@ -58,10 +53,21 @@ Parameters:
         3288,
         3653,
       ]
+  IncludeAdditionalPolicies:
+    Type: String
+    Default: false
+  
+  AdditionalPolicies:
+    Type: CommaDelimitedList
+    Description: A list of additional policies to attach the lambdas role (comma delimited).
+    Default: none
 
 Conditions:
   ShouldUseSplunk: !Equals [true, !Ref EnableSplunk]
-  AllowAccessToSpine: !Equals [true, !Ref AccessToSpine]
+
+  ShouldIncludeAdditionalPolicies: !Equals
+    - true
+    - !Ref IncludeAdditionalPolicies
 
 Resources:
   LambdaRole:
@@ -75,20 +81,24 @@ Resources:
               Service: lambda.amazonaws.com
             Action:
               - sts:AssumeRole
-      ManagedPolicyArns:
-        - !ImportValue lambda-resources:LambdaInsightsLogGroupPolicy
-        - !ImportValue account-resources:LambdaEncryptCloudwatchKMSPolicy
-        - !ImportValue account-resources:LambdaDecryptSecretsKMSPolicy
-        - !If
-          - AllowAccessToSpine
-          - !ImportValue account-resources:LambdaAccessSecretsPolicy
-          - !Ref AWS::NoValue
+      ManagedPolicyArns: !Split
+        - ","
+        - !Join
+          - ","
+          - - !Ref LambdaManagedPolicy
+            - !ImportValue lambda-resources:LambdaInsightsLogGroupPolicy
+            - !ImportValue account-resources:LambdaEncryptCloudwatchKMSPolicy
+            - !ImportValue account-resources:LambdaDecryptSecretsKMSPolicy
+            - !If
+              - ShouldIncludeAdditionalPolicies
+              - !Join
+                - ','
+                - !Ref AdditionalPolicies
+              - !Ref AWS::NoValue
 
   LambdaManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      Roles:
-        - !Ref LambdaRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -97,8 +107,8 @@ Resources:
               - logs:CreateLogStream
               - logs:PutLogEvents
             Resource:
-              - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}"
-              - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}:log-stream:*"
+              - !GetAtt LambdaLogGroup.Arn
+              - !Sub ${LambdaLogGroup.Arn}:log-stream:*
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup

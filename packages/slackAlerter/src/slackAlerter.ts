@@ -81,8 +81,8 @@ const postSlackMessage = async (slackMessageContent: CloudWatchAlertMessageConte
   }
 
   logger.info("Getting slack web hook url...")
-  const secrets = await getSecrets(["slackWebhookUrl"], "parameterStore")
-  const url = secrets["slackWebhookUrl"]
+  const secrets = await getSecrets(["account-resources-SlackWebhookUrl"], "secretsManager")
+  const url = secrets["account-resources-SlackWebhookUrl"]
 
   logger.info("Sending request to slack webhook url...")
   try {

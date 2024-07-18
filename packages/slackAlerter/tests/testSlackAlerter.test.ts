@@ -16,10 +16,8 @@ describe("Slack Alerter", () => {
   it("posts a correctly formatted message to slack when called with a valid SNS event", async () => {
     fetchMock
       .once(JSON.stringify({
-        Parameter:{
-          Name: "slackWebhookUrl",
-          Value: "www.slack.com/webhook"
-        }
+        Name: "account-resources-SlackWebhookUrl",
+        SecretString: "www.slack.com/webhook"
       }))
       .once(JSON.stringify({ok: true}))
 
@@ -63,17 +61,13 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%201`
   it("posts multiple message to slack when called with a valid SNS event containing multiple records", async () => {
     fetchMock
       .once(JSON.stringify({
-        Parameter:{
-          Name: "slackWebhookUrl",
-          Value: "www.slack.com/webhook"
-        }
+        Name: "account-resources-SlackWebhookUrl",
+        SecretString: "www.slack.com/webhook"
       }))
       .once(JSON.stringify({ok: true}))
       .once(JSON.stringify({
-        Parameter:{
-          Name: "slackWebhookUrl",
-          Value: "www.slack.com/webhook"
-        }
+        Name: "account-resources-SlackWebhookUrl",
+        SecretString: "www.slack.com/webhook"
       }))
       .once(JSON.stringify({ok: true}))
 
@@ -151,10 +145,8 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
   it("gets secrets when posting a message to slack", async () => {
     fetchMock
       .once(JSON.stringify({
-        Parameter:{
-          Name: "slackWebhookUrl",
-          Value: "www.slack.com/webhook"
-        }
+        Name: "account-resources-SlackWebhookUrl",
+        SecretString: "www.slack.com/webhook"
       }))
       .once(JSON.stringify({ok: true}))
 
@@ -168,7 +160,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
     await handler(mockSNSEvent, context, callback)
 
     const expectedRequest = [
-      "http://localhost:2773/systemsmanager/parameters/get?name=slackWebhookUrl&withDecryption=true",
+      "http://localhost:2773/secretsmanager/get?secretId=account-resources-SlackWebhookUrl",
       {
         headers: {
           "X-Aws-Parameters-Secrets-Token": "76b6033a-232c-4b5c-8d92-39760202b2d8"
@@ -183,10 +175,8 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
   it("Throws SyntaxError when SNS record contains invalid json", async () => {
     fetchMock
       .once(JSON.stringify({
-        Parameter:{
-          Name: "slackWebhookUrl",
-          Value: "www.slack.com/webhook"
-        }
+        Name: "account-resources-SlackWebhookUrl",
+        SecretString: "www.slack.com/webhook"
       }))
       .once(JSON.stringify({ok: true}))
 
@@ -207,8 +197,6 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
         const context = {} as Context
         const callback = jest.fn()
 
-        // await handler(mockSNSEvent, context, callback)
-
         expect(async () =>
           await handler(mockSNSEvent, context, callback)
         ).rejects.toThrow(SyntaxError)
@@ -218,10 +206,8 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
   it("Throws Error when an error occurs posting to slack", async () => {
     fetchMock
       .once(JSON.stringify({
-        Parameter:{
-          Name: "slackWebhookUrl",
-          Value: "www.slack.com/webhook"
-        }
+        Name: "account-resources-SlackWebhookUrl",
+        SecretString: "www.slack.com/webhook"
       }))
       .mockRejectOnce(new Error("Mock fetch error"))
 
@@ -240,10 +226,8 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
   it("Throws Error when an error response is received from slack", async () => {
     fetchMock
       .once(JSON.stringify({
-        Parameter:{
-          Name: "slackWebhookUrl",
-          Value: "www.slack.com/webhook"
-        }
+        Name: "account-resources-SlackWebhookUrl",
+        SecretString: "www.slack.com/webhook"
       }))
       .once(JSON.stringify({ok: false, error: "invalid_payload"}), {status: 400})
 

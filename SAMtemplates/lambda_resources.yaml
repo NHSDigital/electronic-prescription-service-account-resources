@@ -409,6 +409,66 @@ Resources:
         EntryPoints:
           - certificateChecker/src/certificateChecker.ts
 
+  ##################################################
+  # Slack Alerter
+  ###################################################
+  SlackAlertsSnsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${AWS::StackName}-slackAlerts
+      KmsMasterKeyId: !ImportValue account-resources:SnsKMSKey
+
+  SnsAlerterResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-SlackAlerter"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !ImportValue account-resources:SnsDecryptSecretsKMSPolicy
+
+  SlackAlerter:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-slackAlerter
+      CodeUri: ../../packages
+      Handler: slackAlerter.handler
+      Role: !GetAtt SnsAlerterResources.Outputs.LambdaRoleArn
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 256
+      Timeout: 60
+      Environment:
+        Variables:
+          NODE_OPTIONS: "--enable-source-maps"
+          ENV: !Ref Env
+          PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: 2773
+      Layers:
+        - arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11
+      Events:
+        SNSEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref SlackAlertsSnsTopic
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        tsconfig: slackAlerter/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - slackAlerter/src/slackAlerter.ts
+
 Outputs:
   #################################################
   # Lambda Insights Outputs

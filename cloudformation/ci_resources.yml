@@ -324,6 +324,22 @@ Resources:
               - scheduler:UntagResource
               - scheduler:UpdateSchedule
               - scheduler:ListTagsForResource
+              - sns:CreateTopic
+              - sns:DeleteTopic
+              - sns:ListTopics
+              - sns:AddPermission
+              - sns:RemovePermission
+              - sns:GetSubscriptionAttributes
+              - sns:GetTopicAttributes
+              - sns:ListSubscriptions
+              - sns:ListSubscriptionsByTopic
+              - sns:ListTagsForResource
+              - sns:SetSubscriptionAttributes
+              - sns:SetTopicAttributes
+              - sns:Subscribe
+              - sns:Unsubscribe
+              - sns:TagResource
+              - sns:UntagResource
             Resource: "*"
   
   GrantCloudFormationExecutionAccessPolicyC:
