@@ -201,7 +201,7 @@ Resources:
     Properties:
       CodeUri: ../packages/
       Handler: splunkProcessor.handler
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Role: !GetAtt SplunkDeliveryStreamProcessorRole.Arn
       Architectures:
         - x86_64
@@ -365,7 +365,7 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-CertificateChecker"
       CodeUri: ../packages/
       Handler: certificateChecker.handler
-      Runtime: nodejs18.x 
+      Runtime: nodejs20.x
       Role: !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
