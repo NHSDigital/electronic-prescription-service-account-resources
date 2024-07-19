@@ -27,6 +27,7 @@ const lambdaHandler = async (event: any) => {
     const secretResponse = await secretsClient.send(getSecretCommand)
     const privateKey = secretResponse.SecretString
     const accessTokenResponse = await getAccessToken(privateKey as Secret)
+    logger.info("accessTokenResponse", accessTokenResponse)
     const accessToken = accessTokenResponse.access_token
     const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${apiName}/environments/${environment}/instances/${instance}`
     const response = await axios.put(path, specDefinition, {
