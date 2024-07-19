@@ -29,7 +29,7 @@ const lambdaHandler = async (event: any) => {
     const accessTokenResponse = await getAccessToken(privateKey as Secret)
     const accessToken = accessTokenResponse.access_token
     const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${apiName}/environments/${environment}/instances/${instance}`
-    const response = await axios.post(path, specDefinition, {
+    const response = await axios.put(path, specDefinition, {
       headers: {"content-type": "application/json", Authorization: `Bearer: ${accessToken}`}
     })
     return response.data
