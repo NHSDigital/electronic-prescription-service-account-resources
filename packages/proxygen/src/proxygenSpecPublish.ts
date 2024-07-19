@@ -5,7 +5,7 @@ import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import axios from "axios"
 
-const logger = new Logger({serviceName: "proxygenPublish"})
+const logger = new Logger({serviceName: "proxygenSpecPublish"})
 
 //eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lambdaHandler = async (event: any) => {

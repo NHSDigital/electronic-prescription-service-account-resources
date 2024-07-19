@@ -898,7 +898,7 @@ Outputs:
     Description: Name of the IAM Role(ProxygenPTLRole)
     Value: !Ref ReleaseNotesExecuteLambdaRole
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ProxygenPTLRole"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "ProxygenPTLRoleName"]]
   ProxygenProdRole:
     Description: ARN of the IAM Role(ProxygenProdRole)
     Value: !GetAtt ProxygenPTLRole.Arn
@@ -908,4 +908,4 @@ Outputs:
     Description: Name of the IAM Role(ProxygenProdRole)
     Value: !Ref ReleaseNotesExecuteLambdaRole
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ProxygenProdRole"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "ProxygenProdRoleName"]]

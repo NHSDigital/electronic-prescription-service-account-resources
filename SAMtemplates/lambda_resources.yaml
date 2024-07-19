@@ -410,7 +410,7 @@ Resources:
           - certificateChecker/src/certificateChecker.ts
 
   ##################################################
-  # Proxygen deployment lambda
+  # Proxygen lambdas
   ##################################################
   ExecuteProxygenPTLManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -426,10 +426,10 @@ Resources:
             Action:
               - lambda:InvokeFunction
             Resource:
-              - !GetAtt ProxygenPTLDeployFunction.Arn
-              - !GetAtt ProxygenPTLSecretFunction.Arn
+              - !GetAtt ProxygenPTLInstancePutFunction.Arn
+              - !GetAtt ProxygenPTLSecretPutFunction.Arn
               - !GetAtt ProxygenPTLSpecPublishFunction.Arn
-              - !GetAtt ProxygenInstanceListFunction.Arn
+              - !GetAtt ProxygenInstanceGetFunction.Arn
               - !GetAtt ProxygenInstanceDeleteFunction.Arn
 
   ExecuteProxygenProdManagedPolicy:
@@ -446,21 +446,21 @@ Resources:
             Action:
               - lambda:InvokeFunction
             Resource:
-              - !GetAtt ProxygenProdDeployFunction.Arn
-              - !GetAtt ProxygenProdSecretFunction.Arn
+              - !GetAtt ProxygenProdInstancePutFunction.Arn
+              - !GetAtt ProxygenProdSecretPutFunction.Arn
               - !GetAtt ProxygenProdSpecPublishFunction.Arn
 
   ProxygenManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !GetAtt ProxygenPTLDeployFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenProdDeployFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenPTLSecretFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenProdSecretFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenPTLInstancePutFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenProdInstancePutFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenPTLSecretPutFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenProdSecretPutFunctionResources.Outputs.LambdaRoleName
         - !GetAtt ProxygenPTLSpecPublishFunctionResources.Outputs.LambdaRoleName
         - !GetAtt ProxygenProdSpecPublishFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenInstanceListFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenInstanceGetFunctionResources.Outputs.LambdaRoleName
         - !GetAtt ProxygenInstanceDeleteFunctionResources.Outputs.LambdaRoleName
       PolicyDocument:
         Version: 2012-10-17
@@ -472,7 +472,7 @@ Resources:
               - !ImportValue account-resources:PSUProxygenPrivateKey
               - !ImportValue account-resources:CPSUProxygenPrivateKey
 
-  ProxygenPTLDeployFunctionResources:
+  ProxygenPTLInstancePutFunctionResources:
     Type: AWS::Serverless::Application
     DependsOn:
       - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
@@ -482,19 +482,19 @@ Resources:
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
-        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLDeploy"
+        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstancePut"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
 
-  ProxygenPTLDeployFunction:
+  ProxygenPTLInstancePutFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLDeploy"
+      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLInstancePut"
       CodeUri: ../packages/
-      Handler: proxygenDeploy.handler
+      Handler: proxygenInstancePut.handler
       Runtime: nodejs18.x
       Timeout: 600
-      Role: !GetAtt ProxygenPTLDeployFunctionResources.Outputs.LambdaRoleArn
+      Role: !GetAtt ProxygenPTLInstancePutFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
           NODE_OPTIONS: --enable-source-maps
@@ -508,9 +508,9 @@ Resources:
         tsconfig: proxygen/tsconfig.json
         packages: bundle
         EntryPoints:
-          - proxygen/src/proxygenDeploy.ts
+          - proxygen/src/proxygenInstancePut.ts
 
-  ProxygenProdDeployFunctionResources:
+  ProxygenProdInstancePutFunctionResources:
     Type: AWS::Serverless::Application
     DependsOn:
       - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
@@ -520,19 +520,19 @@ Resources:
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
-        LambdaName: !Sub "${AWS::StackName}-ProxygenProdDeploy"
+        LambdaName: !Sub "${AWS::StackName}-ProxygenProdInstancePut"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
 
-  ProxygenProdDeployFunction:
+  ProxygenProdInstancePutFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-ProxygenProdDeploy"
+      FunctionName: !Sub "${AWS::StackName}-ProxygenProdInstancePut"
       CodeUri: ../packages/
-      Handler: proxygenDeploy.handler
+      Handler: proxygenInstancePut.handler
       Runtime: nodejs18.x
       Timeout: 600
-      Role: !GetAtt ProxygenProdDeployFunctionResources.Outputs.LambdaRoleArn
+      Role: !GetAtt ProxygenProdInstancePutFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
           NODE_OPTIONS: --enable-source-maps
@@ -546,9 +546,9 @@ Resources:
         tsconfig: proxygen/tsconfig.json
         packages: bundle
         EntryPoints:
-          - proxygen/src/proxygenDeploy.ts
+          - proxygen/src/proxygenInstancePut.ts
 
-  ProxygenPTLSecretFunctionResources:
+  ProxygenPTLSecretPutFunctionResources:
     Type: AWS::Serverless::Application
     DependsOn:
       - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
@@ -558,19 +558,19 @@ Resources:
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
-        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLSecret"
+        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLSecretPut"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
 
-  ProxygenPTLSecretFunction:
+  ProxygenPTLSecretPutFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLSecret"
+      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLSecretPut"
       CodeUri: ../packages/
-      Handler: proxygenSecret.handler
+      Handler: proxygenSecretPut.handler
       Runtime: nodejs18.x
       Timeout: 600
-      Role: !GetAtt ProxygenPTLSecretFunctionResources.Outputs.LambdaRoleArn
+      Role: !GetAtt ProxygenPTLSecretPutFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
           NODE_OPTIONS: --enable-source-maps
@@ -584,9 +584,9 @@ Resources:
         tsconfig: proxygen/tsconfig.json
         packages: bundle
         EntryPoints:
-          - proxygen/src/proxygenSecret.ts
+          - proxygen/src/proxygenSecretPut.ts
 
-  ProxygenProdSecretFunctionResources:
+  ProxygenProdSecretPutFunctionResources:
     Type: AWS::Serverless::Application
     DependsOn:
       - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
@@ -596,19 +596,19 @@ Resources:
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
-        LambdaName: !Sub "${AWS::StackName}-ProxygenProdSecret"
+        LambdaName: !Sub "${AWS::StackName}-ProxygenProdSecretPut"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
 
-  ProxygenProdSecretFunction:
+  ProxygenProdSecretPutFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-ProxygenProdSecret"
+      FunctionName: !Sub "${AWS::StackName}-ProxygenProdSecretPut"
       CodeUri: ../packages/
-      Handler: proxygenSecret.handler
+      Handler: proxygenSecretPut.handler
       Runtime: nodejs18.x
       Timeout: 600
-      Role: !GetAtt ProxygenProdSecretFunctionResources.Outputs.LambdaRoleArn
+      Role: !GetAtt ProxygenProdSecretPutFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
           NODE_OPTIONS: --enable-source-maps
@@ -622,7 +622,7 @@ Resources:
         tsconfig: proxygen/tsconfig.json
         packages: bundle
         EntryPoints:
-          - proxygen/src/proxygenSecret.ts
+          - proxygen/src/proxygenSecretPut.ts
 
   ProxygenPTLSpecPublishFunctionResources:
     Type: AWS::Serverless::Application
@@ -700,7 +700,7 @@ Resources:
         EntryPoints:
           - proxygen/src/proxygenSpecPublish.ts
 
-  ProxygenInstanceListFunctionResources:
+  ProxygenInstanceGetFunctionResources:
     Type: AWS::Serverless::Application
     DependsOn:
       - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
@@ -710,19 +710,19 @@ Resources:
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
-        LambdaName: !Sub "${AWS::StackName}-ProxygenInstanceList"
+        LambdaName: !Sub "${AWS::StackName}-ProxygenInstanceGet"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
 
-  ProxygenInstanceListFunction:
+  ProxygenInstanceGetFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-ProxygenInstanceList"
+      FunctionName: !Sub "${AWS::StackName}-ProxygenInstanceGet"
       CodeUri: ../packages/
-      Handler: proxygenInstanceList.handler
+      Handler: proxygenInstanceGet.handler
       Runtime: nodejs18.x
       Timeout: 600
-      Role: !GetAtt ProxygenInstanceListFunctionResources.Outputs.LambdaRoleArn
+      Role: !GetAtt ProxygenInstanceGetFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
           NODE_OPTIONS: --enable-source-maps
@@ -736,7 +736,7 @@ Resources:
         tsconfig: proxygen/tsconfig.json
         packages: bundle
         EntryPoints:
-          - proxygen/src/proxygenInstanceList.ts
+          - proxygen/src/proxygenInstanceGet.ts
 
   ProxygenInstanceDeleteFunctionResources:
     Type: AWS::Serverless::Application
