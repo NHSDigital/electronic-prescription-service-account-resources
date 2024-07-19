@@ -25,7 +25,10 @@
         "NONE"
       ],
       "PrepareChangesetClaimFilters": [
-        "repo:NHSDigital/electronic-prescription-service-account-resources:*"
+        "repo:NHSDigital/electronic-prescription-service-account-resources:ref:refs/heads/main"
+      ],
+      "ArtilleryLoadTestRoleClaimFilters": [
+        "NONE"
       ]
     },
     "account-resources": {},
@@ -38,6 +41,7 @@
     },
     "vpc-resources": {
       "Environment": "prod"
-    }
+    },
+    "artillery-resources": {}
   }
 }

@@ -25,7 +25,7 @@ CHANGES=$(jq '.["Changes"]' <<< "$CHANGE_SET")
 TAGS=$(jq '.["Tags"]' <<< "$CHANGE_SET")
 TAGS="${TAGS//[$'\t\r\n ']}"
 
-if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information didn't contain changes. Submit different information to create a change set." ]; then
+if [ "$STATUS" == "FAILED" ] && [ "$STATUS_REASON" != "The submitted information didn't contain changes. Submit different information to create a change set." ] && [ "$STATUS_REASON" != "No updates are to be performed." ]; then
   echo "Failed to create change set."
   exit 1
 fi

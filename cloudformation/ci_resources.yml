@@ -20,6 +20,11 @@ Parameters:
     Description: >
       Subject claim filter for valid tokens for the prepare changeset role.
     Default: ""
+  ArtilleryLoadTestRoleClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the artillery load test role.
+    Default: ""
 
 Resources:
   ##################################################
@@ -42,6 +47,7 @@ Resources:
         - Ref: CloudFormationCheckVersionRole
         - Ref: ReleaseNotesExecuteLambdaRole
         - Ref: CloudFormationPrepareChangesetRole
+        - Ref: ArtilleryRunnerRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -169,7 +175,11 @@ Resources:
   # | display eventSource, eventName
   # | dedup eventSource, eventName
   #
-  GrantCloudFormationExecutionAccessPolicyA:
+
+  # there are multiple policies to prevent each one becoming too large
+
+  # iam permissions are restricted to just act on this account so are in a separate policy
+  GrantCloudFormationExecutionAccessIAMPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -179,7 +189,6 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - cloudformation:CreateChangeSet
               - iam:AddClientIDToOpenIDConnectProvider
               - iam:Attach*
               - iam:Create*
@@ -193,6 +202,19 @@ Resources:
               - iam:Untag*
               - iam:Update*
               - iam:PassRole
+            Resource: !Sub "arn:aws:iam::${AWS::AccountId}:*"
+
+  GrantCloudFormationExecutionAccessPolicyA:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudformation:CreateChangeSet
               - logs:AssociateKmsKey
               - logs:DisassociateKmsKey
               - logs:CreateLogGroup
@@ -216,6 +238,7 @@ Resources:
               - logs:ListTagsForResource
               - logs:TagResource
               - logs:DescribeLogStreams
+              - logs:DescribeResourcePolicies
               - lambda:Add*
               - lambda:CreateFunction
               - lambda:CreateAlias
@@ -500,6 +523,12 @@ Resources:
               - ec2:CreateFlowLogs
               - ec2:DeleteFlowLogs
               - ec2:DescribeFlowLogs
+              - ecs:DescribeClusters
+              - ecs:CreateCluster
+              - ecs:TagResource
+              - ecs:UntagResource
+              - ecs:ListTagsForResource
+              - ecs:DeleteCluster
             Resource: "*"
 
   ##################################################
@@ -594,6 +623,133 @@ Resources:
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref ReleaseNotesExecuteLambdaClaimFilters
 
+  ##################################################
+  # Artillery.io runner Role
+  ##################################################
+  ArtilleryRunnerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref ArtilleryLoadTestRoleClaimFilters
+
+  ArtilleryRunnerPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: ArtilleryRunnerRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement: 
+          - Effect: "Allow"
+            Action:
+              - "iam:PassRole"
+              - "iam:GetRole"
+            Resource: 
+              - !Sub "arn:aws:iam::${AWS::AccountId}:role/artilleryio-ecs-worker-role"
+          - Sid: "SQSPermissions"
+            Effect: "Allow"
+            Action: 
+              - "sqs:*"
+            Resource: !Sub "arn:aws:sqs:*:${AWS::AccountId}:artilleryio*"
+          - Sid: "SQSListQueues"
+            Effect: "Allow"
+            Action: 
+              - "sqs:ListQueues"
+            Resource: "*"
+          - Sid: "ECSPermissionsGeneral"
+            Effect: "Allow"
+            Action: 
+              - "ecs:ListClusters"
+              - "ecs:RegisterTaskDefinition"
+              - "ecs:DeregisterTaskDefinition"
+              - "ecs:DescribeTaskDefinition"
+            Resource: "*"
+          - Sid: "ECSPermissionsScopedToCluster"
+            Effect: "Allow"
+            Action: 
+              - "ecs:DescribeClusters"
+              - "ecs:ListContainerInstances"
+            Resource: !Sub "arn:aws:ecs:*:${AWS::AccountId}:cluster/*"
+          - Sid: "ECSPermissionsScopedWithCondition"
+            Effect: "Allow"
+            Action: 
+              - "ecs:SubmitTaskStateChange"
+              - "ecs:DescribeTasks"
+              - "ecs:ListTasks"
+              - "ecs:ListTaskDefinitions"
+              - "ecs:DescribeTaskDefinition"
+              - "ecs:StartTask"
+              - "ecs:StopTask"
+              - "ecs:RunTask"
+            Condition: 
+              ArnEquals: 
+                ecs:cluster: !Sub "arn:aws:ecs:*:${AWS::AccountId}:cluster/*"
+            Resource: "*"
+          - Sid: "S3Permissions"
+            Effect: "Allow"
+            Action:
+              - "s3:DeleteObject"
+              - "s3:GetObject"
+              - "s3:GetObjectAcl"
+              - "s3:GetObjectTagging"
+              - "s3:GetObjectVersion"
+              - "s3:PutObject"
+              - "s3:PutObjectAcl"
+              - "s3:ListBucket"
+              - "s3:GetBucketLocation"
+              - "s3:GetBucketLogging"
+              - "s3:GetBucketPolicy"
+              - "s3:GetBucketTagging"
+              - "s3:PutBucketPolicy"
+              - "s3:PutBucketTagging"
+              - "s3:PutMetricsConfiguration"
+              - "s3:GetLifecycleConfiguration"
+              - "s3:PutLifecycleConfiguration"
+            Resource: 
+              - !Sub "arn:aws:s3:::artilleryio-test-data-${AWS::AccountId}"
+              - !Sub "arn:aws:s3:::artilleryio-test-data-${AWS::AccountId}/*"
+          - Effect: "Allow"
+            Action: 
+              - "secretsmanager:GetSecretValue"
+            Resource: 
+              - !Sub "arn:aws:secretsmanager:*:${AWS::AccountId}:secret:artilleryio/*"
+          - Effect: "Allow"
+            Action: 
+              - "ssm:PutParameter"
+              - "ssm:GetParameter"
+              - "ssm:GetParameters"
+              - "ssm:DeleteParameter"
+              - "ssm:DescribeParameters"
+              - "ssm:GetParametersByPath"
+            Resource: 
+              - !Sub "arn:aws:ssm:eu-west-2:${AWS::AccountId}:parameter/artilleryio/*"
+          - Effect: "Allow"
+            Action: 
+              - "ec2:DescribeRouteTables"
+              - "ec2:DescribeVpcs"
+              - "ec2:DescribeSubnets"
+            Resource: 
+              - "*"
+          - Effect: Allow
+            Action:
+              - cloudformation:ListExports
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - logs:PutRetentionPolicy
+            Resource: 
+              - !Sub "arn:aws:logs:eu-west-2:${AWS::AccountId}:log-group:artilleryio-log-group/*"
+
 Outputs:
   ##################################################
   # Cloudformation Deployment Role Outputs
@@ -685,4 +841,22 @@ Outputs:
         !Join [
           ":",
           [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRoleName"],
+        ]
+  ##################################################
+  # Artillery Runner Role Outputs
+  ##################################################
+  ArtilleryRunnerRole:
+    Description: ARN of the IAM Role(ArtilleryRunnerRole)
+    Value: !GetAtt ArtilleryRunnerRole.Arn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ArtilleryRunnerRole"]]
+  ArtilleryRunnerRoleName:
+    Description: Name of the IAM Role(ArtilleryRunnerRole)
+    Value: !Ref ArtilleryRunnerRole
+    Export:
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "ArtilleryRunnerRoleName"],
         ]

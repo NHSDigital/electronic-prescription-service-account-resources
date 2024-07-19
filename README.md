@@ -103,6 +103,8 @@ It creates the following resources
 - CloudFormationCheckVersionRole - role used by github pipelines to check a deployed version of a stack
 - ReleaseNotesExecuteLambdaRole - role used by github pipelines to execute the release notes lambda
 - CloudFormationPrepareChangesetRole - role used by github pipelines to prepare a changeset
+- ArtilleryRunnerRole - role used by github pipelines to run artillery
+- various managed policies attached to these roles to give minimum permissions needed
 
 # Account Resources
 
@@ -187,6 +189,34 @@ It creates the following resources
 - SplunkDeliveryStreamProcessorRole - role used by SplunkDeliveryStreamProcessor
 - SplunkDeliveryStreamProcessorLogGroup - used by SplunkDeliveryStreamProcessor lambda
 - SplunkDeliveryStreamProcessorInvokeRole - used by delivery stream to invoke SplunkDeliveryStreamProcessor lambda
+
+# vpc_resources
+cloudformation/vpc_resources.yml contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
+This is created as part of CI pipeline.   
+It creates the following resources
+
+- a VPC
+- Internet gateway
+- NAT gateway in all 3 AZ
+- ElasticIP in 3 AZ for the NAT gateways in each AZ
+- Routes and route table for private subnets in each AZ
+- Private subnet in each AZ
+- Public subnet in each AZ
+
+# artillery_resources
+cloudformation/artillery_resources.yml contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
+This is created as part of CI pipeline.   
+It creates the following resources
+
+- an S3 bucket named "artilleryio-test-data-${AWS::AccountId}"
+- a standard bucket policy
+- KMS key used to encrypt objects in the bucket
+- alias for the KMS key
+- managed policy to use the KMS key
+- an artillery worker role
+- a minimum policy for the worker role to allow artillery to run
+- log group named "artilleryio-log-group/artilleryio-cluster"
+- an ECS cluster named "artilleryio-cluster"
 
 ## Parameters for stacks
 Environment specific parameters are defined in JSON files in cloudformation/env folder.   

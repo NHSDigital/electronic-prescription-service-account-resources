@@ -141,6 +141,15 @@ function transformStepFunctionsLogEvent(logEvent) {
       eventMessage = logEvent.message
     }
   }
+  if (typeof eventMessage.details?.output != "undefined") {
+    eventMessage.details.output = "redacted"
+  }
+  if (typeof eventMessage.details?.parameters != "undefined") {
+    eventMessage.details.parameters = "redacted"
+  }
+  if (typeof eventMessage.details?.input != "undefined") {
+    eventMessage.details.input = "redacted"
+  }
   return eventMessage
 }
 
