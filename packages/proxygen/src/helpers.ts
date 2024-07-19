@@ -17,7 +17,7 @@ function createSignedJWT(privateKey: Secret) {
     sub: "prescription-status-update-api-client",
     iss: "prescription-status-update-api-client",
     jti: jti_value,
-    aud: auth_url,
+    aud: realm_url,
     exp: currentTimestamp + 180 // expiry time is 180 seconds from time of creation
   }
 
