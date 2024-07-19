@@ -28,6 +28,12 @@
       ],
       "ArtilleryLoadTestRoleClaimFilters": [
         "NONE"
+      ],
+      "ProxygenPTLClaimFilters": [
+        "NONE"
+      ],
+      "ProxygenProdClaimFilters": [
+        "NONE"
       ]
     },
     "account-resources": {},

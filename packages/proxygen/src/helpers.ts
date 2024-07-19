@@ -1,8 +1,11 @@
 import jwt, {Secret} from "jsonwebtoken"
 import {v4 as uuidv4} from "uuid"
 import axios from "axios"
+import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 
 const realm_url = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
+const secretsClient = new SecretsManagerClient({})
+const ALLOWED_ENVIRONMENTS = process.env["ALLOWED_ENVIRONMENTS"]?.split(",")
 
 function createSignedJWT(privateKey: Secret, kid: string, apiName: string) {
   const header = {
@@ -25,7 +28,30 @@ function createSignedJWT(privateKey: Secret, kid: string, apiName: string) {
   return signedJWT
 }
 
-export async function getAccessToken(privateKey: Secret, kid: string, apiName: string) {
+async function getSecret(apiName: string): Promise<jwt.Secret> {
+  let secretName
+
+  switch (apiName) {
+    case "prescription-status-update-api":
+      secretName = "account-resources-PSU-ProxygenPrivateKey"
+      break
+    case "custom-prescription-status-update-api":
+      secretName = "account-resources-CPSU-ProxygenPrivateKey"
+      break
+  }
+
+  const input = {
+    SecretId: secretName
+  }
+  const getSecretCommand = new GetSecretValueCommand(input)
+
+  const secretResponse = await secretsClient.send(getSecretCommand)
+  const privateKey = secretResponse.SecretString
+  return privateKey as Secret
+}
+
+export async function getAccessToken(kid: string, apiName: string) {
+  const privateKey = await getSecret(apiName)
   const signedJWT = createSignedJWT(privateKey, kid, apiName)
   const payload = {
     grant_type: "client_credentials",
@@ -35,4 +61,11 @@ export async function getAccessToken(privateKey: Secret, kid: string, apiName: s
   const auth_url = `${realm_url}/protocol/openid-connect/token`
   const response = await axios.post(auth_url, payload, {headers: {"content-type": "application/x-www-form-urlencoded"}})
   return response.data
+}
+
+export function checkAllowedEnvironment(environment: string) {
+  if (ALLOWED_ENVIRONMENTS?.includes(environment)) {
+    return
+  }
+  throw new Error("environment is invalid")
 }

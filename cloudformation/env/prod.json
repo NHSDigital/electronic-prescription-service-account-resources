@@ -29,6 +29,13 @@
       ],
       "ArtilleryLoadTestRoleClaimFilters": [
         "NONE"
+      ],
+      "ProxygenPTLClaimFilters": [
+        "repo:NHSDigital/eps-prescription-status-update-api:*"
+      ],
+      "ProxygenProdClaimFilters": [
+        "repo:NHSDigital/eps-prescription-status-update-api:environment:int",
+        "repo:NHSDigital/eps-prescription-status-update-api:environment:prod"
       ]
     },
     "account-resources": {},

@@ -25,6 +25,16 @@ Parameters:
     Description: >
       Subject claim filter for valid tokens for the artillery load test role.
     Default: ""
+  ProxygenPTLClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the proxygen PTL role.
+    Default: ""
+  ProxygenProdClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the proxygen prod role.
+    Default: ""
 
 Resources:
   ##################################################
@@ -48,6 +58,8 @@ Resources:
         - Ref: ReleaseNotesExecuteLambdaRole
         - Ref: CloudFormationPrepareChangesetRole
         - Ref: ArtilleryRunnerRole
+        - Ref: ProxygenPTLRole
+        - Ref: ProxygenProdRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -160,12 +172,12 @@ Resources:
             Action:
               - iam:PassRole
             Resource: !GetAtt CloudFormationExecutionRole.Arn
-  
+
   # Handy reference for AWS permissions:
   # https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html
-  # 
+  #
   # to see what failed you can use this cloudwatch query against the NHSDAudit_trail_log_group
-  # 
+  #
   # fields @timestamp, @message, @logStream, @log
   # | filter @message  like 'ci-resources-CloudFormationExecutionRole'
   # | filter @message like 'AccessDenied'
@@ -272,7 +284,7 @@ Resources:
               - apigateway:UpdateRestApiPolicy
               - apigateway:TagResource
             Resource: "*"
-  
+
   GrantCloudFormationExecutionAccessPolicyB:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -348,7 +360,7 @@ Resources:
               - scheduler:UpdateSchedule
               - scheduler:ListTagsForResource
             Resource: "*"
-  
+
   GrantCloudFormationExecutionAccessPolicyC:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -417,7 +429,7 @@ Resources:
               - cloudwatch:PutMetricAlarm
               - cloudwatch:DeleteAlarms
             Resource: "*"
-  
+
   GrantCloudFormationExecutionEc2AccessPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -633,26 +645,26 @@ Resources:
         - Ref: ArtilleryRunnerRole
       PolicyDocument:
         Version: "2012-10-17"
-        Statement: 
+        Statement:
           - Effect: "Allow"
             Action:
               - "iam:PassRole"
               - "iam:GetRole"
-            Resource: 
+            Resource:
               - !Sub "arn:aws:iam::${AWS::AccountId}:role/artilleryio-ecs-worker-role"
           - Sid: "SQSPermissions"
             Effect: "Allow"
-            Action: 
+            Action:
               - "sqs:*"
             Resource: !Sub "arn:aws:sqs:*:${AWS::AccountId}:artilleryio*"
           - Sid: "SQSListQueues"
             Effect: "Allow"
-            Action: 
+            Action:
               - "sqs:ListQueues"
             Resource: "*"
           - Sid: "ECSPermissionsGeneral"
             Effect: "Allow"
-            Action: 
+            Action:
               - "ecs:ListClusters"
               - "ecs:RegisterTaskDefinition"
               - "ecs:DeregisterTaskDefinition"
@@ -660,13 +672,13 @@ Resources:
             Resource: "*"
           - Sid: "ECSPermissionsScopedToCluster"
             Effect: "Allow"
-            Action: 
+            Action:
               - "ecs:DescribeClusters"
               - "ecs:ListContainerInstances"
             Resource: !Sub "arn:aws:ecs:*:${AWS::AccountId}:cluster/*"
           - Sid: "ECSPermissionsScopedWithCondition"
             Effect: "Allow"
-            Action: 
+            Action:
               - "ecs:SubmitTaskStateChange"
               - "ecs:DescribeTasks"
               - "ecs:ListTasks"
@@ -675,8 +687,8 @@ Resources:
               - "ecs:StartTask"
               - "ecs:StopTask"
               - "ecs:RunTask"
-            Condition: 
-              ArnEquals: 
+            Condition:
+              ArnEquals:
                 ecs:cluster: !Sub "arn:aws:ecs:*:${AWS::AccountId}:cluster/*"
             Resource: "*"
           - Sid: "S3Permissions"
@@ -699,30 +711,30 @@ Resources:
               - "s3:PutMetricsConfiguration"
               - "s3:GetLifecycleConfiguration"
               - "s3:PutLifecycleConfiguration"
-            Resource: 
+            Resource:
               - !Sub "arn:aws:s3:::artilleryio-test-data-${AWS::AccountId}"
               - !Sub "arn:aws:s3:::artilleryio-test-data-${AWS::AccountId}/*"
           - Effect: "Allow"
-            Action: 
+            Action:
               - "secretsmanager:GetSecretValue"
-            Resource: 
+            Resource:
               - !Sub "arn:aws:secretsmanager:*:${AWS::AccountId}:secret:artilleryio/*"
           - Effect: "Allow"
-            Action: 
+            Action:
               - "ssm:PutParameter"
               - "ssm:GetParameter"
               - "ssm:GetParameters"
               - "ssm:DeleteParameter"
               - "ssm:DescribeParameters"
               - "ssm:GetParametersByPath"
-            Resource: 
+            Resource:
               - !Sub "arn:aws:ssm:eu-west-2:${AWS::AccountId}:parameter/artilleryio/*"
           - Effect: "Allow"
-            Action: 
+            Action:
               - "ec2:DescribeRouteTables"
               - "ec2:DescribeVpcs"
               - "ec2:DescribeSubnets"
-            Resource: 
+            Resource:
               - "*"
           - Effect: Allow
             Action:
@@ -731,8 +743,43 @@ Resources:
           - Effect: Allow
             Action:
               - logs:PutRetentionPolicy
-            Resource: 
+            Resource:
               - !Sub "arn:aws:logs:eu-west-2:${AWS::AccountId}:log-group:artilleryio-log-group/*"
+
+  ##################################################
+  # Proxygen roles
+  ##################################################
+  ProxygenPTLRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref ProxygenPTLClaimFilters
+
+  ProxygenProdRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref ProxygenProdClaimFilters
 
 Outputs:
   ##################################################
@@ -833,14 +880,32 @@ Outputs:
     Description: ARN of the IAM Role(ArtilleryRunnerRole)
     Value: !GetAtt ArtilleryRunnerRole.Arn
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "ArtilleryRunnerRole"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryRunnerRole"]]
   ArtilleryRunnerRoleName:
     Description: Name of the IAM Role(ArtilleryRunnerRole)
     Value: !Ref ArtilleryRunnerRole
     Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "ArtilleryRunnerRoleName"],
-        ]
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryRunnerRoleName"]]
+  ##################################################
+  # Proxygen Roles Outputs
+  ##################################################
+  ProxygenPTLRole:
+    Description: ARN of the IAM Role(ProxygenPTLRole)
+    Value: !GetAtt ProxygenPTLRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ProxygenPTLRole"]]
+  ProxygenPTLRoleName:
+    Description: Name of the IAM Role(ProxygenPTLRole)
+    Value: !Ref ReleaseNotesExecuteLambdaRole
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ProxygenPTLRole"]]
+  ProxygenProdRole:
+    Description: ARN of the IAM Role(ProxygenProdRole)
+    Value: !GetAtt ProxygenPTLRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ProxygenProdRole"]]
+  ProxygenProdRoleName:
+    Description: Name of the IAM Role(ProxygenProdRole)
+    Value: !Ref ReleaseNotesExecuteLambdaRole
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ProxygenProdRole"]]
