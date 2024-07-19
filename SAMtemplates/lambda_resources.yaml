@@ -412,6 +412,20 @@ Resources:
   ##################################################
   # Proxygen deployment lambda
   ##################################################
+  ExecuteProxygenDeployManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !ImportValue ci-resources:CloudFormationDeployRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource:
+              - !GetAtt ProxygenDeployFunction.Arn
+
   ProxygenDeployManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:

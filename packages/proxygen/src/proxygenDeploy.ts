@@ -19,8 +19,19 @@ const lambdaHandler = async (event: any) => {
     const specDefinition = event.specDefinition
     const instance = event.instance
 
+    let secretName
+
+    switch (apiName) {
+      case "prescription-status-update-api":
+        secretName = "account-resources-PSU-ProxygenPrivateKey"
+        break
+      case "custom-prescription-status-update-api":
+        secretName = "account-resources-CPSU-ProxygenPrivateKey"
+        break
+    }
+
     const input = {
-      SecretId: "account-resources-PSU-ProxygenPrivateKey"
+      SecretId: secretName
     }
     const getSecretCommand = new GetSecretValueCommand(input)
 
