@@ -15,6 +15,7 @@
         "@aws-lambda-powertools/logger": "^2.3.0"
     },
     "devDependencies": {
-        "@types/aws-lambda": "^8.10.140"
+        "@types/aws-lambda": "^8.10.140",
+        "jest-fetch-mock": "^3.0.3"
     }
 }
