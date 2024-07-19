@@ -410,13 +410,13 @@ Resources:
           - certificateChecker/src/certificateChecker.ts
 
   ##################################################
-  # Proxygen
+  # Proxygen deployment lambda
   ##################################################
-  ProxygenManagedPolicy:
+  ProxygenDeployManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !GetAtt ProxygenFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenDeployFunctionResources.Outputs.LambdaRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -427,7 +427,7 @@ Resources:
               - !ImportValue account-resources:PSUProxygenPrivateKey
               - !ImportValue account-resources:CPSUProxygenPrivateKey
 
-  ProxygenFunctionResources:
+  ProxygenDeployFunctionResources:
     Type: AWS::Serverless::Application
     DependsOn:
       - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
@@ -441,15 +441,15 @@ Resources:
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
 
-  ProxygenFunction:
+  ProxygenDeployFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-Proxygen"
+      FunctionName: !Sub "${AWS::StackName}-ProxygenDeploy"
       CodeUri: ../packages/
-      Handler: proxygen.handler
+      Handler: proxygenDeploy.handler
       Runtime: nodejs18.x
       Timeout: 600
-      Role: !GetAtt ProxygenFunctionResources.Outputs.LambdaRoleArn
+      Role: !GetAtt ProxygenDeployFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
           NODE_OPTIONS: --enable-source-maps
@@ -462,7 +462,7 @@ Resources:
         tsconfig: proxygen/tsconfig.json
         packages: bundle
         EntryPoints:
-          - proxygen/src/proxygen.ts
+          - proxygen/src/proxygenDeploy.ts
 
 Outputs:
   #################################################
