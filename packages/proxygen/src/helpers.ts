@@ -2,7 +2,7 @@ import jwt, {Secret} from "jsonwebtoken"
 import {v4 as uuidv4} from "uuid"
 import axios from "axios"
 
-const auth_url = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
+const realm_url = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
 
 function createSignedJWT(privateKey: Secret) {
   const header = {
@@ -32,6 +32,7 @@ export async function getAccessToken(privateKey: Secret) {
     client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
     client_assertion: signedJWT
   }
+  const auth_url = `${realm_url}/protocol/openid-connect/token`
   const response = await axios.post(auth_url, payload, {headers: {"content-type": "application/x-www-form-urlencoded"}})
   return response.data
 }

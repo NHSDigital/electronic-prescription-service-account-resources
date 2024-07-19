@@ -448,6 +448,7 @@ Resources:
       CodeUri: ../packages/
       Handler: proxygen.handler
       Runtime: nodejs18.x
+      Timeout: 600
       Role: !GetAtt ProxygenFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
