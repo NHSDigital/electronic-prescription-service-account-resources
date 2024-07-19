@@ -1,0 +1,28 @@
+{
+    "name": "proxygen",
+    "version": "1.0.0",
+    "description": "Lambda to daily check AWS certficates expiry ",
+    "main": "certficateChecker.ts",
+    "author": "NHS England",
+    "license": "MIT",
+    "dependencies": {
+        "@aws-sdk/client-cloudwatch-logs": "^3.614.0",
+        "@aws-sdk/client-secrets-manager": "^3.614.0",
+        "@middy/core": "^5.4.5",
+        "@middy/input-output-logger": "^5.4.5",
+        "axios": "^1.7.2",
+        "jsonwebtoken": "^9.0.2",
+        "uuid": "^10.0.0"
+    },
+    "scripts": {
+        "compile": "tsc",
+        "test": "npm run compile && npm run unit",
+        "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
+        "lint": "eslint . --ext .ts --max-warnings 0 --debug"
+    },
+    "devDependencies": {
+        "@types/jsonwebtoken": "^9.0.6",
+        "@types/uuid": "^10.0.0",
+        "aws-sdk-client-mock": "^4.0.1"
+    }
+}

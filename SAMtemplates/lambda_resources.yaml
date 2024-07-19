@@ -118,7 +118,7 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - kms:GenerateDataKey 
+              - kms:GenerateDataKey
             Resource:
               - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
@@ -135,7 +135,7 @@ Resources:
       SplunkDestinationConfiguration:
         HECEndpoint: !Ref SplunkHECEndpoint
         HECEndpointType: "Event"
-        HECToken: '{{resolve:secretsmanager:account-resources-SplunkHECToken:SecretString}}'
+        HECToken: "{{resolve:secretsmanager:account-resources-SplunkHECToken:SecretString}}"
         ProcessingConfiguration:
           Enabled: true
           Processors:
@@ -341,9 +341,9 @@ Resources:
               - !ImportValue account-resources:PsuClientCertSecret
               - !ImportValue account-resources:PsuClientSandboxCertSecret
               - !ImportValue account-resources:SpinePublicCertificate
-          - Effect: Allow 
+          - Effect: Allow
             Action:
-             - secretsmanager:BatchGetSecretValue    
+              - secretsmanager:BatchGetSecretValue
             Resource: "*"
   ExpiryFunctionResources:
     Type: AWS::Serverless::Application
@@ -365,7 +365,7 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-CertificateChecker"
       CodeUri: ../packages/
       Handler: certificateChecker.handler
-      Runtime: nodejs18.x 
+      Runtime: nodejs18.x
       Role: !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
@@ -376,7 +376,7 @@ Resources:
           Properties:
             Name: !Sub ${AWS::StackName}-CertExpirySchedule
             ScheduleExpression: "rate(1 day)"
-            Input: !Sub 
+            Input: !Sub
               - "{\"secretARNs\": [ \
                 \"${ClinicalTrackerCACertSecret}\", \
                 \"${ClinicalTrackerClientCertSecret}\", \
@@ -397,8 +397,8 @@ Resources:
                 PsuCACertSecret: !ImportValue account-resources:PsuCACertSecret
                 PsuClientCertSecret: !ImportValue account-resources:PsuClientCertSecret
                 PsuClientSandboxCertSecret: !ImportValue account-resources:PsuClientSandboxCertSecret
-                SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate          
-    Metadata: 
+                SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
+    Metadata:
       BuildMethod: esbuild
       BuildProperties:
         Minify: true
@@ -408,6 +408,60 @@ Resources:
         packages: bundle
         EntryPoints:
           - certificateChecker/src/certificateChecker.ts
+
+  ##################################################
+  # Proxygen
+  ##################################################
+  ProxygenManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !GetAtt ProxygenFunctionResources.Outputs.LambdaRoleName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !ImportValue account-resources:PSUProxygenPrivateKey
+              - !ImportValue account-resources:CPSUProxygenPrivateKey
+
+  ProxygenFunctionResources:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-Proxygen"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+
+  ProxygenFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-Proxygen"
+      CodeUri: ../packages/
+      Handler: proxygen.handler
+      Runtime: nodejs18.x
+      Role: !GetAtt ProxygenFunctionResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          NODE_OPTIONS: --enable-source-maps
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: proxygen/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - proxygen/src/proxygen.ts
 
 Outputs:
   #################################################
