@@ -1,6 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
-
   ##################################################
   # artillery-io-test-data Bucket
   ##################################################
@@ -49,7 +48,11 @@ Resources:
     Properties:
       BucketName: !Sub "artilleryio-test-data-${AWS::AccountId}"
       LoggingConfiguration:
-        DestinationBucketName: !Select [5, !Split [':', !ImportValue account-resources:AuditLoggingBucket]]
+        DestinationBucketName:
+          !Select [
+            5,
+            !Split [":", !ImportValue account-resources:AuditLoggingBucket],
+          ]
         LogFilePrefix: artilleryIO/
       VersioningConfiguration:
         Status: Enabled
@@ -110,9 +113,9 @@ Resources:
             Action:
               - sts:AssumeRole
       ManagedPolicyArns: !Split
-        - ','
+        - ","
         - !Join
-          - ','
+          - ","
           - - !ImportValue account-resources:CloudwatchEncryptionKMSPolicyArn
 
   ArtilleryWorkerPolicy:
@@ -122,43 +125,43 @@ Resources:
         - Ref: ArtilleryWorkerRole
       PolicyDocument:
         Version: "2012-10-17"
-        Statement: 
-        - Effect: "Allow"
-          Action: 
-            - "ssm:DescribeParameters"
-          Resource: 
-            - "*"
-        - Effect: "Allow"
-          Action: 
-            - "ssm:GetParameters"
-            - "ssm:GetParameter"
-            - "ssm:PutParameter"
-            - "ssm:DeleteParameter"
-            - "ssm:DescribeParameters"
-            - "ssm:GetParametersByPath"
-          Resource: 
-            - !Sub "arn:aws:ssm:*:${AWS::AccountId}:parameter/artilleryio/*"
-        - Effect: "Allow"
-          Action: 
-            - "ecr:GetAuthorizationToken"
-          Resource: 
-            - "*"
-        - Effect: "Allow"
-          Action: 
-            - "logs:*"
-          Resource: 
-           - !Sub "arn:aws:logs:*:${AWS::AccountId}:log-group:artilleryio-log-group*:*"
-        - Effect: "Allow"
-          Action: 
-           - "sqs:*"
-          Resource: 
-           - !Sub "arn:aws:sqs:*:${AWS::AccountId}:artilleryio*"
-        - Effect: "Allow"
-          Action: 
-            - "xray:PutTraceSegments"
-            - "xray:PutTelemetryRecords"
-          Resource: 
-            - "*"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "ssm:DescribeParameters"
+            Resource:
+              - "*"
+          - Effect: "Allow"
+            Action:
+              - "ssm:GetParameters"
+              - "ssm:GetParameter"
+              - "ssm:PutParameter"
+              - "ssm:DeleteParameter"
+              - "ssm:DescribeParameters"
+              - "ssm:GetParametersByPath"
+            Resource:
+              - !Sub "arn:aws:ssm:*:${AWS::AccountId}:parameter/artilleryio/*"
+          - Effect: "Allow"
+            Action:
+              - "ecr:GetAuthorizationToken"
+            Resource:
+              - "*"
+          - Effect: "Allow"
+            Action:
+              - "logs:*"
+            Resource:
+              - !Sub "arn:aws:logs:*:${AWS::AccountId}:log-group:artilleryio-log-group*:*"
+          - Effect: "Allow"
+            Action:
+              - "sqs:*"
+            Resource:
+              - !Sub "arn:aws:sqs:*:${AWS::AccountId}:artilleryio*"
+          - Effect: "Allow"
+            Action:
+              - "xray:PutTraceSegments"
+              - "xray:PutTelemetryRecords"
+            Resource:
+              - "*"
 
   ArtilleryWorkerLogGroupManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -182,11 +185,14 @@ Resources:
       LogGroupName: artilleryio-log-group/artilleryio-cluster
       RetentionInDays: 30
       KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
-  
+
   ECSCluster:
-    Type: 'AWS::ECS::Cluster'
+    Type: "AWS::ECS::Cluster"
     Properties:
       ClusterName: artilleryio-cluster
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
 
   ##################################################
   # default artillery params
@@ -295,18 +301,10 @@ Outputs:
     Description: ARN of the IAM Role(ArtilleryWorkerRole)
     Value: !GetAtt ArtilleryWorkerRole.Arn
     Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "ArtilleryWorkerRole"],
-        ]
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryWorkerRole"]]
 
   ArtilleryWorkerRoleName:
     Description: Name of the IAM Role(ArtilleryWorkerRole)
     Value: !Ref ArtilleryWorkerRole
     Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "ArtilleryWorkerRoleName"],
-        ]
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryWorkerRoleName"]]
