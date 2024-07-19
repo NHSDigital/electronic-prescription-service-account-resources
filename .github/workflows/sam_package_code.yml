@@ -47,6 +47,9 @@ jobs:
           cp .tool-versions ~/
           rm -rf .aws-sam
           export PATH=$PATH:$PWD/node_modules/.bin
+          ls -la
+          ls -la /packages
+          ls -la /packages/slackAlerter
           make sam-build
           cp Makefile .aws-sam/build/
           cp samconfig_package_and_deploy.toml .aws-sam/build/
