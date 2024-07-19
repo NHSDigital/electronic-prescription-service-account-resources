@@ -1,0 +1,310 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  ##################################################
+  # artillery-io-test-data Bucket
+  ##################################################
+  ArtilleryBucketKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-s3
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
+            Resource: "*"
+
+  ArtilleryBucketKMSKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/ArtilleryBucketKMSKeyAlias
+      TargetKeyId: !Ref ArtilleryBucketKMSKey
+
+  UseArtilleryBucketKMSKeyManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: ArtilleryWorkerRole
+        - !ImportValue ci-resources:ArtilleryRunnerRoleName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt
+              - kms:ReEncrypt*
+              - kms:Decrypt
+            Resource: !GetAtt ArtilleryBucketKMSKey.Arn
+
+  ArtilleryBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "artilleryio-test-data-${AWS::AccountId}"
+      LoggingConfiguration:
+        DestinationBucketName:
+          !Select [
+            5,
+            !Split [":", !ImportValue account-resources:AuditLoggingBucket],
+          ]
+        LogFilePrefix: artilleryIO/
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${ArtilleryBucketKMSKeyAlias}"
+              SSEAlgorithm: "aws:kms"
+
+  ArtilleryBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ArtilleryBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action:
+              - s3:*
+            Resource:
+              - !Join ["", [!GetAtt ArtilleryBucket.Arn, "/*"]]
+              - !GetAtt ArtilleryBucket.Arn
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !GetAtt ArtilleryWorkerRole.Arn
+                - !ImportValue ci-resources:ArtilleryRunnerRole
+            Action:
+              - s3:GetObject*
+              - s3:PutObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject
+            Resource:
+              - !Join ["", [!GetAtt ArtilleryBucket.Arn, "/*"]]
+              - !GetAtt ArtilleryBucket.Arn
+
+  ArtilleryWorkerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: artilleryio-ecs-worker-role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+                - ecs.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns: !Split
+        - ","
+        - !Join
+          - ","
+          - - !ImportValue account-resources:CloudwatchEncryptionKMSPolicyArn
+
+  ArtilleryWorkerPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: ArtilleryWorkerRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "ssm:DescribeParameters"
+            Resource:
+              - "*"
+          - Effect: "Allow"
+            Action:
+              - "ssm:GetParameters"
+              - "ssm:GetParameter"
+              - "ssm:PutParameter"
+              - "ssm:DeleteParameter"
+              - "ssm:DescribeParameters"
+              - "ssm:GetParametersByPath"
+            Resource:
+              - !Sub "arn:aws:ssm:*:${AWS::AccountId}:parameter/artilleryio/*"
+          - Effect: "Allow"
+            Action:
+              - "ecr:GetAuthorizationToken"
+            Resource:
+              - "*"
+          - Effect: "Allow"
+            Action:
+              - "logs:*"
+            Resource:
+              - !Sub "arn:aws:logs:*:${AWS::AccountId}:log-group:artilleryio-log-group*:*"
+          - Effect: "Allow"
+            Action:
+              - "sqs:*"
+            Resource:
+              - !Sub "arn:aws:sqs:*:${AWS::AccountId}:artilleryio*"
+          - Effect: "Allow"
+            Action:
+              - "xray:PutTraceSegments"
+              - "xray:PutTelemetryRecords"
+            Resource:
+              - "*"
+
+  ArtilleryWorkerLogGroupManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: ArtilleryWorkerRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource:
+              - !GetAtt ArtilleryWorkerLogGroup.Arn
+              - !Sub ${ArtilleryWorkerLogGroup.Arn}:log-stream:*
+
+  ArtilleryWorkerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: artilleryio-log-group/artilleryio-cluster
+      RetentionInDays: 30
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+
+  ECSCluster:
+    Type: "AWS::ECS::Cluster"
+    Properties:
+      ClusterName: artilleryio-cluster
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+
+  ##################################################
+  # default artillery params
+  ##################################################
+
+  ArtilleryArtifactoryAuthParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /artilleryio/ARTIFACTORY_AUTH
+      Type: String
+      Value: "null"
+
+  ArtilleryArtifactoryEmailParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /artilleryio/ARTIFACTORY_EMAIL
+      Type: String
+      Value: "null"
+
+  ArtilleryNpmrcParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /artilleryio/NPMRC
+      Type: String
+      Value: "null"
+
+  ArtilleryNpmRegistryParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /artilleryio/NPM_REGISTRY
+      Type: String
+      Value: "null"
+
+  ArtilleryNpmScopeParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /artilleryio/NPM_SCOPE
+      Type: String
+      Value: "null"
+
+  ArtilleryNpmScopeRegistryParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /artilleryio/NPM_SCOPE_REGISTRY
+      Type: String
+      Value: "null"
+
+  ArtilleryNpmTokenParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /artilleryio/NPM_TOKEN
+      Type: String
+      Value: "null"
+
+  ##################################################
+  # custom artillery params for runtime
+  ##################################################
+
+  ArtilleryPSUApiKey:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: API key used for PSU load testing
+      Name: /artilleryio/psu_api_key
+      Type: String
+      Value: ChangeMe
+
+  ArtilleryPSUPrivateKey:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: Private key used for PSU load testing
+      Name: /artilleryio/psu_private_key
+      Type: String
+      Value: ChangeMe
+
+  ArtilleryPSUKid:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: KID used for PSU load testing
+      Name: /artilleryio/psu_kid
+      Type: String
+      Value: ChangeMe
+
+Outputs:
+  ArtilleryPSUApiKey:
+    Description: ArtilleryPSUApiKey
+    Value: !Ref ArtilleryPSUApiKey
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryPSUApiKey"]]
+
+  ArtilleryPSUPrivateKey:
+    Description: ArtilleryPSUPrivateKey
+    Value: !Ref ArtilleryPSUPrivateKey
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryPSUPrivateKey"]]
+
+  ArtilleryPSUKid:
+    Description: ArtilleryPSUKid
+    Value: !Ref ArtilleryPSUKid
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryPSUKid"]]
+
+  ##################################################
+  # Cloudformation Prepare Changeset Role Outputs
+  ##################################################
+  ArtilleryWorkerRole:
+    Description: ARN of the IAM Role(ArtilleryWorkerRole)
+    Value: !GetAtt ArtilleryWorkerRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryWorkerRole"]]
+
+  ArtilleryWorkerRoleName:
+    Description: Name of the IAM Role(ArtilleryWorkerRole)
+    Value: !Ref ArtilleryWorkerRole
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryWorkerRoleName"]]

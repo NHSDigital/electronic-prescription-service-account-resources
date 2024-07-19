@@ -8,7 +8,8 @@
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
         "repo:NHSDigital/eps-FHIR-validator-lambda:*",
         "repo:NHSDigital/eps-prescription-status-update-api:*",
-        "repo:NHSDigital/electronic-prescription-service-api:*"
+        "repo:NHSDigital/electronic-prescription-service-api:*",
+        "repo:NHSDigital/eps-load-test:*"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -17,13 +18,18 @@
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
         "repo:NHSDigital/eps-FHIR-validator-lambda:*",
         "repo:NHSDigital/eps-prescription-status-update-api:*",
-        "repo:NHSDigital/electronic-prescription-service-api:*"
+        "repo:NHSDigital/electronic-prescription-service-api:*",
+        "repo:NHSDigital/eps-load-test:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "NONE"
       ],
       "PrepareChangesetClaimFilters": [
-        "repo:NHSDigital/electronic-prescription-service-account-resources:*"
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
+        "repo:NHSDigital/eps-load-test:*"
+      ],
+      "ArtilleryLoadTestRoleClaimFilters": [
+        "repo:NHSDigital/eps-load-test:*"
       ]
     },
     "account-resources": {},
@@ -36,6 +42,7 @@
     },
     "vpc-resources": {
       "Environment": "ref"
-    }
+    },
+    "artillery-resources": {}
   }
 }

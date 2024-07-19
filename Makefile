@@ -29,7 +29,8 @@ check-licenses-node:
 
 lint: lint-cloudformation lint-node lint-githubactions lint-githubaction-scripts
 lint-cloudformation:
-	poetry run cfn-lint -t cloudformation/*.yml
+	poetry run cfn-lint -I "cloudformation/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
+	poetry run cfn-lint -I "SAMtemplates/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
 
 lint-node:
 	npm run lint --workspace packages/certificateChecker
