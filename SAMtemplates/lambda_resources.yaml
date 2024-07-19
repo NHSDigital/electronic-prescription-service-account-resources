@@ -416,7 +416,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue ci-resources:CloudFormationDeployRole
+        - !ImportValue ci-resources:CloudFormationDeployRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -451,7 +451,7 @@ Resources:
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
-        LambdaName: !Sub "${AWS::StackName}-Proxygen"
+        LambdaName: !Sub "${AWS::StackName}-ProxygenDeploy"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
 
