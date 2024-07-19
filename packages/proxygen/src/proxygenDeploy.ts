@@ -18,6 +18,7 @@ const lambdaHandler = async (event: any) => {
     const environment = event.environment
     const specDefinition = event.specDefinition
     const instance = event.instance
+    const kid = event.kid
 
     let secretName
 
@@ -37,7 +38,7 @@ const lambdaHandler = async (event: any) => {
 
     const secretResponse = await secretsClient.send(getSecretCommand)
     const privateKey = secretResponse.SecretString
-    const accessTokenResponse = await getAccessToken(privateKey as Secret)
+    const accessTokenResponse = await getAccessToken(privateKey as Secret, kid, apiName)
     const accessToken = accessTokenResponse.access_token
     const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${apiName}/environments/${environment}/instances/${instance}`
     const response = await axios.put(path, specDefinition, {
