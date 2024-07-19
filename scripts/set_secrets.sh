@@ -392,3 +392,5 @@ set_secrets "NHSDigital/eps-prescription-status-update-api"
 echo
 set_secrets "NHSDigital/eps-FHIR-validator-lambda"
 echo
+set_secrets "NHSDigital/eps-dynamodb-poc"
+echo
