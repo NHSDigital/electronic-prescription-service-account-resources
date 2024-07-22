@@ -35,6 +35,9 @@
       ],
       "PrepareChangesetClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-account-resources:*"
+      ],
+      "ArtilleryLoadTestRoleClaimFilters": [
+        "repo:NHSDigital/eps-load-test:*"
       ]
     },
     "account-resources": {},
@@ -48,6 +51,7 @@
     },
     "vpc-resources": {
       "Environment": "dev"
-    }
+    },
+    "artillery-resources": {}
   }
 }
