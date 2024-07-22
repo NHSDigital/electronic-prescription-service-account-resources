@@ -415,10 +415,10 @@ Resources:
   SlackAlertsSnsTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub ${AWS::StackName}-slackAlerts
+      TopicName: !Sub ${AWS::StackName}-SlackAlerts
       KmsMasterKeyId: !ImportValue account-resources:SnsKMSKey
 
-  SnsAlerterResources:
+  SlackAlerterResources:
     Type: AWS::Serverless::Application
     Properties:
       Location: common_lambda_resources.yml
@@ -440,7 +440,7 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-slackAlerter
       CodeUri: ../packages
       Handler: slackAlerter.handler
-      Role: !GetAtt SnsAlerterResources.Outputs.LambdaRoleArn
+      Role: !GetAtt SlackAlerterResources.Outputs.LambdaRoleArn
       Runtime: nodejs20.x
       Architectures:
         - x86_64
