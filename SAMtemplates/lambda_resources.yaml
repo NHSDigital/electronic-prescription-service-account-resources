@@ -438,7 +438,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${AWS::StackName}-slackAlerter
-      CodeUri: ../../packages
+      CodeUri: ../packages
       Handler: slackAlerter.handler
       Role: !GetAtt SnsAlerterResources.Outputs.LambdaRoleArn
       Runtime: nodejs20.x
