@@ -6,7 +6,7 @@ export function getRealmURL() {
 }
 
 export async function getAccessToken(event: Proxygen, realm_url: string) {
-  const privateKey = await getSecret(event.apiName)
+  const privateKey = await getSecret(event.proxygenSecretName)
   const signedJWT = createSignedJWT(privateKey, event.kid, event.apiName, realm_url)
   const payload = {
     grant_type: "client_credentials",
@@ -32,6 +32,7 @@ export function checkAllowedEnvironment(environment: string | undefined) {
 
 export interface Proxygen {
   apiName: string
+  proxygenSecretName: string
   environment?: string
   specDefinition?: string
   kid: string

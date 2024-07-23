@@ -25,36 +25,19 @@ describe("getSecret", () => {
       VersionStages: ["valid-stage"]
     })
 
-    const result = await getSecret("prescription-status-update-api")
+    const result = await getSecret("proxygen-secret-name")
     expect(result).toBe("mockPrivateKeyPSU")
     expect(smMock).toHaveReceivedCommand(GetSecretValueCommand)
     expect(smMock).toHaveReceivedCommandWith(GetSecretValueCommand, {
-      SecretId: "account-resources-PSU-ProxygenPrivateKey"
-    })
-  })
-
-  it("should return the correct secret for custom-prescription-status-update-api", async () => {
-    const smMock = mockClient(SecretsManagerClient)
-    smMock.on(GetSecretValueCommand).resolves({
-      ARN: "valid-arn",
-      CreatedDate: new Date(),
-      Name: "valid-certificate",
-      SecretString: "mockPrivateKeyCPSU",
-      VersionId: "valid-version-id",
-      VersionStages: ["valid-stage"]
-    })
-
-    const result = await getSecret("custom-prescription-status-update-api")
-    expect(result).toBe("mockPrivateKeyCPSU")
-    expect(smMock).toHaveReceivedCommand(GetSecretValueCommand)
-    expect(smMock).toHaveReceivedCommandWith(GetSecretValueCommand, {
-      SecretId: "account-resources-CPSU-ProxygenPrivateKey"
+      SecretId: "proxygen-secret-name"
     })
   })
 
   it("should handle missing secret names gracefully", async () => {
     const smMock = mockClient(SecretsManagerClient)
     await expect(getSecret("unknown-api")).rejects.toThrow()
-    expect(smMock).not.toHaveReceivedAnyCommand()
+    expect(smMock).toHaveReceivedCommandWith(GetSecretValueCommand, {
+      SecretId: "unknown-api"
+    })
   })
 })

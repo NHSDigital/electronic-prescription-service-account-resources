@@ -6,6 +6,7 @@ import {mockClient} from "aws-sdk-client-mock"
 import "aws-sdk-client-mock-jest"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 import jwt from "jsonwebtoken"
+import {Proxygen} from "../src/helpers"
 
 jest.unstable_mockModule("../src/uuidHelper", () => ({
   returnUuid: jest.fn().mockReturnValue("mockUuid")
@@ -22,9 +23,10 @@ const signingHelpers = await import("../src/signingHelpers")
 const realm_url = "https://mock-realm-url"
 
 describe("getAccessToken", () => {
-  const mockEvent = {
+  const mockEvent: Proxygen = {
     apiName: "prescription-status-update-api",
-    kid: "mockKid"
+    kid: "mockKid",
+    proxygenSecretName: "proxygen-secret-name"
   }
   const mockPrivateKey = "mockPrivateKey"
   const mockAccessToken = "mockAccessToken"
@@ -52,7 +54,7 @@ describe("getAccessToken", () => {
 
     const result = await helpers.getAccessToken(mockEvent, realm_url)
 
-    expect(signingHelpers.getSecret).toHaveBeenCalledWith(mockEvent.apiName)
+    expect(signingHelpers.getSecret).toHaveBeenCalledWith(mockEvent.proxygenSecretName)
     expect(signingHelpers.createSignedJWT).toHaveBeenCalledWith(
       mockPrivateKey,
       mockEvent.kid,
@@ -66,7 +68,7 @@ describe("getAccessToken", () => {
 
     await expect(helpers.getAccessToken(mockEvent, realm_url)).rejects.toThrow("Request failed with status code 500")
 
-    expect(signingHelpers.getSecret).toHaveBeenCalledWith(mockEvent.apiName)
+    expect(signingHelpers.getSecret).toHaveBeenCalledWith(mockEvent.proxygenSecretName)
     expect(signingHelpers.createSignedJWT).toHaveBeenCalledWith(
       mockPrivateKey,
       mockEvent.kid,

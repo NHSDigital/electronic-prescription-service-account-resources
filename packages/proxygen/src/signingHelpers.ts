@@ -24,23 +24,9 @@ export function createSignedJWT(privateKey: Secret, kid: string, apiName: string
   return signedJWT
 }
 
-export async function getSecret(apiName: string): Promise<jwt.Secret> {
-  //  const secretName = `account-resources-${apiName}-ProxygenPrivateKey`
-  let secretName
-
-  switch (apiName) {
-    case "prescription-status-update-api":
-      secretName = "account-resources-PSU-ProxygenPrivateKey"
-      break
-    case "custom-prescription-status-update-api":
-      secretName = "account-resources-CPSU-ProxygenPrivateKey"
-      break
-    default:
-      throw new Error("unknown")
-  }
-
+export async function getSecret(proxygenSecretName: string): Promise<jwt.Secret> {
   const input = {
-    SecretId: secretName
+    SecretId: proxygenSecretName
   }
   const getSecretCommand = new GetSecretValueCommand(input)
 
