@@ -54,7 +54,7 @@ const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudW
     stack = "unknown"
     alarmName = cloudWatchMessage.AlarmName
   }
-  
+
   const header: string = formatHeader(alarmName, cloudWatchMessage.NewStateValue)
   const region: string = cloudWatchMessage.AlarmArn.split(":")[3]
   const trigger: string = formatTrigger(cloudWatchMessage.Trigger)

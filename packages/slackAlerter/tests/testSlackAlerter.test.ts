@@ -58,7 +58,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%201`
     expect(fetchMock.mock.calls[1]).toEqual(expectedRequest)
   })
 
-  it("posts a correctly formatted message to slack when called with a valid SNS event a non standard alarm name", async () => {
+  it("posts a correctly formatted message to slack when called with a non standard alarm name", async () => {
     fetchMock
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
