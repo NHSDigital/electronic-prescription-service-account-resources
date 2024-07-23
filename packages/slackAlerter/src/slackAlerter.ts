@@ -16,6 +16,7 @@ const logger: Logger = new Logger({serviceName: "slackAlerter"})
 
 export const handler: SNSHandler = async(event: SNSEvent): Promise<void> => {
   logger.info("Received SNS message...")
+  console.log(JSON.stringify(event))
 
   const totalRecords: number = event.Records.length
   logger.info(`${totalRecords} record(s) to process...`)
