@@ -429,8 +429,8 @@ Resources:
               - !GetAtt ProxygenPTLInstancePutFunction.Arn
               - !GetAtt ProxygenPTLSecretPutFunction.Arn
               - !GetAtt ProxygenPTLSpecPublishFunction.Arn
-              - !GetAtt ProxygenInstanceGetFunction.Arn
-              - !GetAtt ProxygenInstanceDeleteFunction.Arn
+              - !GetAtt ProxygenPTLInstanceGetFunction.Arn
+              - !GetAtt ProxygenPTLInstanceDeleteFunction.Arn
 
   ExecuteProxygenProdManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -460,8 +460,8 @@ Resources:
         - !GetAtt ProxygenProdSecretPutFunctionResources.Outputs.LambdaRoleName
         - !GetAtt ProxygenPTLSpecPublishFunctionResources.Outputs.LambdaRoleName
         - !GetAtt ProxygenProdSpecPublishFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenInstanceGetFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenInstanceDeleteFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenPTLInstanceGetFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenPTLInstanceDeleteFunctionResources.Outputs.LambdaRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -700,7 +700,7 @@ Resources:
         EntryPoints:
           - proxygen/src/proxygenSpecPublish.ts
 
-  ProxygenInstanceGetFunctionResources:
+  ProxygenPTLInstanceGetFunctionResources:
     Type: AWS::Serverless::Application
     DependsOn:
       - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
@@ -710,19 +710,19 @@ Resources:
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
-        LambdaName: !Sub "${AWS::StackName}-ProxygenInstanceGet"
+        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstanceGet"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
 
-  ProxygenInstanceGetFunction:
+  ProxygenPTLInstanceGetFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-ProxygenInstanceGet"
+      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLInstanceGet"
       CodeUri: ../packages/
       Handler: proxygenInstanceGet.handler
       Runtime: nodejs18.x
       Timeout: 600
-      Role: !GetAtt ProxygenInstanceGetFunctionResources.Outputs.LambdaRoleArn
+      Role: !GetAtt ProxygenPTLInstanceGetFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
           NODE_OPTIONS: --enable-source-maps
@@ -738,7 +738,7 @@ Resources:
         EntryPoints:
           - proxygen/src/proxygenInstanceGet.ts
 
-  ProxygenInstanceDeleteFunctionResources:
+  ProxygenPTLInstanceDeleteFunctionResources:
     Type: AWS::Serverless::Application
     DependsOn:
       - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
@@ -748,19 +748,19 @@ Resources:
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
-        LambdaName: !Sub "${AWS::StackName}-ProxygenInstanceDelete"
+        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstanceDelete"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
 
-  ProxygenInstanceDeleteFunction:
+  ProxygenPTLInstanceDeleteFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-ProxygenInstanceDelete"
+      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLInstanceDelete"
       CodeUri: ../packages/
       Handler: proxygenInstanceDelete.handler
       Runtime: nodejs18.x
       Timeout: 600
-      Role: !GetAtt ProxygenInstanceDeleteFunctionResources.Outputs.LambdaRoleArn
+      Role: !GetAtt ProxygenPTLInstanceDeleteFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
           NODE_OPTIONS: --enable-source-maps
