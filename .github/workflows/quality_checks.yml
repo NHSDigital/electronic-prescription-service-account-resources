@@ -51,7 +51,6 @@ jobs:
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
-          projectBaseDir: my-custom-directory
           args: >
             -Dsonar.javascript.lcov.reportPaths=packages/certificateChecker/coverage/lcov.info,packages/splunkProcessor/coverage/lcov.info,packages/proxgen/coverage/lcov.info
         env:
