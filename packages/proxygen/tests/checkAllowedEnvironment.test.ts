@@ -5,7 +5,7 @@ import {checkAllowedEnvironment} from "../src/helpers"
 import {jest} from "@jest/globals"
 
 describe("checkAllowedEnvironment", () => {
-  let _SAVED_ALLOWED_ENVIRONMENTS: any
+  let _SAVED_ALLOWED_ENVIRONMENTS: string | undefined
   beforeEach(() => {
     jest.resetModules()
     _SAVED_ALLOWED_ENVIRONMENTS = process.env.ALLOWED_ENVIRONMENTS

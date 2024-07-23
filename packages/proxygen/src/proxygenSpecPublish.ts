@@ -9,18 +9,14 @@ const logger = new Logger({serviceName: "proxygenSpecPublish"})
 
 //eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lambdaHandler = async (event: Proxygen) => {
-  try {
-    checkAllowedEnvironment(event.environment)
+  checkAllowedEnvironment(event.environment)
 
-    const accessToken = await getAccessToken(event)
-    const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/spec/${event.environment}`
-    const response = await axios.post(path, event.specDefinition, {
-      headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
-    })
-    return response.data
-  } catch (error) {
-    throw error
-  }
+  const accessToken = await getAccessToken(event)
+  const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/spec/${event.environment}`
+  const response = await axios.post(path, event.specDefinition, {
+    headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
+  })
+  return response.data
 }
 
 export const handler = middy(lambdaHandler)
