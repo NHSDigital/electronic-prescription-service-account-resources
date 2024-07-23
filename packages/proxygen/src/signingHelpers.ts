@@ -25,6 +25,7 @@ export function createSignedJWT(privateKey: Secret, kid: string, apiName: string
 }
 
 export async function getSecret(apiName: string): Promise<jwt.Secret> {
+  //  const secretName = `account-resources-${apiName}-ProxygenPrivateKey`
   let secretName
 
   switch (apiName) {

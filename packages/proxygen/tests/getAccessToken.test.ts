@@ -15,10 +15,11 @@ jest.unstable_mockModule("../src/signingHelpers", () => ({
   createSignedJWT: jest.fn().mockReturnValue("signedJWT")
 }))
 
+// import using await to ensure uuidHelper and signingHelpers are mocked properly
 const helpers = await import("../src/helpers")
 const signingHelpers = await import("../src/signingHelpers")
 
-const realm_url = "http://mock-realm-url"
+const realm_url = "https://mock-realm-url"
 
 describe("getAccessToken", () => {
   const mockEvent = {
