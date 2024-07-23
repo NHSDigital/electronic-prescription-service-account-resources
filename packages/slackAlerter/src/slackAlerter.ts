@@ -16,7 +16,6 @@ const logger: Logger = new Logger({serviceName: "slackAlerter"})
 
 export const handler: SNSHandler = async(event: SNSEvent): Promise<void> => {
   logger.info("Received SNS message...")
-  console.log(JSON.stringify(event))
 
   const totalRecords: number = event.Records.length
   logger.info(`${totalRecords} record(s) to process...`)
@@ -46,7 +45,17 @@ const processRecord = async (record: SNSEventRecord): Promise<void> => {
 }
 
 const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudWatchAlertMessageContent => {
-  const header: string = formatHeader(cloudWatchMessage.AlarmName, cloudWatchMessage.NewStateValue)
+  let stack, alarmName
+  if (cloudWatchMessage.AlarmName.includes(" - ")){
+    const parts = cloudWatchMessage.AlarmName.split("-")
+    stack = parts[0].trim()
+    alarmName = parts[1].trim()
+  } else {
+    stack = "unknown"
+    alarmName = cloudWatchMessage.AlarmName
+  }
+  
+  const header: string = formatHeader(alarmName, cloudWatchMessage.NewStateValue)
   const region: string = cloudWatchMessage.AlarmArn.split(":")[3]
   const trigger: string = formatTrigger(cloudWatchMessage.Trigger)
   const oldState: string = formatState(cloudWatchMessage.OldStateValue)
@@ -56,7 +65,7 @@ const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudW
   const contentValues: CloudWatchAlertContentValues = {
     header: header,
     timestamp: cloudWatchMessage.StateChangeTime,
-    stack: cloudWatchMessage.AlarmName.split("-")[0].trim(),
+    stack: stack,
     environment: ENV,
     region: region,
     description: cloudWatchMessage.AlarmDescription || "No description",

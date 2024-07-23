@@ -9,7 +9,7 @@ import {
 describe("formatHeader", () => {
   it("returns a correctly formatted header when called", () => {
     const expected = ":red_circle: Test Alarm"
-    const actual = formatHeader("PSU - Test Alarm", "ALARM")
+    const actual = formatHeader("Test Alarm", "ALARM")
     expect(actual).toEqual(expected)
   })
 })
