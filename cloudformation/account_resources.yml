@@ -612,6 +612,17 @@ Resources:
             Action:
               - kms:*
             Resource: "*"
+          - Sid: Enable Cloudwatch Alarms
+            Effect: Allow
+            Principal:
+              Service: cloudwatch.amazonaws.com
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt*
+              - kms:ReEncrypt*
+              - kms:Decrypt
+            Resource: "*"
     
   SnsKMSKeyKMSKeyAlias:
     Type: AWS::KMS::Alias
