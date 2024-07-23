@@ -1,6 +1,6 @@
 // getSecret.test.ts
 
-import {getSecret} from "../src/helpers"
+import {getSecret} from "../src/signingHelpers"
 import {mockClient} from "aws-sdk-client-mock"
 import "aws-sdk-client-mock-jest"
 import {jest} from "@jest/globals"

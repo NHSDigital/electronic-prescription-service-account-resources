@@ -1,6 +1,11 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import {checkAllowedEnvironment, getAccessToken, Proxygen} from "./helpers"
+import {
+  checkAllowedEnvironment,
+  getAccessToken,
+  getRealmURL,
+  Proxygen
+} from "./helpers"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import axios from "axios"
@@ -11,7 +16,7 @@ const logger = new Logger({serviceName: "proxygenSecretPut"})
 const lambdaHandler = async (event: Proxygen) => {
   checkAllowedEnvironment(event.environment)
 
-  const accessToken = await getAccessToken(event)
+  const accessToken = await getAccessToken(event, getRealmURL())
 
   //eslint-disable-next-line max-len
   const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/environments/${event.environment}/secrets/mtls/${event.secretName}`
