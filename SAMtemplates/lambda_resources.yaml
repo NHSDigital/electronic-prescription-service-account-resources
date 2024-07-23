@@ -433,6 +433,7 @@ Resources:
         AdditionalPolicies: !Join
           - ","
           - - !ImportValue account-resources:SnsDecryptSecretsKMSPolicy
+            - !ImportValue account-resources:AccessSlackSecretsManagedPolicy
 
   SlackAlerter:
     Type: AWS::Serverless::Function

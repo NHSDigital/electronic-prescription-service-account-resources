@@ -989,6 +989,18 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SlackWebhookUrl"
+  
+  AccessSlackSecretsManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !Ref SlackWebHookUrl
   #endregion
 
 Outputs:
@@ -1368,4 +1380,10 @@ Outputs:
     Value: !GetAtt SlackWebHookUrl.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SlackWebHookUrl"]]
+  
+  AccessSlackSecretsManagedPolicy:
+    Description: "Access SNS Secrets Policy ARN"
+    Value: !GetAtt AccessSlackSecretsManagedPolicy.PolicyArn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AccessSlackSecretsManagedPolicy"]]
   #endregion
