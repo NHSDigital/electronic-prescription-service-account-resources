@@ -1,6 +1,6 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import {checkAllowedEnvironment, getAccessToken} from "./helpers"
+import {checkAllowedEnvironment, getAccessToken, Proxygen} from "./helpers"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import axios from "axios"
@@ -8,20 +8,13 @@ import axios from "axios"
 const logger = new Logger({serviceName: "proxygenSecretPut"})
 
 //eslint-disable-next-line @typescript-eslint/no-explicit-any
-const lambdaHandler = async (event: any) => {
+const lambdaHandler = async (event: Proxygen) => {
   try {
-    const apiName = event.apiName
-    const environment = event.environment
-    const specDefinition = event.specDefinition
-    const secretName = event.secretName
-    const kid = event.kid
+    checkAllowedEnvironment(event.environment)
 
-    checkAllowedEnvironment(environment)
-
-    const accessTokenResponse = await getAccessToken(kid, apiName)
-    const accessToken = accessTokenResponse.access_token
-    const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${apiName}/environments/${environment}/secrets/mtls/${secretName}`
-    const response = await axios.put(path, specDefinition, {
+    const accessToken = await getAccessToken(event)
+    const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/environments/${event.environment}/secrets/mtls/${event.secretName}`
+    const response = await axios.put(path, event.secretValue, {
       headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
     })
     return response.data

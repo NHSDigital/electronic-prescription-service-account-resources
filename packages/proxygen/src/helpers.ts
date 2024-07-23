@@ -5,9 +5,8 @@ import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secre
 
 const realm_url = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
 const secretsClient = new SecretsManagerClient({})
-const ALLOWED_ENVIRONMENTS = process.env["ALLOWED_ENVIRONMENTS"]?.split(",")
 
-function createSignedJWT(privateKey: Secret, kid: string, apiName: string) {
+export function createSignedJWT(privateKey: Secret, kid: string, apiName: string) {
   const header = {
     typ: "JWT",
     alg: "RS512",
@@ -28,7 +27,7 @@ function createSignedJWT(privateKey: Secret, kid: string, apiName: string) {
   return signedJWT
 }
 
-async function getSecret(apiName: string): Promise<jwt.Secret> {
+export async function getSecret(apiName: string): Promise<jwt.Secret> {
   let secretName
 
   switch (apiName) {
@@ -38,6 +37,8 @@ async function getSecret(apiName: string): Promise<jwt.Secret> {
     case "custom-prescription-status-update-api":
       secretName = "account-resources-CPSU-ProxygenPrivateKey"
       break
+    default:
+      throw new Error("unknown")
   }
 
   const input = {
@@ -50,9 +51,9 @@ async function getSecret(apiName: string): Promise<jwt.Secret> {
   return privateKey as Secret
 }
 
-export async function getAccessToken(kid: string, apiName: string) {
-  const privateKey = await getSecret(apiName)
-  const signedJWT = createSignedJWT(privateKey, kid, apiName)
+export async function getAccessToken(event: Proxygen) {
+  const privateKey = await getSecret(event.apiName)
+  const signedJWT = createSignedJWT(privateKey, event.kid, event.apiName)
   const payload = {
     grant_type: "client_credentials",
     client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
@@ -60,12 +61,27 @@ export async function getAccessToken(kid: string, apiName: string) {
   }
   const auth_url = `${realm_url}/protocol/openid-connect/token`
   const response = await axios.post(auth_url, payload, {headers: {"content-type": "application/x-www-form-urlencoded"}})
-  return response.data
+  return response.data.access_token
 }
 
-export function checkAllowedEnvironment(environment: string) {
+export function checkAllowedEnvironment(environment: string | undefined) {
+  const ALLOWED_ENVIRONMENTS = process.env["ALLOWED_ENVIRONMENTS"]?.split(",")
+
+  if (environment === undefined) {
+    throw new Error("environment is invalid")
+  }
   if (ALLOWED_ENVIRONMENTS?.includes(environment)) {
     return
   }
-  throw new Error("environment is invalid")
+  throw new Error(`environment ${environment} is invalid. Allowed environments: ${ALLOWED_ENVIRONMENTS}`)
+}
+
+export interface Proxygen {
+  apiName: string
+  environment?: string
+  specDefinition?: string
+  kid: string
+  instance?: string
+  secretName?: string
+  secretValue?: string
 }
