@@ -416,9 +416,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue ci-resources:CloudFormationDeployRoleName
-      # remove above line and uncomment this once complete
-      #        - !ImportValue ci-resources:ProxygenPTLRoleName
+        - !ImportValue ci-resources:ProxygenPTLRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -436,9 +434,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue ci-resources:CloudFormationDeployRoleName
-      # remove above line and uncomment this once complete
-      #        - !ImportValue ci-resources:ProxygenProdRoleName
+        - !ImportValue ci-resources:ProxygenProdRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
