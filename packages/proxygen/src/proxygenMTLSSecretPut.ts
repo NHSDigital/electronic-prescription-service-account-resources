@@ -20,15 +20,14 @@ const lambdaHandler = async (event: Proxygen) => {
 
   const accessToken = await getAccessToken(event, getRealmURL())
 
-  const body = {
-    key: event.secretKey,
-    cert: event.secretCert
-  }
+  const formData = new FormData()
+  formData.append("key", event.secretKey as string)
+  formData.append("cert", event.secretCert as string)
 
   //eslint-disable-next-line max-len
   const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/environments/${event.environment}/secrets/mtls/${event.secretName}`
-  const response = await axios.put(path, body, {
-    headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
+  const response = await axios.put(path, formData, {
+    headers: {"content-type": "multipart/form-data", Authorization: `Bearer ${accessToken}`}
   })
   return response.data
 }
