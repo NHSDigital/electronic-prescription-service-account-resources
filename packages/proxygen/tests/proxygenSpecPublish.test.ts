@@ -72,20 +72,40 @@ describe("Unit test for proxygenSpecPublish", function () {
     )
   })
 
+  it("throws error if environment is not uat or prod", async () => {
+    process.env.ALLOWED_ENVIRONMENTS = "dev,uat"
+    nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
+
+    await expect(handler.handler(validProxygen, {})).rejects.toThrow("Environment is not uat or prod")
+  })
+
   it("throws error if proxygen call fails", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk").post("/apis/testApi/spec/dev").reply(500, {foo: "bar"})
+    nock("https://proxygen.prod.api.platform.nhs.uk").post("/apis/testApi/spec/uat").reply(500, {foo: "bar"})
 
-    process.env.ALLOWED_ENVIRONMENTS = "dev"
+    process.env.ALLOWED_ENVIRONMENTS = "uat"
+    validProxygen.environment = "uat"
 
     await expect(handler.handler(validProxygen, {})).rejects.toThrow("Request failed with status code 500")
   })
 
-  it("should work if everything is OK", async () => {
+  it("should work if everything is OK for uat", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk").post("/apis/testApi/spec/dev").reply(200, {foo: "bar"})
+    nock("https://proxygen.prod.api.platform.nhs.uk").post("/apis/testApi/spec/uat").reply(200, {foo: "bar"})
 
-    process.env.ALLOWED_ENVIRONMENTS = "dev"
+    process.env.ALLOWED_ENVIRONMENTS = "uat"
+    validProxygen.environment = "uat"
+
+    const res = await handler.handler(validProxygen, {})
+    expect(res).toMatchObject({foo: "bar"})
+  })
+
+  it("should work if everything is OK for prod", async () => {
+    nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
+    nock("https://proxygen.prod.api.platform.nhs.uk").post("/apis/testApi/spec").reply(200, {foo: "bar"})
+
+    process.env.ALLOWED_ENVIRONMENTS = "prod"
+    validProxygen.environment = "prod"
 
     const res = await handler.handler(validProxygen, {})
     expect(res).toMatchObject({foo: "bar"})

@@ -20,7 +20,15 @@ const lambdaHandler = async (event: Proxygen) => {
 
   const accessToken = await getAccessToken(event, getRealmURL())
 
-  const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/spec/${event.environment}`
+  let path
+  if (event.environment === "uat") {
+    path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/spec/uat`
+  } else if (event.environment === "prod") {
+    path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/spec`
+  } else {
+    throw new Error("Environment is not uat or prod")
+  }
+
   const response = await axios.post(path, event.specDefinition, {
     headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
   })
