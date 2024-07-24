@@ -81,6 +81,7 @@
       "vars",
       "versionable",
       "whens",
+      "proxygen",
     ],
     "cSpell.dictionaries": ["en-GB"],
     "cSpell.ignorePaths": ["package-lock.json", "node_modules", ".vscode"],
