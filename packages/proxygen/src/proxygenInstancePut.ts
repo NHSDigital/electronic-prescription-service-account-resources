@@ -15,7 +15,7 @@ const logger = new Logger({serviceName: "proxygenInstancePut"})
 
 //eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lambdaHandler = async (event: Proxygen) => {
-  checkRequiredKeys(event, ["environment", "instance"])
+  checkRequiredKeys(event, ["environment", "instance", "specDefinition"])
 
   checkAllowedEnvironment(event.environment)
 

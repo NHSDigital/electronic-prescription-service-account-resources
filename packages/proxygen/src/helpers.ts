@@ -45,7 +45,7 @@ export interface Proxygen {
   apiName: string
   proxygenSecretName: string
   environment?: string
-  specDefinition?: string
+  specDefinition?: object
   kid: string
   instance?: string
   secretName?: string
