@@ -58,7 +58,9 @@ describe("Unit test for proxygenInstanceGet", function () {
   })
 
   it("throws error if missing required property on input", async () => {
-    await expect(handler.handler({}, {})).rejects.toThrow("input is missing required keys")
+    await expect(handler.handler({}, {})).rejects.toThrow(
+      "Input is one of missing required keys: apiName,proxygenSecretName,kid,environment. Input keys: "
+    )
   })
 
   it("throws error if environment is not allowed", async () => {

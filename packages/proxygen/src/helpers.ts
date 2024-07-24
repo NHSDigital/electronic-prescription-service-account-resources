@@ -38,7 +38,7 @@ export function checkRequiredKeys(obj: Proxygen, requiredKeys: Array<string>) {
     return
   }
 
-  throw new Error("input is missing required keys")
+  throw new Error(`Input is one of missing required keys: ${completeRequiredKeys}. Input keys: ${Object.keys(obj)}`)
 }
 
 export interface Proxygen {

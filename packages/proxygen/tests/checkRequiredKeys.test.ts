@@ -14,11 +14,15 @@ describe("checkRequiredKeys", () => {
 
   it("should throw an error if a required key is missing", () => {
     const requiredKeys = ["missingKey"]
-    expect(() => checkRequiredKeys(validProxygen, requiredKeys)).toThrow("input is missing required keys")
+    expect(() => checkRequiredKeys(validProxygen, requiredKeys)).toThrow(
+      "Input is one of missing required keys: apiName,proxygenSecretName,kid,missingKey. Input keys: apiName,proxygenSecretName,kid"
+    )
   })
 
   it("should throw an error if obj is empty", () => {
-    expect(() => checkRequiredKeys({} as Proxygen, [])).toThrow("input is missing required keys")
+    expect(() => checkRequiredKeys({} as Proxygen, [])).toThrow(
+      "Input is one of missing required keys: apiName,proxygenSecretName,kid. Input keys: "
+    )
   })
 
   it("should not throw an error if obj has extra non required keys", () => {
@@ -46,6 +50,8 @@ describe("checkRequiredKeys", () => {
     }
 
     delete objWithMissingKeys.apiName
-    expect(() => checkRequiredKeys(objWithMissingKeys, [])).toThrow()
+    expect(() => checkRequiredKeys(objWithMissingKeys, [])).toThrow(
+      "Input is one of missing required keys: apiName,proxygenSecretName,kid. Input keys: proxygenSecretName,kid,environment"
+    )
   })
 })
