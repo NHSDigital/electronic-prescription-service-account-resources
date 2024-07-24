@@ -2,6 +2,7 @@ import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
 import {
   checkAllowedEnvironment,
+  checkRequiredKeys,
   getAccessToken,
   getRealmURL,
   Proxygen
@@ -14,6 +15,8 @@ const logger = new Logger({serviceName: "proxygenInstancePut"})
 
 //eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lambdaHandler = async (event: Proxygen) => {
+  checkRequiredKeys(event, ["environment", "instance"])
+
   checkAllowedEnvironment(event.environment)
 
   const accessToken = await getAccessToken(event, getRealmURL())

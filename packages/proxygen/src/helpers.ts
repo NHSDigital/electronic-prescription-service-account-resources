@@ -30,6 +30,17 @@ export function checkAllowedEnvironment(environment: string | undefined) {
   throw new Error(`environment ${environment} is invalid. Allowed environments: ${ALLOWED_ENVIRONMENTS}`)
 }
 
+export function checkRequiredKeys(obj: Proxygen, requiredKeys: Array<string>) {
+  const completeRequiredKeys = ["apiName", "proxygenSecretName", "kid"].concat(requiredKeys)
+  const checkAllKeys = completeRequiredKeys.every((i) => Object.prototype.hasOwnProperty.call(obj, i))
+
+  if (checkAllKeys) {
+    return
+  }
+
+  throw new Error("input is missing required keys")
+}
+
 export interface Proxygen {
   apiName: string
   proxygenSecretName: string

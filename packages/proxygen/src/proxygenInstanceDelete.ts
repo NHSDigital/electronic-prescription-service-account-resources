@@ -2,6 +2,7 @@ import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
 import {
   checkAllowedEnvironment,
+  checkRequiredKeys,
   getAccessToken,
   getRealmURL,
   Proxygen
@@ -12,8 +13,9 @@ import axios from "axios"
 
 const logger = new Logger({serviceName: "proxygenInstanceDelete"})
 
-//eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lambdaHandler = async (event: Proxygen) => {
+
+  checkRequiredKeys(event, ["environment", "instance"])
   checkAllowedEnvironment(event.environment)
 
   const accessToken = await getAccessToken(event, getRealmURL())
