@@ -83,14 +83,19 @@ describe("Unit test for proxygenInstancePut", function () {
   })
 
   it("should work if everything is OK", async () => {
+    let actualBody
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
     nock("https://proxygen.prod.api.platform.nhs.uk")
-      .put("/apis/testApi/environments/dev/instances/testInstance")
+      .put("/apis/testApi/environments/dev/instances/testInstance", (body) => {
+        actualBody = body
+        return body
+      })
       .reply(200, {foo: "bar"})
 
     process.env.ALLOWED_ENVIRONMENTS = "dev"
 
     const res = await handler.handler(validProxygen, {})
     expect(res).toMatchObject({foo: "bar"})
+    expect(actualBody).toMatchObject({foo: "bar"})
   })
 })

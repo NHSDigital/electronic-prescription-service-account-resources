@@ -21,8 +21,8 @@ const lambdaHandler = async (event: Proxygen) => {
   const accessToken = await getAccessToken(event, getRealmURL())
 
   const formData = new FormData()
-  formData.append("key", event.secretKey as string)
-  formData.append("cert", event.secretCert as string)
+  formData.append("cert", new Blob([event.secretCert as string]))
+  formData.append("key", new Blob([event.secretKey as string]))
 
   logger.info("formdata", {formData})
 
