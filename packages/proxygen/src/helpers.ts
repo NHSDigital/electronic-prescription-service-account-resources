@@ -49,5 +49,6 @@ export interface Proxygen {
   kid: string
   instance?: string
   secretName?: string
-  secretValue?: string
+  secretKey?: string
+  secretCert?: string
 }

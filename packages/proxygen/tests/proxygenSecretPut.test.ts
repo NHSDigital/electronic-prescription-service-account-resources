@@ -20,7 +20,7 @@ jest.unstable_mockModule("../src/signingHelpers", () => ({
 // import using await to ensure uuidHelper and signingHelpers are mocked properly
 await import("../src/helpers")
 await import("../src/signingHelpers")
-const handler = await import("../src/proxygenSecretPut")
+const handler = await import("../src/proxygenMTLSSecretPut")
 
 const validProxygen: Proxygen = {
   apiName: "testApi",
@@ -28,11 +28,12 @@ const validProxygen: Proxygen = {
   kid: "testKid",
   environment: "dev",
   secretName: "testSecretName",
-  secretValue: "testSecretValue"
+  secretKey: "testSecretKey",
+  secretCert: "testSecretCert"
 }
 const realm_url = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
 
-describe("Unit test for proxygenSecretPut", function () {
+describe("Unit test for proxygenMTLSSecretPut", function () {
   let _SAVED_ALLOWED_ENVIRONMENTS: string | undefined
   const mockPrivateKey = "mockPrivateKey"
   const mockAccessToken = "mockAccessToken"
