@@ -13,7 +13,6 @@ import axios from "axios"
 
 const logger = new Logger({serviceName: "proxygenMTLSSecretPut"})
 
-//eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lambdaHandler = async (event: Proxygen) => {
   checkRequiredKeys(event, ["environment", "secretName", "secretKey", "secretCert"])
 

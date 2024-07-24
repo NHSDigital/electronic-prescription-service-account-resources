@@ -13,7 +13,6 @@ import axios from "axios"
 
 const logger = new Logger({serviceName: "proxygenInstancePut"})
 
-//eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lambdaHandler = async (event: Proxygen) => {
   checkRequiredKeys(event, ["environment", "instance", "specDefinition"])
 
