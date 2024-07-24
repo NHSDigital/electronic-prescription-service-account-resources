@@ -45,6 +45,8 @@ const processRecord = async (record: SNSEventRecord): Promise<void> => {
 }
 
 const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudWatchAlertMessageContent => {
+  // To fully populate the message, alert names should be in the format "<stack_name> - <Alarm Name>" 
+  // e.g. "psu - Lambda Errors".
   let stack, alarmName
   if (cloudWatchMessage.AlarmName.includes(" - ")){
     const parts = cloudWatchMessage.AlarmName.split("-")
@@ -91,6 +93,9 @@ const postSlackMessage = async (slackMessageContent: CloudWatchAlertMessageConte
   }
 
   logger.info("Getting slack web hook url...")
+  // Gets the appropriate webhook to post into the prod or non-prod alert channels in slack.
+  // Whilst signed into the NHSE slack you can find the values under the "Incoming Webhooks"
+  // section of the eps-alerts app configuration.
   const secrets = await getSecrets(["account-resources-SlackWebhookUrl"], "secretsManager")
   const url = secrets["account-resources-SlackWebhookUrl"]
 
