@@ -1,3 +1,5 @@
+/* eslint-disable  max-len */
+
 import {checkRequiredKeys, Proxygen} from "../src/helpers"
 
 // Mock data
