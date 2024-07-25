@@ -781,6 +781,20 @@ Resources:
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref ProxygenProdClaimFilters
 
+  ProxygenAccessExportPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: ProxygenPTLRole
+        - Ref: ProxygenProdRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudformation:ListExports
+            Resource: "*"
+
 Outputs:
   ##################################################
   # Cloudformation Deployment Role Outputs
