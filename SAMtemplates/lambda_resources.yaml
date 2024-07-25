@@ -4,6 +4,18 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   splunk firehose transform
 
+Globals:
+  Function:
+    Timeout: 60
+    MemorySize: 256
+    Architectures:
+      - x86_64
+    Runtime: nodejs20.x
+    Environment:
+      Variables:
+        NODE_OPTIONS: "--enable-source-maps"
+        ENV: !Ref Env
+
 Parameters:
   SplunkHECEndpoint:
     Type: String
@@ -201,17 +213,11 @@ Resources:
     Properties:
       CodeUri: ../packages/
       Handler: splunkProcessor.handler
-      Runtime: nodejs20.x
       Role: !GetAtt SplunkDeliveryStreamProcessorRole.Arn
-      Architectures:
-        - x86_64
       MemorySize: 512
-      Timeout: 60
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           LOG_LEVEL: !Ref LogLevel
-          ENV: !Ref Env
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
@@ -345,6 +351,7 @@ Resources:
             Action:
              - secretsmanager:BatchGetSecretValue    
             Resource: "*"
+
   ExpiryFunctionResources:
     Type: AWS::Serverless::Application
     DependsOn:
@@ -365,11 +372,7 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-CertificateChecker"
       CodeUri: ../packages/
       Handler: certificateChecker.handler
-      Runtime: nodejs20.x
       Role: !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
-      Environment:
-        Variables:
-          NODE_OPTIONS: --enable-source-maps
       Events:
         ScheduleEvent:
           Type: ScheduleV2
@@ -442,15 +445,8 @@ Resources:
       CodeUri: ../packages
       Handler: slackAlerter.handler
       Role: !GetAtt SlackAlerterResources.Outputs.LambdaRoleArn
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 256
-      Timeout: 60
       Environment:
         Variables:
-          NODE_OPTIONS: "--enable-source-maps"
-          ENV: !Ref Env
           PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: 2773
       Layers:
         - arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11
