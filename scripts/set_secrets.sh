@@ -64,6 +64,17 @@ get_dev_roles() {
         echo "Can not get DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE. Setting to DEV_CLOUD_FORMATION_DEPLOY_ROLE"
         DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${DEV_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
+
+    DEV_ARTILLERY_RUNNER_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-dev \
+        --query 'Exports[?Name==`ci-resources:ArtilleryRunnerRole`].Value' \
+        --output text)    
+
+    if [ -z "${DEV_ARTILLERY_RUNNER_ROLE}" ]; then
+        echo "Can not get DEV_ARTILLERY_RUNNER_ROLE. Setting to unset"
+        DEV_ARTILLERY_RUNNER_ROLE="unset"
+    fi
+    
 }
 
 get_ref_roles() {
@@ -95,6 +106,16 @@ get_ref_roles() {
     if [ -z "${REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}" ]; then
         echo "Can not get REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE. Setting to REF_CLOUD_FORMATION_DEPLOY_ROLE"
         REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${REF_CLOUD_FORMATION_DEPLOY_ROLE}
+    fi
+
+    REF_ARTILLERY_RUNNER_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-ref \
+        --query 'Exports[?Name==`ci-resources:ArtilleryRunnerRole`].Value' \
+        --output text)    
+
+    if [ -z "${REF_ARTILLERY_RUNNER_ROLE}" ]; then
+        echo "Can not get REF_ARTILLERY_RUNNER_ROLE. Setting to unset"
+        REF_ARTILLERY_RUNNER_ROLE="unset"
     fi
 }
 
@@ -324,6 +345,36 @@ set_secrets() {
         --body "$REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 }
 
+set_artillery_secrets() {
+    REPO=$1
+    echo "Setting secrets in ${REPO}"
+    echo
+
+    if ! gh secret list --repo ${REPO} >/dev/null 2>&1; then
+        echo "Can not list secrets in repo. Check permissions"
+        exit 1
+    fi
+
+    # for dev secrets, we need to set for actions and dependabot so dependabot pull requests work
+    echo "setting DEV_ARTILLERY_RUNNER_ROLE for actions"
+    gh secret set DEV_ARTILLERY_RUNNER_ROLE \
+        --repo ${REPO} \
+        --app actions \
+        --body "$DEV_ARTILLERY_RUNNER_ROLE"
+
+    echo "setting DEV_ARTILLERY_RUNNER_ROLE for dependabot"
+    gh secret set DEV_ARTILLERY_RUNNER_ROLE \
+        --repo ${REPO} \
+        --app dependabot \
+        --body "$DEV_ARTILLERY_RUNNER_ROLE"
+
+    echo "setting REF_ARTILLERY_RUNNER_ROLE for actions"
+    gh secret set REF_ARTILLERY_RUNNER_ROLE \
+        --repo ${REPO} \
+        --app actions \
+        --body "$REF_ARTILLERY_RUNNER_ROLE"
+}
+
 check_gh_logged_in
 
 echo "Getting dev roles"
@@ -349,11 +400,13 @@ echo "DEV_CLOUD_FORMATION_DEPLOY_ROLE:            ${DEV_CLOUD_FORMATION_DEPLOY_R
 echo "DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE:     ${DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE}"
 echo "DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE:    ${DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE}"
 echo "DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE:  ${DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}"
+echo "DEV_ARTILLERY_RUNNER_ROLE:                  ${DEV_ARTILLERY_RUNNER_ROLE}"
 echo
 
 echo "REF_CLOUD_FORMATION_DEPLOY_ROLE:            ${REF_CLOUD_FORMATION_DEPLOY_ROLE}"
 echo "REF_CLOUD_FORMATION_CHECK_VERSION_ROLE:     ${REF_CLOUD_FORMATION_CHECK_VERSION_ROLE}"
 echo "REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE:  ${REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}"
+echo "REF_ARTILLERY_RUNNER_ROLE:                  ${REF_ARTILLERY_RUNNER_ROLE}"
 echo
 
 echo "QA_CLOUD_FORMATION_DEPLOY_ROLE:             ${QA_CLOUD_FORMATION_DEPLOY_ROLE}"
@@ -391,4 +444,10 @@ echo
 set_secrets "NHSDigital/eps-prescription-status-update-api"
 echo
 set_secrets "NHSDigital/eps-FHIR-validator-lambda"
+echo
+set_secrets "NHSDigital/eps-dynamodb-poc"
+echo
+set_secrets "NHSDigital/eps-load-test"
+echo
+set_artillery_secrets "NHSDigital/eps-load-test"
 echo
