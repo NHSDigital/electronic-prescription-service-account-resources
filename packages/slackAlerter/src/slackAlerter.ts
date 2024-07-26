@@ -1,5 +1,5 @@
-import {Logger} from "@aws-lambda-powertools/logger"
-import {SNSEvent, SNSHandler, SNSEventRecord} from "aws-lambda"
+import { Logger } from "@aws-lambda-powertools/logger"
+import { SQSEvent, SQSHandler, SQSRecord, SQSBatchResponse, SQSBatchItemFailure } from "aws-lambda"
 import {
   formatHeader,
   formatTrigger,
@@ -14,23 +14,31 @@ const ENV: string = process.env.ENV || "not-set"
 
 const logger: Logger = new Logger({serviceName: "slackAlerter"})
 
-export const handler: SNSHandler = async(event: SNSEvent): Promise<void> => {
-  logger.info("Received SNS message...")
+export const handler: SQSHandler = async(event: SQSEvent): Promise<SQSBatchResponse> => {
+  logger.info("Received SQS message...")
+  const batchItemFailures: SQSBatchItemFailure[] = []
 
   const totalRecords: number = event.Records.length
   logger.info(`${totalRecords} record(s) to process...`)
   for (const [index, record] of event.Records.entries()){
-    logger.info(`Processing record...`, {recordNo: index, totalRecords: totalRecords})
-    await processRecord(record)
-    logger.info(`Processing complete.`, {recordNo: index, totalRecords: totalRecords})
+    logger.info("Processing record...", {recordNo: index, totalRecords: totalRecords})
+    try{
+      await processRecord(record)
+    } catch (error) {
+      logger.info("Error processing record, returning as failed", {recordNo: index, totalRecords: totalRecords})
+      batchItemFailures.push({itemIdentifier: record.messageId})
+    }
+    logger.info("Processing complete.", {recordNo: index, totalRecords: totalRecords})
   }
-  logger.info("Processing SNS message complete.")
+  logger.info("Processing SQS message complete.")
+
+  return { batchItemFailures }
 }
 
-const processRecord = async (record: SNSEventRecord): Promise<void> => {
+const processRecord = async (record: SQSRecord): Promise<void> => {
   let cloudWatchAlarm: CloudWatchAlarm
   try {
-    cloudWatchAlarm = JSON.parse(record.Sns.Message)
+    cloudWatchAlarm = JSON.parse(record.body)
   } catch (err) {
     logger.info("Invalid JSON in SNS Message", {error: err})
     throw err

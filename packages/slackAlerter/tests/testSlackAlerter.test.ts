@@ -3,7 +3,7 @@ import fetchMock from "jest-fetch-mock"
 import {generateMockAlarmEvent} from "./utils/testUtils"
 import {populateCloudWatchAlertMessageContent} from "../src/slackMessageTemplates"
 import {handler} from "../src/slackAlerter"
-import {Context, SNSEvent} from "aws-lambda"
+import {Context, SQSEvent, SQSBatchResponse} from "aws-lambda"
 
 fetchMock.enableMocks()
 
@@ -13,7 +13,7 @@ describe("Slack Alerter", () => {
   })
 
   // Happy Path
-  it("posts a correctly formatted message to slack when called with a valid SNS event", async () => {
+  it("posts a correctly formatted message to slack when called with a valid SQS event", async () => {
     fetchMock
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
@@ -21,14 +21,15 @@ describe("Slack Alerter", () => {
       }))
       .once(JSON.stringify({ok: true}))
 
-    const mockSNSEvent = generateMockAlarmEvent([{
+    const mockSQSEvent = generateMockAlarmEvent([{
       name: "PSU - Test Alarm 1",
-      description: "Test alarm for some test lambda"
-    }]) as SNSEvent
+      description: "Test alarm for some test lambda",
+      id: "record1"
+    }]) as SQSEvent
     const context = {} as Context
     const callback = jest.fn()
 
-    await handler(mockSNSEvent, context, callback)
+    await handler(mockSQSEvent, context, callback)
 
     const expectedRequest = [
       "www.slack.com/webhook",
@@ -66,14 +67,15 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%201`
       }))
       .once(JSON.stringify({ok: true}))
 
-    const mockSNSEvent = generateMockAlarmEvent([{
+    const mockSQSEvent = generateMockAlarmEvent([{
       name: "Test Alarm 1",
-      description: "Test alarm for some test lambda"
-    }]) as SNSEvent
+      description: "Test alarm for some test lambda",
+      id: "record1"
+    }]) as SQSEvent
     const context = {} as Context
     const callback = jest.fn()
 
-    await handler(mockSNSEvent, context, callback)
+    await handler(mockSQSEvent, context, callback)
 
     const expectedRequest = [
       "www.slack.com/webhook",
@@ -103,7 +105,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=Test%20Alarm%201`
     expect(fetchMock.mock.calls[1]).toEqual(expectedRequest)
   })
 
-  it("posts multiple message to slack when called with a valid SNS event containing multiple records", async () => {
+  it("posts multiple message to slack when called with a valid SQS event containing multiple records", async () => {
     fetchMock
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
@@ -116,20 +118,22 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=Test%20Alarm%201`
       }))
       .once(JSON.stringify({ok: true}))
 
-    const mockSNSEvent = generateMockAlarmEvent([
+    const mockSQSEvent = generateMockAlarmEvent([
       {
         name: "PSU - Test Alarm 1",
-        description: "Test alarm for some test lambda"
+        description: "Test alarm for some test lambda",
+        id: "record1"
       },
       {
         name: "PSU - Test Alarm 2",
-        description: "Test alarm 2 for some test lambda"
+        description: "Test alarm 2 for some test lambda",
+        id: "record2"
       }
-    ]) as SNSEvent
+    ]) as SQSEvent
     const context = {} as Context
     const callback = jest.fn()
 
-    await handler(mockSNSEvent, context, callback)
+    await handler(mockSQSEvent, context, callback)
 
     const expectedRequest1 = [
       "www.slack.com/webhook",
@@ -195,14 +199,15 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
       }))
       .once(JSON.stringify({ok: true}))
 
-    const mockSNSEvent = generateMockAlarmEvent([{
+    const mockSQSEvent = generateMockAlarmEvent([{
       name: "PSU - Test Alarm 1",
-      description: "Test alarm for some test lambda"
-    }]) as SNSEvent
+      description: "Test alarm for some test lambda",
+      id: "record1"
+    }]) as SQSEvent
     const context = {} as Context
     const callback = jest.fn()
 
-    await handler(mockSNSEvent, context, callback)
+    await handler(mockSQSEvent, context, callback)
 
     const expectedRequest = [
       "http://localhost:2773/secretsmanager/get?secretId=account-resources-SlackWebhookUrl",
@@ -216,8 +221,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
     expect(fetchMock.mock.calls[0]).toEqual(expectedRequest)
   })
 
-  // Errors processing SNS Message
-  it("Throws SyntaxError when SNS record contains invalid json", async () => {
+  it("returns no failures when when called with a valid SQS event", async () => {
     fetchMock
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
@@ -225,30 +229,95 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
       }))
       .once(JSON.stringify({ok: true}))
 
-    const mockSNSEvent = {
+    const mockSQSEvent = generateMockAlarmEvent([{
+      name: "PSU - Test Alarm 1",
+      description: "Test alarm for some test lambda",
+      id: "record1"
+    }]) as SQSEvent
+    const context = {} as Context
+    const callback = jest.fn()
+
+    const actual = await handler(mockSQSEvent, context, callback)
+
+    const expectedResponse = {
+      batchItemFailures: []
+    }
+    expect(actual).toEqual(expectedResponse)
+  })
+
+  // Errors processing SNS Message
+  it("Returns batchItemFailures when SNS message contains invalid json", async () => {
+    fetchMock
+      .once(JSON.stringify({
+        Name: "account-resources-SlackWebhookUrl",
+        SecretString: "www.slack.com/webhook"
+      }))
+      .once(JSON.stringify({ok: true}))
+
+    const mockSQSEvent = {
       Records: [
         {
-          Sns: {
-            Message: ""
-          }
+          body: "",
+          messageId: "record1"
         }
       ]
-    } as SNSEvent
+    } as SQSEvent
+    const context = {} as Context
+    const callback = jest.fn()
 
-        generateMockAlarmEvent([{
-          name: "PSU - Test Alarm 1",
-          description: "Test alarm for some test lambda"
-        }]) as SNSEvent
-        const context = {} as Context
-        const callback = jest.fn()
+    const expectedResponse: SQSBatchResponse = {
+      batchItemFailures: [
+        {
+          itemIdentifier: "record1"
+        }
+      ]
+    }
+    const actual = await handler(mockSQSEvent, context, callback)
+    expect(actual).toEqual(expectedResponse)
+  })
 
-        expect(async () =>
-          await handler(mockSNSEvent, context, callback)
-        ).rejects.toThrow(SyntaxError)
+  it("Returns only failed records when called with an SQS message contained a mix of valid and invalid records", async () => {
+    fetchMock
+      .once(JSON.stringify({
+        Name: "account-resources-SlackWebhookUrl",
+        SecretString: "www.slack.com/webhook"
+      }))
+      .once(JSON.stringify({ok: true}))
+      .once(JSON.stringify({
+        Name: "account-resources-SlackWebhookUrl",
+        SecretString: "www.slack.com/webhook"
+      }))
+      .mockRejectOnce(new Error("Mock fetch error"))
+
+    const mockSQSEvent = generateMockAlarmEvent([
+      {
+        name: "PSU - Test Alarm 1",
+        description: "Test alarm for some test lambda",
+        id: "record1"
+      },
+      {
+        name: "PSU - Test Alarm 2",
+        description: "Test alarm for some test lambda",
+        id: "record2"
+      }
+    ]) as SQSEvent
+
+    const context = {} as Context
+    const callback = jest.fn()
+
+    const expectedResponse: SQSBatchResponse = {
+      batchItemFailures: [
+        {
+          itemIdentifier: "record2"
+        }
+      ]
+    }
+    const actual = await handler(mockSQSEvent, context, callback)
+    expect(actual).toEqual(expectedResponse)
   })
 
   // Errors posting to Slack
-  it("Throws Error when an error occurs posting to slack", async () => {
+  it("Returns batchItemFailures when an error occurs posting to slack", async () => {
     fetchMock
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
@@ -256,19 +325,26 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
       }))
       .mockRejectOnce(new Error("Mock fetch error"))
 
-    const mockSNSEvent = generateMockAlarmEvent([{
+    const mockSQSEvent = generateMockAlarmEvent([{
       name: "PSU - Test Alarm 1",
-      description: "Test alarm for some test lambda"
-    }]) as SNSEvent
+      description: "Test alarm for some test lambda",
+      id: "record1"
+    }]) as SQSEvent
     const context = {} as Context
     const callback = jest.fn()
 
-    expect(async () =>
-      await handler(mockSNSEvent, context, callback)
-    ).rejects.toThrow("Mock fetch error")
+    const expectedResponse: SQSBatchResponse = {
+      batchItemFailures: [
+        {
+          itemIdentifier: "record1"
+        }
+      ]
+    }
+    const actual = await handler(mockSQSEvent, context, callback)
+    expect(actual).toEqual(expectedResponse)
   })
 
-  it("Throws Error when an error response is received from slack", async () => {
+  it("Returns batchItemFailures when an error response is received from slack", async () => {
     fetchMock
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
@@ -276,15 +352,22 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
       }))
       .once(JSON.stringify({ok: false, error: "invalid_payload"}), {status: 400})
 
-    const mockSNSEvent = generateMockAlarmEvent([{
+    const mockSQSEvent = generateMockAlarmEvent([{
       name: "PSU - Test Alarm 1",
-      description: "Test alarm for some test lambda"
-    }]) as SNSEvent
+      description: "Test alarm for some test lambda",
+      id: "record1"
+    }]) as SQSEvent
     const context = {} as Context
     const callback = jest.fn()
 
-    expect(async () =>
-      await handler(mockSNSEvent, context, callback)
-    ).rejects.toThrow("Error response received from slack")
+    const expectedResponse: SQSBatchResponse = {
+      batchItemFailures: [
+        {
+          itemIdentifier: "record1"
+        }
+      ]
+    }
+    const actual = await handler(mockSQSEvent, context, callback)
+    expect(actual).toEqual(expectedResponse)
   })
 })

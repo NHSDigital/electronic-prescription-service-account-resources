@@ -1,26 +1,26 @@
-import {SNSEvent, SNSMessage} from "aws-lambda"
+import {SNSMessage, SQSEvent, SQSRecord} from "aws-lambda"
 import {CloudWatchAlarm, Trigger} from "../../src/types"
 
 interface Alarm {
     name: string
     description: string
+    id: string
 }
 
-export const generateMockAlarmEvent = (alarms: Alarm[]): Partial<SNSEvent> => {
+export const generateMockAlarmEvent = (alarms: Alarm[]): Partial<SQSEvent> => {
 
-  const records: Partial<SNSMessage>[] = []
+  const records: Partial<SQSRecord>[] = []
   for (const alarm of alarms){
-    const message = {
-      Sns: {
-        Message: JSON.stringify(generateMockAlarm(alarm))
-      }
-    } as Partial<SNSMessage>
-    records.push(message)
+    const record = {
+      body: JSON.stringify(generateMockAlarm(alarm)),
+      messageId: alarm.id
+    } as Partial<SQSRecord>
+    records.push(record)
   }
 
   return {
     Records: records
-  } as SNSEvent
+  } as SQSEvent
 }
 
 const generateMockAlarm = (alarmDetails: Alarm): CloudWatchAlarm => {
