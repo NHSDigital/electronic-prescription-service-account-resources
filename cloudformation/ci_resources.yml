@@ -146,11 +146,14 @@ Resources:
               - ecr:ListImages
               - ecr:ListTagsForResource
               - ecr:PutImage
-              - ecr:GetAuthorizationToken
               - ecr:InitiateLayerUpload
               - ecr:TagResource
               - ecr:UntagResource
             Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:*"
+          - Effect: Allow
+            Action:
+               - ecr:GetAuthorizationToken
+            Resource: '*'   
 
   ##################################################
   # Cloudformation Execution Role
