@@ -17,10 +17,6 @@ describe("createSignedJWT", () => {
   const mockUuid = "mockUuid"
   const mockRealmUrl = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
 
-  beforeAll(() => {})
-
-  beforeEach(() => {})
-
   afterEach(() => {
     jest.clearAllMocks()
   })
