@@ -954,6 +954,16 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SplunkHECToken"
 
+##################################################
+  # FHIR Facade ECR Repository
+##################################################
+  FHIRFacadeRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: fhir-facade-repo
+      ImageScanningConfiguration: 
+        ScanOnPush: true    
+
 Outputs:
   ##################################################
   # Cloudwatch Outputs
@@ -977,6 +987,18 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudwatchEncryptionKMSPolicyArn"]]
+
+  FHIRFacadeRepoArn:
+    Description: "The Arn of the FHIR Facade ECR repo"
+    Value: !GetAtt FHIRFacadeRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
+
+  FHIRFacadeRepoUri:
+    Description: "The URL of the FHIR Facade ECR repo"    
+    Value: !GetAtt FHIRFacadeRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
 
   ##################################################
   # Artifacts Bucket Outputs
