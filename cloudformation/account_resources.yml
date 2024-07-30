@@ -623,7 +623,16 @@ Resources:
               - kms:ReEncrypt*
               - kms:Decrypt
             Resource: "*"
-    
+          - Sid: Enable SQS
+            Effect: Allow
+            Principal:
+              Service: sqs.amazonaws.com
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Decrypt
+            Resource: "*"
+
   SnsKMSKeyKMSKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
@@ -645,7 +654,7 @@ Resources:
               - kms:Encrypt*
               - kms:ReEncrypt*
               - kms:Decrypt
-            Resource: !GetAtt SecretsKMSKey.Arn
+            Resource: !GetAtt SnsKMSKey.Arn
 
   SnsDecryptSecretsKMSPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -658,6 +667,61 @@ Resources:
               - kms:Decrypt
             Resource:
               - !GetAtt SnsKMSKey.Arn
+  #endregion
+
+  ##################################################
+  #region SQS KMS
+  ##################################################
+  SqsKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-sqs
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
+            Resource: "*"
+    
+  SqsKMSKeyKMSKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/SqsKMSKeyAlias
+      TargetKeyId: !Ref SqsKMSKey
+
+  UseSqsKMSKeyManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt*
+              - kms:ReEncrypt*
+              - kms:Decrypt
+            Resource: !GetAtt SqsKMSKey.Arn
+
+  SqsDecryptSecretsKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt SqsKMSKey.Arn
   #endregion
 
   ##################################################
@@ -1128,6 +1192,23 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "SnsDecryptSecretsKMSPolicy"]]
+  #endregion
+
+  ##################################################
+  #region SQS KMS Outputs
+  ##################################################
+  SqsKMSKey:
+    Description: SqsKMSKey
+    Value: !GetAtt SqsKMSKey.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SqsKMSKey"]]
+
+  SqsDecryptSecretsKMSPolicy:
+    Description: "SQS Decrypt Secrets KMS Policy ARN"
+    Value: !GetAtt SqsDecryptSecretsKMSPolicy.PolicyArn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "SqsDecryptSecretsKMSPolicy"]]
   #endregion
 
   ##################################################

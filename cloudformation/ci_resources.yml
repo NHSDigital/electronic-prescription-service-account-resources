@@ -363,6 +363,18 @@ Resources:
               - sns:Unsubscribe
               - sns:TagResource
               - sns:UntagResource
+              - sqs:AddPermission
+              - sqs:RemovePermission
+              - sqs:CreateQueue
+              - sqs:DeleteQueue
+              - sqs:ListQueues
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:ListDeadLetterSourceQueues
+              - sqs:ListQueueTags
+              - sqs:TagQueue
+              - sqs:UntagQueue
+              - sqs:SetQueueAttributes
             Resource: "*"
   
   GrantCloudFormationExecutionAccessPolicyC:

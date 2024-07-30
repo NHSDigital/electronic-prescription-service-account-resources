@@ -421,6 +421,32 @@ Resources:
       TopicName: !Sub ${AWS::StackName}-SlackAlerts
       KmsMasterKeyId: !ImportValue account-resources:SnsKMSKey
 
+  SlackAlerterSqsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${AWS::StackName}-SlackAlerts
+      KmsMasterKeyId: !ImportValue account-resources:SqsKMSKey
+      MessageRetentionPeriod: 86400 # 1day in secs
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt SlackAlerterDeadLetterQueue.Arn
+      VisibilityTimeout: 60
+
+  SlackAlerterDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${AWS::StackName}-SlackAlertsDeadLetter
+      KmsMasterKeyId: !ImportValue account-resources:SqsKMSKey
+      MessageRetentionPeriod: 604800 # 1week in secs
+      VisibilityTimeout: 60
+
+  SlackAlerterSqsQueueSnsSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: SlackAlertsSnsTopic.TopicArn
+      RawMessageDelivery: true
+      Protocol: sqs
+      Endpoint: !GetAtt SlackAlerterSqsQueue.Arn
+
   SlackAlerterResources:
     Type: AWS::Serverless::Application
     Properties:
@@ -435,7 +461,7 @@ Resources:
         IncludeAdditionalPolicies: true
         AdditionalPolicies: !Join
           - ","
-          - - !ImportValue account-resources:SnsDecryptSecretsKMSPolicy
+          - - !ImportValue account-resources:SqsDecryptSecretsKMSPolicy
             - !ImportValue account-resources:AccessSlackSecretsManagedPolicy
 
   SlackAlerter:
@@ -451,10 +477,14 @@ Resources:
       Layers:
         - arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11
       Events:
-        SNSEvent:
-          Type: SNS
+        SQSEvent:
+          Type: SQS
           Properties:
-            Topic: !Ref SlackAlertsSnsTopic
+            Queue: !GetAtt SlackAlerterSqsQueue.Arn
+            Enabled: true
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            BatchSize: 10
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
