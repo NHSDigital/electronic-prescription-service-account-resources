@@ -149,6 +149,7 @@ Resources:
               - ecr:InitiateLayerUpload
               - ecr:TagResource
               - ecr:UntagResource
+              - ecr:UploadLayerPart
             Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:*"
           - Effect: Allow
             Action:
