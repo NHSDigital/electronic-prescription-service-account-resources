@@ -151,6 +151,8 @@ Resources:
               - ecr:UntagResource
               - ecr:UploadLayerPart
               - ecr:CompleteLayerUpload
+              - ecr:BatchCheckLayerAvailability
+
             Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:*"
           - Effect: Allow
             Action:
