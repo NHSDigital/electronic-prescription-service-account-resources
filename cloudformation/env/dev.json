@@ -38,6 +38,12 @@
       ],
       "ArtilleryLoadTestRoleClaimFilters": [
         "repo:NHSDigital/eps-load-test:*"
+      ],
+      "ProxygenPTLClaimFilters": [
+        "NONE"
+      ],
+      "ProxygenProdClaimFilters": [
+        "NONE"
       ]
     },
     "account-resources": {},
