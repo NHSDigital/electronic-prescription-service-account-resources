@@ -459,6 +459,7 @@ Resources:
               - sqs:ChangeMessageVisibility
               - sqs:DeleteMessage
               - sqs:ReceiveMessage
+            Resource: !GetAtt  SlackAlerterSqsQueue.Arn
   
   SlackAlerterResources:
     Type: AWS::Serverless::Application
