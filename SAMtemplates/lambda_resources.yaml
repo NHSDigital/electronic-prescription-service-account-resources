@@ -464,7 +464,7 @@ Resources:
     Type: AWS::SQS::QueuePolicy
     Properties:
       Queues:
-        - !GetAtt SlackAlerterSqsQueue.QueueUrl
+        - !GetAtt SlackAlerterDeadLetterQueue.QueueUrl
       PolicyDocument:
         Version: 2012-10-17
         Statement:
