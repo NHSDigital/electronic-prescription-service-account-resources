@@ -443,7 +443,7 @@ Resources:
   SlackAlerterSqsQueueSnsSubscription:
     Type: AWS::SNS::Subscription
     Properties:
-      TopicArn: SlackAlertsSnsTopic.TopicArn
+      TopicArn: !GetAtt SlackAlertsSnsTopic.TopicArn
       RawMessageDelivery: true
       Protocol: sqs
       Endpoint: !GetAtt SlackAlerterSqsQueue.Arn
