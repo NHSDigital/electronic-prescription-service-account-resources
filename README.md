@@ -92,7 +92,7 @@ The following stacks are defined in this repository
 
 # CI Resources
 
-cloudformation/ci_resources.yml contains resources that are needed for the CI pipeline to work. This should be applied to each environment.  
+`cloudformation/ci_resources.yml` contains resources that are needed for the CI pipeline to work. This should be applied to each environment.  
 This is created as part of CI pipeline.  
 It creates the following resources
 
@@ -107,7 +107,7 @@ It creates the following resources
 
 # Account Resources
 
-cloudformation/account_resources.yml contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
+`cloudformation/account_resources.yml` contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
 This is created as part of CI pipeline.  
 It creates the following resources
 
@@ -134,11 +134,11 @@ It creates the following resources
 
 # Route 53 resources - environment accounts
 
-cloudformation/environment_route53.yml contains route 53 resources created in each environment account.  
+`cloudformation/environment_route53.yml` contains route 53 resources created in each environment account.  
 This needs to be manually deployed to each environment.  
 It creates the following resources
 
-- route 53 hosted zone for {environment}.{domain}.national.nhs.uk
+- route 53 hosted zone for `{environment}.{domain}.national.nhs.uk`
 
 To deploy the stack, use the following
 
@@ -177,7 +177,7 @@ aws cloudformation deploy \
 
 # lambda_resources
 
-SAMtemplates/lambda_resources.yaml contains common lambdas and resources needed per environment.  
+`SAMtemplates/lambda_resources.yaml` contains common lambdas and resources needed per environment.  
 This is created as part of CI pipeline.  
 It creates the following resources
 
@@ -204,12 +204,12 @@ It creates the following resources
 - ProxygenProdMTLSSecretPutFunction - lambda used to create or update MTLS secrets in PROD apigee environments
 - ProxygenProdSpecPublishFunction - lambda used to update proxy spec on API catalogue page
 
-PTL apigee environments are internal-dev,internal-dev-sandbox,internal-qa,ref
-ROD apigee environments are int,sandbox,prod
+PTL apigee environments are `internal-dev,internal-dev-sandbox,internal-qa,ref`
+ROD apigee environments are `int,sandbox,prod`
 
 # vpc_resources
 
-cloudformation/vpc_resources.yml contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
+`cloudformation/vpc_resources.yml` contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
 This is created as part of CI pipeline.  
 It creates the following resources
 
@@ -223,19 +223,19 @@ It creates the following resources
 
 # artillery_resources
 
-cloudformation/artillery_resources.yml contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
+`cloudformation/artillery_resources.yml` contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
 This is created as part of CI pipeline.  
 It creates the following resources
 
-- an S3 bucket named "artilleryio-test-data-${AWS::AccountId}"
+- an S3 bucket named "`artilleryio-test-data-${AWS::AccountId}`"
 - a standard bucket policy
 - KMS key used to encrypt objects in the bucket
 - alias for the KMS key
 - managed policy to use the KMS key
 - an artillery worker role
 - a minimum policy for the worker role to allow artillery to run
-- log group named "artilleryio-log-group/artilleryio-cluster"
-- an ECS cluster named "artilleryio-cluster"
+- log group named "`artilleryio-log-group/artilleryio-cluster`"
+- an ECS cluster named "`artilleryio-cluster`"
 
 ## Parameters for stacks
 
@@ -275,14 +275,14 @@ There are `make` commands that are run as part of the CI pipeline and help alias
 
 ### Github folder
 
-This .github folder contains workflows and templates related to github
+This `.github` folder contains workflows and templates related to github
 
 - `pull_request_template.yml`: Template for pull requests.
 
-Workflows are in the .github/workflows folder
+Workflows are in the `.github/workflows` folder
 
 - `combine-dependabot-prs.yml`: Workflow for combining dependabot pull requests. Runs on demand
-- `pull_request.yml`: Called when pull request is opened or updated. Creates change sets for stacks against dev. The changesets are named <stack_name>-pr-<PR_NO>
+- `pull_request.yml`: Called when pull request is opened or updated. Creates change sets for stacks against dev. The changesets are named `<stack_name>-pr-<PR_NO>`
 - `quality_checks.yml`: Runs check-licenses and linting against the repo. Called from pull_request.yml and release.yml
 - `release.yml`: Run when code is merged to main branch or a tag starting v is pushed. Creates versioned changesets that are executed after being reviewed.
 - `pr-link.yaml`: This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
@@ -291,7 +291,7 @@ Workflows are in the .github/workflows folder
 
 ## Scripts
 
-- calculate_version.py - used when merge to main to calculate a semver-compliant version number to name the release in github
-- check_python_licenses.sh - check that all python libraries used have a compatible license
-- parse_parameters.py - used in github pipelines to parse cloudformation/env files to set parameters in format that can be passed to cloudformation command
-- set_secrets.sh - script which can be manually run to set secrets in all EPS repositories
+- `calculate_version.py` - used when merge to main to calculate a semver-compliant version number to name the release in github
+- `check_python_licenses.sh` - check that all python libraries used have a compatible license
+- `parse_parameters.py` - used in github pipelines to parse cloudformation/env files to set parameters in format that can be passed to cloudformation command
+- `set_secrets.sh` - script which can be manually run to set secrets in all EPS repositories

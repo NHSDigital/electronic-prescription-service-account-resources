@@ -31,7 +31,8 @@
         "NONE"
       ],
       "ProxygenPTLClaimFilters": [
-        "repo:NHSDigital/eps-prescription-status-update-api:*"
+        "repo:NHSDigital/eps-prescription-status-update-api:*",
+        "repo:NHSDigital/eps-load-test:*"
       ],
       "ProxygenProdClaimFilters": [
         "repo:NHSDigital/eps-prescription-status-update-api:environment:int",

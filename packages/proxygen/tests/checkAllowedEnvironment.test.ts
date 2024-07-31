@@ -11,7 +11,7 @@ describe("checkAllowedEnvironment", () => {
     _SAVED_ALLOWED_ENVIRONMENTS = process.env.ALLOWED_ENVIRONMENTS
   })
 
-  beforeEach(() => {
+  afterEach(() => {
     process.env.ALLOWED_ENVIRONMENTS = _SAVED_ALLOWED_ENVIRONMENTS
   })
   it("should not throw an error if the environment is allowed", () => {

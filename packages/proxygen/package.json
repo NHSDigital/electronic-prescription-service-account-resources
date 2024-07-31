@@ -2,7 +2,7 @@
     "name": "proxygen",
     "version": "1.0.0",
     "description": "Lambda to daily check AWS certficates expiry ",
-    "main": "certficateChecker.ts",
+    "main": "proxygenInstanceGet.ts",
     "author": "NHS England",
     "license": "MIT",
     "dependencies": {

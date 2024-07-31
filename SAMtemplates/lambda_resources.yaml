@@ -4,6 +4,17 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   splunk firehose transform
 
+Globals:
+  Function:
+    Timeout: 50
+    MemorySize: 256
+    Architectures:
+      - x86_64
+    Runtime: nodejs20.x
+    Environment:
+      Variables:
+        NODE_OPTIONS: "--enable-source-maps"
+
 Parameters:
   SplunkHECEndpoint:
     Type: String
@@ -201,15 +212,11 @@ Resources:
     Properties:
       CodeUri: ../packages/
       Handler: splunkProcessor.handler
-      Runtime: nodejs18.x
       Role: !GetAtt SplunkDeliveryStreamProcessorRole.Arn
-      Architectures:
-        - x86_64
       MemorySize: 512
       Timeout: 60
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           LOG_LEVEL: !Ref LogLevel
           ENV: !Ref Env
     Metadata: # Manage esbuild properties
@@ -365,11 +372,7 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-CertificateChecker"
       CodeUri: ../packages/
       Handler: certificateChecker.handler
-      Runtime: nodejs18.x
       Role: !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
-      Environment:
-        Variables:
-          NODE_OPTIONS: --enable-source-maps
       Events:
         ScheduleEvent:
           Type: ScheduleV2
@@ -488,12 +491,10 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-ProxygenPTLInstancePut"
       CodeUri: ../packages/
       Handler: proxygenInstancePut.handler
-      Runtime: nodejs18.x
       Timeout: 600
       Role: !GetAtt ProxygenPTLInstancePutFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox,internal-qa,ref
     Metadata:
       BuildMethod: esbuild
@@ -526,12 +527,10 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-ProxygenProdInstancePut"
       CodeUri: ../packages/
       Handler: proxygenInstancePut.handler
-      Runtime: nodejs18.x
       Timeout: 600
       Role: !GetAtt ProxygenProdInstancePutFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           ALLOWED_ENVIRONMENTS: int,sandbox,prod
     Metadata:
       BuildMethod: esbuild
@@ -564,12 +563,10 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-ProxygenPTLMTLSSecretPut"
       CodeUri: ../packages/
       Handler: proxygenMTLSSecretPut.handler
-      Runtime: nodejs18.x
       Timeout: 600
       Role: !GetAtt ProxygenPTLMTLSSecretPutFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox,internal-qa,ref
     Metadata:
       BuildMethod: esbuild
@@ -602,12 +599,10 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-ProxygenProdMTLSSecretPut"
       CodeUri: ../packages/
       Handler: proxygenMTLSSecretPut.handler
-      Runtime: nodejs18.x
       Timeout: 600
       Role: !GetAtt ProxygenProdMTLSSecretPutFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           ALLOWED_ENVIRONMENTS: int,sandbox,prod
     Metadata:
       BuildMethod: esbuild
@@ -640,12 +635,10 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-ProxygenPTLSpecPublish"
       CodeUri: ../packages/
       Handler: proxygenSpecPublish.handler
-      Runtime: nodejs18.x
       Timeout: 600
       Role: !GetAtt ProxygenPTLSpecPublishFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           ALLOWED_ENVIRONMENTS: uat
     Metadata:
       BuildMethod: esbuild
@@ -678,12 +671,10 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-ProxygenProdSpecPublish"
       CodeUri: ../packages/
       Handler: proxygenSpecPublish.handler
-      Runtime: nodejs18.x
       Timeout: 600
       Role: !GetAtt ProxygenProdSpecPublishFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           ALLOWED_ENVIRONMENTS: prod
     Metadata:
       BuildMethod: esbuild
@@ -716,12 +707,10 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-ProxygenPTLInstanceGet"
       CodeUri: ../packages/
       Handler: proxygenInstanceGet.handler
-      Runtime: nodejs18.x
       Timeout: 600
       Role: !GetAtt ProxygenPTLInstanceGetFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           ALLOWED_ENVIRONMENTS: internal-dev
     Metadata:
       BuildMethod: esbuild
@@ -754,12 +743,10 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-ProxygenPTLInstanceDelete"
       CodeUri: ../packages/
       Handler: proxygenInstanceDelete.handler
-      Runtime: nodejs18.x
       Timeout: 600
       Role: !GetAtt ProxygenPTLInstanceDeleteFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           ALLOWED_ENVIRONMENTS: internal-dev
     Metadata:
       BuildMethod: esbuild
