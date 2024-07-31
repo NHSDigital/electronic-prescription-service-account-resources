@@ -429,6 +429,7 @@ Resources:
       MessageRetentionPeriod: 86400 # 1day in secs
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt SlackAlerterDeadLetterQueue.Arn
+        maxReceiveCount: 5
       VisibilityTimeout: 60
 
   SlackAlerterDeadLetterQueue:
