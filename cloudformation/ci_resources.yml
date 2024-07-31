@@ -910,16 +910,16 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "ProxygenPTLRole"]]
   ProxygenPTLRoleName:
     Description: Name of the IAM Role(ProxygenPTLRole)
-    Value: !Ref ReleaseNotesExecuteLambdaRole
+    Value: !Ref ProxygenPTLRole
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ProxygenPTLRoleName"]]
   ProxygenProdRole:
     Description: ARN of the IAM Role(ProxygenProdRole)
-    Value: !GetAtt ProxygenPTLRole.Arn
+    Value: !GetAtt ProxygenProdRole.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ProxygenProdRole"]]
   ProxygenProdRoleName:
     Description: Name of the IAM Role(ProxygenProdRole)
-    Value: !Ref ReleaseNotesExecuteLambdaRole
+    Value: !Ref ProxygenProdRole
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ProxygenProdRoleName"]]
