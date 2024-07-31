@@ -276,45 +276,46 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=PSU%20-%20Test%20Alarm%202`
     expect(actual).toEqual(expectedResponse)
   })
 
-  it("Returns only failed records when called with an SQS message contained a mix of valid and invalid records", async () => {
-    fetchMock
-      .once(JSON.stringify({
-        Name: "account-resources-SlackWebhookUrl",
-        SecretString: "www.slack.com/webhook"
-      }))
-      .once(JSON.stringify({ok: true}))
-      .once(JSON.stringify({
-        Name: "account-resources-SlackWebhookUrl",
-        SecretString: "www.slack.com/webhook"
-      }))
-      .mockRejectOnce(new Error("Mock fetch error"))
+  it("Returns only failed records when called with an SQS message containing a mix of valid and invalid records",
+    async () => {
+      fetchMock
+        .once(JSON.stringify({
+          Name: "account-resources-SlackWebhookUrl",
+          SecretString: "www.slack.com/webhook"
+        }))
+        .once(JSON.stringify({ok: true}))
+        .once(JSON.stringify({
+          Name: "account-resources-SlackWebhookUrl",
+          SecretString: "www.slack.com/webhook"
+        }))
+        .mockRejectOnce(new Error("Mock fetch error"))
 
-    const mockSQSEvent = generateMockAlarmEvent([
-      {
-        name: "PSU - Test Alarm 1",
-        description: "Test alarm for some test lambda",
-        id: "record1"
-      },
-      {
-        name: "PSU - Test Alarm 2",
-        description: "Test alarm for some test lambda",
-        id: "record2"
-      }
-    ]) as SQSEvent
-
-    const context = {} as Context
-    const callback = jest.fn()
-
-    const expectedResponse: SQSBatchResponse = {
-      batchItemFailures: [
+      const mockSQSEvent = generateMockAlarmEvent([
         {
-          itemIdentifier: "record2"
+          name: "PSU - Test Alarm 1",
+          description: "Test alarm for some test lambda",
+          id: "record1"
+        },
+        {
+          name: "PSU - Test Alarm 2",
+          description: "Test alarm for some test lambda",
+          id: "record2"
         }
-      ]
-    }
-    const actual = await handler(mockSQSEvent, context, callback)
-    expect(actual).toEqual(expectedResponse)
-  })
+      ]) as SQSEvent
+
+      const context = {} as Context
+      const callback = jest.fn()
+
+      const expectedResponse: SQSBatchResponse = {
+        batchItemFailures: [
+          {
+            itemIdentifier: "record2"
+          }
+        ]
+      }
+      const actual = await handler(mockSQSEvent, context, callback)
+      expect(actual).toEqual(expectedResponse)
+    })
 
   // Errors posting to Slack
   it("Returns batchItemFailures when an error occurs posting to slack", async () => {

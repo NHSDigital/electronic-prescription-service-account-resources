@@ -1,5 +1,11 @@
-import { Logger } from "@aws-lambda-powertools/logger"
-import { SQSEvent, SQSHandler, SQSRecord, SQSBatchResponse, SQSBatchItemFailure } from "aws-lambda"
+import {Logger} from "@aws-lambda-powertools/logger"
+import {
+  SQSEvent,
+  SQSHandler,
+  SQSRecord,
+  SQSBatchResponse,
+  SQSBatchItemFailure
+} from "aws-lambda"
 import {
   formatHeader,
   formatTrigger,
@@ -32,7 +38,7 @@ export const handler: SQSHandler = async(event: SQSEvent): Promise<SQSBatchRespo
   }
   logger.info("Processing SQS message complete.")
 
-  return { batchItemFailures }
+  return {batchItemFailures}
 }
 
 const processRecord = async (record: SQSRecord): Promise<void> => {
@@ -53,7 +59,7 @@ const processRecord = async (record: SQSRecord): Promise<void> => {
 }
 
 const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudWatchAlertMessageContent => {
-  // To fully populate the message, alert names should be in the format "<stack_name> - <Alarm Name>" 
+  // To fully populate the message, alert names should be in the format "<stack_name> - <Alarm Name>"
   // e.g. "psu - Lambda Errors".
   let stack, alarmName
   if (cloudWatchMessage.AlarmName.includes(" - ")){

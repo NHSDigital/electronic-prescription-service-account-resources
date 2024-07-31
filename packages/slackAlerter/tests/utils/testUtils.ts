@@ -1,4 +1,4 @@
-import {SNSMessage, SQSEvent, SQSRecord} from "aws-lambda"
+import {SQSEvent, SQSRecord} from "aws-lambda"
 import {CloudWatchAlarm, Trigger} from "../../src/types"
 
 interface Alarm {
