@@ -520,7 +520,7 @@ Resources:
           - ","
           - - !ImportValue account-resources:SqsDecryptSecretsKMSPolicy
             - !ImportValue account-resources:AccessSlackSecretsManagedPolicy
-            - !GetAtt AccessSlackAlerterSqsQueuePolicy.PolicyArn
+            - !GetAtt ReadSlackAlerterSqsQueuePolicy.PolicyArn
 
   SlackAlerter:
     Type: AWS::Serverless::Function
