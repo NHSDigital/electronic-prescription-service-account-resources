@@ -54,7 +54,7 @@ describe("Unit test for proxygenInstancePut", function () {
     jest.spyOn(jwt, "sign").mockImplementation(jest.fn(() => "mockSignedJWT"))
   })
 
-  beforeEach(() => {
+  afterEach(() => {
     process.env.ALLOWED_ENVIRONMENTS = _SAVED_ALLOWED_ENVIRONMENTS
     jest.clearAllMocks()
     nock.cleanAll()

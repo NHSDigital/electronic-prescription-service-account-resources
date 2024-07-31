@@ -8,8 +8,6 @@ import {jest} from "@jest/globals"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 
 describe("getSecret", () => {
-  beforeEach(() => {})
-
   afterEach(() => {
     jest.clearAllMocks()
   })
