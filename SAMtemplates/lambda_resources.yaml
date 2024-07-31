@@ -448,6 +448,18 @@ Resources:
       Protocol: sqs
       Endpoint: !GetAtt SlackAlerterSqsQueue.Arn
 
+  AccessSlackAlerterSqsQueuePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sqs:ChangeMessageVisibility
+              - sqs:DeleteMessage
+              - sqs:ReceiveMessage
+  
   SlackAlerterResources:
     Type: AWS::Serverless::Application
     Properties:
@@ -464,6 +476,7 @@ Resources:
           - ","
           - - !ImportValue account-resources:SqsDecryptSecretsKMSPolicy
             - !ImportValue account-resources:AccessSlackSecretsManagedPolicy
+            - !GetAtt AccessSlackAlerterSqsQueuePolicy.PolicyArn
 
   SlackAlerter:
     Type: AWS::Serverless::Function
