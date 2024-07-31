@@ -48,7 +48,7 @@ The code below will:
    method.
 6) Any additional records which exceed 6MB will be re-ingested back into Firehose.
 */
-const zlib = require("zlib")
+const zlib = require("node:zlib")
 const {Firehose} = require("@aws-sdk/client-firehose")
 const {Kinesis} = require("@aws-sdk/client-kinesis")
 const {Logger} = require("@aws-lambda-powertools/logger")
