@@ -431,6 +431,26 @@ Resources:
         deadLetterTargetArn: !GetAtt SlackAlerterDeadLetterQueue.Arn
         maxReceiveCount: 5
       VisibilityTimeout: 60
+  
+  SlackAlerterSqsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !GetAtt SlackAlerterSqsQueue.QueueUrl
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action:
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:SendMessage
+            Resource: !GetAtt SlackAlerterSqsQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt SlackAlertsSnsTopic.TopicArn
 
   SlackAlerterDeadLetterQueue:
     Type: AWS::SQS::Queue
@@ -439,6 +459,26 @@ Resources:
       KmsMasterKeyId: !ImportValue account-resources:SqsKMSKey
       MessageRetentionPeriod: 604800 # 1week in secs
       VisibilityTimeout: 60
+  
+  SlackAlerterDeadLetterQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !GetAtt SlackAlerterSqsQueue.QueueUrl
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sqs.amazonaws.com
+            Action:
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:SendMessage
+            Resource: !GetAtt SlackAlerterDeadLetterQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt SlackAlerterSqsQueue.Arn
 
   SlackAlerterSqsQueueSnsSubscription:
     Type: AWS::SNS::Subscription
@@ -448,7 +488,7 @@ Resources:
       Protocol: sqs
       Endpoint: !GetAtt SlackAlerterSqsQueue.Arn
 
-  AccessSlackAlerterSqsQueuePolicy:
+  ReadSlackAlerterSqsQueuePolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
