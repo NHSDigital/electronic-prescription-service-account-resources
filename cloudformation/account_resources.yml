@@ -687,6 +687,17 @@ Resources:
             Action:
               - kms:*
             Resource: "*"
+          - Sid: Enable SNS
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt*
+              - kms:ReEncrypt*
+              - kms:Decrypt
+            Resource: "*"
     
   SqsKMSKeyKMSKeyAlias:
     Type: AWS::KMS::Alias

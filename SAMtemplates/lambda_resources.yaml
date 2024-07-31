@@ -421,6 +421,8 @@ Resources:
       TopicName: !Sub ${AWS::StackName}-SlackAlerts
       KmsMasterKeyId: !ImportValue account-resources:SnsKMSKey
 
+  # todo add deliver status logging
+
   SlackAlerterSqsQueue:
     Type: AWS::SQS::Queue
     Properties:
