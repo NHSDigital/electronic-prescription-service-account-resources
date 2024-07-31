@@ -459,6 +459,9 @@ Resources:
               - sqs:ChangeMessageVisibility
               - sqs:DeleteMessage
               - sqs:ReceiveMessage
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:ListQueues
             Resource: !GetAtt  SlackAlerterSqsQueue.Arn
   
   SlackAlerterResources:
