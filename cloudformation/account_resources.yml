@@ -1008,6 +1008,26 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SplunkHECToken"
 
+##################################################
+  # FHIR Facade ECR Repository
+##################################################
+  FHIRFacadeRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: fhir-facade-repo
+      ImageScanningConfiguration: 
+        ScanOnPush: true    
+
+##################################################
+  # Validator ECR Repository
+##################################################     
+  ValidatorRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: validator-repo
+      ImageScanningConfiguration: 
+        ScanOnPush: true     
+
 Outputs:
   ##################################################
   # Cloudwatch Outputs
@@ -1031,6 +1051,30 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudwatchEncryptionKMSPolicyArn"]]
+
+  FHIRFacadeRepoArn:
+    Description: "The Arn of the FHIR Facade ECR repo"
+    Value: !GetAtt FHIRFacadeRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
+
+  FHIRFacadeRepoUri:
+    Description: "The URI of the FHIR Facade ECR repo"    
+    Value: !GetAtt FHIRFacadeRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
+
+  ValidatorRepoArn:
+    Description: "The Arn of the Validator repo"
+    Value: !GetAtt ValidatorRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]     
+
+  ValidatorRepoUri:
+    Description: "The URI of the Validator ECR repo"    
+    Value: !GetAtt ValidatorRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
 
   ##################################################
   # Artifacts Bucket Outputs
