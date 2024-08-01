@@ -1,8 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
-  ##################################################
   #region API Gateway
-  ##################################################
   ApiGwCloudWatchRole:
     Type: AWS::IAM::Role
     Properties:
@@ -43,9 +41,7 @@ Resources:
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
   #endregion
 
-  ##################################################
   #region Account
-  ##################################################
   Account:
     Type: AWS::ApiGateway::Account
     Properties:
@@ -53,9 +49,7 @@ Resources:
     DependsOn: AllowApiGwLoggingPolicy
   #endregion
 
-  ##################################################
   #region Cloudwatch
-  ##################################################
   CloudwatchResourcePolicy:
     Type: AWS::Logs::ResourcePolicy
     Properties:
@@ -145,9 +139,7 @@ Resources:
               - !GetAtt CloudwatchLogsKmsKey.Arn
   #endregion
 
-  ##################################################
   #region IAM Roles & Policies
-  ##################################################
   SNSFeedbackLoggingRole:
     Type: AWS::IAM::Role
     Properties:
@@ -176,11 +168,8 @@ Resources:
               - logs:PutMetricFilter
               - logs:PutRetentionPolicy
             Resource: "*"
-  
-  
-  ##################################################
+
   #region Artifacts Bucket
-  ##################################################
   ArtifactsBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -270,9 +259,7 @@ Resources:
               - !GetAtt ArtifactsBucket.Arn
   #endregion
 
-  ##################################################
   #region Trust Store Bucket
-  ##################################################
   TrustStoreBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -362,9 +349,7 @@ Resources:
               - !GetAtt TrustStoreBucket.Arn
   #endregion
 
-  ##################################################
   #region Audit Logging Bucket
-  ##################################################
   AuditLoggingBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -440,9 +425,7 @@ Resources:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
   #endregion
 
-  ##################################################
   #region Splunk Delivery Stream Backup Bucket
-  ##################################################
   SplunkDeliveryStreamBackupKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -572,9 +555,7 @@ Resources:
                   - "/*"
   #endregion
 
-  ##################################################
   #region ECR Repositories
-  ##################################################
   FHIRFacadeRepo:
     Type: AWS::ECR::Repository
     Properties: 
@@ -590,9 +571,7 @@ Resources:
         ScanOnPush: true
   #endregion
 
-  ##################################################
   #region Secrets KMS
-  ##################################################
   SecretsKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -645,9 +624,7 @@ Resources:
               - !GetAtt SecretsKMSKey.Arn
   #endregion
 
-  ##################################################
   #region SNS KMS
-  ##################################################
   SnsKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -720,9 +697,7 @@ Resources:
               - !GetAtt SnsKMSKey.Arn
   #endregion
 
-  ##################################################
   #region SQS KMS
-  ##################################################
   SqsKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -786,9 +761,7 @@ Resources:
               - !GetAtt SqsKMSKey.Arn
   #endregion
 
-  ##################################################
   #region PfP CA Secrets
-  ##################################################
   PfpCAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -806,9 +779,7 @@ Resources:
       SecretString: ChangeMe
   #endregion
 
-  ##################################################
   #region PfP Client Secrets
-  ##################################################
   PfpClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -842,9 +813,7 @@ Resources:
       SecretString: ChangeMe
   #endregion
 
-  ##################################################
   #region Clinical Tracker CA Secrets
-  ##################################################
   ClinicalTrackerCAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -862,9 +831,7 @@ Resources:
       SecretString: ChangeMe
   #endregion
 
-  ##################################################
   #region Clinical Tracker Client Secrets
-  ##################################################
   ClinicalTrackerClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -898,9 +865,7 @@ Resources:
       SecretString: ChangeMe
   #endregion
 
-  ##################################################
   #region PSU CA Secrets
-  ##################################################
   PsuCAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -918,9 +883,7 @@ Resources:
       SecretString: ChangeMe
   #endregion
 
-  ##################################################
   #region PSU Client Secrets
-  ##################################################
   PsuClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -954,9 +917,7 @@ Resources:
       SecretString: ChangeMe
   #endregion
 
-  ##################################################
   #region EPS FHIR Facade CA Secrets
-  ##################################################
   FhirFacadeCAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -973,9 +934,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
-  ##################################################
   # EPS FHIR Facade Client Secrets
-  ##################################################
   FhirFacadeClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1009,9 +968,7 @@ Resources:
       SecretString: ChangeMe
   #endregion
 
-  ##################################################
   #region Spine Secrets
-  ##################################################
   SpinePrivateKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1053,9 +1010,7 @@ Resources:
       SecretString: ChangeMe
   #endregion
 
-  ##################################################
   #region Other Secrets
-  ##################################################
   ServiceSearchApiKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1185,9 +1140,7 @@ Resources:
   #endregion
 
 Outputs:
-  ##################################################
   #region Cloudwatch Outputs
-  ##################################################
   CloudwatchLogsKmsKeyArn:
     Description: "The Arn of the API GW cloudwatch logs KMS Key"
     Value: !GetAtt CloudwatchLogsKmsKey.Arn
@@ -1209,9 +1162,7 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "CloudwatchEncryptionKMSPolicyArn"]]
   #endregion
 
-  ##################################################
   #region IAM Roles & Policies Outputs
-  ##################################################
   SNSFeedbackLoggingRoleArn:
     Description: "The Arn of the SNS feedback logging role"
     Value: !GetAtt SNSFeedbackLoggingRole.Arn
@@ -1219,9 +1170,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "SNSFeedbackLoggingRoleArn"]]
   #endregion
 
-  ##################################################
   #region Artifacts Bucket Outputs
-  ##################################################
   ArtifactsBucket:
     Description: ARN of the Artifacts bucket
     Value: !GetAtt ArtifactsBucket.Arn
@@ -1229,9 +1178,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "ArtifactsBucket"]]
   #endregion
 
-  ##################################################
   #region Trust Store Bucket Outputs
-  ##################################################
   TrustStoreBucket:
     Description: ARN of the Truststore bucket
     Value: !GetAtt TrustStoreBucket.Arn
@@ -1239,9 +1186,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "TrustStoreBucket"]]
   #endregion
 
-  ##################################################
   #region Audit Logging Bucket Outputs
-  ##################################################
   AuditLoggingBucket:
     Description: ARN of the audit logging bucket
     Value: !GetAtt AuditLoggingBucket.Arn
@@ -1249,9 +1194,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "AuditLoggingBucket"]]
   #endregion
 
-  ##################################################
   #region Splunk Delivery Stream Backup Bucket Outputs
-  ##################################################
   SplunkDeliveryStreamBackupKMSKey:
     Description: SplunkDeliveryStreamBackupKMSKey
     Value: !GetAtt SplunkDeliveryStreamBackupKMSKey.Arn
@@ -1287,9 +1230,7 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStreamBackupBucket"]]
   #endregion
 
-  ##################################################
   #region ECR Repositories Outputs
-  ##################################################
   FHIRFacadeRepoArn:
     Description: "The Arn of the FHIR Facade ECR repo"
     Value: !GetAtt FHIRFacadeRepo.Arn
@@ -1315,9 +1256,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
   #endregion
 
-  ##################################################
   #region Secrets KMS Outputs
-  ##################################################
   SecretsKMSKey:
     Description: SecretsKMSKey
     Value: !GetAtt SecretsKMSKey.Arn
@@ -1332,9 +1271,7 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "LambdaDecryptSecretsKMSPolicy"]]
   #endregion
 
-  ##################################################
   #region SNS KMS Outputs
-  ##################################################
   SnsKMSKey:
     Description: SnsKMSKey
     Value: !GetAtt SnsKMSKey.Arn
@@ -1349,9 +1286,7 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "SnsDecryptSecretsKMSPolicy"]]
   #endregion
 
-  ##################################################
   #region SQS KMS Outputs
-  ##################################################
   SqsKMSKey:
     Description: SqsKMSKey
     Value: !GetAtt SqsKMSKey.Arn
@@ -1366,9 +1301,7 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "SqsDecryptSecretsKMSPolicy"]]
   #endregion
 
-  ##################################################
   #region PfP CA Secrets Outputs
-  ##################################################
   PfpCAKeySecret:
     Description: ARN of the PfP CA key secret
     Value: !GetAtt PfpCAKeySecret.Id
@@ -1382,9 +1315,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "PfpCACertSecret"]]
   #endregion
 
-  ##################################################
   #region PfP Client Secrets Outputs
-  ##################################################
   PfpClientKeySecret:
     Description: ARN of the PfP client key secret
     Value: !GetAtt PfpClientKeySecret.Id
@@ -1410,9 +1341,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "PfpClientSandboxCertSecret"]]
   #endregion
 
-  ##################################################
   #region Clinical Tracker CA Secrets Outputs
-  ##################################################
   ClinicalTrackerCAKeySecret:
     Description: ARN of the clinical tracker CA key secret
     Value: !GetAtt ClinicalTrackerCAKeySecret.Id
@@ -1426,9 +1355,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerCACertSecret"]]
   #endregion
 
-  ##################################################
   #region Clinical Tracker Client Secrets Outputs
-  ##################################################
   ClinicalTrackerClientKeySecret:
     Description: ARN of the clinical tracker client key secret
     Value: !GetAtt ClinicalTrackerClientKeySecret.Id
@@ -1464,9 +1391,7 @@ Outputs:
         ]
   #endregion
 
-  ##################################################
   #region PSU CA Secrets Outputs
-  ##################################################
   PsuCAKeySecret:
     Description: ARN of the prescription status update CA key secret
     Value: !GetAtt PsuCAKeySecret.Id
@@ -1480,9 +1405,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "PsuCACertSecret"]]
   #endregion
 
-  ##################################################
   #region PSU Client Secrets Outputs
-  ##################################################
   PsuClientKeySecret:
     Description: ARN of the prescription status update client key secret
     Value: !GetAtt PsuClientKeySecret.Id
@@ -1508,9 +1431,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"]]
   #endregion
 
-  ##################################################
   #region EPS FHIR Facade CA Secrets Outputs
-  ##################################################
   FhirFacadeCAKeySecret:
     Description: ARN of the EPS FHIR facade CA key secret
     Value: !GetAtt FhirFacadeCAKeySecret.Id
@@ -1523,9 +1444,7 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeCACertSecret"]]
 
-  ##################################################
   #region EPS FHIR Facade Client Secrets Outputs
-  ##################################################
   FhirFacadeClientKeySecret:
     Description: ARN of the EPS FHIR facade client key secret
     Value: !GetAtt FhirFacadeClientKeySecret.Id
@@ -1551,9 +1470,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientSandboxCertSecret"]]
   #endregion
 
-  ##################################################
   #region Spine Secrets Outputs
-  ##################################################
   SpinePrivateKey:
     Description: ARN of the private key for spine mutual TLS
     Value: !GetAtt SpinePrivateKey.Id
@@ -1585,9 +1502,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "SpineCAChain"]]
   #endregion
 
-  ##################################################
   #region Other Secrets Outputs
-  ##################################################
   ServiceSearchApiKey:
     Description: ServiceSearchApiKey
     Value: !GetAtt ServiceSearchApiKey.Id
