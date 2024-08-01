@@ -803,6 +803,60 @@ Resources:
       SecretString: ChangeMe
 
   ##################################################
+  # EPS CA Secrets
+  ##################################################
+  EpsCAKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS CA private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  EpsCACertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS CA secret
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
+  # EPS Client Secrets
+  ##################################################
+  EpsClientKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS client private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  EpsClientCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS client cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  EpsClientSandboxKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS client sandbox private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  EpsClientSandboxCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS client sandbox cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
   # Spine Secrets
   ##################################################
   SpinePrivateKey:
@@ -1223,6 +1277,48 @@ Outputs:
     Value: !GetAtt PsuClientSandboxCertSecret.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"]]
+
+  ##################################################
+  # EPS CA Secrets Outputs
+  ##################################################
+  EpsCAKeySecret:
+    Description: ARN of the prescription status update CA key secret
+    Value: !GetAtt EpsCAKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "EpsCAKeySecret"]]
+
+  EpsCACertSecret:
+    Description: ARN of the prescription status update CA cert secret
+    Value: !GetAtt EpsCACertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "EpsCACertSecret"]]
+
+  ##################################################
+  # EPS Client Secrets Outputs
+  ##################################################
+  EpsClientKeySecret:
+    Description: ARN of the prescription status update client key secret
+    Value: !GetAtt EpsClientKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "EpsClientKeySecret"]]
+
+  EpsClientCertSecret:
+    Description: ARN of the prescription status update client cert secret
+    Value: !GetAtt EpsClientCertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "EpsClientCertSecret"]]
+
+  EpsClientSandboxKeySecret:
+    Description: ARN of the prescription status update client key secret for sandbox
+    Value: !GetAtt EpsClientSandboxKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "EpsClientSandboxKeySecret"]]
+
+  EpsClientSandboxCertSecret:
+    Description: ARN of the prescription status update client cert secret for sandbox
+    Value: !GetAtt EpsClientSandboxCertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "EpsClientSandboxCertSecret"]]
 
   ##################################################
   # Spine Secrets Outputs
