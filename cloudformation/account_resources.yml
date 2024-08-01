@@ -964,6 +964,16 @@ Resources:
       ImageScanningConfiguration: 
         ScanOnPush: true    
 
+##################################################
+  # Validator ECR Repository
+##################################################     
+  ValidatorRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: validator-repo
+      ImageScanningConfiguration: 
+        ScanOnPush: true     
+
 Outputs:
   ##################################################
   # Cloudwatch Outputs
