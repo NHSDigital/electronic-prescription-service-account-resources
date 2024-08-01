@@ -4,6 +4,17 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   splunk firehose transform
 
+Globals:
+  Function:
+    Timeout: 50
+    MemorySize: 256
+    Architectures:
+      - x86_64
+    Runtime: nodejs20.x
+    Environment:
+      Variables:
+        NODE_OPTIONS: "--enable-source-maps"
+
 Parameters:
   SplunkHECEndpoint:
     Type: String
@@ -118,7 +129,7 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - kms:GenerateDataKey 
+              - kms:GenerateDataKey
             Resource:
               - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
@@ -135,7 +146,7 @@ Resources:
       SplunkDestinationConfiguration:
         HECEndpoint: !Ref SplunkHECEndpoint
         HECEndpointType: "Event"
-        HECToken: '{{resolve:secretsmanager:account-resources-SplunkHECToken:SecretString}}'
+        HECToken: "{{resolve:secretsmanager:account-resources-SplunkHECToken:SecretString}}"
         ProcessingConfiguration:
           Enabled: true
           Processors:
@@ -201,15 +212,11 @@ Resources:
     Properties:
       CodeUri: ../packages/
       Handler: splunkProcessor.handler
-      Runtime: nodejs18.x
       Role: !GetAtt SplunkDeliveryStreamProcessorRole.Arn
-      Architectures:
-        - x86_64
       MemorySize: 512
       Timeout: 60
       Environment:
         Variables:
-          NODE_OPTIONS: --enable-source-maps
           LOG_LEVEL: !Ref LogLevel
           ENV: !Ref Env
     Metadata: # Manage esbuild properties
@@ -341,9 +348,9 @@ Resources:
               - !ImportValue account-resources:PsuClientCertSecret
               - !ImportValue account-resources:PsuClientSandboxCertSecret
               - !ImportValue account-resources:SpinePublicCertificate
-          - Effect: Allow 
+          - Effect: Allow
             Action:
-             - secretsmanager:BatchGetSecretValue    
+              - secretsmanager:BatchGetSecretValue
             Resource: "*"
   ExpiryFunctionResources:
     Type: AWS::Serverless::Application
@@ -365,18 +372,14 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-CertificateChecker"
       CodeUri: ../packages/
       Handler: certificateChecker.handler
-      Runtime: nodejs18.x 
       Role: !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleArn
-      Environment:
-        Variables:
-          NODE_OPTIONS: --enable-source-maps
       Events:
         ScheduleEvent:
           Type: ScheduleV2
           Properties:
             Name: !Sub ${AWS::StackName}-CertExpirySchedule
             ScheduleExpression: "rate(1 day)"
-            Input: !Sub 
+            Input: !Sub
               - "{\"secretARNs\": [ \
                 \"${ClinicalTrackerCACertSecret}\", \
                 \"${ClinicalTrackerClientCertSecret}\", \
@@ -397,8 +400,8 @@ Resources:
                 PsuCACertSecret: !ImportValue account-resources:PsuCACertSecret
                 PsuClientCertSecret: !ImportValue account-resources:PsuClientCertSecret
                 PsuClientSandboxCertSecret: !ImportValue account-resources:PsuClientSandboxCertSecret
-                SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate          
-    Metadata: 
+                SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
+    Metadata:
       BuildMethod: esbuild
       BuildProperties:
         Minify: true
@@ -408,6 +411,353 @@ Resources:
         packages: bundle
         EntryPoints:
           - certificateChecker/src/certificateChecker.ts
+
+  ##################################################
+  # Proxygen lambdas
+  ##################################################
+  ExecuteProxygenPTLManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !ImportValue ci-resources:ProxygenPTLRoleName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource:
+              - !GetAtt ProxygenPTLInstancePutFunction.Arn
+              - !GetAtt ProxygenPTLMTLSSecretPutFunction.Arn
+              - !GetAtt ProxygenPTLSpecPublishFunction.Arn
+              - !GetAtt ProxygenPTLInstanceGetFunction.Arn
+              - !GetAtt ProxygenPTLInstanceDeleteFunction.Arn
+
+  ExecuteProxygenProdManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !ImportValue ci-resources:ProxygenProdRoleName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource:
+              - !GetAtt ProxygenProdInstancePutFunction.Arn
+              - !GetAtt ProxygenProdMTLSSecretPutFunction.Arn
+              - !GetAtt ProxygenProdSpecPublishFunction.Arn
+
+  ProxygenManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !GetAtt ProxygenPTLInstancePutFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenProdInstancePutFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenPTLMTLSSecretPutFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenProdMTLSSecretPutFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenPTLSpecPublishFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenProdSpecPublishFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenPTLInstanceGetFunctionResources.Outputs.LambdaRoleName
+        - !GetAtt ProxygenPTLInstanceDeleteFunctionResources.Outputs.LambdaRoleName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !ImportValue account-resources:PSUProxygenPrivateKey
+              - !ImportValue account-resources:CPSUProxygenPrivateKey
+
+  ProxygenPTLInstancePutFunctionResources:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstancePut"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+
+  ProxygenPTLInstancePutFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLInstancePut"
+      CodeUri: ../packages/
+      Handler: proxygenInstancePut.handler
+      Timeout: 600
+      Role: !GetAtt ProxygenPTLInstancePutFunctionResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox,internal-qa,ref
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: proxygen/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - proxygen/src/proxygenInstancePut.ts
+
+  ProxygenProdInstancePutFunctionResources:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-ProxygenProdInstancePut"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+
+  ProxygenProdInstancePutFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-ProxygenProdInstancePut"
+      CodeUri: ../packages/
+      Handler: proxygenInstancePut.handler
+      Timeout: 600
+      Role: !GetAtt ProxygenProdInstancePutFunctionResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          ALLOWED_ENVIRONMENTS: int,sandbox,prod
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: proxygen/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - proxygen/src/proxygenInstancePut.ts
+
+  ProxygenPTLMTLSSecretPutFunctionResources:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLMTLSSecretPut"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+
+  ProxygenPTLMTLSSecretPutFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLMTLSSecretPut"
+      CodeUri: ../packages/
+      Handler: proxygenMTLSSecretPut.handler
+      Timeout: 600
+      Role: !GetAtt ProxygenPTLMTLSSecretPutFunctionResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox,internal-qa,ref
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: proxygen/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - proxygen/src/proxygenMTLSSecretPut.ts
+
+  ProxygenProdMTLSSecretPutFunctionResources:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-ProxygenProdMTLSSecretPut"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+
+  ProxygenProdMTLSSecretPutFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-ProxygenProdMTLSSecretPut"
+      CodeUri: ../packages/
+      Handler: proxygenMTLSSecretPut.handler
+      Timeout: 600
+      Role: !GetAtt ProxygenProdMTLSSecretPutFunctionResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          ALLOWED_ENVIRONMENTS: int,sandbox,prod
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: proxygen/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - proxygen/src/proxygenMTLSSecretPut.ts
+
+  ProxygenPTLSpecPublishFunctionResources:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLSpecPublish"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+
+  ProxygenPTLSpecPublishFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLSpecPublish"
+      CodeUri: ../packages/
+      Handler: proxygenSpecPublish.handler
+      Timeout: 600
+      Role: !GetAtt ProxygenPTLSpecPublishFunctionResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          ALLOWED_ENVIRONMENTS: uat
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: proxygen/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - proxygen/src/proxygenSpecPublish.ts
+
+  ProxygenProdSpecPublishFunctionResources:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-ProxygenProdSpecPublish"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+
+  ProxygenProdSpecPublishFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-ProxygenProdSpecPublish"
+      CodeUri: ../packages/
+      Handler: proxygenSpecPublish.handler
+      Timeout: 600
+      Role: !GetAtt ProxygenProdSpecPublishFunctionResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          ALLOWED_ENVIRONMENTS: prod
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: proxygen/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - proxygen/src/proxygenSpecPublish.ts
+
+  ProxygenPTLInstanceGetFunctionResources:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstanceGet"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+
+  ProxygenPTLInstanceGetFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLInstanceGet"
+      CodeUri: ../packages/
+      Handler: proxygenInstanceGet.handler
+      Timeout: 600
+      Role: !GetAtt ProxygenPTLInstanceGetFunctionResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          ALLOWED_ENVIRONMENTS: internal-dev
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: proxygen/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - proxygen/src/proxygenInstanceGet.ts
+
+  ProxygenPTLInstanceDeleteFunctionResources:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - SplunkSubscriptionFilterDeliveryStreamManagedPolicy
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstanceDelete"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+
+  ProxygenPTLInstanceDeleteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-ProxygenPTLInstanceDelete"
+      CodeUri: ../packages/
+      Handler: proxygenInstanceDelete.handler
+      Timeout: 600
+      Role: !GetAtt ProxygenPTLInstanceDeleteFunctionResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          ALLOWED_ENVIRONMENTS: internal-dev
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: proxygen/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - proxygen/src/proxygenInstanceDelete.ts
 
 Outputs:
   #################################################

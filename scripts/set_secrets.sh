@@ -74,7 +74,6 @@ get_dev_roles() {
         echo "Can not get DEV_ARTILLERY_RUNNER_ROLE. Setting to unset"
         DEV_ARTILLERY_RUNNER_ROLE="unset"
     fi
-    
 }
 
 get_ref_roles() {
@@ -213,6 +212,26 @@ get_prod_roles() {
         echo "Can not get PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE. Setting to PROD_CLOUD_FORMATION_DEPLOY_ROLE"
         PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${PROD_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
+
+    PROXYGEN_PTL_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-prod \
+        --query 'Exports[?Name==`ci-resources:ProxygenPTLRole`].Value' \
+        --output text)    
+
+    if [ -z "${PROXYGEN_PTL_ROLE}" ]; then
+        echo "Can not get PROXYGEN_PTL_ROLE. Setting to PROXYGEN_PTL_ROLE"
+        PROXYGEN_PTL_ROLE=${PROXYGEN_PTL_ROLE}
+    fi
+
+    PROXYGEN_PROD_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-prod \
+        --query 'Exports[?Name==`ci-resources:ProxygenProdRole`].Value' \
+        --output text)    
+
+    if [ -z "${PROXYGEN_PROD_ROLE}" ]; then
+        echo "Can not get PROXYGEN_PROD_ROLE. Setting to PROXYGEN_PROD_ROLE"
+        PROXYGEN_PTL_ROLE=${PROXYGEN_PROD_ROLE}
+    fi
 }
 
 set_secrets() {
@@ -343,6 +362,30 @@ set_secrets() {
         --repo ${REPO} \
         --app actions \
         --body "$REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
+
+    echo "setting PROXYGEN_PTL_ROLE for actions"
+    gh secret set PROXYGEN_PTL_ROLE \
+        --repo ${REPO} \
+        --app actions \
+        --body "$PROXYGEN_PTL_ROLE"
+
+    echo "setting PROXYGEN_PTL_ROLE for dependabot"
+    gh secret set PROXYGEN_PTL_ROLE \
+        --repo ${REPO} \
+        --app dependabot \
+        --body "$PROXYGEN_PTL_ROLE"
+
+    echo "setting PROXYGEN_PROD_ROLE for actions"
+    gh secret set PROXYGEN_PROD_ROLE \
+        --repo ${REPO} \
+        --app actions \
+        --body "$PROXYGEN_PROD_ROLE"
+
+    echo "setting PROXYGEN_PROD_ROLE for dependabot"
+    gh secret set PROXYGEN_PROD_ROLE \
+        --repo ${REPO} \
+        --app dependabot \
+        --body "$PROXYGEN_PROD_ROLE"
 }
 
 set_artillery_secrets() {
