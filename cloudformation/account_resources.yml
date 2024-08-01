@@ -1059,10 +1059,22 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
 
   FHIRFacadeRepoUri:
-    Description: "The URL of the FHIR Facade ECR repo"    
+    Description: "The URI of the FHIR Facade ECR repo"    
     Value: !GetAtt FHIRFacadeRepo.RepositoryUri
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
+
+  ValidatorRepoArn:
+    Description: "The Arn of the Validator repo"
+    Value: !GetAtt ValidatorRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]     
+
+  ValidatorRepoUri:
+    Description: "The URI of the Validator ECR repo"    
+    Value: !GetAtt ValidatorRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
 
   ##################################################
   # Artifacts Bucket Outputs
