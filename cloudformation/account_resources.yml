@@ -803,56 +803,56 @@ Resources:
       SecretString: ChangeMe
 
   ##################################################
-  # EPS CA Secrets
+  # EPS FHIR Facade CA Secrets
   ##################################################
-  EpsCAKeySecret:
+  FhirFacadeCAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
-      Description: EPS CA private key
+      Description: EPS FHIR facade CA private key
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
-  EpsCACertSecret:
+  FhirFacadeCACertSecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
-      Description: EPS CA secret
+      Description: EPS FHIR facade CA secret
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
   ##################################################
-  # EPS Client Secrets
+  # EPS FHIR Facade Client Secrets
   ##################################################
-  EpsClientKeySecret:
+  FhirFacadeClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
-      Description: EPS client private key
+      Description: EPS FHIR facade client private key
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
-  EpsClientCertSecret:
+  FhirFacadeClientCertSecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
-      Description: EPS client cert
+      Description: EPS FHIR facade client cert
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
-  EpsClientSandboxKeySecret:
+  FhirFacadeClientSandboxKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
-      Description: EPS client sandbox private key
+      Description: EPS FHIR facade client sandbox private key
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
-  EpsClientSandboxCertSecret:
+  FhirFacadeClientSandboxCertSecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
-      Description: EPS client sandbox cert
+      Description: EPS FHIR facade client sandbox cert
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
@@ -1279,46 +1279,46 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"]]
 
   ##################################################
-  # EPS CA Secrets Outputs
+  # EPS FHIR Facade CA Secrets Outputs
   ##################################################
-  EpsCAKeySecret:
-    Description: ARN of the prescription status update CA key secret
-    Value: !GetAtt EpsCAKeySecret.Id
+  FhirFacadeCAKeySecret:
+    Description: ARN of the EPS FHIR facade CA key secret
+    Value: !GetAtt FhirFacadeCAKeySecret.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "EpsCAKeySecret"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeCAKeySecret"]]
 
-  EpsCACertSecret:
-    Description: ARN of the prescription status update CA cert secret
-    Value: !GetAtt EpsCACertSecret.Id
+  FhirFacadeCACertSecret:
+    Description: ARN of the EPS FHIR facade CA cert secret
+    Value: !GetAtt FhirFacadeCACertSecret.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "EpsCACertSecret"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeCACertSecret"]]
 
   ##################################################
-  # EPS Client Secrets Outputs
+  # EPS FHIR Facade Client Secrets Outputs
   ##################################################
-  EpsClientKeySecret:
-    Description: ARN of the prescription status update client key secret
-    Value: !GetAtt EpsClientKeySecret.Id
+  FhirFacadeClientKeySecret:
+    Description: ARN of the EPS FHIR facade client key secret
+    Value: !GetAtt FhirFacadeClientKeySecret.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "EpsClientKeySecret"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientKeySecret"]]
 
-  EpsClientCertSecret:
-    Description: ARN of the prescription status update client cert secret
-    Value: !GetAtt EpsClientCertSecret.Id
+  FhirFacadeClientCertSecret:
+    Description: ARN of the EPS FHIR facade client cert secret
+    Value: !GetAtt FhirFacadeClientCertSecret.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "EpsClientCertSecret"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientCertSecret"]]
 
-  EpsClientSandboxKeySecret:
-    Description: ARN of the prescription status update client key secret for sandbox
-    Value: !GetAtt EpsClientSandboxKeySecret.Id
+  FhirFacadeClientSandboxKeySecret:
+    Description: ARN of the EPS FHIR facade client key secret for sandbox
+    Value: !GetAtt FhirFacadeClientSandboxKeySecret.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "EpsClientSandboxKeySecret"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientSandboxKeySecret"]]
 
-  EpsClientSandboxCertSecret:
-    Description: ARN of the prescription status update client cert secret for sandbox
-    Value: !GetAtt EpsClientSandboxCertSecret.Id
+  FhirFacadeClientSandboxCertSecret:
+    Description: ARN of the EPS FHIR facade client cert secret for sandbox
+    Value: !GetAtt FhirFacadeClientSandboxCertSecret.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "EpsClientSandboxCertSecret"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientSandboxCertSecret"]]
 
   ##################################################
   # Spine Secrets Outputs
