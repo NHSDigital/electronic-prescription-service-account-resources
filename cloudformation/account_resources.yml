@@ -146,6 +146,39 @@ Resources:
   #endregion
 
   ##################################################
+  #region IAM Roles & Policies
+  ##################################################
+  SNSFeedbackLoggingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref SNSFeedbackLoggingPolicy
+
+  SNSFeedbackLoggingPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - logs:PutMetricFilter
+              - logs:PutRetentionPolicy
+            Resource: "*"
+  
+  
+  ##################################################
   #region Artifacts Bucket
   ##################################################
   ArtifactsBucketKMSKey:
@@ -537,6 +570,24 @@ Resources:
                 - ""
                 - - !GetAtt SplunkDeliveryStreamBackupBucket.Arn
                   - "/*"
+  #endregion
+
+  ##################################################
+  #region ECR Repositories
+  ##################################################
+  FHIRFacadeRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: fhir-facade-repo
+      ImageScanningConfiguration: 
+        ScanOnPush: true    
+    
+  ValidatorRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: validator-repo
+      ImageScanningConfiguration: 
+        ScanOnPush: true
   #endregion
 
   ##################################################
@@ -1133,24 +1184,6 @@ Resources:
               - !Ref SlackWebHookUrl
   #endregion
 
-##################################################
-  #region ECR Repositories
-##################################################
-  FHIRFacadeRepo:
-    Type: AWS::ECR::Repository
-    Properties: 
-      RepositoryName: fhir-facade-repo
-      ImageScanningConfiguration: 
-        ScanOnPush: true    
-     
-  ValidatorRepo:
-    Type: AWS::ECR::Repository
-    Properties: 
-      RepositoryName: validator-repo
-      ImageScanningConfiguration: 
-        ScanOnPush: true
-  #endregion
-
 Outputs:
   ##################################################
   #region Cloudwatch Outputs
@@ -1175,33 +1208,15 @@ Outputs:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudwatchEncryptionKMSPolicyArn"]]
   #endregion
-  
+
   ##################################################
-  #region ECR Repository Outputs
+  #region IAM Roles & Policies Outputs
   ##################################################
-  FHIRFacadeRepoArn:
-    Description: "The Arn of the FHIR Facade ECR repo"
-    Value: !GetAtt FHIRFacadeRepo.Arn
+  SNSFeedbackLoggingRoleArn:
+    Description: "The Arn of the SNS feedback logging role"
+    Value: !GetAtt SNSFeedbackLoggingRole.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
-
-  FHIRFacadeRepoUri:
-    Description: "The URI of the FHIR Facade ECR repo"    
-    Value: !GetAtt FHIRFacadeRepo.RepositoryUri
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
-
-  ValidatorRepoArn:
-    Description: "The Arn of the Validator repo"
-    Value: !GetAtt ValidatorRepo.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]     
-
-  ValidatorRepoUri:
-    Description: "The URI of the Validator ECR repo"    
-    Value: !GetAtt ValidatorRepo.RepositoryUri
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "SNSFeedbackLoggingRoleArn"]]
   #endregion
 
   ##################################################
@@ -1270,6 +1285,34 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStreamBackupBucket"]]
+  #endregion
+
+  ##################################################
+  #region ECR Repositories Outputs
+  ##################################################
+  FHIRFacadeRepoArn:
+    Description: "The Arn of the FHIR Facade ECR repo"
+    Value: !GetAtt FHIRFacadeRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
+
+  FHIRFacadeRepoUri:
+    Description: "The URI of the FHIR Facade ECR repo"    
+    Value: !GetAtt FHIRFacadeRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
+
+  ValidatorRepoArn:
+    Description: "The Arn of the Validator repo"
+    Value: !GetAtt ValidatorRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]     
+
+  ValidatorRepoUri:
+    Description: "The URI of the Validator ECR repo"    
+    Value: !GetAtt ValidatorRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
   #endregion
 
   ##################################################

@@ -63,7 +63,7 @@ Parameters:
 
 Resources:
   ##################################################
-  # Lambda Insights
+  #region Lambda Insights
   ##################################################
   LambdaInsightsCloudwatchLogGroup:
     Type: AWS::Logs::LogGroup
@@ -90,9 +90,10 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
             Resource: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+  #endregion
 
   ##################################################
-  # Splunk Subscription Filter
+  #region Splunk Subscription Filter
   ##################################################
   SplunkSubscriptionFilterRole:
     Type: AWS::IAM::Role
@@ -133,9 +134,10 @@ Resources:
               - kms:GenerateDataKey
             Resource:
               - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+  #endregion
 
   ##################################################
-  # Splunk Delivery Stream
+  #region Splunk Delivery Stream
   ##################################################
   SplunkDeliveryStream:
     # Depends on policy as delivery streams require a role with correct policies to be build, and a role reference doesn't provide a dependency as Stream -> Role <- Policy, so Stream -!> Policy
@@ -204,9 +206,10 @@ Resources:
               - kms:ReEncrypt*
             Resource:
               - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+  #endregion
 
   ##################################################
-  # Splunk Delivery Stream Processor
+  #region Splunk Delivery Stream Processor
   ##################################################
   SplunkDeliveryStreamProcessor:
     Type: AWS::Serverless::Function
@@ -293,9 +296,10 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${SplunkDeliveryStreamProcessor}"
       RetentionInDays: !Ref LogRetentionDays
       KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+  #endregion
 
   ##################################################
-  # Splunk Delivery Stream Processor Invoke
+  #region Splunk Delivery Stream Processor Invoke
   ##################################################
   SplunkDeliveryStreamProcessorInvokeRole:
     Type: AWS::IAM::Role
@@ -322,8 +326,10 @@ Resources:
               - lambda:InvokeFunction
             Resource:
               - !GetAtt SplunkDeliveryStreamProcessor.Arn
+  #endregion
+
   ##################################################
-  # Certificate Checker
+  #region Certificate Checker
   ##################################################
   LambdaManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -420,15 +426,20 @@ Resources:
         packages: bundle
         EntryPoints:
           - certificateChecker/src/certificateChecker.ts
+  #endregion
 
   ##################################################
-  # Slack Alerter
+  #region Slack Alerter
   ###################################################
   SlackAlertsSnsTopic:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: !Sub ${AWS::StackName}-SlackAlerts
       KmsMasterKeyId: !ImportValue account-resources:SnsKMSKey
+      DeliveryStatusLogging:
+        - Protocol: sqs
+          SuccessFeedbackRoleArn: !ImportValue account-resources:SNSFeedbackLoggingRoleArn
+          FailureFeedbackRoleArn: !ImportValue account-resources:SNSFeedbackLoggingRoleArn
 
   # todo add deliver status logging
 
@@ -564,9 +575,10 @@ Resources:
         packages: bundle
         EntryPoints:
           - slackAlerter/src/slackAlerter.ts
+  #endregion
 
   ##################################################
-  # Proxygen lambdas
+  #region Proxygen lambdas
   ##################################################
   ExecuteProxygenPTLManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -911,7 +923,9 @@ Resources:
         packages: bundle
         EntryPoints:
           - proxygen/src/proxygenInstanceDelete.ts
+  #endregion
 
+#region outputs
 Outputs:
   #################################################
   # Lambda Insights Outputs
@@ -939,3 +953,4 @@ Outputs:
     Value: !GetAtt SplunkDeliveryStream.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStream"]]
+#endregion

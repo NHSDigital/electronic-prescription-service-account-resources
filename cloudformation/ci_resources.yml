@@ -187,7 +187,6 @@ Resources:
             Action:
               - sts:AssumeRole
 
-
   AssumeExecutionRolePolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
