@@ -12,6 +12,7 @@ import jwt from "jsonwebtoken"
 import {Proxygen} from "../src/helpers"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 import {mockClient} from "aws-sdk-client-mock"
+import { Context } from "aws-lambda"
 
 jest.unstable_mockModule("../src/signingHelpers", () => ({
   getSecret: jest.fn().mockReturnValue("mockPrivateKey"),
@@ -61,7 +62,7 @@ describe("Unit test for proxygenInstancePut", function () {
   })
 
   it("throws error if missing required property on input", async () => {
-    await expect(handler.handler({}, {})).rejects.toThrow(
+    await expect(handler.handler({} as Proxygen, {} as Context)).rejects.toThrow(
       "Input is one of missing required keys: apiName,proxygenSecretName,kid,environment,instance,specDefinition. Input keys: "
     )
   })
@@ -69,7 +70,7 @@ describe("Unit test for proxygenInstancePut", function () {
   it("throws error if environment is not allowed", async () => {
     process.env.ALLOWED_ENVIRONMENTS = "int,sandbox,prod"
 
-    await expect(handler.handler(validProxygen, {})).rejects.toThrow(
+    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow(
       "environment dev is invalid. Allowed environments: int,sandbox,prod"
     )
   })
@@ -82,7 +83,7 @@ describe("Unit test for proxygenInstancePut", function () {
 
     process.env.ALLOWED_ENVIRONMENTS = "dev"
 
-    await expect(handler.handler(validProxygen, {})).rejects.toThrow("Request failed with status code 500")
+    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Request failed with status code 500")
   })
 
   it("should work if everything is OK", async () => {
@@ -97,7 +98,7 @@ describe("Unit test for proxygenInstancePut", function () {
 
     process.env.ALLOWED_ENVIRONMENTS = "dev"
 
-    const res = await handler.handler(validProxygen, {})
+    const res = await handler.handler(validProxygen, {} as Context)
     expect(res).toMatchObject({foo: "bar"})
     expect(actualBody).toMatchObject({foo: "bar"})
   })

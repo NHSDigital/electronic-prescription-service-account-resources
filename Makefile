@@ -61,6 +61,7 @@ clean:
 
 deep-clean: clean
 	rm -rf venv
+	find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +
 	poetry env remove --all
 
 aws-configure:

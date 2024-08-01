@@ -1,29 +1,29 @@
 {
-	"folders": [
-		{
-			"name": "account-resources",
-			"path": ".."
-		},
-		{
-			"name": "packages/certificateChecker",
-			"path": "../packages/certificateChecker"
-		},
-		{
-			"name": "packages/splunkProcessor",
-			"path": "../packages/splunkProcessor"
-		},
+  "folders": [
+    {
+      "name": "account-resources",
+      "path": ".."
+    },
+    {
+      "name": "packages/certificateChecker",
+      "path": "../packages/certificateChecker"
+    },
+    {
+    "name": "packages/splunkProcessor",
+    "path": "../packages/splunkProcessor"
+    },
     {
       "name": "packages/proxygen",
       "path": "../packages/proxygen",
     },
-	],
-	"settings": {
-		"jest.disabledWorkspaceFolders": [
-			"account-resources"
-		],
-		"files.exclude": {
-			"packages/": true,
-		},
+  ],
+  "settings": {
+    "jest.disabledWorkspaceFolders": [
+      "account-resources"
+    ],
+    "files.exclude": {
+      "packages/": true,
+    },
         "cSpell.words": [
           "apigw",
           "ASID",
@@ -86,35 +86,35 @@
           "versionable",
           "whens",
         ],
-		"cSpell.dictionaries": ["en-GB"],
-		"cSpell.ignorePaths": ["package-lock.json","node_modules",".vscode"],
-		"jest.jestCommandLine": "NODE_OPTIONS=--experimental-vm-modules node_modules/.bin/jest --no-cache",
-		"jest.nodeEnv": {
-			"POWERTOOLS_DEV": true,
-		}
-	},
-	"extensions": {
-		"recommendations": [
-			"AmazonWebServices.aws-toolkit-vscode",
-			"redhat.vscode-yaml",
-			"ms-python.python",
-			"ms-python.flake8",
-			"eamodio.gitlens",
-			"github.vscode-pull-request-github",
-			"orta.vscode-jest",
-			"42crunch.vscode-openapi",
-			"mermade.openapi-lint",
-			"rvest.vs-code-prettier-eslint",
-			"redhat.vscode-yaml",
-			"christian-kohler.npm-intellisense",
-			"dbaeumer.vscode-eslint",
-			"lfm.vscode-makefile-term",
-			"GrapeCity.gc-excelviewer",
-			"redhat.vscode-xml",
-			"streetsidesoftware.code-spell-checker",
-			"timonwong.shellcheck",
-			"mkhl.direnv",
-			"tamasfe.even-better-toml",
-		]
-	}
+    "cSpell.dictionaries": ["en-GB"],
+    "cSpell.ignorePaths": ["package-lock.json","node_modules",".vscode"],
+    "jest.jestCommandLine": "NODE_OPTIONS=--experimental-vm-modules node_modules/.bin/jest --no-cache",
+    "jest.nodeEnv": {
+      "POWERTOOLS_DEV": true,
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "AmazonWebServices.aws-toolkit-vscode",
+      "redhat.vscode-yaml",
+      "ms-python.python",
+      "ms-python.flake8",
+      "eamodio.gitlens",
+      "github.vscode-pull-request-github",
+      "orta.vscode-jest",
+      "42crunch.vscode-openapi",
+      "mermade.openapi-lint",
+      "rvest.vs-code-prettier-eslint",
+      "redhat.vscode-yaml",
+      "christian-kohler.npm-intellisense",
+      "dbaeumer.vscode-eslint",
+      "lfm.vscode-makefile-term",
+      "GrapeCity.gc-excelviewer",
+      "redhat.vscode-xml",
+      "streetsidesoftware.code-spell-checker",
+      "timonwong.shellcheck",
+      "mkhl.direnv",
+      "tamasfe.even-better-toml",
+    ]
+  }
 }
