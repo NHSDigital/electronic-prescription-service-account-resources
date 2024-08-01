@@ -143,6 +143,34 @@ Resources:
             Resource:
               - !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/*"
 
+  ECRPushImagePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationDeployRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - ecr:DescribeImages
+              - ecr:DescribeRepositories
+              - ecr:ListImages
+              - ecr:ListTagsForResource
+              - ecr:PutImage
+              - ecr:InitiateLayerUpload
+              - ecr:TagResource
+              - ecr:UntagResource
+              - ecr:UploadLayerPart
+              - ecr:CompleteLayerUpload
+              - ecr:BatchCheckLayerAvailability
+
+            Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:*"
+          - Effect: Allow
+            Action:
+               - ecr:GetAuthorizationToken
+            Resource: '*'   
+
   ##################################################
   # Cloudformation Execution Role
   ##################################################
@@ -158,6 +186,7 @@ Resources:
                 - cloudformation.amazonaws.com
             Action:
               - sts:AssumeRole
+
 
   AssumeExecutionRolePolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -428,6 +457,24 @@ Resources:
               - cloudwatch:DescribeAlarms
               - cloudwatch:PutMetricAlarm
               - cloudwatch:DeleteAlarms
+              - ecr:CreateRepository
+              - ecr:DeleteRepository
+              - ecr:DeleteRegistryPolicy
+              - ecr:DeleteRepositoryPolicy
+              - ecr:DescribeImages
+              - ecr:DescribeRegistry
+              - ecr:DescribeRepositories
+              - ecr:GetRegistryPolicy
+              - ecr:GetRegistryScanningConfiguration
+              - ecr:GetRepositoryPolicy
+              - ecr:ListImages
+              - ecr:ListTagsForResource
+              - ecr:PutImageScanningConfiguration
+              - ecr:PutRegistryPolicy
+              - ecr:PutRegistryScanningConfiguration
+              - ecr:SetRepositoryPolicy
+              - ecr:TagResource
+              - ecr:UntagResource
             Resource: "*"
 
   GrantCloudFormationExecutionEc2AccessPolicy:
