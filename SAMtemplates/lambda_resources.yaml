@@ -347,9 +347,9 @@ Resources:
               - !ImportValue account-resources:PsuCACertSecret
               - !ImportValue account-resources:PsuClientCertSecret
               - !ImportValue account-resources:PsuClientSandboxCertSecret
-              - !ImportValue account-resources:EpsCACertSecret
-              - !ImportValue account-resources:EpsClientCertSecret
-              - !ImportValue account-resources:EpsClientSandboxCertSecret
+              - !ImportValue account-resources:FhirFacadeCACertSecret
+              - !ImportValue account-resources:FhirFacadeClientCertSecret
+              - !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
               - !ImportValue account-resources:SpinePublicCertificate
           - Effect: Allow
             Action:
@@ -393,9 +393,9 @@ Resources:
                 \"${PsuCACertSecret}\", \
                 \"${PsuClientCertSecret}\", \
                 \"${PsuClientSandboxCertSecret}\", \
-                \"${EpsCACertSecret}\", \
-                \"${EpsClientCertSecret}\", \
-                \"${EpsClientSandboxCertSecret}\", \
+                \"${FhirFacadeCACertSecret}\", \
+                \"${FhirFacadeClientCertSecret}\", \
+                \"${FhirFacadeClientSandboxCertSecret}\", \
                 \"${SpinePublicCertificate}\" ]}"
               - ClinicalTrackerCACertSecret: !ImportValue account-resources:ClinicalTrackerCACertSecret
                 ClinicalTrackerClientCertSecret: !ImportValue account-resources:ClinicalTrackerClientCertSecret
@@ -406,9 +406,9 @@ Resources:
                 PsuCACertSecret: !ImportValue account-resources:PsuCACertSecret
                 PsuClientCertSecret: !ImportValue account-resources:PsuClientCertSecret
                 PsuClientSandboxCertSecret: !ImportValue account-resources:PsuClientSandboxCertSecret
-                EpsCACertSecret: !ImportValue account-resources:EpsCACertSecret
-                EpsClientCertSecret: !ImportValue account-resources:EpsClientCertSecret
-                EpsClientSandboxCertSecret: !ImportValue account-resources:EpsClientSandboxCertSecret
+                FhirFacadeCACertSecret: !ImportValue account-resources:FhirFacadeCACertSecret
+                FhirFacadeClientCertSecret: !ImportValue account-resources:FhirFacadeClientCertSecret
+                FhirFacadeClientSandboxCertSecret: !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
                 SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
     Metadata:
       BuildMethod: esbuild
