@@ -25,8 +25,7 @@ The contents of this repository are protected by Crown Copyright (C).
 
 It is recommended that you use visual studio code and a devcontainer as this will install all necessary components and correct versions of tools and languages.  
 See https://code.visualstudio.com/docs/devcontainers/containers for details on how to set this up on your host machine.  
-There is also a workspace file in .vscode that should be opened once you have started the devcontainer. The workspace file can also be opened outside of a devcontainer if you wish.  
-
+There is also a workspace file in .vscode that should be opened once you have started the devcontainer. The workspace file can also be opened outside of a devcontainer if you wish.
 
 All commits must be made using [signed commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
 
@@ -50,7 +49,6 @@ You will need to create the files, if they do not already exist.
 This will ensure that your VSCode bash terminal prompts you for your GPG key password.
 
 You can cache the gpg key passphrase by following instructions at https://superuser.com/questions/624343/keep-gnupg-credentials-cached-for-entire-user-session
-
 
 ### Setup
 
@@ -89,12 +87,13 @@ The pre-commit hook uses python package pre-commit and is configured in the file
 A combination of these checks are also run in CI.
 
 ### Stacks
+
 The following stacks are defined in this repository
 
 # CI Resources
 
-cloudformation/ci_resources.yml contains resources that are needed for the CI pipeline to work. This should be applied to each environment.  
-This is created as part of CI pipeline.   
+`cloudformation/ci_resources.yml` contains resources that are needed for the CI pipeline to work. This should be applied to each environment.  
+This is created as part of CI pipeline.  
 It creates the following resources
 
 - OIDC provider allowing github to assume a role in the account
@@ -108,8 +107,8 @@ It creates the following resources
 
 # Account Resources
 
-cloudformation/account_resources.yml contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
-This is created as part of CI pipeline.   
+`cloudformation/account_resources.yml` contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
+This is created as part of CI pipeline.  
 It creates the following resources
 
 - API Gateway account role with logging permissions
@@ -144,11 +143,11 @@ It creates the following resources
 
 # Route 53 resources - environment accounts
 
-cloudformation/environment_route53.yml contains route 53 resources created in each environment account.  
-This needs to be manually deployed to each environment.   
+`cloudformation/environment_route53.yml` contains route 53 resources created in each environment account.  
+This needs to be manually deployed to each environment.  
 It creates the following resources
 
-- route 53 hosted zone for {environment}.{domain}.national.nhs.uk
+- route 53 hosted zone for `{environment}.{domain}.national.nhs.uk`
 
 To deploy the stack, use the following
 
@@ -186,9 +185,12 @@ aws cloudformation deploy \
 ```
 
 # lambda_resources
-SAMtemplates/lambda_resources.yaml contains common lambdas and resources needed per environment.   
-This is created as part of CI pipeline.   
+
+`SAMtemplates/lambda_resources.yaml` contains common lambdas and resources needed per environment.  
+This is created as part of CI pipeline.  
 It creates the following resources
+
+- CloudWatchKMSKey - used to encrypt cloudwatch logs
  - LambdaInsightsCloudwatchLogGroup - log group used by insights
  - LambdaInsightsLogGroupPolicy - policy to allow the use of the lambda insights log group
 - SplunkSubscriptionFilterRole - used by filters on cloudwatch logs to send to splunk
@@ -201,10 +203,28 @@ It creates the following resources
 - CertExpiryCheckFunction & common resources - lambda used to check cert expiry
 - SlackAlertsSnsTopic - SNS topic used to pass Cloudwatch (& other) alerts to the Slack Alerter lambda
 - SlackAlerter & common resources - lambda used to process, format and post incoming alerts to eps alert slack channels
+- LambdaInsightsCloudwatchLogGroup - log group for lambda insights
+- CertExpiryCheckFunction - lambda function to check certificate expiry dates
+- CertExpiryCheckFunctionScheduleEvent - schedule to run CertExpiryCheckFunction
+- ExecuteProxygenPTLManagedPolicy - policy allowing execution of PTL proxygen lambdas
+- ExecuteProxygenProdManagedPolicy - policy allowing execution of PROD proxygen lambdas
+- ProxygenManagedPolicy - policy that proxygen lambdas use to access secrets
+- ProxygenPTLInstanceDeleteFunction - lambda use to delete proxygen instances in internal-dev apigee environment
+- ProxygenPTLInstanceGetFunction - lambda used to get proxygen instances in internal-dev apigee environments
+- ProxygenPTLInstancePutFunction - lambda used to deploy proxy using proxygen api in PTL apigee environments
+- ProxygenPTLMTLSSecretPutFunction - lambda used to create or update MTLS secrets in PTL apigee environments
+- ProxygenPTLSpecPublishFunction - lambda used to update proxy spec on UAT API catalogue page
+- ProxygenProdInstancePutFunction - lambda used to deploy proxy using proxygen api in PROD apigee environments
+- ProxygenProdMTLSSecretPutFunction - lambda used to create or update MTLS secrets in PROD apigee environments
+- ProxygenProdSpecPublishFunction - lambda used to update proxy spec on API catalogue page
+
+PTL apigee environments are `internal-dev,internal-dev-sandbox,internal-qa,ref`
+ROD apigee environments are `int,sandbox,prod`
 
 # vpc_resources
-cloudformation/vpc_resources.yml contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
-This is created as part of CI pipeline.   
+
+`cloudformation/vpc_resources.yml` contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
+This is created as part of CI pipeline.  
 It creates the following resources
 
 - a VPC
@@ -216,22 +236,24 @@ It creates the following resources
 - Public subnet in each AZ
 
 # artillery_resources
-cloudformation/artillery_resources.yml contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
-This is created as part of CI pipeline.   
+
+`cloudformation/artillery_resources.yml` contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
+This is created as part of CI pipeline.  
 It creates the following resources
 
-- an S3 bucket named "artilleryio-test-data-${AWS::AccountId}"
+- an S3 bucket named "`artilleryio-test-data-${AWS::AccountId}`"
 - a standard bucket policy
 - KMS key used to encrypt objects in the bucket
 - alias for the KMS key
 - managed policy to use the KMS key
 - an artillery worker role
 - a minimum policy for the worker role to allow artillery to run
-- log group named "artilleryio-log-group/artilleryio-cluster"
-- an ECS cluster named "artilleryio-cluster"
+- log group named "`artilleryio-log-group/artilleryio-cluster`"
+- an ECS cluster named "`artilleryio-cluster`"
 
 ## Parameters for stacks
-Environment specific parameters are defined in JSON files in cloudformation/env folder.   
+
+Environment specific parameters are defined in JSON files in cloudformation/env folder.
 
 This is used to create subject claim filters used for the OIDC connection to restrict which repositories and environments can connect to AWS
 
@@ -240,6 +262,7 @@ This is used to create subject claim filters used for the OIDC connection to res
 There are `make` commands that are run as part of the CI pipeline and help alias some functionality during development.
 
 #### install targets
+
 - `install-python` installs python dependencies
 - `install-hooks` installs git pre commit hooks
 - `install` runs all install targets
@@ -266,14 +289,14 @@ There are `make` commands that are run as part of the CI pipeline and help alias
 
 ### Github folder
 
-This .github folder contains workflows and templates related to github
+This `.github` folder contains workflows and templates related to github
 
 - `pull_request_template.yml`: Template for pull requests.
 
-Workflows are in the .github/workflows folder
+Workflows are in the `.github/workflows` folder
 
 - `combine-dependabot-prs.yml`: Workflow for combining dependabot pull requests. Runs on demand
-- `pull_request.yml`: Called when pull request is opened or updated. Creates change sets for stacks against dev. The changesets are named <stack_name>-pr-<PR_NO>
+- `pull_request.yml`: Called when pull request is opened or updated. Creates change sets for stacks against dev. The changesets are named `<stack_name>-pr-<PR_NO>`
 - `quality_checks.yml`: Runs check-licenses and linting against the repo. Called from pull_request.yml and release.yml
 - `release.yml`: Run when code is merged to main branch or a tag starting v is pushed. Creates versioned changesets that are executed after being reviewed.
 - `pr-link.yaml`: This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
@@ -281,7 +304,8 @@ Workflows are in the .github/workflows folder
 - `cloudformation.yml`: Creates a changeset for specified stack and outputs changes. Either runs it or deletes it
 
 ## Scripts
-- calculate_version.py - used when merge to main to calculate a semver-compliant version number to name the release in github 
-- check_python_licenses.sh - check that all python libraries used have a compatible license
-- parse_parameters.py - used in github pipelines to parse cloudformation/env files to set parameters in format that can be passed to cloudformation command
-- set_secrets.sh - script which can be manually run to set secrets in all EPS repositories
+
+- `calculate_version.py` - used when merge to main to calculate a semver-compliant version number to name the release in github
+- `check_python_licenses.sh` - check that all python libraries used have a compatible license
+- `parse_parameters.py` - used in github pipelines to parse cloudformation/env files to set parameters in format that can be passed to cloudformation command
+- `set_secrets.sh` - script which can be manually run to set secrets in all EPS repositories

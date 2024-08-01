@@ -904,6 +904,61 @@ Resources:
   #endregion
 
   ##################################################
+  #region EPS FHIR Facade CA Secrets
+  ##################################################
+  FhirFacadeCAKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS FHIR facade CA private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  FhirFacadeCACertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS FHIR facade CA secret
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  ##################################################
+  # EPS FHIR Facade Client Secrets
+  ##################################################
+  FhirFacadeClientKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS FHIR facade client private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  FhirFacadeClientCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS FHIR facade client cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  FhirFacadeClientSandboxKeySecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS FHIR facade client sandbox private key
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+
+  FhirFacadeClientSandboxCertSecret:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: EPS FHIR facade client sandbox cert
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+  #endregion
+
+  ##################################################
   #region Spine Secrets
   ##################################################
   SpinePrivateKey:
@@ -1078,6 +1133,24 @@ Resources:
               - !Ref SlackWebHookUrl
   #endregion
 
+##################################################
+  #region ECR Repositories
+##################################################
+  FHIRFacadeRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: fhir-facade-repo
+      ImageScanningConfiguration: 
+        ScanOnPush: true    
+     
+  ValidatorRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: validator-repo
+      ImageScanningConfiguration: 
+        ScanOnPush: true
+  #endregion
+
 Outputs:
   ##################################################
   #region Cloudwatch Outputs
@@ -1101,6 +1174,34 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudwatchEncryptionKMSPolicyArn"]]
+  #endregion
+  
+  ##################################################
+  #region ECR Repository Outputs
+  ##################################################
+  FHIRFacadeRepoArn:
+    Description: "The Arn of the FHIR Facade ECR repo"
+    Value: !GetAtt FHIRFacadeRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
+
+  FHIRFacadeRepoUri:
+    Description: "The URI of the FHIR Facade ECR repo"    
+    Value: !GetAtt FHIRFacadeRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
+
+  ValidatorRepoArn:
+    Description: "The Arn of the Validator repo"
+    Value: !GetAtt ValidatorRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]     
+
+  ValidatorRepoUri:
+    Description: "The URI of the Validator ECR repo"    
+    Value: !GetAtt ValidatorRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
   #endregion
 
   ##################################################
@@ -1362,6 +1463,49 @@ Outputs:
     Value: !GetAtt PsuClientSandboxCertSecret.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"]]
+  #endregion
+
+  ##################################################
+  #region EPS FHIR Facade CA Secrets Outputs
+  ##################################################
+  FhirFacadeCAKeySecret:
+    Description: ARN of the EPS FHIR facade CA key secret
+    Value: !GetAtt FhirFacadeCAKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeCAKeySecret"]]
+
+  FhirFacadeCACertSecret:
+    Description: ARN of the EPS FHIR facade CA cert secret
+    Value: !GetAtt FhirFacadeCACertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeCACertSecret"]]
+
+  ##################################################
+  #region EPS FHIR Facade Client Secrets Outputs
+  ##################################################
+  FhirFacadeClientKeySecret:
+    Description: ARN of the EPS FHIR facade client key secret
+    Value: !GetAtt FhirFacadeClientKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientKeySecret"]]
+
+  FhirFacadeClientCertSecret:
+    Description: ARN of the EPS FHIR facade client cert secret
+    Value: !GetAtt FhirFacadeClientCertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientCertSecret"]]
+
+  FhirFacadeClientSandboxKeySecret:
+    Description: ARN of the EPS FHIR facade client key secret for sandbox
+    Value: !GetAtt FhirFacadeClientSandboxKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientSandboxKeySecret"]]
+
+  FhirFacadeClientSandboxCertSecret:
+    Description: ARN of the EPS FHIR facade client cert secret for sandbox
+    Value: !GetAtt FhirFacadeClientSandboxCertSecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientSandboxCertSecret"]]
   #endregion
 
   ##################################################

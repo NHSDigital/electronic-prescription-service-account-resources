@@ -13,9 +13,9 @@
 			"path": "../packages/splunkProcessor"
 		},
     {
-			"name": "packages/slackAlerter",
-			"path": "../packages/slackAlerter"
-		}
+      "name": "packages/proxygen",
+      "path": "../packages/proxygen",
+    },
 	],
 	"settings": {
 		"jest.disabledWorkspaceFolders": [
@@ -50,6 +50,7 @@
           "HSCN",
           "liter",
           "milliliter",
+          "MTLS",
           "netmums",
           "NHSD",
           "nhsdlogin",
@@ -67,6 +68,7 @@
           "powertools",
           "prescriptionsforpatients",
           "Prosthetist",
+          "proxygen",
           "querystring",
           "reingest",
           "reingested",
@@ -82,19 +84,13 @@
           "URPID",
           "vars",
           "versionable",
-          "whens"
+          "whens",
         ],
-		"cSpell.dictionaries": [
-			"en-GB"
-		],
-		"cSpell.ignorePaths": [
-			"package-lock.json",
-			"node_modules",
-			".vscode"
-		],
+		"cSpell.dictionaries": ["en-GB"],
+		"cSpell.ignorePaths": ["package-lock.json","node_modules",".vscode"],
 		"jest.jestCommandLine": "NODE_OPTIONS=--experimental-vm-modules node_modules/.bin/jest --no-cache",
 		"jest.nodeEnv": {
-			"POWERTOOLS_DEV": true
+			"POWERTOOLS_DEV": true,
 		}
 	},
 	"extensions": {
@@ -118,7 +114,7 @@
 			"streetsidesoftware.code-spell-checker",
 			"timonwong.shellcheck",
 			"mkhl.direnv",
-			"tamasfe.even-better-toml"
+			"tamasfe.even-better-toml",
 		]
 	}
 }

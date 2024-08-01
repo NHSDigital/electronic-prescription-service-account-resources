@@ -16,7 +16,8 @@
   "workspaces": [
     "packages/splunkProcessor",
     "packages/certificateChecker",
-    "packages/slackAlerter"
+    "packages/slackAlerter",
+    "packages/proxygen"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.11",
