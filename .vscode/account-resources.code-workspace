@@ -13,6 +13,10 @@
     "path": "../packages/splunkProcessor"
     },
     {
+      "name": "packages/slackAlerter",
+      "path": "../packages/slackAlerter"
+    },
+    {
       "name": "packages/proxygen",
       "path": "../packages/proxygen",
     },

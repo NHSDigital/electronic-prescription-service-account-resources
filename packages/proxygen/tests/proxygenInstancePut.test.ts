@@ -12,7 +12,7 @@ import jwt from "jsonwebtoken"
 import {Proxygen} from "../src/helpers"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 import {mockClient} from "aws-sdk-client-mock"
-import { Context } from "aws-lambda"
+import {Context} from "aws-lambda"
 
 jest.unstable_mockModule("../src/signingHelpers", () => ({
   getSecret: jest.fn().mockReturnValue("mockPrivateKey"),
