@@ -37,7 +37,7 @@
     "@aws-lambda-powertools/logger": "^2.6.0",
     "archiver": "^7.0.1",
     "esbuild": "^0.23.0",
-    "ts-jest": "^29.2.3",
+    "ts-jest": "^29.2.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   }
