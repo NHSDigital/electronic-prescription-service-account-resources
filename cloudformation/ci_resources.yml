@@ -323,6 +323,7 @@ Resources:
               - elasticloadbalancing:RegisterTargets
               - elasticloadbalancing:DeregisterTargets
               - elasticloadbalancing:DescribeTargetHealth
+              - elasticloadbalancing:AddTags
               - elasticloadbalancing:CreateListener
               - elasticloadbalancing:DeleteListener
               - elasticloadbalancing:DescribeListeners
