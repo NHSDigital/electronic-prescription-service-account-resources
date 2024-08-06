@@ -312,6 +312,29 @@ Resources:
               - apigateway:RemoveCertificateFromDomain
               - apigateway:UpdateRestApiPolicy
               - apigateway:TagResource
+              - elasticloadbalancing:CreateLoadBalancer
+              - elasticloadbalancing:DeleteLoadBalancer
+              - elasticloadbalancing:DescribeLoadBalancers
+              - elasticloadbalancing:ModifyLoadBalancerAttributes
+              - elasticloadbalancing:CreateTargetGroup
+              - elasticloadbalancing:DeleteTargetGroup
+              - elasticloadbalancing:DescribeTargetGroups
+              - elasticloadbalancing:ModifyTargetGroupAttributes
+              - elasticloadbalancing:RegisterTargets
+              - elasticloadbalancing:DeregisterTargets
+              - elasticloadbalancing:DescribeTargetHealth
+              - elasticloadbalancing:CreateListener
+              - elasticloadbalancing:DeleteListener
+              - elasticloadbalancing:DescribeListeners
+              - elasticloadbalancing:ModifyListener
+              - elasticloadbalancing:CreateRule
+              - elasticloadbalancing:DeleteRule
+              - elasticloadbalancing:DescribeRules
+              - elasticloadbalancing:ModifyRule
+              - elasticloadbalancing:CreateListenerRule
+              - elasticloadbalancing:DeleteListenerRule
+              - elasticloadbalancing:DescribeListenerRules
+              - elasticloadbalancing:ModifyListenerRule
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyB:
@@ -391,29 +414,6 @@ Resources:
               - scheduler:UntagResource
               - scheduler:UpdateSchedule
               - scheduler:ListTagsForResource
-              - elasticloadbalancing:CreateLoadBalancer
-              - elasticloadbalancing:DeleteLoadBalancer
-              - elasticloadbalancing:DescribeLoadBalancers
-              - elasticloadbalancing:ModifyLoadBalancerAttributes
-              - elasticloadbalancing:CreateTargetGroup
-              - elasticloadbalancing:DeleteTargetGroup
-              - elasticloadbalancing:DescribeTargetGroups
-              - elasticloadbalancing:ModifyTargetGroupAttributes
-              - elasticloadbalancing:RegisterTargets
-              - elasticloadbalancing:DeregisterTargets
-              - elasticloadbalancing:DescribeTargetHealth
-              - elasticloadbalancing:CreateListener
-              - elasticloadbalancing:DeleteListener
-              - elasticloadbalancing:DescribeListeners
-              - elasticloadbalancing:ModifyListener
-              - elasticloadbalancing:CreateRule
-              - elasticloadbalancing:DeleteRule
-              - elasticloadbalancing:DescribeRules
-              - elasticloadbalancing:ModifyRule
-              - elasticloadbalancing:CreateListenerRule
-              - elasticloadbalancing:DeleteListenerRule
-              - elasticloadbalancing:DescribeListenerRules
-              - elasticloadbalancing:ModifyListenerRule
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyC:
