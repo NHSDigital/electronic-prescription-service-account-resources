@@ -109,8 +109,6 @@ Resources:
             Resource:
               - !GetAtt LambdaLogGroup.Arn
               - !Sub ${LambdaLogGroup.Arn}:log-stream:*
-              - !GetAtt LambdaLogGroup.Arn
-              - !Sub ${LambdaLogGroup.Arn}:log-stream:*
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
