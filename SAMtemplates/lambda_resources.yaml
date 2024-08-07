@@ -720,7 +720,7 @@ Resources:
       Role: !GetAtt ProxygenPTLInstanceGetFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          ALLOWED_ENVIRONMENTS: internal-dev
+          ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -756,7 +756,7 @@ Resources:
       Role: !GetAtt ProxygenPTLInstanceDeleteFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          ALLOWED_ENVIRONMENTS: internal-dev
+          ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
