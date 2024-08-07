@@ -56,7 +56,7 @@ Parameters:
   IncludeAdditionalPolicies:
     Type: String
     Default: false
-
+  
   AdditionalPolicies:
     Type: CommaDelimitedList
     Description: A list of additional policies to attach the lambdas role (comma delimited).
@@ -64,6 +64,7 @@ Parameters:
 
 Conditions:
   ShouldUseSplunk: !Equals [true, !Ref EnableSplunk]
+
   ShouldIncludeAdditionalPolicies: !Equals
     - true
     - !Ref IncludeAdditionalPolicies
@@ -91,7 +92,7 @@ Resources:
             - !If
               - ShouldIncludeAdditionalPolicies
               - !Join
-                - ","
+                - ','
                 - !Ref AdditionalPolicies
               - !Ref AWS::NoValue
 

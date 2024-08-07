@@ -118,19 +118,28 @@ It creates the following resources
 - Trust store bucket and KMS key - public CA certs used for mutual TLS are uploaded to this bucket
 - Splunk delivery stream bucket and KMS key - cloudwatch logs that can not be delivered to splunk are put in here
 - Audit logging bucket - s3 access logs from artifact, trust store and splunk delivery stream buckets are sent to here
+- KMS key for encrypting SNS messages
 - Secrets and KMS key - there are various secrets created for storing keys used in mutual TLS. These have a default value set, but the values are modified when creating new keys.
-- - CAKeySecret - used to store the private CA key
-- - CACertSecret - used to store the public CA cert
-- - ClientKeySecret - used to store the private client key
-- - ClientCertSecret - used to store the public client cert
-- - SpinePrivateKey - used to store the spine private key
-- - SpinePublicCertificate - used to store the spine public key
-- - SpineASID - used to store the spine ASID
-- - SpinePartyKey - used to store the spine party key
-- - SpineCAChain - used to store the spine CA chain
-- - ServiceSearchApiKey - used to store the service search API key
-- - JiraToken - used to store token for jira
-- - ConfluenceToken - used to store token for confluence
+    - CAKeySecret - used to store the private CA key
+    - CACertSecret - used to store the public CA cert
+    - ClientKeySecret - used to store the private client key
+    - ClientCertSecret - used to store the public client cert
+    - SpinePrivateKey - used to store the spine private key
+    - SpinePublicCertificate - used to store the spine public key
+    - SpineASID - used to store the spine ASID
+    - SpinePartyKey - used to store the spine party key
+    - SpineCAChain - used to store the spine CA chain
+    - ServiceSearchApiKey - used to store the service search API key
+    - JiraToken - used to store token for jira
+    - ConfluenceToken - used to store token for confluence
+    - ProxgenPrivateKey - used to store the private key for proxygen
+    - ProxgenPublicKey - used to store the public key for proxygen
+    - PSUProxygenPrivateKey - used to store the private key for deploying the PSU proxy via proxygen
+    - PSUProxygenPublicKey - used to store the public key for deploying the PSU proxy via proxygen
+    - CPSUProxygenPrivateKey - used to store the private key for deploying the CPSU proxy via proxygen
+    - CPSUProxygenPublicKey - used to store the public key for deploying the CPSU proxy via proxygen
+    - SlackWebHookUrl - used to store the slack webhook url needed for the Slack Alerter lambda to post to eps alert slack channels
+
 
 # Route 53 resources - environment accounts
 
@@ -182,6 +191,8 @@ This is created as part of CI pipeline.
 It creates the following resources
 
 - CloudWatchKMSKey - used to encrypt cloudwatch logs
+ - LambdaInsightsCloudwatchLogGroup - log group used by insights
+ - LambdaInsightsLogGroupPolicy - policy to allow the use of the lambda insights log group
 - SplunkSubscriptionFilterRole - used by filters on cloudwatch logs to send to splunk
 - SplunkDeliveryStream - kinesis firehose delivery stream used to send cloudwatch logs to splunk
 - SplunkDeliveryStreamLogGroup - log group used by SplunkDeliveryStream
@@ -189,6 +200,9 @@ It creates the following resources
 - SplunkDeliveryStreamProcessorRole - role used by SplunkDeliveryStreamProcessor
 - SplunkDeliveryStreamProcessorLogGroup - used by SplunkDeliveryStreamProcessor lambda
 - SplunkDeliveryStreamProcessorInvokeRole - used by delivery stream to invoke SplunkDeliveryStreamProcessor lambda
+- CertExpiryCheckFunction & common resources - lambda used to check cert expiry
+- SlackAlertsSnsTopic - SNS topic used to pass Cloudwatch (& other) alerts to the Slack Alerter lambda
+- SlackAlerter & common resources - lambda used to process, format and post incoming alerts to eps alert slack channels
 - LambdaInsightsCloudwatchLogGroup - log group for lambda insights
 - CertExpiryCheckFunction - lambda function to check certificate expiry dates
 - CertExpiryCheckFunctionScheduleEvent - schedule to run CertExpiryCheckFunction

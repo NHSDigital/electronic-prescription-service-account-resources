@@ -187,7 +187,6 @@ Resources:
             Action:
               - sts:AssumeRole
 
-
   AssumeExecutionRolePolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -281,8 +280,7 @@ Resources:
               - logs:DescribeLogStreams
               - logs:DescribeResourcePolicies
               - lambda:Add*
-              - lambda:CreateFunction
-              - lambda:CreateAlias
+              - lambda:Create*
               - lambda:Delete*
               - lambda:Get*
               - lambda:List*
@@ -415,6 +413,34 @@ Resources:
               - scheduler:UntagResource
               - scheduler:UpdateSchedule
               - scheduler:ListTagsForResource
+              - sns:CreateTopic
+              - sns:DeleteTopic
+              - sns:ListTopics
+              - sns:AddPermission
+              - sns:RemovePermission
+              - sns:GetSubscriptionAttributes
+              - sns:GetTopicAttributes
+              - sns:ListSubscriptions
+              - sns:ListSubscriptionsByTopic
+              - sns:ListTagsForResource
+              - sns:SetSubscriptionAttributes
+              - sns:SetTopicAttributes
+              - sns:Subscribe
+              - sns:Unsubscribe
+              - sns:TagResource
+              - sns:UntagResource
+              - sqs:AddPermission
+              - sqs:RemovePermission
+              - sqs:CreateQueue
+              - sqs:DeleteQueue
+              - sqs:ListQueues
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:ListDeadLetterSourceQueues
+              - sqs:ListQueueTags
+              - sqs:TagQueue
+              - sqs:UntagQueue
+              - sqs:SetQueueAttributes
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyC:
