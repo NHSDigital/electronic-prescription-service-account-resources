@@ -1,20 +1,20 @@
-import type { JestConfigWithTsJest } from "ts-jest";
+import type {JestConfigWithTsJest} from "ts-jest"
 
-const esModules = ["@middy"].join("|");
+const esModules = ["@middy"].join("|")
 const jestConfig: JestConfigWithTsJest = {
   preset: "ts-jest/presets/default-esm",
   moduleFileExtensions: ["js", "json", "ts", "d.ts"],
   moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^(\\.{1,2}/.*)\\.js$": "$1"
   },
   transform: {
     "^.+\\.ts?$": [
       "ts-jest",
       {
         useESM: true,
-        tsconfig: "./tsconfig.json",
-      },
-    ],
+        tsconfig: "./tsconfig.json"
+      }
+    ]
   },
   clearMocks: true,
   collectCoverage: true,
@@ -24,7 +24,7 @@ const jestConfig: JestConfigWithTsJest = {
   testEnvironment: "node",
   extensionsToTreatAsEsm: [".ts"],
   verbose: true,
-  transformIgnorePatterns: [`node_modules/(?!${esModules})`],
-};
+  transformIgnorePatterns: [`node_modules/(?!${esModules})`]
+}
 
-export default jestConfig;
+export default jestConfig

@@ -34,6 +34,7 @@ lint-cloudformation:
 
 lint-node:
 	npm run lint --workspace packages/certificateChecker
+	npm run lint --workspace packages/slackAlerter
 	npm run lint --workspace packages/proxygen
 
 lint-githubactions:
@@ -45,6 +46,7 @@ lint-githubaction-scripts:
 test: generate-mock-certs
 	npm run test --workspace packages/splunkProcessor
 	npm run test --workspace packages/certificateChecker
+	npm run test --workspace packages/slackAlerter
 	npm run test --workspace packages/proxygen
 
 generate-mock-certs:
@@ -59,6 +61,7 @@ clean:
 
 deep-clean: clean
 	rm -rf venv
+	find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +
 	poetry env remove --all
 
 aws-configure:

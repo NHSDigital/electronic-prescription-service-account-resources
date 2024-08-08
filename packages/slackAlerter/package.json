@@ -1,0 +1,21 @@
+{
+    "name": "slackAlerter",
+    "version": "1.0.0",
+    "description": "Sends cloudwatch alerts to slack",
+    "main": "slackAlerter.ts",
+    "author": "NHS England",
+    "license": "MIT",
+    "scripts": {
+        "compile": "tsc",
+        "test": "npm run compile && npm run unit",
+        "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
+        "lint": "eslint . --ext .ts --max-warnings 0 --fix"
+    },
+    "dependencies": {
+        "@aws-lambda-powertools/logger": "^2.3.0"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.143",
+        "jest-fetch-mock": "^3.0.3"
+    }
+}

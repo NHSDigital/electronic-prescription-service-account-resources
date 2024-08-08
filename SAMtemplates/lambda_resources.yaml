@@ -6,7 +6,7 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 50
+    Timeout: 60
     MemorySize: 256
     Architectures:
       - x86_64
@@ -14,6 +14,7 @@ Globals:
     Environment:
       Variables:
         NODE_OPTIONS: "--enable-source-maps"
+        ENV: !Ref Env
 
 Parameters:
   SplunkHECEndpoint:
@@ -62,7 +63,7 @@ Parameters:
 
 Resources:
   ##################################################
-  # Lambda Insights
+  #region Lambda Insights
   ##################################################
   LambdaInsightsCloudwatchLogGroup:
     Type: AWS::Logs::LogGroup
@@ -89,9 +90,10 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
             Resource: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+  #endregion
 
   ##################################################
-  # Splunk Subscription Filter
+  #region Splunk Subscription Filter
   ##################################################
   SplunkSubscriptionFilterRole:
     Type: AWS::IAM::Role
@@ -132,9 +134,10 @@ Resources:
               - kms:GenerateDataKey
             Resource:
               - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+  #endregion
 
   ##################################################
-  # Splunk Delivery Stream
+  #region Splunk Delivery Stream
   ##################################################
   SplunkDeliveryStream:
     # Depends on policy as delivery streams require a role with correct policies to be build, and a role reference doesn't provide a dependency as Stream -> Role <- Policy, so Stream -!> Policy
@@ -203,9 +206,10 @@ Resources:
               - kms:ReEncrypt*
             Resource:
               - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+  #endregion
 
   ##################################################
-  # Splunk Delivery Stream Processor
+  #region Splunk Delivery Stream Processor
   ##################################################
   SplunkDeliveryStreamProcessor:
     Type: AWS::Serverless::Function
@@ -214,11 +218,9 @@ Resources:
       Handler: splunkProcessor.handler
       Role: !GetAtt SplunkDeliveryStreamProcessorRole.Arn
       MemorySize: 512
-      Timeout: 60
       Environment:
         Variables:
           LOG_LEVEL: !Ref LogLevel
-          ENV: !Ref Env
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
@@ -294,9 +296,10 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${SplunkDeliveryStreamProcessor}"
       RetentionInDays: !Ref LogRetentionDays
       KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+  #endregion
 
   ##################################################
-  # Splunk Delivery Stream Processor Invoke
+  #region Splunk Delivery Stream Processor Invoke
   ##################################################
   SplunkDeliveryStreamProcessorInvokeRole:
     Type: AWS::IAM::Role
@@ -323,8 +326,10 @@ Resources:
               - lambda:InvokeFunction
             Resource:
               - !GetAtt SplunkDeliveryStreamProcessor.Arn
+  #endregion
+
   ##################################################
-  # Certificate Checker
+  #region Certificate Checker
   ##################################################
   LambdaManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -355,6 +360,7 @@ Resources:
             Action:
               - secretsmanager:BatchGetSecretValue
             Resource: "*"
+
   ExpiryFunctionResources:
     Type: AWS::Serverless::Application
     DependsOn:
@@ -420,9 +426,159 @@ Resources:
         packages: bundle
         EntryPoints:
           - certificateChecker/src/certificateChecker.ts
+  #endregion
 
   ##################################################
-  # Proxygen lambdas
+  #region Slack Alerter
+  ###################################################
+  SlackAlertsSnsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${AWS::StackName}-SlackAlerts
+      KmsMasterKeyId: !ImportValue account-resources:SnsKMSKey
+      DeliveryStatusLogging:
+        - Protocol: sqs
+          SuccessFeedbackRoleArn: !ImportValue account-resources:SNSFeedbackLoggingRoleArn
+          FailureFeedbackRoleArn: !ImportValue account-resources:SNSFeedbackLoggingRoleArn
+
+  # todo add deliver status logging
+
+  SlackAlerterSqsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${AWS::StackName}-SlackAlerts
+      KmsMasterKeyId: !ImportValue account-resources:SqsKMSKey
+      MessageRetentionPeriod: 86400 # 1day in secs
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt SlackAlerterDeadLetterQueue.Arn
+        maxReceiveCount: 5
+      VisibilityTimeout: 60
+  
+  SlackAlerterSqsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !GetAtt SlackAlerterSqsQueue.QueueUrl
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action:
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:SendMessage
+            Resource: !GetAtt SlackAlerterSqsQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt SlackAlertsSnsTopic.TopicArn
+
+  SlackAlerterDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${AWS::StackName}-SlackAlertsDeadLetter
+      KmsMasterKeyId: !ImportValue account-resources:SqsKMSKey
+      MessageRetentionPeriod: 604800 # 1week in secs
+      VisibilityTimeout: 60
+  
+  SlackAlerterDeadLetterQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !GetAtt SlackAlerterDeadLetterQueue.QueueUrl
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sqs.amazonaws.com
+            Action:
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:SendMessage
+            Resource: !GetAtt SlackAlerterDeadLetterQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt SlackAlerterSqsQueue.Arn
+
+  SlackAlerterSqsQueueSnsSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !GetAtt SlackAlertsSnsTopic.TopicArn
+      RawMessageDelivery: true
+      Protocol: sqs
+      Endpoint: !GetAtt SlackAlerterSqsQueue.Arn
+
+  ReadSlackAlerterSqsQueuePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sqs:ChangeMessageVisibility
+              - sqs:DeleteMessage
+              - sqs:ReceiveMessage
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:ListQueues
+            Resource: !GetAtt  SlackAlerterSqsQueue.Arn
+  
+  SlackAlerterResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-SlackAlerter"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !ImportValue account-resources:SqsDecryptSecretsKMSPolicy
+            - !ImportValue account-resources:AccessSlackSecretsManagedPolicy
+            - !GetAtt ReadSlackAlerterSqsQueuePolicy.PolicyArn
+
+  SlackAlerter:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-SlackAlerter
+      CodeUri: ../packages
+      Handler: slackAlerter.handler
+      Role: !GetAtt SlackAlerterResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: 2773
+      Layers:
+        - arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SlackAlerterSqsQueue.Arn
+            Enabled: true
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            BatchSize: 10
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        tsconfig: slackAlerter/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - slackAlerter/src/slackAlerter.ts
+  #endregion
+
+  ##################################################
+  #region Proxygen lambdas
   ##################################################
   ExecuteProxygenPTLManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -720,7 +876,7 @@ Resources:
       Role: !GetAtt ProxygenPTLInstanceGetFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          ALLOWED_ENVIRONMENTS: internal-dev
+          ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -756,7 +912,7 @@ Resources:
       Role: !GetAtt ProxygenPTLInstanceDeleteFunctionResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
-          ALLOWED_ENVIRONMENTS: internal-dev
+          ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -767,7 +923,9 @@ Resources:
         packages: bundle
         EntryPoints:
           - proxygen/src/proxygenInstanceDelete.ts
+  #endregion
 
+#region outputs
 Outputs:
   #################################################
   # Lambda Insights Outputs
@@ -795,3 +953,4 @@ Outputs:
     Value: !GetAtt SplunkDeliveryStream.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStream"]]
+#endregion

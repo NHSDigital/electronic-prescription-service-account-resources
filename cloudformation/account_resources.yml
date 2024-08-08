@@ -1,8 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
-  ##################################################
-  # API Gateway
-  ##################################################
+  #region API Gateway
   ApiGwCloudWatchRole:
     Type: AWS::IAM::Role
     Properties:
@@ -41,19 +39,17 @@ Resources:
               - logs:GetLogDelivery
               - logs:ListLogDeliveries
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+  #endregion
 
-  ##################################################
-  # Account
-  ##################################################
+  #region Account
   Account:
     Type: AWS::ApiGateway::Account
     Properties:
       CloudWatchRoleArn: !GetAtt ApiGwCloudWatchRole.Arn
     DependsOn: AllowApiGwLoggingPolicy
+  #endregion
 
-  ##################################################
-  # Cloudwatch
-  ##################################################
+  #region Cloudwatch
   CloudwatchResourcePolicy:
     Type: AWS::Logs::ResourcePolicy
     Properties:
@@ -141,10 +137,39 @@ Resources:
               - kms:ReEncrypt*
             Resource:
               - !GetAtt CloudwatchLogsKmsKey.Arn
+  #endregion
 
-  ##################################################
-  # Artifacts Bucket
-  ##################################################
+  #region IAM Roles & Policies
+  SNSFeedbackLoggingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref SNSFeedbackLoggingPolicy
+
+  SNSFeedbackLoggingPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - logs:PutMetricFilter
+              - logs:PutRetentionPolicy
+            Resource: "*"
+
+  #region Artifacts Bucket
   ArtifactsBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -232,10 +257,9 @@ Resources:
             Resource:
               - !Join ["", [!GetAtt ArtifactsBucket.Arn, "/*"]]
               - !GetAtt ArtifactsBucket.Arn
+  #endregion
 
-  ##################################################
-  # Trust Store Bucket
-  ##################################################
+  #region Trust Store Bucket
   TrustStoreBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -323,10 +347,9 @@ Resources:
             Resource:
               - !Join ["", [!GetAtt TrustStoreBucket.Arn, "/*"]]
               - !GetAtt TrustStoreBucket.Arn
+  #endregion
 
-  ##################################################
-  # Audit Logging Bucket
-  ##################################################
+  #region Audit Logging Bucket
   AuditLoggingBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -400,10 +423,9 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
+  #endregion
 
-  ##################################################
-  # Splunk Delivery Stream Backup Bucket
-  ##################################################
+  #region Splunk Delivery Stream Backup Bucket
   SplunkDeliveryStreamBackupKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -531,10 +553,25 @@ Resources:
                 - ""
                 - - !GetAtt SplunkDeliveryStreamBackupBucket.Arn
                   - "/*"
+  #endregion
 
-  ##################################################
-  # Secrets KMS
-  ##################################################
+  #region ECR Repositories
+  FHIRFacadeRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: fhir-facade-repo
+      ImageScanningConfiguration: 
+        ScanOnPush: true    
+    
+  ValidatorRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: validator-repo
+      ImageScanningConfiguration: 
+        ScanOnPush: true
+  #endregion
+
+  #region Secrets KMS
   SecretsKMSKey:
     Type: AWS::KMS::Key
     Properties:
@@ -585,64 +622,146 @@ Resources:
               - kms:Decrypt
             Resource:
               - !GetAtt SecretsKMSKey.Arn
+  #endregion
 
-  ##################################################
-  # OLD CA Secrets - to delete after next prod deployment
-  ##################################################
-  CAKeySecret:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
+  #region SNS KMS
+  SnsKMSKey:
+    Type: AWS::KMS::Key
     Properties:
-      Description: CA private key
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-sns
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
+            Resource: "*"
+          - Sid: Enable Cloudwatch Alarms
+            Effect: Allow
+            Principal:
+              Service: cloudwatch.amazonaws.com
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt*
+              - kms:ReEncrypt*
+              - kms:Decrypt
+            Resource: "*"
+          - Sid: Enable SQS
+            Effect: Allow
+            Principal:
+              Service: sqs.amazonaws.com
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Decrypt
+            Resource: "*"
 
-  CACertSecret:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
+  SnsKMSKeyKMSKeyAlias:
+    Type: AWS::KMS::Alias
     Properties:
-      Description: CA certificate
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
+      AliasName: alias/SnsKMSKeyAlias
+      TargetKeyId: !Ref SnsKMSKey
 
-  ##################################################
-  # OLD Client Secrets - to delete after next prod deployment
-  ##################################################
-  ClientKeySecret:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
+  UseSnsKMSKeyManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      Description: Client private key
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
+      Roles:
+        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt*
+              - kms:ReEncrypt*
+              - kms:Decrypt
+            Resource: !GetAtt SnsKMSKey.Arn
 
-  ClientCertSecret:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
+  SnsDecryptSecretsKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      Description: Client cert
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt SnsKMSKey.Arn
+  #endregion
 
-  ClientSandboxKeySecret:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
+  #region SQS KMS
+  SqsKMSKey:
+    Type: AWS::KMS::Key
     Properties:
-      Description: Client sandbox private key
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
-
-  ClientSandboxCertSecret:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-sqs
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
+            Resource: "*"
+          - Sid: Enable SNS
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt*
+              - kms:ReEncrypt*
+              - kms:Decrypt
+            Resource: "*"
+    
+  SqsKMSKeyKMSKeyAlias:
+    Type: AWS::KMS::Alias
     Properties:
-      Description: Client sandbox cert
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
+      AliasName: alias/SqsKMSKeyAlias
+      TargetKeyId: !Ref SqsKMSKey
 
-  ##################################################
-  # PfP CA Secrets
-  ##################################################
+  UseSqsKMSKeyManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt*
+              - kms:ReEncrypt*
+              - kms:Decrypt
+            Resource: !GetAtt SqsKMSKey.Arn
+
+  SqsDecryptSecretsKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt SqsKMSKey.Arn
+  #endregion
+
+  #region PfP CA Secrets
   PfpCAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -658,10 +777,9 @@ Resources:
       Description: PfP CA certificate
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
+  #endregion
 
-  ##################################################
-  # PfP Client Secrets
-  ##################################################
+  #region PfP Client Secrets
   PfpClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -693,10 +811,9 @@ Resources:
       Description: PfP Client sandbox cert
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
+  #endregion
 
-  ##################################################
-  # Clinical Tracker CA Secrets
-  ##################################################
+  #region Clinical Tracker CA Secrets
   ClinicalTrackerCAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -712,10 +829,9 @@ Resources:
       Description: Clinical tracker CA secret
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
+  #endregion
 
-  ##################################################
-  # Clinical Tracker Client Secrets
-  ##################################################
+  #region Clinical Tracker Client Secrets
   ClinicalTrackerClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -747,10 +863,9 @@ Resources:
       Description: Clinical tracker client sandbox cert
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
+  #endregion
 
-  ##################################################
-  # PSU CA Secrets
-  ##################################################
+  #region PSU CA Secrets
   PsuCAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -766,10 +881,9 @@ Resources:
       Description: Prescription status update CA secret
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
+  #endregion
 
-  ##################################################
-  # PSU Client Secrets
-  ##################################################
+  #region PSU Client Secrets
   PsuClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -801,10 +915,9 @@ Resources:
       Description: Prescription status update client sandbox cert
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
+  #endregion
 
-  ##################################################
-  # EPS FHIR Facade CA Secrets
-  ##################################################
+  #region EPS FHIR Facade CA Secrets
   FhirFacadeCAKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -821,9 +934,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
 
-  ##################################################
   # EPS FHIR Facade Client Secrets
-  ##################################################
   FhirFacadeClientKeySecret:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -855,10 +966,9 @@ Resources:
       Description: EPS FHIR facade client sandbox cert
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
+  #endregion
 
-  ##################################################
-  # Spine Secrets
-  ##################################################
+  #region Spine Secrets
   SpinePrivateKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -898,10 +1008,9 @@ Resources:
       Description: CA chain for spine
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
+  #endregion
 
-  ##################################################
-  # Other Secrets
-  ##################################################
+  #region Other Secrets
   ServiceSearchApiKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1007,31 +1116,31 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SplunkHECToken"
-
-##################################################
-  # FHIR Facade ECR Repository
-##################################################
-  FHIRFacadeRepo:
-    Type: AWS::ECR::Repository
-    Properties: 
-      RepositoryName: fhir-facade-repo
-      ImageScanningConfiguration: 
-        ScanOnPush: true    
-
-##################################################
-  # Validator ECR Repository
-##################################################     
-  ValidatorRepo:
-    Type: AWS::ECR::Repository
-    Properties: 
-      RepositoryName: validator-repo
-      ImageScanningConfiguration: 
-        ScanOnPush: true     
+  
+  SlackWebHookUrl:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: slack webhook url
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-SlackWebhookUrl"
+  
+  AccessSlackSecretsManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !Ref SlackWebHookUrl
+  #endregion
 
 Outputs:
-  ##################################################
-  # Cloudwatch Outputs
-  ##################################################
+  #region Cloudwatch Outputs
   CloudwatchLogsKmsKeyArn:
     Description: "The Arn of the API GW cloudwatch logs KMS Key"
     Value: !GetAtt CloudwatchLogsKmsKey.Arn
@@ -1051,61 +1160,41 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "CloudwatchEncryptionKMSPolicyArn"]]
+  #endregion
 
-  FHIRFacadeRepoArn:
-    Description: "The Arn of the FHIR Facade ECR repo"
-    Value: !GetAtt FHIRFacadeRepo.Arn
+  #region IAM Roles & Policies Outputs
+  SNSFeedbackLoggingRoleArn:
+    Description: "The Arn of the SNS feedback logging role"
+    Value: !GetAtt SNSFeedbackLoggingRole.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "SNSFeedbackLoggingRoleArn"]]
+  #endregion
 
-  FHIRFacadeRepoUri:
-    Description: "The URI of the FHIR Facade ECR repo"    
-    Value: !GetAtt FHIRFacadeRepo.RepositoryUri
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
-
-  ValidatorRepoArn:
-    Description: "The Arn of the Validator repo"
-    Value: !GetAtt ValidatorRepo.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]     
-
-  ValidatorRepoUri:
-    Description: "The URI of the Validator ECR repo"    
-    Value: !GetAtt ValidatorRepo.RepositoryUri
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
-
-  ##################################################
-  # Artifacts Bucket Outputs
-  ##################################################
+  #region Artifacts Bucket Outputs
   ArtifactsBucket:
     Description: ARN of the Artifacts bucket
     Value: !GetAtt ArtifactsBucket.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ArtifactsBucket"]]
+  #endregion
 
-  ##################################################
-  # Trust Store Bucket Outputs
-  ##################################################
+  #region Trust Store Bucket Outputs
   TrustStoreBucket:
     Description: ARN of the Truststore bucket
     Value: !GetAtt TrustStoreBucket.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "TrustStoreBucket"]]
+  #endregion
 
-  ##################################################
-  # Audit Logging Bucket Outputs
-  ##################################################
+  #region Audit Logging Bucket Outputs
   AuditLoggingBucket:
     Description: ARN of the audit logging bucket
     Value: !GetAtt AuditLoggingBucket.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AuditLoggingBucket"]]
+  #endregion
 
-  ##################################################
-  # Splunk Delivery Stream Backup Bucket Outputs
-  ##################################################
+  #region Splunk Delivery Stream Backup Bucket Outputs
   SplunkDeliveryStreamBackupKMSKey:
     Description: SplunkDeliveryStreamBackupKMSKey
     Value: !GetAtt SplunkDeliveryStreamBackupKMSKey.Arn
@@ -1139,10 +1228,35 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStreamBackupBucket"]]
+  #endregion
 
-  ##################################################
-  # Secrets KMS Outputs
-  ##################################################
+  #region ECR Repositories Outputs
+  FHIRFacadeRepoArn:
+    Description: "The Arn of the FHIR Facade ECR repo"
+    Value: !GetAtt FHIRFacadeRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
+
+  FHIRFacadeRepoUri:
+    Description: "The URI of the FHIR Facade ECR repo"    
+    Value: !GetAtt FHIRFacadeRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
+
+  ValidatorRepoArn:
+    Description: "The Arn of the Validator repo"
+    Value: !GetAtt ValidatorRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]     
+
+  ValidatorRepoUri:
+    Description: "The URI of the Validator ECR repo"    
+    Value: !GetAtt ValidatorRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
+  #endregion
+
+  #region Secrets KMS Outputs
   SecretsKMSKey:
     Description: SecretsKMSKey
     Value: !GetAtt SecretsKMSKey.Arn
@@ -1155,40 +1269,39 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "LambdaDecryptSecretsKMSPolicy"]]
+  #endregion
 
-  ##################################################
-  # OLD CA Secrets Outputs - to delete after next prod deployment
-  ##################################################
-  CAKeySecret:
-    Description: ARN of the CA key secret
-    Value: !GetAtt CAKeySecret.Id
+  #region SNS KMS Outputs
+  SnsKMSKey:
+    Description: SnsKMSKey
+    Value: !GetAtt SnsKMSKey.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SnsKMSKey"]]
 
-  CACertSecret:
-    Description: ARN of the CA cert secret
-    Value: !GetAtt CACertSecret.Id
+  SnsDecryptSecretsKMSPolicy:
+    Description: "SNS Decrypt Secrets KMS Policy ARN"
+    Value: !GetAtt SnsDecryptSecretsKMSPolicy.PolicyArn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "SnsDecryptSecretsKMSPolicy"]]
+  #endregion
 
-  ##################################################
-  # OLD Client Secrets Outputs - to delete after next prod deployment
-  ##################################################
-  ClientKeySecret:
-    Description: ARN of the client key secret
-    Value: !GetAtt ClientKeySecret.Id
+  #region SQS KMS Outputs
+  SqsKMSKey:
+    Description: SqsKMSKey
+    Value: !GetAtt SqsKMSKey.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SqsKMSKey"]]
 
-  ClientCertSecret:
-    Description: ARN of the client cert secret
-    Value: !GetAtt ClientCertSecret.Id
+  SqsDecryptSecretsKMSPolicy:
+    Description: "SQS Decrypt Secrets KMS Policy ARN"
+    Value: !GetAtt SqsDecryptSecretsKMSPolicy.PolicyArn
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "SqsDecryptSecretsKMSPolicy"]]
+  #endregion
 
-  ClientSandboxKeySecret:
-    Description: ARN of the client key secret for sandbox
-    Value: !GetAtt ClientSandboxKeySecret.Id
-
-  ClientSandboxCertSecret:
-    Description: ARN of the client cert secret for sandbox
-    Value: !GetAtt ClientSandboxCertSecret.Id
-
-  ##################################################
-  # PfP CA Secrets Outputs
-  ##################################################
+  #region PfP CA Secrets Outputs
   PfpCAKeySecret:
     Description: ARN of the PfP CA key secret
     Value: !GetAtt PfpCAKeySecret.Id
@@ -1200,10 +1313,9 @@ Outputs:
     Value: !GetAtt PfpCACertSecret.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PfpCACertSecret"]]
+  #endregion
 
-  ##################################################
-  # PfP Client Secrets Outputs
-  ##################################################
+  #region PfP Client Secrets Outputs
   PfpClientKeySecret:
     Description: ARN of the PfP client key secret
     Value: !GetAtt PfpClientKeySecret.Id
@@ -1227,10 +1339,9 @@ Outputs:
     Value: !GetAtt PfpClientSandboxCertSecret.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PfpClientSandboxCertSecret"]]
+  #endregion
 
-  ##################################################
-  # Clinical Tracker CA Secrets Outputs
-  ##################################################
+  #region Clinical Tracker CA Secrets Outputs
   ClinicalTrackerCAKeySecret:
     Description: ARN of the clinical tracker CA key secret
     Value: !GetAtt ClinicalTrackerCAKeySecret.Id
@@ -1242,10 +1353,9 @@ Outputs:
     Value: !GetAtt ClinicalTrackerCACertSecret.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerCACertSecret"]]
+  #endregion
 
-  ##################################################
-  # Clinical Tracker Client Secrets Outputs
-  ##################################################
+  #region Clinical Tracker Client Secrets Outputs
   ClinicalTrackerClientKeySecret:
     Description: ARN of the clinical tracker client key secret
     Value: !GetAtt ClinicalTrackerClientKeySecret.Id
@@ -1279,10 +1389,9 @@ Outputs:
           ":",
           [!Ref "AWS::StackName", "ClinicalTrackerClientSandboxCertSecret"],
         ]
+  #endregion
 
-  ##################################################
-  # PSU CA Secrets Outputs
-  ##################################################
+  #region PSU CA Secrets Outputs
   PsuCAKeySecret:
     Description: ARN of the prescription status update CA key secret
     Value: !GetAtt PsuCAKeySecret.Id
@@ -1294,10 +1403,9 @@ Outputs:
     Value: !GetAtt PsuCACertSecret.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PsuCACertSecret"]]
+  #endregion
 
-  ##################################################
-  # PSU Client Secrets Outputs
-  ##################################################
+  #region PSU Client Secrets Outputs
   PsuClientKeySecret:
     Description: ARN of the prescription status update client key secret
     Value: !GetAtt PsuClientKeySecret.Id
@@ -1321,10 +1429,9 @@ Outputs:
     Value: !GetAtt PsuClientSandboxCertSecret.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"]]
+  #endregion
 
-  ##################################################
-  # EPS FHIR Facade CA Secrets Outputs
-  ##################################################
+  #region EPS FHIR Facade CA Secrets Outputs
   FhirFacadeCAKeySecret:
     Description: ARN of the EPS FHIR facade CA key secret
     Value: !GetAtt FhirFacadeCAKeySecret.Id
@@ -1337,9 +1444,7 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeCACertSecret"]]
 
-  ##################################################
-  # EPS FHIR Facade Client Secrets Outputs
-  ##################################################
+  #region EPS FHIR Facade Client Secrets Outputs
   FhirFacadeClientKeySecret:
     Description: ARN of the EPS FHIR facade client key secret
     Value: !GetAtt FhirFacadeClientKeySecret.Id
@@ -1363,10 +1468,9 @@ Outputs:
     Value: !GetAtt FhirFacadeClientSandboxCertSecret.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientSandboxCertSecret"]]
+  #endregion
 
-  ##################################################
-  # Spine Secrets Outputs
-  ##################################################
+  #region Spine Secrets Outputs
   SpinePrivateKey:
     Description: ARN of the private key for spine mutual TLS
     Value: !GetAtt SpinePrivateKey.Id
@@ -1396,10 +1500,9 @@ Outputs:
     Value: !GetAtt SpineCAChain.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SpineCAChain"]]
+  #endregion
 
-  ##################################################
-  # Other Secrets Outputs
-  ##################################################
+  #region Other Secrets Outputs
   ServiceSearchApiKey:
     Description: ServiceSearchApiKey
     Value: !GetAtt ServiceSearchApiKey.Id
@@ -1465,3 +1568,16 @@ Outputs:
     Value: !GetAtt CPSUProxygenPublicKey.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CPSUProxygenPublicKey"]]
+  
+  SlackWebHookUrl:
+    Description: Slack webhook url
+    Value: !GetAtt SlackWebHookUrl.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SlackWebHookUrl"]]
+  
+  AccessSlackSecretsManagedPolicy:
+    Description: "Access SNS Secrets Policy ARN"
+    Value: !GetAtt AccessSlackSecretsManagedPolicy.PolicyArn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AccessSlackSecretsManagedPolicy"]]
+  #endregion
