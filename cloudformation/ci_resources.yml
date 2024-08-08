@@ -334,6 +334,15 @@ Resources:
               - elasticloadbalancing:DeleteListenerRule
               - elasticloadbalancing:DescribeListenerRules
               - elasticloadbalancing:ModifyListenerRule
+              - elasticloadbalancing:CreateTrustStore
+              - elasticloadbalancing:DescribeTrustStores
+              - elasticloadbalancing:DeleteTrustStore
+              - elasticloadbalancing:ModifyTrustStore
+              - elasticloadbalancing:GetTrustStoreCaCertificatesBundle
+              - elasticloadbalancing:AddTrustStoreRevocations
+              - elasticloadbalancing:RemoveTrustStoreRevocations
+              - elasticloadbalancing:DescribeTrustStoreAssociations
+              - elasticloadbalancing:DeleteSharedTrustStoreAssociation
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyB:
