@@ -301,6 +301,7 @@ Resources:
               - kms:Tag*
               - kms:Untag*
               - kms:Update*
+              - kms:Decrypt*
               - apigateway:DELETE
               - apigateway:GET
               - apigateway:POST
