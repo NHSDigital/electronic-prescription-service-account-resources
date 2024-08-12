@@ -1,6 +1,6 @@
 {
     "jest.jestCommandLine": "NODE_OPTIONS=--experimental-vm-modules  /workspaces/electronic-prescription-service-account-resources/node_modules/.bin/jest --no-cache",
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.formatOnSave": true,
     "javascript.format.enable": true,
     "typescript.format.enable": true

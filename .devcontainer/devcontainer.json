@@ -30,7 +30,7 @@
         "timonwong.shellcheck",
         "mkhl.direnv",
         "github.vscode-github-actions",
-        "rvest.vs-code-prettier-eslint"
+        "dbaeumer.vscode-eslint"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/workspaces/electronic-prescription-service-account-resources/.venv/bin/python",
@@ -50,7 +50,10 @@
           "Formik",
           "pino",
           "serialisation"
-        ]
+        ],
+        "eslint.useFlatConfig": true,
+        "eslint.format.enable": true,
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"    
       }
     }
   },

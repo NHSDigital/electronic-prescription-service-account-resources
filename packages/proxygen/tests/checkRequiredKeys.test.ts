@@ -22,6 +22,7 @@ describe("checkRequiredKeys", () => {
   })
 
   it("should throw an error if obj is empty", () => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     expect(() => checkRequiredKeys({} as Proxygen, [])).toThrow(
       "Input is one of missing required keys: apiName,proxygenSecretName,kid. Input keys: "
     )

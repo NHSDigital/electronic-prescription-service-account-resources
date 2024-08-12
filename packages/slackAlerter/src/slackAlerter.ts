@@ -22,7 +22,7 @@ const logger: Logger = new Logger({serviceName: "slackAlerter"})
 
 export const handler: SQSHandler = async(event: SQSEvent): Promise<SQSBatchResponse> => {
   logger.info("Received SQS message...")
-  const batchItemFailures: SQSBatchItemFailure[] = []
+  const batchItemFailures: Array<SQSBatchItemFailure> = []
 
   const totalRecords: number = event.Records.length
   logger.info(`${totalRecords} record(s) to process...`)
@@ -101,6 +101,7 @@ const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudW
 }
 
 const postSlackMessage = async (slackMessageContent: CloudWatchAlertMessageContent): Promise<void> => {
+  // eslint-disable-next-line no-undef
   const options: RequestInit = {
     method: "POST",
     body: JSON.stringify(slackMessageContent),

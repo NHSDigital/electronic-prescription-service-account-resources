@@ -23,7 +23,8 @@ export interface SecretsManagerSecret {
     Name: string
     VersionId: string
     SecretString: string
-    VersionStages: string[]
+    VersionStages: Array<string>
+    // eslint-disable-next-line no-undef
     CreatedDate: EpochTimeStamp
 }
 // #endregion
@@ -62,7 +63,7 @@ export interface CloudWatchAlarm {
     AlarmArn: string
     OldStateValue: string
     OKActions: []
-    AlarmActions: string[]
+    AlarmActions: Array<string>
     InsufficientDataActions: []
     Trigger: Trigger
 }
@@ -118,7 +119,7 @@ interface Button {
 
 interface RichTextSection {
     type: "rich_text_section"
-    elements: RichText[]
+    elements: Array<RichText>
 }
 
 interface MessageBlock {
@@ -136,17 +137,17 @@ interface DividerBlock extends MessageBlock {
 
 interface SectionBlock extends MessageBlock {
     type: "section"
-    fields: (Text | PlainText)[]
+    fields: Array<Text | PlainText>
 }
 
 interface RichTextBlock extends MessageBlock {
     type: "rich_text"
-    elements: RichTextSection[]
+    elements: Array<RichTextSection>
 }
 
 interface ActionBlock extends MessageBlock {
     type: "actions"
-    elements: Button[]
+    elements: Array<Button>
 }
 
 export interface CloudWatchAlertMessageContent {

@@ -7,7 +7,7 @@ export interface Secret {
   Name: string
   SecretString: string
   VersionId: string
-  VersionStages: string[]
+  VersionStages: Array<string>
 }
 
 export function checkCertificateExpiry(secret: Secret, logger: Logger): void {
