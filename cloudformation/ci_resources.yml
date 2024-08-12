@@ -476,6 +476,7 @@ Resources:
               - dynamodb:DescribeContinuousBackups
               - dynamodb:DescribeKinesisStreamingDestination
               - dynamodb:DescribeTimeToLive
+              - dynamodb:UpdateTimeToLive
               - application-autoscaling:PutScalingPolicy
               - application-autoscaling:DeleteScalingPolicy
               - application-autoscaling:DescribeScalingPolicies
