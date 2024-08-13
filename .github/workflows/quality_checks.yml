@@ -48,6 +48,14 @@ jobs:
       - name: Run Unit Tests
         run: make test
 
+      - name: Run cfn-guard
+        run: make cfn-guard
+  
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cfn_guard_output
+          path: cfn_guard_output
+        
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:

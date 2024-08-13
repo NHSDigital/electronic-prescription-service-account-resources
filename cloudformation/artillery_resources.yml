@@ -45,6 +45,10 @@ Resources:
 
   ArtilleryBucket:
     Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
     Properties:
       BucketName: !Sub "artilleryio-test-data-${AWS::AccountId}"
       LoggingConfiguration:
@@ -69,6 +73,10 @@ Resources:
 
   ArtilleryBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
     Properties:
       Bucket: !Ref ArtilleryBucket
       PolicyDocument:

@@ -211,6 +211,10 @@ Resources:
 
   ArtifactsBucket:
     Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
     Properties:
       LoggingConfiguration:
         DestinationBucketName: !Ref AuditLoggingBucket
@@ -230,6 +234,10 @@ Resources:
 
   ArtifactsBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
     Properties:
       Bucket: !Ref ArtifactsBucket
       PolicyDocument:
@@ -301,6 +309,10 @@ Resources:
 
   TrustStoreBucket:
     Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
     Properties:
       LoggingConfiguration:
         DestinationBucketName: !Ref AuditLoggingBucket
@@ -320,6 +332,10 @@ Resources:
 
   TrustStoreBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
     Properties:
       Bucket: !Ref TrustStoreBucket
       PolicyDocument:
@@ -352,6 +368,11 @@ Resources:
   #region Audit Logging Bucket
   AuditLoggingBucket:
     Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_LOGGING_ENABLED
     Properties:
       VersioningConfiguration:
         Status: Enabled
@@ -367,6 +388,10 @@ Resources:
 
   AuditLoggingBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
     Properties:
       Bucket: !Ref AuditLoggingBucket
       PolicyDocument:
@@ -478,6 +503,10 @@ Resources:
 
   SplunkDeliveryStreamBackupBucket:
     Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
     Properties:
       VersioningConfiguration:
         Status: Enabled
@@ -498,6 +527,10 @@ Resources:
 
   SplunkDeliveryStreamBackupBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
     Properties:
       Bucket: !Ref SplunkDeliveryStreamBackupBucket
       PolicyDocument:

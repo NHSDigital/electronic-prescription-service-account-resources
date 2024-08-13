@@ -141,3 +141,6 @@ show-eps-route-53-nameservers: guard-env
 		--stack-name eps-route53-resources \
 		--query "Stacks[*].Outputs[?OutputKey=='NameServers'].{OutputKey: OutputKey, OutputValue: OutputValue, Description: Description}" \
 		--profile prescription-$${env}
+
+cfn-guard:
+	./scripts/run_cfn_guard.sh
