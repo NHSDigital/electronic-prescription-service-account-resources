@@ -20,6 +20,7 @@ while IFS= read -r -d '' file
 do
     echo "checking $file"
     mkdir -p "$(dirname cfn_guard_output/"$file")"
+    sam validate -t "$file" --debug 2>&1 
 
     sam validate -t "$file" --debug 2>&1 | \
     grep -Pazo '(?s)AWSTemplateFormatVersion.*\n\n' | \
