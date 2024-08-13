@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "test": "POWERTOOLS_DEV=true jest --coverage",
-    "lint": "eslint . --ext .js --max-warnings 0 --fix",
+    "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs .",
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {

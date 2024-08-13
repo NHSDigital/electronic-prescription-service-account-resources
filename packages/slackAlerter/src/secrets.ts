@@ -14,7 +14,7 @@ const logger: Logger = new Logger({serviceName: "slackAlerter"})
 let AWS_SESSION_TOKEN: string
 let EXTENSION_HTTP_PORT: string
 
-export const getSecrets = async (secretNames: string[], secretsStore: SecretsStore): Promise<LambdaSecrets> => {
+export const getSecrets = async (secretNames: Array<string>, secretsStore: SecretsStore): Promise<LambdaSecrets> => {
   checkSecretsExtensionConfig()
 
   const secrets: LambdaSecrets = {}
@@ -59,6 +59,7 @@ const getSecret = async (secretName: string, secretsStore: SecretsStore): Promis
 }
 
 const get = async(secretUrl: string): Promise<ParameterStoreParameter | SecretsManagerSecret> => {
+  // eslint-disable-next-line no-undef
   const options: RequestInit = {
     method: "GET",
     headers: {

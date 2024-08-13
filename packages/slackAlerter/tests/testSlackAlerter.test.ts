@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import {jest} from "@jest/globals"
 import fetchMock from "jest-fetch-mock"
 import {generateMockAlarmEvent} from "./utils/testUtils"

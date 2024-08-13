@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import {SQSEvent, SQSRecord} from "aws-lambda"
 import {CloudWatchAlarm, Trigger} from "../../src/types"
 
@@ -7,9 +8,9 @@ interface Alarm {
     id: string
 }
 
-export const generateMockAlarmEvent = (alarms: Alarm[]): Partial<SQSEvent> => {
+export const generateMockAlarmEvent = (alarms: Array<Alarm>): Partial<SQSEvent> => {
 
-  const records: Partial<SQSRecord>[] = []
+  const records: Array<Partial<SQSRecord>> = []
   for (const alarm of alarms){
     const record = {
       body: JSON.stringify(generateMockAlarm(alarm)),
