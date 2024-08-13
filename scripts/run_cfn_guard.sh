@@ -15,10 +15,19 @@ mkdir -p cfn_guard_output
     --show-summary fail \
     > cfn_guard_output/cloudformation.txt
 
-~/.guard/bin/cfn-guard validate \
-    --data SAMtemplates \
-    --rules /tmp/ruleset/output/ncsc.guard \
-    --show-summary fail \
-    > cfn_guard_output/SAMtemplates.txt
+for file in SAMtemplates/*.y*ml
+do
+    echo "checking $file"
+    mkdir -p $(dirname cfn_guard_output/$file)
+
+    sam validate -t $file --debug 2>&1 | \
+    grep -Pazo '(?s)AWSTemplateFormatVersion.*\n\n' | \
+    tr -d '\0' | \
+    ~/.guard/bin/cfn-guard validate \
+        --rules /tmp/ruleset/output/ncsc.guard \
+        --show-summary fail \
+        > cfn_guard_output/$file.txt
+done
+
 
 rm -rf /tmp/ruleset
