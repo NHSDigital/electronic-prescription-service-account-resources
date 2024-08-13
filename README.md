@@ -276,6 +276,7 @@ There are `make` commands that are run as part of the CI pipeline and help alias
 - `lint` runs lint for all code
 - `lint-cloudformation` runs lint for cloudformation templates
 - `lint-githubactions` runs lint for github actions
+- `cfn-guard` runs cfn-guard for sam and cloudformation templates
 
 #### Check licenses
 
