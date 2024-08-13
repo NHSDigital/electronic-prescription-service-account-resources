@@ -214,7 +214,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED_a
     Properties:
       LoggingConfiguration:
         DestinationBucketName: !Ref AuditLoggingBucket
