@@ -234,6 +234,7 @@ It creates the following resources
 - Routes and route table for private subnets in each AZ
 - Private subnet in each AZ
 - Public subnet in each AZ
+- Security group for the VPC
 
 # artillery_resources
 
