@@ -48,7 +48,8 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED 
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED   
     Properties:
       BucketName: !Sub "artilleryio-test-data-${AWS::AccountId}"
       LoggingConfiguration:

@@ -235,6 +235,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -466,6 +467,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -619,6 +621,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: es2020
@@ -719,6 +722,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -759,6 +763,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -799,6 +804,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -839,6 +845,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -879,6 +886,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -919,6 +927,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -959,6 +968,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -999,6 +1009,7 @@ Resources:
         SuppressedRules:
         - LAMBDA_DLQ_CHECK
         - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"

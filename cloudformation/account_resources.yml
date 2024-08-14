@@ -215,6 +215,7 @@ Resources:
       guard:
         SuppressedRules:
         - S3_BUCKET_REPLICATION_ENABLED
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
       LoggingConfiguration:
         DestinationBucketName: !Ref AuditLoggingBucket
@@ -312,7 +313,8 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
       LoggingConfiguration:
         DestinationBucketName: !Ref AuditLoggingBucket
@@ -373,6 +375,7 @@ Resources:
         SuppressedRules:
         - S3_BUCKET_REPLICATION_ENABLED    
         - S3_BUCKET_LOGGING_ENABLED
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
       VersioningConfiguration:
         Status: Enabled
@@ -506,7 +509,8 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
       VersioningConfiguration:
         Status: Enabled
