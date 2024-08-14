@@ -18,7 +18,7 @@ for ruleset in "${rulesets[@]}"
 
     ~/.guard/bin/cfn-guard validate \
         --data cloudformation \
-        --rules /tmp/ruleset/output/wa-Reliability-Pillar.guard \
+            --rules "/tmp/ruleset/output/$ruleset.guard" \
         --show-summary fail \
         > "cfn_guard_output/cloudformation_$ruleset.txt"
 
