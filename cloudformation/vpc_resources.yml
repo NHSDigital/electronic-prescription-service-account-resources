@@ -206,6 +206,30 @@ Resources:
           SubnetId: !Ref
             Fn::Sub: PrivateSubnet${Identifier}
 
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${AWS::StackName}:SecurityGroup
+      GroupDescription: !Sub ${AWS::StackName}:SecurityGroup
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - Description: Allow inbound port 443 traffic
+          CidrIp: 0.0.0.0/0
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      SecurityGroupEgress:
+        - Description: Block all outbound traffic
+          CidrIp: 127.0.0.1/32
+          IpProtocol: "-1"
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}:SecurityGroup
+        - Key: Region
+          Value: !Ref AWS::Region
+        - Key: Environment
+          Value: !Ref Environment
+
 Outputs:
   VpcId:
     Description: VPC ID
@@ -254,3 +278,9 @@ Outputs:
           Fn::Sub: PrivateSubnet${Identifier}
         Export:
           Name: !Sub ${AWS::StackName}:PrivateSubnet${Identifier}
+
+  SecurityGroupId:
+    Description: Security Group ID
+    Value: !GetAtt SecurityGroup.Id
+    Export:
+      Name: !Sub ${AWS::StackName}:SecurityGroupId
