@@ -218,10 +218,6 @@ Resources:
           FromPort: 443
           IpProtocol: tcp
           ToPort: 443
-      SecurityGroupEgress:
-        - Description: Block all outbound traffic
-          CidrIp: 127.0.0.1/32
-          IpProtocol: "-1"
       Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName}:SecurityGroup
