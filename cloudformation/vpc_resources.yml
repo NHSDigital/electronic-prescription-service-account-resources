@@ -6,8 +6,8 @@ Parameters:
     Type: String
     Default: Dev
 
-Mappings: 
-  vpc: 
+Mappings:
+  vpc:
     A:
       az: a
       publicCidrBlock: 10.192.0.0/19
@@ -31,7 +31,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName}:VPC
-  
+
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
@@ -121,31 +121,31 @@ Resources:
         Type: AWS::EC2::NatGateway
         Properties:
           AllocationId: !GetAtt
-              - !Sub NatGatewayEip${Identifier}
-              - AllocationId
-          SubnetId: !Ref 
+            - !Sub NatGatewayEip${Identifier}
+            - AllocationId
+          SubnetId: !Ref
             Fn::Sub: PublicSubnet${Identifier}
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-         VpcId: !Ref Vpc
-         Tags:
-          - Key: Name
-            Value: !Sub ${AWS::StackName}:${Vpc}:PublicRouteTable
-          - Key: Region
-            Value: !Ref AWS::Region
-          - Key: Environment
-            Value: !Ref Environment
-  
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}:${Vpc}:PublicRouteTable
+        - Key: Region
+          Value: !Ref AWS::Region
+        - Key: Environment
+          Value: !Ref Environment
+
   DefaultPublicRoute:
     Type: AWS::EC2::Route
     DependsOn: InternetGatewayAttachment
     Properties:
-         RouteTableId: !Ref PublicRouteTable
-         DestinationCidrBlock: 0.0.0.0/0
-         GatewayId: !Ref InternetGateway
-  
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
   Fn::ForEach::PublicSubnetRouteAssociation:
     - Identifier
     - - "A"
@@ -157,7 +157,7 @@ Resources:
           RouteTableId: !Ref PublicRouteTable
           SubnetId: !Ref
             Fn::Sub: PublicSubnet${Identifier}
-  
+
   Fn::ForEach::PrivateRouteTable:
     - Identifier
     - - "A"
@@ -178,7 +178,7 @@ Resources:
               Value: !Ref AWS::Region
             - Key: Environment
               Value: !Ref Environment
-  
+
   Fn::ForEach::DefaultPrivateRoute:
     - Identifier
     - - "A"
@@ -230,7 +230,7 @@ Outputs:
   VpcId:
     Description: VPC ID
     Value: !Ref Vpc
-    Export: 
+    Export:
       Name: !Sub ${AWS::StackName}:VpcId
 
   VpcDefaultSecurityGroup:
@@ -241,16 +241,21 @@ Outputs:
 
   PublicSubnets:
     Description: A list of the VPC's public subnets
-    Value: !Join [",", [!Ref PublicSubnetA, !Ref PublicSubnetB, !Ref PublicSubnetC]]
+    Value:
+      !Join [",", [!Ref PublicSubnetA, !Ref PublicSubnetB, !Ref PublicSubnetC]]
     Export:
       Name: !Sub ${AWS::StackName}:PublicSubnets
-  
+
   PrivateSubnets:
     Description:
-    Value: !Join [",", [!Ref PrivateSubnetA, !Ref PrivateSubnetB, !Ref PrivateSubnetC]]
+    Value:
+      !Join [
+        ",",
+        [!Ref PrivateSubnetA, !Ref PrivateSubnetB, !Ref PrivateSubnetC],
+      ]
     Export:
       Name: !Sub ${AWS::StackName}:PrivateSubnets
-  
+
   Fn::ForEach::PublicSubnetOutput:
     - Identifier
     - - "A"
@@ -262,7 +267,7 @@ Outputs:
           Fn::Sub: PublicSubnet${Identifier}
         Export:
           Name: !Sub ${AWS::StackName}:PublicSubnet${Identifier}
-  
+
   Fn::ForEach::PrivateSubnetOutput:
     - Identifier
     - - "A"
