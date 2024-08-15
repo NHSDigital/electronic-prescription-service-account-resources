@@ -233,12 +233,6 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:VpcId
 
-  VpcDefaultSecurityGroup:
-    Description: VPC ID
-    Value: !GetAtt Vpc.DefaultSecurityGroup
-    Export: 
-      Name: !Sub ${AWS::StackName}:VpcDefaultSecurityGroup
-
   PublicSubnets:
     Description: A list of the VPC's public subnets
     Value:
