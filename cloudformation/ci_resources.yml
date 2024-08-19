@@ -315,6 +315,7 @@ Resources:
               - elasticloadbalancing:DeleteLoadBalancer
               - elasticloadbalancing:DescribeLoadBalancers
               - elasticloadbalancing:ModifyLoadBalancerAttributes
+              - elasticloadbalancing:SetSecurityGroups
               - elasticloadbalancing:CreateTargetGroup
               - elasticloadbalancing:DeleteTargetGroup
               - elasticloadbalancing:DescribeTargetGroups
