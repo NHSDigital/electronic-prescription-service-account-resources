@@ -143,7 +143,7 @@ It creates the following resources
 
 # Route 53 resources - environment accounts
 
-`cloudformation/environment_route53.yml` contains route 53 resources created in each environment account.  
+`cloudformation/eps_environment_route53.yml` contains route 53 resources created in each environment account.  
 This needs to be manually deployed to each environment.  
 It creates the following resources
 
@@ -156,17 +156,17 @@ make aws-login
 export AWS_PROFILE=<name of AWS profile defined in ~/.aws/config>
 
 aws cloudformation deploy \
-          --template-file cloudformation/environment_route53.yml \
+          --template-file cloudformation/eps_environment_route53.yml \
           --stack-name route53-resources \
           --region eu-west-2 \
           --parameter-overrides environment=<ENVIRONMENT>
 ```
 
-On bootstrap or major changes, you should get the name server host names for the created zone and update the file management_route53.yml and deploy it
+On bootstrap or major changes, you should get the name server host names for the created zone and update the file eps_management_route53.yml and deploy it
 
 # Route 53 resources - management account
 
-cloudformation/management_route53.yml contains route 53 resources created in the management account. This should only be applied manually to the management account.  
+cloudformation/eps_management_route53.yml contains route 53 resources created in the management account. This should only be applied manually to the management account.  
 It creates the following resources
 
 - route 53 hosted zone for {domain}.national.nhs.uk
@@ -179,7 +179,7 @@ make aws-login
 export AWS_PROFILE=prescription-management
 
 aws cloudformation deploy \
-          --template-file cloudformation/management_route53.yml \
+          --template-file cloudformation/eps_management_route53.yml \
           --stack-name route53-resources \
           --region eu-west-2
 ```
