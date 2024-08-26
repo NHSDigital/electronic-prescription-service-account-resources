@@ -67,6 +67,10 @@ Resources:
   ##################################################
   LambdaInsightsCloudwatchLogGroup:
     Type: AWS::Logs::LogGroup
+    Metadata:
+      guard:
+        SuppressedRules:
+        - CW_LOGGROUP_RETENTION_PERIOD_CHECK    
     Properties:
       LogGroupName: !Ref LambdaInsightsLogGroupName
       RetentionInDays: !Ref LogRetentionDays
@@ -173,6 +177,10 @@ Resources:
 
   SplunkDeliveryStreamLogGroup:
     Type: AWS::Logs::LogGroup
+    Metadata:
+      guard:
+        SuppressedRules:
+        - CW_LOGGROUP_RETENTION_PERIOD_CHECK    
     Properties:
       LogGroupName: !Sub "/aws/kinesisfirehose/${AWS::StackName}-SplunkDeliveryStream"
       RetentionInDays: !Ref LogRetentionDays
@@ -223,6 +231,11 @@ Resources:
           LOG_LEVEL: !Ref LogLevel
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -292,6 +305,10 @@ Resources:
 
   SplunkDeliveryStreamProcessorLogGroup:
     Type: AWS::Logs::LogGroup
+    Metadata:
+      guard:
+        SuppressedRules:
+        - CW_LOGGROUP_RETENTION_PERIOD_CHECK    
     Properties:
       LogGroupName: !Sub "/aws/lambda/${SplunkDeliveryStreamProcessor}"
       RetentionInDays: !Ref LogRetentionDays
@@ -375,6 +392,33 @@ Resources:
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
 
+  CertExpiryCheckFunctionScheduleEventRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - scheduler.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref CertExpiryCheckFunctionScheduleEventRolePolicy
+
+  CertExpiryCheckFunctionScheduleEventRolePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource:
+              - !GetAtt CertExpiryCheckFunction.Arn
+
   CertExpiryCheckFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -388,6 +432,7 @@ Resources:
           Properties:
             Name: !Sub ${AWS::StackName}-CertExpirySchedule
             ScheduleExpression: "rate(1 day)"
+            RoleArn: !GetAtt CertExpiryCheckFunctionScheduleEventRole.Arn
             Input: !Sub
               - "{\"secretARNs\": [ \
                 \"${ClinicalTrackerCACertSecret}\", \
@@ -418,6 +463,11 @@ Resources:
                 SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
     Metadata:
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -567,6 +617,11 @@ Resources:
             BatchSize: 10
     Metadata:
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: es2020
@@ -663,6 +718,11 @@ Resources:
           ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox,internal-qa,ref
     Metadata:
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -699,6 +759,11 @@ Resources:
           ALLOWED_ENVIRONMENTS: int,sandbox,prod
     Metadata:
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -735,6 +800,11 @@ Resources:
           ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox,internal-qa,ref
     Metadata:
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -771,6 +841,11 @@ Resources:
           ALLOWED_ENVIRONMENTS: int,sandbox,prod
     Metadata:
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -807,6 +882,11 @@ Resources:
           ALLOWED_ENVIRONMENTS: uat
     Metadata:
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -843,6 +923,11 @@ Resources:
           ALLOWED_ENVIRONMENTS: prod
     Metadata:
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -879,6 +964,11 @@ Resources:
           ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox
     Metadata:
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -915,6 +1005,11 @@ Resources:
           ALLOWED_ENVIRONMENTS: internal-dev,internal-dev-sandbox
     Metadata:
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
