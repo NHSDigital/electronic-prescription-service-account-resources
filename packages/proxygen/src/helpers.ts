@@ -1,5 +1,6 @@
 import axios from "axios"
 import {createSignedJWT, getSecret} from "./signingHelpers"
+import {Logger} from "@aws-lambda-powertools/logger"
 
 export function getRealmURL() {
   return "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
@@ -39,6 +40,55 @@ export function checkRequiredKeys(obj: Proxygen, requiredKeys: Array<string>) {
   }
 
   throw new Error(`Input is one of missing required keys: ${completeRequiredKeys}. Input keys: ${Object.keys(obj)}`)
+}
+
+export function proxygenErrorHandler(error: unknown, logger: Logger) {
+  if (axios.isAxiosError(error)) {
+    if (error.response) {
+      logger.error("Error in response to call to proxygen", {
+        response: {
+          status: error.response.status,
+          statusText: error.response.statusText,
+          data: error.response.data,
+          headers: error.response.headers
+        },
+        request: {
+          method: error.request.method,
+          path: error.request.path,
+          headers: error.request.headers,
+          body: error.config?.data
+        },
+        stack: error.stack,
+        errorMessage: error.message
+      })
+    } else if (error.request) {
+      logger.error("Error in request to call to proxygen", {
+        request: {
+          method: error.request.method,
+          path: error.request.path,
+          headers: error.request.headers,
+          body: error.request.body
+        },
+        stack: error.stack,
+        errorMessage: error.message
+      })
+    } else {
+      logger.error("General axios error in request to proxygen", {
+        stack: error.stack,
+        errorMessage: error.message
+      })
+    }
+    throw (new Error("Axios error"))
+  } else {
+    if (error instanceof Error) {
+      logger.error("General error in request to proxygen", {
+        stack: error.stack,
+        errorMessage: error.message
+      })
+      throw (new Error("General error"))
+    }
+    throw (error)
+  }
 }
 
 export interface Proxygen {

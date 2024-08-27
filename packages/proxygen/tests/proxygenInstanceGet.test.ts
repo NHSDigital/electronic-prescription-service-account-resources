@@ -13,6 +13,7 @@ import {Proxygen} from "../src/helpers"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 import {mockClient} from "aws-sdk-client-mock"
 import {Context} from "aws-lambda"
+import {Logger} from "@aws-lambda-powertools/logger"
 
 jest.unstable_mockModule("../src/signingHelpers", () => ({
   getSecret: jest.fn().mockReturnValue("mockPrivateKey"),
@@ -80,8 +81,35 @@ describe("Unit test for proxygenInstanceGet", function () {
       .reply(500, {foo: "bar"})
 
     process.env.ALLOWED_ENVIRONMENTS = "dev"
+    const mockLoggerError = jest.spyOn(Logger.prototype, "error")
+    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
+    expect(mockLoggerError).toBeCalledTimes(1)
 
-    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Request failed with status code 500")
+    const loggerCallParams = mockLoggerError.mock.calls[0]
+    expect(loggerCallParams[0]).toEqual("Error in response to call to proxygen")
+    expect(loggerCallParams[1]).toEqual(expect.objectContaining(
+      {
+        "errorMessage": "Request failed with status code 500",
+        "request": expect.objectContaining({
+          "headers": expect.objectContaining({
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "authorization": "Bearer mockAccessToken",
+            "content-type": "application/json",
+            "host": "proxygen.prod.api.platform.nhs.uk"
+          }),
+          "method": "GET",
+          "path": "/apis/testApi/environments/dev/instances"
+        }),
+        response: expect.objectContaining({
+          status: 500,
+          data: expect.objectContaining({foo: "bar"}),
+          "headers": expect.objectContaining({
+            "content-type": "application/json"
+          })
+        })
+      }
+    ))
   })
 
   it("should work if everything is OK", async () => {
