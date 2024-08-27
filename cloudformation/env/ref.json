@@ -39,7 +39,7 @@
       "ProxygenProdClaimFilters": [
         "NONE"
       ],
-      "EnableDeleteCNAME": false
+      "EnableDeleteCNAME": "false"
     },
     "account-resources": {},
     "lambda-resources": {
