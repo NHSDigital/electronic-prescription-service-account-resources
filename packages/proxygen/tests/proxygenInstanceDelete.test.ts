@@ -75,7 +75,7 @@ describe("Unit test for proxygenInstanceDelete", function () {
     )
   })
 
-  it("throws error if proxygen call fails", async () => {
+  it("throws error if proxygen responds with error", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
     nock("https://proxygen.prod.api.platform.nhs.uk")
       .delete("/apis/testApi/environments/dev/instances/testInstance")
@@ -109,6 +109,37 @@ describe("Unit test for proxygenInstanceDelete", function () {
           "headers": expect.objectContaining({
             "content-type": "application/json"
           })
+        })
+      }
+    ))
+  })
+
+  it("throws error if proxygen request fails", async () => {
+    nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
+    nock("https://proxygen.prod.api.platform.nhs.uk")
+      .delete("/apis/testApi/environments/dev/instances/testInstance")
+      .replyWithError("Something awful happened")
+
+    process.env.ALLOWED_ENVIRONMENTS = "dev"
+    const mockLoggerError = jest.spyOn(Logger.prototype, "error")
+
+    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
+    expect(mockLoggerError).toBeCalledTimes(1)
+
+    const loggerCallParams = mockLoggerError.mock.calls[0]
+    expect(loggerCallParams[0]).toEqual("Error in request to call to proxygen")
+    expect(loggerCallParams[1]).toEqual(expect.objectContaining(
+      {
+        "errorMessage": "Something awful happened",
+        "request": expect.objectContaining({
+          "headers": expect.objectContaining({
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Encoding": "gzip, compress, deflate, br",
+            "Authorization": "Bearer mockAccessToken",
+            "Content-Type": "application/json"
+          }),
+          "method": "delete",
+          "url": "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/instances/testInstance"
         })
       }
     ))

@@ -45,6 +45,7 @@ export function checkRequiredKeys(obj: Proxygen, requiredKeys: Array<string>) {
 export function proxygenErrorHandler(error: unknown, logger: Logger) {
   if (axios.isAxiosError(error)) {
     if (error.response) {
+      // handle a non 2xx response
       logger.error("Error in response to call to proxygen", {
         response: {
           status: error.response.status,
@@ -62,31 +63,36 @@ export function proxygenErrorHandler(error: unknown, logger: Logger) {
         errorMessage: error.message
       })
     } else if (error.request) {
+      // handle errors where no response received
       logger.error("Error in request to call to proxygen", {
         request: {
-          method: error.request.method,
-          path: error.request.path,
-          headers: error.request.headers,
-          body: error.request.body
+          method: error.config?.method,
+          url: error.config?.url,
+          headers: error.config?.headers,
+          body: error.config?.data
         },
         stack: error.stack,
         errorMessage: error.message
       })
     } else {
+      // handle errors setting up the request
       logger.error("General axios error in request to proxygen", {
         stack: error.stack,
         errorMessage: error.message
       })
     }
+    // throw an error so lambda exits
     throw (new Error("Axios error"))
   } else {
     if (error instanceof Error) {
+      // make sure errors are logged nicely
       logger.error("General error in request to proxygen", {
         stack: error.stack,
         errorMessage: error.message
       })
       throw (new Error("General error"))
     }
+    // we should never reach here but leaving it in just in case
     throw (error)
   }
 }

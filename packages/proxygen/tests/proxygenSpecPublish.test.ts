@@ -82,7 +82,7 @@ describe("Unit test for proxygenSpecPublish", function () {
     await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Environment is not uat or prod")
   })
 
-  it("throws error if proxygen call fails", async () => {
+  it("throws error if proxygen responds with error", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
     nock("https://proxygen.prod.api.platform.nhs.uk").post("/apis/testApi/spec/uat").reply(500, {foo: "bar"})
 
@@ -114,6 +114,37 @@ describe("Unit test for proxygenSpecPublish", function () {
           "headers": expect.objectContaining({
             "content-type": "application/json"
           })
+        })
+      }
+    ))
+  })
+
+  it("throws error if proxygen request fails", async () => {
+    nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
+    nock("https://proxygen.prod.api.platform.nhs.uk")
+      .post("/apis/testApi/spec/uat")
+      .replyWithError("Something awful happened")
+
+    process.env.ALLOWED_ENVIRONMENTS = "uat"
+    validProxygen.environment = "uat"
+    const mockLoggerError = jest.spyOn(Logger.prototype, "error")
+
+    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
+    expect(mockLoggerError).toBeCalledTimes(1)
+
+    const loggerCallParams = mockLoggerError.mock.calls[0]
+    expect(loggerCallParams[0]).toEqual("Error in request to call to proxygen")
+    expect(loggerCallParams[1]).toEqual(expect.objectContaining(
+      {
+        "errorMessage": "Something awful happened",
+        "request": expect.objectContaining({
+          "headers": expect.objectContaining({
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Encoding": "gzip, compress, deflate, br",
+            "Authorization": "Bearer mockAccessToken"
+          }),
+          "method": "post",
+          "url": "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/spec/uat"
         })
       }
     ))
