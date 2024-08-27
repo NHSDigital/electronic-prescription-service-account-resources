@@ -24,3 +24,4 @@ lib/
 node_modules
 *-params.json
 packages/certificateChecker/tests/mock-certs/
+cfn_guard_output

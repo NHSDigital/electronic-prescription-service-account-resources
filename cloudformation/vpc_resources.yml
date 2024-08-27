@@ -140,6 +140,10 @@ Resources:
 
   DefaultPublicRoute:
     Type: AWS::EC2::Route
+    Metadata:
+      guard:
+        SuppressedRules:
+        - NO_UNRESTRICTED_ROUTE_TO_IGW    
     DependsOn: InternetGatewayAttachment
     Properties:
       RouteTableId: !Ref PublicRouteTable

@@ -315,6 +315,7 @@ Resources:
               - elasticloadbalancing:DeleteLoadBalancer
               - elasticloadbalancing:DescribeLoadBalancers
               - elasticloadbalancing:ModifyLoadBalancerAttributes
+              - elasticloadbalancing:SetSecurityGroups
               - elasticloadbalancing:CreateTargetGroup
               - elasticloadbalancing:DeleteTargetGroup
               - elasticloadbalancing:DescribeTargetGroups
@@ -344,6 +345,17 @@ Resources:
               - elasticloadbalancing:RemoveTrustStoreRevocations
               - elasticloadbalancing:DescribeTrustStoreAssociations
               - elasticloadbalancing:DeleteSharedTrustStoreAssociation
+              - ecs:RegisterTaskDefinition
+              - ecs:DeregisterTaskDefinition
+              - ecs:UpdateService
+              - ecs:DescribeServices
+              - ecs:CreateService
+              - ecs:DeleteService
+              - ecs:RunTask
+              - ecs:StopTask
+              - ecs:DescribeTasks
+              - ecs:ListTasks
+              - ecs:ListServices
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyB:
