@@ -21,7 +21,7 @@
 title: EPS Account Resources deployments
 description: >- # this means to ignore newlines until "baseurl:"
   EPS Account Resources API deployment history
-baseurl: "/eps-account-resources" # the subpath of your site, e.g. /blog
+baseurl: "/electronic-prescription-service-account-resources" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_url: https://github.com/NHSDigital/electronic-prescription-service-account-resources
 
