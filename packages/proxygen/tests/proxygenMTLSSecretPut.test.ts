@@ -82,7 +82,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
     nock("https://proxygen.prod.api.platform.nhs.uk")
       .put("/apis/testApi/environments/dev/secrets/mtls/testSecretName")
-      .reply(500, {foo: "bar"})
+      .reply(500, {foo_error: "bar_error"})
 
     process.env.ALLOWED_ENVIRONMENTS = "dev"
     const mockLoggerError = jest.spyOn(Logger.prototype, "error")
@@ -92,28 +92,42 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
 
     const loggerCallParams = mockLoggerError.mock.calls[0]
     expect(loggerCallParams[0]).toEqual("Error in response to call to proxygen")
-    expect(loggerCallParams[1]).toEqual(expect.objectContaining(
-      {
-        "errorMessage": "Request failed with status code 500",
-        "request": expect.objectContaining({
-          "headers": expect.objectContaining({
-            "accept": "application/json, text/plain, */*",
-            "accept-encoding": "gzip, compress, deflate, br",
-            "authorization": "Bearer mockAccessToken",
-            "host": "proxygen.prod.api.platform.nhs.uk"
+    expect(loggerCallParams[1]).toEqual({
+      axiosError: expect.objectContaining({
+        code: "ERR_BAD_RESPONSE",
+        status: 500,
+        message: "Request failed with status code 500",
+        config: expect.objectContaining({
+          headers: expect.objectContaining({
+            Accept: "application/json, text/plain, */*",
+            Authorization: "Bearer mockAccessToken",
+            "Accept-Encoding": "gzip, compress, deflate, br"
           }),
-          "method": "PUT",
-          "path": "/apis/testApi/environments/dev/secrets/mtls/testSecretName"
+          method: "put",
+          url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/secrets/mtls/testSecretName"
         }),
-        response: expect.objectContaining({
-          status: 500,
-          data: expect.objectContaining({foo: "bar"}),
-          "headers": expect.objectContaining({
+        request: {
+          headers: expect.objectContaining({
+            accept: "application/json, text/plain, */*",
+            authorization: "Bearer mockAccessToken",
+            "accept-encoding": "gzip, compress, deflate, br",
+            host: "proxygen.prod.api.platform.nhs.uk"
+          }),
+          method: "PUT",
+          path: "/apis/testApi/environments/dev/secrets/mtls/testSecretName"
+        },
+        response: {
+          data: {
+            foo_error: "bar_error"
+          },
+          headers: expect.objectContaining({
             "content-type": "application/json"
-          })
-        })
-      }
-    ))
+          }),
+          status: 500,
+          statusText: null
+        }
+      })
+    })
   })
 
   it("throws error if proxygen request fails", async () => {
@@ -130,20 +144,20 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
 
     const loggerCallParams = mockLoggerError.mock.calls[0]
     expect(loggerCallParams[0]).toEqual("Error in request to call to proxygen")
-    expect(loggerCallParams[1]).toEqual(expect.objectContaining(
-      {
-        "errorMessage": "Something awful happened",
-        "request": expect.objectContaining({
-          "headers": expect.objectContaining({
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Encoding": "gzip, compress, deflate, br",
-            "Authorization": "Bearer mockAccessToken"
+    expect(loggerCallParams[1]).toEqual({
+      axiosError: expect.objectContaining({
+        message: "Something awful happened",
+        config: expect.objectContaining({
+          headers: expect.objectContaining({
+            Accept: "application/json, text/plain, */*",
+            Authorization: "Bearer mockAccessToken",
+            "Accept-Encoding": "gzip, compress, deflate, br"
           }),
-          "method": "put",
-          "url": "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/secrets/mtls/testSecretName"
+          method: "put",
+          url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/secrets/mtls/testSecretName"
         })
-      }
-    ))
+      })
+    })
   })
 
   it("should work if everything is OK", async () => {

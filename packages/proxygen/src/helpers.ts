@@ -44,42 +44,38 @@ export function checkRequiredKeys(obj: Proxygen, requiredKeys: Array<string>) {
 
 export function proxygenErrorHandler(error: unknown, logger: Logger) {
   if (axios.isAxiosError(error)) {
+    const axiosError = {
+      code: error.code,
+      status: error.status,
+      stack: error.stack,
+      message: error.message,
+      config: {
+        data: error.config?.data,
+        headers: error.config?.headers,
+        method: error.config?.method,
+        url: error.config?.url
+      },
+      request: {
+        headers: error.request?.headers,
+        method: error.request.method,
+        path: error.request.path
+      },
+      response: {
+        data: error.response?.data,
+        headers: error.response?.headers,
+        status: error.response?.status,
+        statusText: error.response?.statusText
+      }
+    }
     if (error.response) {
       // handle a non 2xx response
-      logger.error("Error in response to call to proxygen", {
-        response: {
-          status: error.response.status,
-          statusText: error.response.statusText,
-          data: error.response.data,
-          headers: error.response.headers
-        },
-        request: {
-          method: error.request.method,
-          path: error.request.path,
-          headers: error.request.headers,
-          body: error.config?.data
-        },
-        stack: error.stack,
-        errorMessage: error.message
-      })
+      logger.error("Error in response to call to proxygen", {axiosError})
     } else if (error.request) {
       // handle errors where no response received
-      logger.error("Error in request to call to proxygen", {
-        request: {
-          method: error.config?.method,
-          url: error.config?.url,
-          headers: error.config?.headers,
-          body: error.config?.data
-        },
-        stack: error.stack,
-        errorMessage: error.message
-      })
+      logger.error("Error in request to call to proxygen", {axiosError})
     } else {
       // handle errors setting up the request
-      logger.error("General axios error in request to proxygen", {
-        stack: error.stack,
-        errorMessage: error.message
-      })
+      logger.error("General axios error in request to proxygen", {axiosError})
     }
     // throw an error so lambda exits
     throw (new Error("Axios error"))
