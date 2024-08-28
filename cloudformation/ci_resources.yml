@@ -193,7 +193,7 @@ Resources:
               - route53:ChangeResourceRecordSets
               - route53:ListHostedZonesByName
               - route53:ListResourceRecordSets
-            Resource: !Sub "arn:aws::${AWS::Region}:${AWS::AccountId}:*"
+            Resource: "*"
 
   ##################################################
   # Cloudformation Execution Role
@@ -672,6 +672,10 @@ Resources:
               - ec2:DescribeFlowLogs
               - ec2:CreateNetworkAcl
               - ec2:DescribeNetworkAcls
+              - ec2:DeleteNetworkAcl
+              - ec2:CreateNetworkAclEntry
+              - ec2:DeleteNetworkAclEntry
+              - ec2:ReplaceNetworkAclEntry
               - ecs:DescribeClusters
               - ecs:CreateCluster
               - ecs:TagResource
