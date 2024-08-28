@@ -193,7 +193,7 @@ Resources:
               - route53:ChangeResourceRecordSets
               - route53:ListHostedZonesByName
               - route53:ListResourceRecordSets
-            Resource: !Sub "arn:aws::${AWS::Region}:${AWS::AccountId}:*"
+            Resource: "*"
 
   ##################################################
   # Cloudformation Execution Role
