@@ -1,0 +1,11 @@
+---
+layout: page
+---
+<h2>Full dev deployment history</h2>
+{% for stack in site.data.stacks %}
+<h3>
+Deployment history for {{ stack.name }}
+</h3>
+{% assign file_name = "dev-" | append: stack.name | append: "_deployments" %}
+{% include full_deployment_history.html %}
+{% endfor %}
