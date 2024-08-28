@@ -671,6 +671,7 @@ Resources:
               - ec2:DeleteFlowLogs
               - ec2:DescribeFlowLogs
               - ec2:CreateNetworkAcl
+              - ec2:DescribeNetworkAcls
               - ecs:DescribeClusters
               - ecs:CreateCluster
               - ecs:TagResource
