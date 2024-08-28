@@ -1,0 +1,151 @@
+name: merge to main workflow
+
+on:
+  push:
+    branches: [main]
+
+env:
+  BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
+
+jobs:
+  quality_checks:
+    uses: ./.github/workflows/quality_checks.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  package_code:
+    uses: ./.github/workflows/sam_package_code.yml
+
+  get_commit_id:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_id: ${{ steps.commit_id.outputs.commit_id }}
+    steps:
+      - name: Get Commit ID
+        id: commit_id
+        run: |
+          echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+    
+  tag_release:
+    needs: [quality_checks, package_code, get_commit_id]
+    runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.output_version_tag.outputs.VERSION_TAG }}
+      change_set_version: ${{ steps.output_change_set_version.outputs.CHANGE_SET_VERSION }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          fetch-depth: 0
+      
+      - name: Install asdf
+        uses: asdf-vm/actions/setup@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.11.3
+        
+      - name: Cache asdf
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.asdf
+          key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
+          restore-keys: |
+            ${{ runner.os }}-asdf-
+      
+      - name: Install asdf dependencies in .tool-versions
+        uses: asdf-vm/actions/install@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.11.3
+        env:
+            PYTHON_CONFIGURE_OPTS: --enable-shared
+      
+      - name: Install Dependencies
+        run: make install
+      
+      - name: Set VERSION_TAG env var to be short git SHA and get next tag varsion
+        id: output_version_tag
+        run: |
+          VERSION_TAG=$(git rev-parse --short HEAD)
+          npx semantic-release --dry-run > semantic-release-output.log
+          NEXT_VERSION=$(grep -i 'The next release version is' semantic-release-output.log | sed -E 's/.* ([[:digit:].]+)$/\1/')
+          if [ -z "${NEXT_VERSION}" ]
+          then
+            echo "Could not get next tag. Here is the log from semantic-release"
+            cat semantic-release-output.log
+            exit 1
+          fi
+          tagFormat=$(node -e "const config=require('./release.config.js'); console.log(config.tagFormat)")
+          if [ "${tagFormat}" = "null" ]
+          then
+            tagFormat="v\${version}"
+          fi
+          # disabling shellcheck as replace does not work
+          # shellcheck disable=SC2001
+          NEW_VERSION_TAG=$(echo "$tagFormat" | sed "s/\${version}/$NEXT_VERSION/")
+          echo "## VERSION TAG : ${VERSION_TAG}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## NEXT TAG WILL BE : ${NEW_VERSION_TAG}" >> "$GITHUB_STEP_SUMMARY"
+          echo "VERSION_TAG=${VERSION_TAG}" >> "$GITHUB_OUTPUT"
+          echo "VERSION_TAG=${VERSION_TAG}" >> "$GITHUB_ENV"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      
+      - name: Output Change Set Version
+        id: output_change_set_version
+        shell: bash
+        run: |
+          TIMESTAMP=$(date +%s)
+          VERSION=$(echo ${{ env.VERSION_TAG }} | tr . -)
+          echo CHANGE_SET_VERSION="$VERSION-$TIMESTAMP" >> "$GITHUB_OUTPUT"
+
+  deploy_dev_stacks:
+    needs: [get_commit_id, package_code, tag_release]
+    uses: ./.github/workflows/release_all_stacks.yml
+    with:
+      target_environment: dev
+      version: ${{ needs.tag_release.outputs.version_tag }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
+      execute_change_set: true
+      lambda_stack_suffix: ""
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.version_tag}}
+      version_number: ${{needs.tag_release.outputs.version_tag}}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights
+      deploy_artillery: true
+    secrets:
+      cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+
+
+  create_release_notes_post_dev:
+    needs: [tag_release, deploy_dev_stacks]
+    uses: ./.github/workflows/create_confluence_release_notes.yml
+    with:
+      VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
+      CREATE_INT_RELEASE_NOTES: true
+      CREATE_INT_RC_RELEASE_NOTES: false
+      CREATE_PROD_RELEASE_NOTES: true
+      MARK_JIRA_RELEASED: false
+    secrets:
+      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}      
+      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+
+  deploy_qa_stacks:
+    needs: [get_commit_id, package_code, tag_release, deploy_dev_stacks]
+    uses: ./.github/workflows/release_all_stacks.yml
+    with:
+      target_environment: qa
+      version: ${{ needs.tag_release.outputs.version_tag }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
+      execute_change_set: true
+      lambda_stack_suffix: ""
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.version_tag}}
+      version_number: ${{needs.tag_release.outputs.version_tag}}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights
+      deploy_artillery: false
+    secrets:
+      cf_create_changeset_role: ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
