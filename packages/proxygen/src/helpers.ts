@@ -81,14 +81,14 @@ export function proxygenErrorHandler(error: unknown, logger: Logger) {
     throw (new Error("Axios error"))
   } else {
     if (error instanceof Error) {
-      // make sure errors are logged nicely
+      // its a non axios error, so make sure it is logged nicely
       logger.error("General error in request to proxygen", {
         stack: error.stack,
         errorMessage: error.message
       })
       throw (new Error("General error"))
     }
-    // we should never reach here but leaving it in just in case
+    // we should never reach here (as it should be AxiosError or Error) but leaving it in just in case
     throw (error)
   }
 }
