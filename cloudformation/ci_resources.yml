@@ -35,6 +35,14 @@ Parameters:
     Description: >
       Subject claim filter for valid tokens for the proxygen prod role.
     Default: ""
+  EnableDeleteCNAME:
+    Type: String
+    Description: Whether to allow delete CNAME permissions
+    Default: false
+    AllowedValues: [true, false]
+
+Conditions:
+  ShouldCreateDeleteCNAMEpermissions: !Equals [true, !Ref EnableDeleteCNAME]
 
 Resources:
   ##################################################
@@ -170,6 +178,22 @@ Resources:
             Action:
               - ecr:GetAuthorizationToken
             Resource: "*"
+
+  RemoveOldCNAMERecordsPolicy:
+    Condition: ShouldCreateDeleteCNAMEpermissions
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationDeployRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - route53:ChangeResourceRecordSets
+              - route53:ListHostedZonesByName
+              - route53:ListResourceRecordSets
+            Resource: !Sub "arn:aws::${AWS::Region}:${AWS::AccountId}:*"
 
   ##################################################
   # Cloudformation Execution Role
