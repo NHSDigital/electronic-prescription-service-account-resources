@@ -8,7 +8,7 @@ RUN apt-get update \
     zlib1g-dev unixodbc unixodbc-dev libsecret-1-0 libsecret-1-dev libsqlite3-dev \
     jq apt-transport-https ca-certificates gnupg-agent software-properties-common \
     bash-completion python3-pip make libbz2-dev libreadline-dev libsqlite3-dev \
-    wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev liblzma-dev netcat faketime
+    wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev liblzma-dev netcat faketime libyaml-dev
 
 # install aws stuff
 RUN wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
@@ -26,9 +26,12 @@ RUN wget -O /tmp/aws-sam-cli.zip https://github.com/aws/aws-sam-cli/releases/lat
 USER vscode
 
 # Install ASDF
-RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.3; \
+RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1; \
     echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc; \
-    echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc;
+    echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc; \
+    echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc; \
+    echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc; \
+    echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc;
 
 ENV PATH="$PATH:/home/vscode/.asdf/bin/:/workspaces/electronic-prescription-service-account-resources/node_modules/.bin"
 
@@ -38,7 +41,8 @@ RUN asdf plugin add python; \
     asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git; \
     asdf plugin add shellcheck https://github.com/luizm/asdf-shellcheck.git; \
     asdf plugin add direnv; \
-    asdf plugin add actionlint;
+    asdf plugin add actionlint; \
+    asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
 
 WORKDIR /workspaces/electronic-prescription-service-account-resources
 ADD .tool-versions /workspaces/electronic-prescription-service-account-resources/.tool-versions
