@@ -46,7 +46,7 @@ jobs:
     environment: ${{ inputs.TARGET_ENVIRONMENT }}
     permissions:
       id-token: write
-      contents: read
+      contents: write
     outputs:
       parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
     steps:

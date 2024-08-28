@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: read
+      contents: write
     env:
       CAPABILITIES: ${{ inputs.capabilities }}
       CHANGE_SET_VERSION: ${{ inputs.change_set_version }}
@@ -159,6 +159,27 @@ jobs:
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}-current-tag
   
+    - name: Checkout gh-pages
+      uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Update release tag in github pages
+      if: ${{ !startsWith(inputs.STACK_NAME, 'CHANGE_ME') }}
+      run: |
+        cd gh-pages
+        NOW=$(date +'%Y-%m-%dT%H:%M:%S')
+        echo "tag,release_datetime" > _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
+        echo "${{ inputs.version }},${NOW}" >> _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
+        echo "${{ inputs.version }},${NOW}" >> _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_deployments.csv
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
+        git add _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_deployments.csv
+        git commit -m 'update releases for ${{ inputs.TARGET_ENVIRONMENT }} and stack ${{ inputs.STACK_NAME }}'
+        parallel --retries 10 --delay 3 ::: "git pull --rebase && git push"
+
   execute_change_set:
     name: Execute Change Set
     if: ${{ inputs.execute_change_set == true }}
@@ -167,7 +188,7 @@ jobs:
     environment: ${{ inputs.target_environment }}
     permissions:
       id-token: write
-      contents: read
+      contents: write
     env:
       CHANGE_SET_VERSION: ${{ inputs.change_set_version }}
       STACK_NAME: ${{ inputs.stack_name }}
