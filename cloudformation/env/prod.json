@@ -37,7 +37,8 @@
       "ProxygenProdClaimFilters": [
         "repo:NHSDigital/eps-prescription-status-update-api:environment:int",
         "repo:NHSDigital/eps-prescription-status-update-api:environment:prod"
-      ]
+      ],
+      "EnableDeleteCNAME": "false"
     },
     "account-resources": {},
     "lambda-resources": {
