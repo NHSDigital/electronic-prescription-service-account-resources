@@ -677,7 +677,18 @@ Resources:
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
         IncludeAdditionalPolicies: false
-        # AdditionalPolicies: enable viewing and deleting of lambda functions
+        AdditionalPolicies: !ImportValue account-resources:AccessFHIRValidatorLambdaAccessPolicy
+
+    FHIRValidatorLambdaAccessPolicy:
+      Type: AWS::IAM::ManagedPolicy
+      Properties:
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - lambda:ListVersionsByFunction
+              Resource: !ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn
   #endregion
 
   ##################################################
