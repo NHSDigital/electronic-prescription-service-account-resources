@@ -75,7 +75,10 @@ describe("janitor", () => {
     }))
 
     await handler()
-    expect(lambda_sdk.deleteFunction).toHaveBeenCalledWith({FunctionName: "some_arn", Qualifier: "1"})
+    // expect(lambda_sdk.deleteFunction).toHaveBeenCalledWith({FunctionName: "some_arn", Qualifier: "1"})
+    expect(logger.info).toHaveBeenCalledWith(
+      `Would have deleted with params ${JSON.stringify({FunctionName: "some_arn", Qualifier: "1"})}`
+    )
     expect(logger.info).toHaveBeenCalledWith("Deleting version 1")
   })
 
@@ -86,7 +89,10 @@ describe("janitor", () => {
     }))
 
     await handler()
-    expect(lambda_sdk.deleteFunction).toHaveBeenCalledWith({FunctionName: "some_arn", Qualifier: "1"})
+    // expect(lambda_sdk.deleteFunction).toHaveBeenCalledWith({FunctionName: "some_arn", Qualifier: "1"})
+    expect(logger.info).toHaveBeenCalledWith(
+      `Would have deleted with params ${JSON.stringify({FunctionName: "some_arn", Qualifier: "1"})}`
+    )
     expect(logger.info).toHaveBeenCalledWith("Deleting version 1")
   })
 
@@ -116,9 +122,15 @@ describe("janitor", () => {
     expect(logger.info).toHaveBeenCalledWith("Found versions: 4, 3")
     expect(logger.info).toHaveBeenCalledWith("Keeping versions: 4, 3")
     expect(logger.info).toHaveBeenCalledWith("Deleting version 2")
-    expect(lambda_sdk.deleteFunction).toHaveBeenCalledWith({FunctionName: "some_arn", Qualifier: "2"})
+    // expect(lambda_sdk.deleteFunction).toHaveBeenCalledWith({FunctionName: "some_arn", Qualifier: "2"})
+    expect(logger.info).toHaveBeenCalledWith(
+      `Would have deleted with params ${JSON.stringify({FunctionName: "some_arn", Qualifier: "2"})}`
+    )
     expect(logger.info).toHaveBeenCalledWith("Deleting version 1")
-    expect(lambda_sdk.deleteFunction).toHaveBeenCalledWith({FunctionName: "some_arn", Qualifier: "1"})
+    // expect(lambda_sdk.deleteFunction).toHaveBeenCalledWith({FunctionName: "some_arn", Qualifier: "1"})
+    expect(logger.info).toHaveBeenCalledWith(
+      `Would have deleted with params ${JSON.stringify({FunctionName: "some_arn", Qualifier: "1"})}`
+    )
     expect(logger.info).toHaveBeenCalledWith("Lambda janitor complete")
   })
 })
