@@ -677,7 +677,7 @@ Resources:
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
         IncludeAdditionalPolicies: false
-        AdditionalPolicies: !ImportValue account-resources:AccessFHIRValidatorLambdaAccessPolicy
+        AdditionalPolicies: !ImportValue account-resources:FHIRValidatorLambdaAccessPolicy
 
     FHIRValidatorLambdaAccessPolicy:
       Type: AWS::IAM::ManagedPolicy
