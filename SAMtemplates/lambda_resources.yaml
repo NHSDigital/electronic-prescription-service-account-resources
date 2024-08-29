@@ -633,6 +633,49 @@ Resources:
   #endregion
 
   ##################################################
+  #region Lambda Janitor
+  ##################################################
+  LambdaJanitor:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${StackName}-LambdaJanitor
+      CodeUri: ../packages
+      Handler: janitor.handler
+      Role: !GetAtt LambdaJanitorResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          LOG_LEVEL: !Ref LogLevel
+          FUNCTION_ARN: !ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn
+          VERSIONS_TO_KEEP: 3
+      Events:
+        # schedule periodic cron job
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        tsconfig: lambdaJanitor/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - lambdaJanitor/src/janitor.ts
+
+  LambdaJanitorResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-LambdaJanitor"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+        IncludeAdditionalPolicies: false
+        # AdditionalPolicies: enable viewing and deleting of lambda functions
+  #endregion
+
+  ##################################################
   #region Proxygen lambdas
   ##################################################
   ExecuteProxygenPTLManagedPolicy:

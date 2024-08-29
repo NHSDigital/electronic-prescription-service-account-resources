@@ -17,7 +17,8 @@
     "packages/splunkProcessor",
     "packages/certificateChecker",
     "packages/slackAlerter",
-    "packages/proxygen"
+    "packages/proxygen",
+    "packages/lambdaJanitor"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.11",

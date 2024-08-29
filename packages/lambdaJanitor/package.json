@@ -1,0 +1,18 @@
+{
+    "name": "lambdaJanitor",
+    "version": "1.0.0",
+    "description": "Lambda to remove old versions of FHIR Validator lambda",
+    "main": "janitor.ts",
+    "author": "NHS England",
+    "license": "MIT",
+    "dependencies": {
+        "@aws-lambda-powertools/logger": "^2.7.0",
+        "@aws-sdk/client-lambda": "^3.637.0"
+    },
+    "scripts": {
+        "compile": "tsc",
+        "test": "npm run compile && npm run unit",
+        "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
+        "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
+    }
+}

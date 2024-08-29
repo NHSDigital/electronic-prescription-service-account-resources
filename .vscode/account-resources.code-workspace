@@ -20,6 +20,10 @@
       "name": "packages/proxygen",
       "path": "../packages/proxygen",
     },
+    {
+      "name": "packages/lambdaJanitor",
+      "path": "../packages/lambdaJanitor",
+    }
   ],
   "settings": {
     "jest.disabledWorkspaceFolders": [
