@@ -93,7 +93,5 @@ export const handler = () => {
   const lambda_sdk = new Lambda()
 
   const params = {logger, lambda_sdk, function_arn: FUNCTION_ARN, versions_to_keep: VERSIONS_TO_KEEP}
-  return async () => {
-    return eventHandler(params)
-  }
+  return eventHandler(params)
 }
