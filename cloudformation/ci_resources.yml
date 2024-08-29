@@ -342,6 +342,7 @@ Resources:
               - elasticloadbalancing:SetSecurityGroups
               - elasticloadbalancing:CreateTargetGroup
               - elasticloadbalancing:DeleteTargetGroup
+              - elasticloadbalancing:ModifyTargetGroup
               - elasticloadbalancing:DescribeTargetGroups
               - elasticloadbalancing:ModifyTargetGroupAttributes
               - elasticloadbalancing:RegisterTargets
