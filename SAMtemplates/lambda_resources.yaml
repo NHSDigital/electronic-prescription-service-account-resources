@@ -676,8 +676,8 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-LambdaJanitor"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
-        IncludeAdditionalPolicies: false
-        AdditionalPolicies: !ImportValue account-resources:FHIRValidatorLambdaAccessPolicy
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !GetAtt FHIRValidatorLambdaAccessPolicy.PolicyArn
 
     FHIRValidatorLambdaAccessPolicy:
       Type: AWS::IAM::ManagedPolicy
