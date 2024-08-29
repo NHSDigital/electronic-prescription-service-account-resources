@@ -648,7 +648,10 @@ Resources:
           FUNCTION_ARN: !ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn
           VERSIONS_TO_KEEP: 3
       Events:
-        # schedule periodic cron job
+        ScheduledEvent:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: "cron(0 6 * * 3 *)"
     Metadata:
       BuildMethod: esbuild
       guard:
