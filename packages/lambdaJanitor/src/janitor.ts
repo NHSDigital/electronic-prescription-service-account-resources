@@ -3,10 +3,10 @@ import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Lambda} from "@aws-sdk/client-lambda"
 import {DeleteFunctionRequest, ListVersionsByFunctionRequest} from "aws-sdk/clients/lambda"
 
-const LOG_LEVEL = (process.env.LOG_LEVEL || "info") as LogLevel
-const FUNCTION_ARN = process.env.FUNCTION_ARN || ""
+const LOG_LEVEL = (process.env.LOG_LEVEL ?? "info") as LogLevel
+const FUNCTION_ARN = process.env.FUNCTION_ARN ?? ""
 const DEFAULT_VERSIONS_TO_KEEP = "3"
-const VERSIONS_TO_KEEP = parseInt(process.env.VERSIONS_TO_KEEP || DEFAULT_VERSIONS_TO_KEEP)
+const VERSIONS_TO_KEEP = parseInt(process.env.VERSIONS_TO_KEEP ?? DEFAULT_VERSIONS_TO_KEEP)
 
 export type HandlerParams = {
   logger: Logger,
