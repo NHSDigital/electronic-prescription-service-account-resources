@@ -41,7 +41,7 @@ export const eventHandler = async (handler_params: HandlerParams) => {
     logger.info("No versions to delete")
   }
 
-  versions_to_delete.forEach(async (version) => {
+  await versions_to_delete.forEach(async (version) => {
     await deleteVersion(logger, lambda_sdk, function_arn, version)
   })
 
