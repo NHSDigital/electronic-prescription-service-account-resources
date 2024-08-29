@@ -651,7 +651,9 @@ Resources:
         ScheduledEvent:
           Type: ScheduleV2
           Properties:
+            Name: !Sub ${AWS::StackName}-LambdaJanitorSchedule
             ScheduleExpression: "cron(0 6 * * 3 *)"
+            RoleArn: !GetAtt LambdaJanitorScheduleEventRole.Arn
     Metadata:
       BuildMethod: esbuild
       guard:
@@ -692,6 +694,33 @@ Resources:
             Action:
               - lambda:ListVersionsByFunction
             Resource: !ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn
+
+  LambdaJanitorScheduleEventRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - scheduler.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref LambdaJanitorScheduleEventRolePolicy
+
+  LambdaJanitorScheduleEventRolePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource:
+              - !GetAtt LambdaJanitor.Arn
   #endregion
 
   ##################################################
