@@ -638,7 +638,7 @@ Resources:
   LambdaJanitor:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${StackName}-LambdaJanitor
+      FunctionName: !Sub ${AWS::StackName}-LambdaJanitor
       CodeUri: ../packages
       Handler: janitor.handler
       Role: !GetAtt LambdaJanitorResources.Outputs.LambdaRoleArn
