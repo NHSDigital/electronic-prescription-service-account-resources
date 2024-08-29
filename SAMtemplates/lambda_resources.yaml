@@ -679,16 +679,16 @@ Resources:
         IncludeAdditionalPolicies: true
         AdditionalPolicies: !GetAtt FHIRValidatorLambdaAccessPolicy.PolicyArn
 
-    FHIRValidatorLambdaAccessPolicy:
-      Type: AWS::IAM::ManagedPolicy
-      Properties:
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - lambda:ListVersionsByFunction
-              Resource: !ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn
+  FHIRValidatorLambdaAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - lambda:ListVersionsByFunction
+            Resource: !ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn
   #endregion
 
   ##################################################
