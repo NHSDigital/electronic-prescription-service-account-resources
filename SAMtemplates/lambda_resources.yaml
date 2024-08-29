@@ -652,7 +652,7 @@ Resources:
           Type: ScheduleV2
           Properties:
             Name: !Sub ${AWS::StackName}-LambdaJanitorSchedule
-            ScheduleExpression: "cron(0 6 * * 3 *)"
+            ScheduleExpression: "cron(0 6 ? * WED *)"
             RoleArn: !GetAtt LambdaJanitorScheduleEventRole.Arn
     Metadata:
       BuildMethod: esbuild
