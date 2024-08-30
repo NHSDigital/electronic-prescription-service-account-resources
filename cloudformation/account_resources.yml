@@ -1129,6 +1129,24 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-CPSU-ProxygenPublicKey"
 
+  ClinicalTrackerProxygenPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for clinical tracker proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-ClinicalTracker-ProxygenPrivateKey"
+
+  ClinicalTrackerProxygenPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for clinical tracker proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-ClinicalTracker-ProxygenPublicKey"
+
   LambdaAccessSecretsPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -1606,6 +1624,18 @@ Outputs:
     Value: !GetAtt CPSUProxygenPublicKey.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CPSUProxygenPublicKey"]]
+
+  ClinicalTrackerProxygenPrivateKey:
+    Description: ClinicalTrackerProxygenPrivateKey
+    Value: !GetAtt ClinicalTrackerProxygenPrivateKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPrivateKey"]]
+
+  ClinicalTrackerProxygenPublicKey:
+    Description: ClinicalTrackerProxygenPublicKey
+    Value: !GetAtt ClinicalTrackerProxygenPublicKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPublicKey"]]
   
   SlackWebHookUrl:
     Description: Slack webhook url
