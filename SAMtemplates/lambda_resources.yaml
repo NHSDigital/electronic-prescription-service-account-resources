@@ -693,6 +693,7 @@ Resources:
           - Effect: Allow
             Action:
               - lambda:ListVersionsByFunction
+              - lambda:DeleteFunction
             Resource: !ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn
 
   LambdaJanitorScheduleEventRole:
