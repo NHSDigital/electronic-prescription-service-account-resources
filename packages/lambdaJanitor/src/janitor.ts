@@ -82,10 +82,8 @@ export const deleteVersion = async (logger: Logger, lambda_sdk: Lambda, function
     Qualifier: String(version)
   }
 
-  logger.info(`Deleting version ${version}`)
-
-  const response = await lambda_sdk.deleteFunction(params)
-  logger.info(`Deleted version ${version}`, JSON.stringify(response.$metadata))
+  logger.info(`Deleting Lambda version with parameters ${JSON.stringify(params)}`)
+  await lambda_sdk.deleteFunction(params)
 }
 
 export const handler = () => {
