@@ -682,9 +682,12 @@ Resources:
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
         IncludeAdditionalPolicies: true
-        AdditionalPolicies: !GetAtt FHIRValidatorLambdaAccessPolicy.PolicyArn
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt FHIRValidatorListLambdaPolicy.PolicyArn
+            - !GetAtt FHIRValidatorDeleteVersionPolicy.PolicyArn
 
-  FHIRValidatorLambdaAccessPolicy:
+  FHIRValidatorListLambdaPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -693,8 +696,18 @@ Resources:
           - Effect: Allow
             Action:
               - lambda:ListVersionsByFunction
-              - lambda:DeleteFunction
             Resource: !ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn
+  
+  FHIRValidatorDeleteVersionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - lambda:DeleteFunction
+            Resource: !Join ["", [!ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn, ":*"]]
 
   LambdaJanitorScheduleEventRole:
     Type: AWS::IAM::Role
