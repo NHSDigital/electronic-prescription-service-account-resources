@@ -690,6 +690,7 @@ Resources:
             Resource:
               - !ImportValue account-resources:PSUProxygenPrivateKey
               - !ImportValue account-resources:CPSUProxygenPrivateKey
+              - !ImportValue account-resources:ClinicalTrackerProxygenPrivateKey
 
   ProxygenPTLInstancePutFunctionResources:
     Type: AWS::Serverless::Application
