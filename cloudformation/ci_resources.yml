@@ -145,6 +145,14 @@ Resources:
               - !ImportValue account-resources:PSUProxygenPublicKey
               - !ImportValue account-resources:CPSUProxygenPrivateKey
               - !ImportValue account-resources:CPSUProxygenPublicKey
+              - !ImportValue account-resources:ClinicalTrackerClientKeySecret
+              - !ImportValue account-resources:ClinicalTrackerClientSandboxKeySecret
+              - !ImportValue account-resources:ClinicalTrackerCACertSecret
+              - !ImportValue account-resources:ClinicalTrackerCAKeySecret
+              - !ImportValue account-resources:ClinicalTrackerClientCertSecret
+              - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
+              - !ImportValue account-resources:ClinicalTrackerProxygenPrivateKey
+              - !ImportValue account-resources:ClinicalTrackerProxygenPublicKey
           - Effect: Allow
             Action:
               - kms:Decrypt
