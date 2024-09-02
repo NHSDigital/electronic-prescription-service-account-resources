@@ -311,6 +311,10 @@ Resources:
               - logs:TagResource
               - logs:DescribeLogStreams
               - logs:DescribeResourcePolicies
+              - logs:DeleteMetricFilter
+              - logs:DescribeMetricFilters
+              - logs:FilterLogEvents
+              - logs:PutMetricFilter
               - lambda:Add*
               - lambda:Create*
               - lambda:Delete*
@@ -565,8 +569,15 @@ Resources:
               - ssm:ListTagsForResource
               - ssm:RemoveTagsFromResource
               - cloudwatch:DescribeAlarms
+              - cloudwatch:DescribeAlarmsForMetric
+              - cloudwatch:EnableAlarmActions
+              - cloudwatch:DisableAlarmActions
+              - cloudwatch:ListMetrics
               - cloudwatch:PutMetricAlarm
+              - cloudwatch:PutCompositeAlarm
               - cloudwatch:DeleteAlarms
+              - cloudwatch:TagResource
+              - cloudwatch:UntagResource
               - ecr:CreateRepository
               - ecr:DeleteRepository
               - ecr:DeleteRegistryPolicy
