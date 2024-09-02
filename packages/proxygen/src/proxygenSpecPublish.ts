@@ -31,7 +31,7 @@ const lambdaHandler = async (event: Proxygen) => {
   }
 
   try {
-    const response = await axios.post(path, event.specDefinition, {
+    const response = await axios.put(path, event.specDefinition, {
       headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
     })
     return response.data

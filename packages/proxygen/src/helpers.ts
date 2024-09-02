@@ -78,7 +78,9 @@ export function proxygenErrorHandler(error: unknown, logger: Logger) {
       logger.error("General axios error in request to proxygen", {axiosError})
     }
     // throw an error so lambda exits
-    throw (new Error("Axios error"))
+    throw (new Error(
+      `Axios error. Status code: ${error.response?.status}. Response body: ${JSON.stringify(error.response?.data)}`
+    ))
   } else {
     if (error instanceof Error) {
       // its a non axios error, so make sure it is logged nicely
