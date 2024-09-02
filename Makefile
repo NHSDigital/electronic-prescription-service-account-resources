@@ -36,6 +36,7 @@ lint-node:
 	npm run lint --workspace packages/certificateChecker
 	npm run lint --workspace packages/slackAlerter
 	npm run lint --workspace packages/proxygen
+	npm run lint --workspace packages/lambdaJanitor
 
 lint-githubactions:
 	actionlint
@@ -48,6 +49,7 @@ test: generate-mock-certs
 	npm run test --workspace packages/certificateChecker
 	npm run test --workspace packages/slackAlerter
 	npm run test --workspace packages/proxygen
+	npm run test --workspace packages/lambdaJanitor
 
 generate-mock-certs:
 	cd packages/certificateChecker/tests && bash ./generate_mock_certs.sh
