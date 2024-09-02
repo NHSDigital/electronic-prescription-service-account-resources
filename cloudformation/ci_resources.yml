@@ -145,6 +145,14 @@ Resources:
               - !ImportValue account-resources:PSUProxygenPublicKey
               - !ImportValue account-resources:CPSUProxygenPrivateKey
               - !ImportValue account-resources:CPSUProxygenPublicKey
+              - !ImportValue account-resources:ClinicalTrackerClientKeySecret
+              - !ImportValue account-resources:ClinicalTrackerClientSandboxKeySecret
+              - !ImportValue account-resources:ClinicalTrackerCACertSecret
+              - !ImportValue account-resources:ClinicalTrackerCAKeySecret
+              - !ImportValue account-resources:ClinicalTrackerClientCertSecret
+              - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
+              - !ImportValue account-resources:ClinicalTrackerProxygenPrivateKey
+              - !ImportValue account-resources:ClinicalTrackerProxygenPublicKey
           - Effect: Allow
             Action:
               - kms:Decrypt
@@ -193,7 +201,7 @@ Resources:
               - route53:ChangeResourceRecordSets
               - route53:ListHostedZonesByName
               - route53:ListResourceRecordSets
-            Resource: !Sub "arn:aws::${AWS::Region}:${AWS::AccountId}:*"
+            Resource: "*"
 
   ##################################################
   # Cloudformation Execution Role
@@ -342,6 +350,7 @@ Resources:
               - elasticloadbalancing:SetSecurityGroups
               - elasticloadbalancing:CreateTargetGroup
               - elasticloadbalancing:DeleteTargetGroup
+              - elasticloadbalancing:ModifyTargetGroup
               - elasticloadbalancing:DescribeTargetGroups
               - elasticloadbalancing:ModifyTargetGroupAttributes
               - elasticloadbalancing:RegisterTargets
@@ -671,6 +680,11 @@ Resources:
               - ec2:DeleteFlowLogs
               - ec2:DescribeFlowLogs
               - ec2:CreateNetworkAcl
+              - ec2:DescribeNetworkAcls
+              - ec2:DeleteNetworkAcl
+              - ec2:CreateNetworkAclEntry
+              - ec2:DeleteNetworkAclEntry
+              - ec2:ReplaceNetworkAclEntry
               - ecs:DescribeClusters
               - ecs:CreateCluster
               - ecs:TagResource

@@ -5,7 +5,8 @@ import {
   checkRequiredKeys,
   getAccessToken,
   getRealmURL,
-  Proxygen
+  Proxygen,
+  proxygenErrorHandler
 } from "./helpers"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
@@ -22,10 +23,14 @@ const lambdaHandler = async (event: Proxygen) => {
 
   //eslint-disable-next-line max-len
   const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/environments/${event.environment}/instances/${event.instance}`
-  const response = await axios.put(path, event.specDefinition, {
-    headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
-  })
-  return response.data
+  try {
+    const response = await axios.put(path, event.specDefinition, {
+      headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
+    })
+    return response.data
+  } catch (error: unknown) {
+    proxygenErrorHandler(error, logger)
+  }
 }
 
 export const handler = middy(lambdaHandler)

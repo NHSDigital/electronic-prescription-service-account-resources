@@ -5,7 +5,8 @@ import {
   checkRequiredKeys,
   getAccessToken,
   getRealmURL,
-  Proxygen
+  Proxygen,
+  proxygenErrorHandler
 } from "./helpers"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
@@ -29,10 +30,14 @@ const lambdaHandler = async (event: Proxygen) => {
     throw new Error("Environment is not uat or prod")
   }
 
-  const response = await axios.post(path, event.specDefinition, {
-    headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
-  })
-  return response.data
+  try {
+    const response = await axios.post(path, event.specDefinition, {
+      headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
+    })
+    return response.data
+  } catch (error: unknown) {
+    proxygenErrorHandler(error, logger)
+  }
 }
 
 export const handler = middy(lambdaHandler)
