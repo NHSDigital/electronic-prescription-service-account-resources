@@ -180,7 +180,7 @@ Resources:
               - ecr:UploadLayerPart
               - ecr:CompleteLayerUpload
               - ecr:BatchCheckLayerAvailability
-
+              - ecr:DescribeImageScanFindings
             Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:*"
           - Effect: Allow
             Action:
