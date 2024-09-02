@@ -17,7 +17,8 @@
     "packages/splunkProcessor",
     "packages/certificateChecker",
     "packages/slackAlerter",
-    "packages/proxygen"
+    "packages/proxygen",
+    "packages/lambdaJanitor"
   ],
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
