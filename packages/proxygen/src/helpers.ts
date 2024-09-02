@@ -1,5 +1,6 @@
 import axios from "axios"
 import {createSignedJWT, getSecret} from "./signingHelpers"
+import {Logger} from "@aws-lambda-powertools/logger"
 
 export function getRealmURL() {
   return "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
@@ -39,6 +40,57 @@ export function checkRequiredKeys(obj: Proxygen, requiredKeys: Array<string>) {
   }
 
   throw new Error(`Input is one of missing required keys: ${completeRequiredKeys}. Input keys: ${Object.keys(obj)}`)
+}
+
+export function proxygenErrorHandler(error: unknown, logger: Logger) {
+  if (axios.isAxiosError(error)) {
+    const axiosError = {
+      code: error.code,
+      status: error.status,
+      stack: error.stack,
+      message: error.message,
+      config: {
+        data: error.config?.data,
+        headers: error.config?.headers,
+        method: error.config?.method,
+        url: error.config?.url
+      },
+      request: {
+        headers: error.request?.headers,
+        method: error.request.method,
+        path: error.request.path
+      },
+      response: {
+        data: error.response?.data,
+        headers: error.response?.headers,
+        status: error.response?.status,
+        statusText: error.response?.statusText
+      }
+    }
+    if (error.response) {
+      // handle a non 2xx response
+      logger.error("Error in response to call to proxygen", {axiosError})
+    } else if (error.request) {
+      // handle errors where no response received
+      logger.error("Error in request to call to proxygen", {axiosError})
+    } else {
+      // handle errors setting up the request
+      logger.error("General axios error in request to proxygen", {axiosError})
+    }
+    // throw an error so lambda exits
+    throw (new Error("Axios error"))
+  } else {
+    if (error instanceof Error) {
+      // its a non axios error, so make sure it is logged nicely
+      logger.error("General error in request to proxygen", {
+        stack: error.stack,
+        errorMessage: error.message
+      })
+      throw (new Error("General error"))
+    }
+    // we should never reach here (as it should be AxiosError or Error) but leaving it in just in case
+    throw (error)
+  }
 }
 
 export interface Proxygen {
