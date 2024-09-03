@@ -28,6 +28,6 @@
         "jest-mock": "^29.7.0",
         "nock": "^13.5.5",
         "ts-jest": "^29.2.5",
-        "ts-jest-mock": "^1.4.1"
+        "ts-jest-mock": "^1.4.2"
     }
 }
