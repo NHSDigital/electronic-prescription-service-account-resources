@@ -19,57 +19,57 @@ describe("formatTrigger", () => {
     {
       description: "returns a correctly formatted trigger when called",
       mockTrigger: generateMockTrigger(90061),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 1 day, 1 hour, 1 minute, 1 second."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 1 day, 1 hour, 1 minute, 1 second."
     },
     {
       description: "returns correctly formatted day in period when called",
       mockTrigger: generateMockTrigger(86400),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 1 day."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 1 day."
     },
     {
       description: "returns correctly formatted days in period when called",
       mockTrigger: generateMockTrigger(172800),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 2 days."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 2 days."
     },
     {
       description: "returns correctly formatted hour in period when called",
       mockTrigger: generateMockTrigger(3600),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 1 hour."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 1 hour."
     },
     {
       description: "returns correctly formatted hours in period when called",
       mockTrigger: generateMockTrigger(7200),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 2 hours."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 2 hours."
     },
     {
       description: "returns correctly formatted minute in period when called",
       mockTrigger: generateMockTrigger(60),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 1 minute."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 1 minute."
     },
     {
       description: "returns correctly formatted minutes in period when called",
       mockTrigger: generateMockTrigger(120),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 2 minutes."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 2 minutes."
     },
     {
       description: "returns correctly formatted second in period when called",
       mockTrigger: generateMockTrigger(1),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 1 second."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 1 second."
     },
     {
       description: "returns correctly formatted seconds in period when called",
       mockTrigger: generateMockTrigger(2),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 2 seconds."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 2 seconds."
     },
     {
       description: "returns a correctly formatted period when called with mixed units",
       mockTrigger: generateMockTrigger(86460),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 1 day, 1 minute."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 1 day, 1 minute."
     },
     {
       description: "returns a correctly formatted period when called with mixed units",
       mockTrigger: generateMockTrigger(3601),
-      expected: "SUM Invocations GreaterThanThreshold 1 for 1 period(s) of 1 hour, 1 second."
+      expected: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 1 hour, 1 second."
     }
   ]
   testCases.forEach(({description, mockTrigger, expected}) => {

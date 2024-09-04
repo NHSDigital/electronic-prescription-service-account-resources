@@ -62,13 +62,18 @@ const processRecord = async (record: SQSRecord): Promise<void> => {
 }
 
 const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudWatchAlertMessageContent => {
-  // To fully populate the message, alert names should be in the format "<stack_name> - <Alarm Name>"
-  // e.g. "psu - Lambda Errors".
+  // To fully populate the message, alarm names should be in the format "<StackName>_<ResourceName>_<Metric>"
+  // e.g. "psu-pr-123_TestLambda_Errors".
   let stack, alarmName
-  if (cloudWatchMessage.AlarmName.includes(" - ")){
-    const parts = cloudWatchMessage.AlarmName.split("-")
-    stack = parts[0].trim()
-    alarmName = parts[1].trim()
+  if (cloudWatchMessage.AlarmName.includes("_")){
+    const parts = cloudWatchMessage.AlarmName.split("_")
+    if (parts.length === 3) {
+      stack = parts[0]
+      alarmName = `${parts[1]} ${parts[2]}`
+    } else {
+      stack = "unknown"
+      alarmName = cloudWatchMessage.AlarmName
+    }
   } else {
     stack = "unknown"
     alarmName = cloudWatchMessage.AlarmName
