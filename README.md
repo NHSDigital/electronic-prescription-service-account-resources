@@ -324,7 +324,7 @@ Workflows are in the `.github/workflows` folder
 
 ## Scripts
 
-- `calculate_version.py` - used when merge to main to calculate a semver-compliant version number to name the release in github
 - `check_python_licenses.sh` - check that all python libraries used have a compatible license
 - `parse_parameters.py` - used in github pipelines to parse cloudformation/env files to set parameters in format that can be passed to cloudformation command
 - `set_secrets.sh` - script which can be manually run to set secrets in all EPS repositories
+- `run_cfn_guard.sh` - script which runs cfn guard against cloudformation and processed SAM templates
