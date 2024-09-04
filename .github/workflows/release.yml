@@ -1,9 +1,7 @@
-name: Release Changes
+name: deploy to environments
 
 on:
-  push:
-    branches: [main]
-    tags: [v**]
+  workflow_dispatch:
 
 env:
   BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
@@ -31,7 +29,7 @@ jobs:
     needs: [quality_checks, package_code, get_commit_id]
     runs-on: ubuntu-latest
     outputs:
-      spec_version: ${{ steps.output_spec_version.outputs.SPEC_VERSION }}
+      version_tag: ${{ steps.output_version_tag.outputs.VERSION_TAG }}
       change_set_version: ${{ steps.output_change_set_version.outputs.CHANGE_SET_VERSION }}
     steps:
       - name: Checkout code
@@ -43,7 +41,7 @@ jobs:
       - name: Install asdf
         uses: asdf-vm/actions/setup@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
         with:
-          asdf_branch: v0.11.3
+          asdf_branch: v0.14.1
         
       - name: Cache asdf
         uses: actions/cache@v4
@@ -57,51 +55,65 @@ jobs:
       - name: Install asdf dependencies in .tool-versions
         uses: asdf-vm/actions/install@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
         with:
-          asdf_branch: v0.11.3
+          asdf_branch: v0.14.1
         env:
             PYTHON_CONFIGURE_OPTS: --enable-shared
       
       - name: Install Dependencies
         run: make install
       
-      - name: Set SPEC_VERSION for merges to main
-        run: echo "SPEC_VERSION=$(poetry run python scripts/calculate_version.py)" >> "$GITHUB_ENV"
-        if: github.ref == 'refs/heads/main'
-      
-      - name: Set SPEC_VERSION for tags
-        run: echo "SPEC_VERSION=${{  github.ref_name }}" >> "$GITHUB_ENV"
-        if: github.ref != 'refs/heads/main'
-      
-      - name: Create Release
-        id: create-release
-        uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
-        continue-on-error: true
+      - name: Set VERSION_TAG to be next tag varsion
+        id: output_version_tag
+        run: |
+          NEXT_VERSION=$(npx semantic-release --dry-run | grep -i 'The next release version is' | sed -E 's/.* ([[:digit:].]+)$/\1/')
+          tagFormat=$(node -e "const config=require('./release.config.js'); console.log(config.tagFormat)")
+          if [ "${tagFormat}" = "null" ]
+          then
+            tagFormat="v\${version}"
+          fi
+          # disabling shellcheck as replace does not work
+          # shellcheck disable=SC2001
+          VERSION_TAG=$(echo "$tagFormat" | sed "s/\${version}/$NEXT_VERSION/")
+          echo "## VERSION TAG : ${VERSION_TAG}" >> "$GITHUB_STEP_SUMMARY"
+          echo "VERSION_TAG=${VERSION_TAG}" >> "$GITHUB_OUTPUT"
+          echo "VERSION_TAG=${VERSION_TAG}" >> "$GITHUB_ENV"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: tag release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx semantic-release
+
+      - name: Get release for editing
+        id: get_release
+        # version 1.2.4
+        uses: cardinalby/git-get-release-action@5172c3a026600b1d459b117738c605fabc9e4e44
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          tag: ${{ env.SPEC_VERSION }}
-          commit: ${{  github.sha }}
+          tag: ${{ env.VERSION_TAG }}
+
+      - name: Edit Release
+        # version 1.2.0
+        uses: irongut/EditRelease@ccf529ad26dddf9996e7dd0f24ca5da4ea507cc2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: ${{ steps.get_release.outputs.id }}
           body: |
-            ## Commit message
-            ${{ github.event.head_commit.message }}
             ## Info
             [See code diff](${{ github.event.compare }})
             [Release workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
             It was initialized by [${{ github.event.sender.login }}](${{ github.event.sender.html_url }})
-      
-      - name: Output SPEC_VERSION
-        id: output_spec_version
-        run: |
-          echo "## RELEASE TAG :** ${{ env.SPEC_VERSION  }}" >> "$GITHUB_STEP_SUMMARY"
-          echo SPEC_VERSION=${{ env.SPEC_VERSION }} >> "$GITHUB_OUTPUT"
 
       - name: Output Change Set Version
         id: output_change_set_version
         shell: bash
         run: |
           TIMESTAMP=$(date +%s)
-          VERSION=$(echo ${{ env.SPEC_VERSION }} | tr . -)
+          VERSION=$(echo ${{ env.VERSION_TAG }} | tr . -)
           echo CHANGE_SET_VERSION="$VERSION-$TIMESTAMP" >> "$GITHUB_OUTPUT"
 
   deploy_dev_stacks:
@@ -109,12 +121,12 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: dev
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.version_tag }}
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
-      version_number: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.version_tag}}
+      version_number: ${{needs.tag_release.outputs.version_tag}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: true
@@ -127,7 +139,7 @@ jobs:
     needs: [tag_release, deploy_dev_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
     with:
-      VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
+      VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       CREATE_INT_RELEASE_NOTES: true
       CREATE_INT_RC_RELEASE_NOTES: false
       CREATE_PROD_RELEASE_NOTES: true
@@ -143,12 +155,12 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: ref
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.version_tag }}
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
-      version_number: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.version_tag}}
+      version_number: ${{needs.tag_release.outputs.version_tag}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: true
@@ -161,12 +173,12 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: qa
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.version_tag }}
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
-      version_number: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.version_tag}}
+      version_number: ${{needs.tag_release.outputs.version_tag}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: false
@@ -178,7 +190,7 @@ jobs:
     needs: [tag_release, deploy_qa_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
     with:
-      VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
+      VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       CREATE_INT_RELEASE_NOTES: false
       CREATE_INT_RC_RELEASE_NOTES: true
       CREATE_PROD_RELEASE_NOTES: false
@@ -195,12 +207,12 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: int
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.version_tag }}
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
-      version_number: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.version_tag}}
+      version_number: ${{needs.tag_release.outputs.version_tag}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: false
@@ -212,7 +224,7 @@ jobs:
     needs: [tag_release, deploy_int_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
     with:
-      VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
+      VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       CREATE_INT_RELEASE_NOTES: true
       CREATE_INT_RC_RELEASE_NOTES: false
       CREATE_PROD_RELEASE_NOTES: false
@@ -228,12 +240,12 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: prod
-      version: ${{ needs.tag_release.outputs.spec_version }}
+      version: ${{ needs.tag_release.outputs.version_tag }}
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
       lambda_stack_suffix: ""
-      artifact_bucket_prefix: ${{needs.tag_release.outputs.spec_version}}
-      version_number: ${{needs.tag_release.outputs.spec_version}}
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.version_tag}}
+      version_number: ${{needs.tag_release.outputs.version_tag}}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: false
@@ -245,7 +257,7 @@ jobs:
     needs: [tag_release, deploy_prod_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
     with:
-      VERSION_NUMBER: ${{ needs.tag_release.outputs.spec_version }}
+      VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       CREATE_INT_RELEASE_NOTES: false
       CREATE_INT_RC_RELEASE_NOTES: false
       CREATE_PROD_RELEASE_NOTES: true

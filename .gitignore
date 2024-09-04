@@ -25,3 +25,8 @@ node_modules
 *-params.json
 packages/certificateChecker/tests/mock-certs/
 cfn_guard_output
+_site/
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+vendor

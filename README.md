@@ -1,6 +1,15 @@
 # Electronic Prescriptions Service Account Resources
 
-![Build](https://github.com/NHSDigital/electronic-prescription-service-account-resources/workflows/release/badge.svg?branch=main)
+![Build](https://github.com/NHSDigital/eps-prescription-status-update-api/actions/workflows/ci.yml/badge.svg?branch=main)  
+![Release](https://github.com/NHSDigital/eps-prescription-status-update-api/actions/workflows/release.yml/badge.svg?branch=main)
+
+## Versions and deployments
+
+Version release history can be found ot https://github.com/NHSDigital/electronic-prescription-service-account-resources/releases.  
+We use eslint convention for commit messages for commits to main branch. Descriptions for the types of changes in a release can be found in the [contributing guidelines](./CONTRIBUTING.md)  
+Deployment history can be found at https://nhsdigital.github.io/electronic-prescription-service-account-resources/
+
+## Introduction
 
 This is the repo containing infrastructure code that defines resources that are to be used in AWS accounts associated with the EPS project.
 
@@ -297,17 +306,25 @@ This `.github` folder contains workflows and templates related to github
 
 Workflows are in the `.github/workflows` folder
 
-- `combine-dependabot-prs.yml`: Workflow for combining dependabot pull requests. Runs on demand
-- `pull_request.yml`: Called when pull request is opened or updated. Creates change sets for stacks against dev. The changesets are named `<stack_name>-pr-<PR_NO>`
-- `quality_checks.yml`: Runs check-licenses and linting against the repo. Called from pull_request.yml and release.yml
-- `release.yml`: Run when code is merged to main branch or a tag starting v is pushed. Creates versioned changesets that are executed after being reviewed.
+- `ci.yml` Workflow run when code merged to main. Deploys to dev and qa environments.
+- `cloudformation.yml`: Creates a changeset for specified stack and outputs changes. Either runs it or deletes it.
+- `combine-dependabot-prs.yml`: Workflow for combining dependabot pull requests. Runs on demand.
+- `create_confluence_release_notes.yml`: Workflow for creating confluence release notes. Called from other workflows.
+- `delete_old_cloudformation_stacks.yml`: Workflow for deleting old cloud formation stacks. Runs daily.
+- `dependabot_auto_approve_and_merge.yml`: Workflow to auto merge dependabot updates.
 - `pr-link.yaml`: This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
-- `dependabot.yml`: Dependabot definition file
-- `cloudformation.yml`: Creates a changeset for specified stack and outputs changes. Either runs it or deletes it
+- `pr_title_check.yml`: Checks title of pull request is valid.
+- `pull_request.yml`: Called when pull request is opened or updated. Creates change sets for stacks against dev. The changesets are named `<stack_name>-pr-<PR_NO>`.
+- `quality_checks.yml`: Runs check-licenses and linting against the repo. Called from pull_request.yml and release.yml.
+- `release_all_stacks.yml`: deploys all stacks to an environment. Called from other workflows.
+- `release.yml`: Runs on demand to create a release and deploy to all environments. Creates versioned changesets that are executed after being reviewed.
+- `sam_package_code.yml`: Packages SAM code for deployment.
+- `sam_releases_code.yml`: Deploys SAM code created by sam_package_code.
+- `dependabot.yml`: Dependabot definition file.
 
 ## Scripts
 
-- `calculate_version.py` - used when merge to main to calculate a semver-compliant version number to name the release in github
 - `check_python_licenses.sh` - check that all python libraries used have a compatible license
 - `parse_parameters.py` - used in github pipelines to parse cloudformation/env files to set parameters in format that can be passed to cloudformation command
 - `set_secrets.sh` - script which can be manually run to set secrets in all EPS repositories
+- `run_cfn_guard.sh` - script which runs cfn guard against cloudformation and processed SAM templates
