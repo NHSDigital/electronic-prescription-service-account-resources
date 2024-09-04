@@ -52,14 +52,14 @@ the threshold (1.0) (minimum 1 datapoint for OK -> ALARM transition).`,
 
 export const generateMockTrigger = (period: number): Trigger => {
   return {
-    "MetricName": "Invocations",
+    "MetricName": "Errors",
     "Namespace": "AWS/Lambda",
     "StatisticType": "Statistic",
     "Statistic": "SUM",
     "Unit": null,
     "Dimensions": [
       {
-        "value": "snsTest",
+        "value": "TestLambda",
         "name": "FunctionName"
       }
     ],
