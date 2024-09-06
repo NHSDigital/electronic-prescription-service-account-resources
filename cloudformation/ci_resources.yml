@@ -696,6 +696,7 @@ Resources:
               - ec2:CreateNetworkAclEntry
               - ec2:DeleteNetworkAclEntry
               - ec2:ReplaceNetworkAclEntry
+              - ec2:DescribeAccountAttributes
               - ecs:DescribeClusters
               - ecs:CreateCluster
               - ecs:TagResource
