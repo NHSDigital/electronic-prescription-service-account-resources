@@ -133,8 +133,6 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
-              - !ImportValue account-resources:ProxgenPrivateKey
-              - !ImportValue account-resources:ProxgenPublicKey
               - !ImportValue account-resources:PsuClientKeySecret
               - !ImportValue account-resources:PsuClientSandboxKeySecret
               - !ImportValue account-resources:PsuCACertSecret
