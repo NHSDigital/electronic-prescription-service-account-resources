@@ -9,7 +9,8 @@
         "repo:NHSDigital/eps-FHIR-validator-lambda:*",
         "repo:NHSDigital/eps-prescription-status-update-api:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
-        "repo:NHSDigital/eps-dynamodb-poc:*"
+        "repo:NHSDigital/eps-dynamodb-poc:*",
+        "repo:NHSDigital/eps-prescription-tracker-ui:*"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -19,7 +20,8 @@
         "repo:NHSDigital/eps-FHIR-validator-lambda:*",
         "repo:NHSDigital/eps-prescription-status-update-api:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
-        "repo:NHSDigital/eps-dynamodb-poc:*"
+        "repo:NHSDigital/eps-dynamodb-poc:*",
+        "repo:NHSDigital/eps-prescription-tracker-ui:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "NONE"
