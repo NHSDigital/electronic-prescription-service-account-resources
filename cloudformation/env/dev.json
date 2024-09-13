@@ -62,6 +62,7 @@
     "vpc-resources": {
       "Environment": "dev"
     },
-    "artillery-resources": {}
+    "artillery-resources": {},
+    "secrets": {}
   }
 }

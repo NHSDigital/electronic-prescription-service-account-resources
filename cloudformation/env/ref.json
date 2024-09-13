@@ -54,6 +54,7 @@
     "vpc-resources": {
       "Environment": "ref"
     },
-    "artillery-resources": {}
+    "artillery-resources": {},
+    "secrets": {}
   }
 }

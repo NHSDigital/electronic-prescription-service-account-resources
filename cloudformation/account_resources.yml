@@ -1302,6 +1302,12 @@ Outputs:
     Value: !GetAtt SecretsKMSKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
+  
+  SecretsKMSKeyAlias:
+    Description: SecretsKMSKeyAlias
+    Value: !Ref SecretsKMSKeyKMSKeyAlias
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKeyAlias"]]
 
   LambdaDecryptSecretsKMSPolicy:
     Description: "Lambda Decrypt Secrets KMS Policy ARN"
