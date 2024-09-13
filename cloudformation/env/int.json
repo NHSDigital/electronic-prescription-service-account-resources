@@ -52,6 +52,7 @@
     "vpc-resources": {
       "Environment": "int"
     },
-    "artillery-resources": {}
+    "artillery-resources": {},
+    "secrets": {}
   }
 }
