@@ -75,6 +75,12 @@ jobs:
       working-directory: .github/scripts
       run: ./check_stack_exists.sh
 
+    # ***************************************************
+    # This does not work for int and prod as this job does not specify an environment 
+    # if we do specify an environment, it will ask for confirmation before creating a changeset
+    # which is not what we want
+    # ***************************************************
+
     - name: Assume create deploy stack role
       if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
       uses: aws-actions/configure-aws-credentials@v4
