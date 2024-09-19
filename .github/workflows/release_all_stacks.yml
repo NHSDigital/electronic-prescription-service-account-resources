@@ -1,5 +1,11 @@
 name: release_all_stacks
 
+# ***************************************************
+# If you add a new stack for release, 
+# then you either need to manually deploy empty stack to int and prod
+# Or fix cloudformation.yml so that it works correctly for new stacks
+# ***************************************************
+
 on:
     workflow_call:
       inputs:
@@ -90,7 +96,6 @@ jobs:
       parameter_secrets: "{}"
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
-
   
   list_vpc_resources_cf_changes:
     uses: ./.github/workflows/cloudformation.yml
@@ -124,6 +129,12 @@ jobs:
       parameter_secrets: "{}"
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
+
+# ***************************************************
+# If you add a new stack for release, 
+# then you either need to manually deploy empty stack to int and prod
+# Or fix cloudformation.yml so that it works correctly for new stacks
+# ***************************************************
 
   release_lambda_resources:
     uses: ./.github/workflows/sam_release_code.yml
