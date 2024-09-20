@@ -1,10 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Parameters:
-  VpcId:
-    Description: "The VPC ID exported by the stack to use for artillery traffic."
-    Type: String
-
 Resources:
   ##################################################
   # artillery-io-test-data Bucket
@@ -297,7 +292,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: "Security group that blocks inbound traffic but allows outbound traffic"
-      VpcId: !Ref VpcId
+      VpcId: !ImportValue vpc-resources:VpcId
       SecurityGroupIngress: []  # Blocks all inbound traffic
       SecurityGroupEgress:
         - IpProtocol: -1        # Allows all protocols
