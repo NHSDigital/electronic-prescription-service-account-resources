@@ -1,4 +1,10 @@
 AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  VpcId:
+    Description: "The VPC ID exported by the stack to use for artillery traffic."
+    Type: String
+
 Resources:
   ##################################################
   # artillery-io-test-data Bucket
@@ -284,6 +290,22 @@ Resources:
       Type: String
       Value: ChangeMe
 
+  ##################################################
+  # VPC Security group, allowing outbound traffic (i.e. hit the test target), but forbids inbound traffic
+  ##################################################
+  ArtillerySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group that blocks inbound traffic but allows outbound traffic"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress: []  # Blocks all inbound traffic
+      SecurityGroupEgress:
+        - IpProtocol: -1        # Allows all protocols
+          CidrIp: 0.0.0.0/0     # Allows outbound traffic to all IPv4 addresses
+      Tags:
+        - Key: Name
+          Value: artillery-security-group
+
 Outputs:
   ArtilleryPSUApiKey:
     Description: ArtilleryPSUApiKey
@@ -317,3 +339,13 @@ Outputs:
     Value: !Ref ArtilleryWorkerRole
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryWorkerRoleName"]]
+
+
+  ##################################################
+  # Security Group Output
+  ##################################################
+  ArtillerySecurityGroupId:
+    Description: "ID of the Artillery Security Group"
+    Value: !Ref ArtillerySecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}:ArtillerySecurityGroupId"
