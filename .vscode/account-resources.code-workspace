@@ -45,6 +45,7 @@
           "Codeable",
           "codeinline",
           "codesystem",
+          "CPSU",
           "DATETIME",
           "devcontainer",
           "esbuild",
@@ -92,7 +93,7 @@
           "URPID",
           "vars",
           "versionable",
-          "whens",
+          "whens"
         ],
     "cSpell.dictionaries": ["en-GB"],
     "cSpell.ignorePaths": ["package-lock.json","node_modules",".vscode"],
