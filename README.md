@@ -260,6 +260,7 @@ It creates the following resources
 - a minimum policy for the worker role to allow artillery to run
 - log group named "`artilleryio-log-group/artilleryio-cluster`"
 - an ECS cluster named "`artilleryio-cluster`"
+- a security group which allows outbound traffic, but forbids incoming traffic
 
 ## Parameters for stacks
 
