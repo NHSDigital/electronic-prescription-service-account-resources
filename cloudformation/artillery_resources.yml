@@ -285,6 +285,14 @@ Resources:
       Type: String
       Value: ChangeMe
 
+  ArtilleryCPSUApiKey:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: API key used for CPSU load testing
+      Name: /artilleryio/cpsu_api_key
+      Type: String
+      Value: ChangeMe
+
   ##################################################
   # VPC Security group, allowing outbound traffic (i.e. hit the test target), but forbids inbound traffic
   ##################################################
