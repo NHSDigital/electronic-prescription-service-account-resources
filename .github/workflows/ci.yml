@@ -149,3 +149,21 @@ jobs:
     secrets:
       cf_create_changeset_role: ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
+
+  deploy_ref_stacks:
+    needs: [get_commit_id, package_code, tag_release, deploy_dev_stacks]
+    uses: ./.github/workflows/release_all_stacks.yml
+    with:
+      target_environment: ref
+      version: ${{ needs.tag_release.outputs.version_tag }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
+      execute_change_set: true
+      lambda_stack_suffix: ""
+      artifact_bucket_prefix: ${{needs.tag_release.outputs.version_tag}}
+      version_number: ${{needs.tag_release.outputs.version_tag}}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights
+      deploy_artillery: true
+    secrets:
+      cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
