@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # get the policy arns
-GrantCloudFormationExecutionAccessIAMPolicy=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessIAMPolicy") | .Value' | grep -o '[^:]*$')
-GrantCloudFormationExecutionAccessPolicyA=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyA") | .Value' | grep -o '[^:]*$')
-GrantCloudFormationExecutionAccessPolicyB=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyB") | .Value' | grep -o '[^:]*$')
-GrantCloudFormationExecutionAccessPolicyC=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyC") | .Value' | grep -o '[^:]*$')
-GrantCloudFormationExecutionAccessPolicyD=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyD") | .Value' | grep -o '[^:]*$')
+GrantCloudFormationExecutionAccessIAMPolicy=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessIAMPolicy") | .Value')
+GrantCloudFormationExecutionAccessPolicyA=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyA") | .Value')
+GrantCloudFormationExecutionAccessPolicyB=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyB") | .Value')
+GrantCloudFormationExecutionAccessPolicyC=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyC") | .Value')
+GrantCloudFormationExecutionAccessPolicyD=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyD") | .Value')
 
 # get the current aws account id
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
