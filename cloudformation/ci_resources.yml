@@ -231,6 +231,23 @@ Resources:
               - iam:PassRole
             Resource: !GetAtt CloudFormationExecutionRole.Arn
 
+  AssumeCDKRolesPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationDeployRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource: 
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-2
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-2
+
   # Handy reference for AWS permissions:
   # https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html
   #
@@ -598,6 +615,88 @@ Resources:
               - ecr:DeleteLifecyclePolicy
               - ecr:PutLifecyclePolicy
             Resource: "*"
+
+
+  GrantCloudFormationExecutionAccessPolicyD:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - cognito-identity:CreateIdentityPool
+          - cognito-idp:ListIdentityProviders
+          - cognito-idp:DisassociateWebACL
+          - cognito-idp:GetLogDeliveryConfiguration
+          - cognito-identity:GetPrincipalTagAttributeMap
+          - cognito-idp:DeleteUserPoolDomain
+          - cognito-idp:CreateIdentityProvider
+          - cognito-idp:DescribeUserPool
+          - cognito-identity:UntagResource
+          - cognito-idp:ListResourceServers
+          - cognito-idp:UntagResource
+          - cognito-identity:UpdateIdentityPool
+          - cognito-idp:GetWebACLForResource
+          - cognito-identity:TagResource
+          - cognito-idp:TagResource
+          - cognito-idp:GetSigningCertificate
+          - cognito-idp:UpdateResourceServer
+          - cognito-idp:DeleteResourceServer
+          - cloudfront:TagResource
+          - cognito-idp:DeleteUserPoolClient
+          - cognito-idp:UpdateUserPoolClient
+          - cognito-idp:GetGroup
+          - cognito-idp:ListUserPools
+          - cognito-idp:CreateResourceServer
+          - cognito-idp:CreateUserPoolClient
+          - cognito-identity:DeleteIdentityPool
+          - cognito-idp:UpdateUserPoolDomain
+          - cognito-idp:DeleteUserPool
+          - cognito-idp:AddCustomAttributes
+          - cognito-identity:ListIdentityPools
+          - cognito-idp:CreateGroup
+          - cognito-idp:CreateUserPool
+          - cognito-idp:UpdateIdentityProvider
+          - cognito-identity:GetIdentityPoolRoles
+          - cognito-idp:ListUserPoolClients
+          - cognito-identity:GetId
+          - cognito-identity:SetPrincipalTagAttributeMap
+          - cognito-idp:CreateUserPoolDomain
+          - cognito-idp:DescribeIdentityProvider
+          - cognito-identity:SetIdentityPoolRoles
+          - cognito-idp:DescribeResourceServer
+          - cloudfront:UpdateDistribution
+          - cognito-idp:DescribeUserPoolClient
+          - cloudfront:UntagResource
+          - cognito-identity:DescribeIdentityPool
+          - cognito-idp:DeleteIdentityProvider
+          - cognito-idp:ListTagsForResource
+          - cognito-idp:DescribeUserPoolDomain
+          - cognito-identity:ListTagsForResource
+          - cognito-idp:AssociateWebACL
+          - cognito-idp:UpdateUserPool
+          - cognito-identity:GetCredentialsForIdentity
+          Resource: "*"
+        - Effect: Allow
+          Action:
+          - lambda:InvokeFunction
+          - s3:PutObject*
+          - s3:GetBucket*
+          - s3:GetObject*
+          Resource:
+          - !Sub arn:aws:s3::${AWS::AccountId}:cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2/*
+          - !Sub arn:aws:s3::${AWS::AccountId}:cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2
+          - !Sub arn:aws:s3::${AWS::AccountId}:cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/*
+          - !Sub arn:aws:s3::${AWS::AccountId}:cdk-hnb659fds-assets-${AWS::AccountId}-eu-east-1
+          - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomCrossRegionExport*
+        - Effect: Allow
+          Action: s3:List*
+          Resource:
+          - !Sub arn:aws:s3::${AWS::AccountId}:cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2/*
+          - !Sub arn:aws:s3::${AWS::AccountId}:cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2
 
   GrantCloudFormationExecutionEc2AccessPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -1099,3 +1198,31 @@ Outputs:
     Value: !Ref ProxygenProdRole
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ProxygenProdRoleName"]]
+  ##################################################
+  # Managed policy Outputs
+  ##################################################
+  GrantCloudFormationExecutionAccessIAMPolicy:
+    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessIAMPolicy
+    Value: !Ref GrantCloudFormationExecutionAccessIAMPolicy
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessIAMPolicy"]]
+  GrantCloudFormationExecutionAccessPolicyA:
+    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessPolicyA
+    Value: !Ref GrantCloudFormationExecutionAccessPolicyA
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyA"]]
+  GrantCloudFormationExecutionAccessPolicyB:
+    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessPolicyB
+    Value: !Ref GrantCloudFormationExecutionAccessPolicyB
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyB"]]
+  GrantCloudFormationExecutionAccessPolicyC:
+    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessPolicyC
+    Value: !Ref GrantCloudFormationExecutionAccessPolicyC
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyC"]]
+  GrantCloudFormationExecutionAccessPolicyD:
+    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessPolicyD
+    Value: !Ref GrantCloudFormationExecutionAccessPolicyD
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyD"]]
