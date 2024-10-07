@@ -102,6 +102,17 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*"
+          - Sid: Allow Deployment Role
+            Effect: Allow
+            Principal:
+              AWS:
+                - !ImportValue ci-resources:CloudFormationExecutionRole
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt
+              - kms:ReEncrypt*
+            Resource: "*"
 
   CloudwatchLogsKmsKeyAlias:
     Type: AWS::KMS::Alias
