@@ -11,7 +11,8 @@
         "repo:NHSDigital/eps-prescription-status-update-api:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
         "repo:NHSDigital/eps-dynamodb-poc:*",
-        "repo:NHSDigital/eps-prescription-tracker-ui:*"
+        "repo:NHSDigital/eps-prescription-tracker-ui:*",
+        "repo:NHSDigital/eps-aws-dashboards:*"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -22,7 +23,8 @@
         "repo:NHSDigital/eps-prescription-status-update-api:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
         "repo:NHSDigital/eps-dynamodb-poc:*",
-        "repo:NHSDigital/eps-prescription-tracker-ui:*"
+        "repo:NHSDigital/eps-prescription-tracker-ui:*",
+        "repo:NHSDigital/eps-aws-dashboards:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -34,7 +36,8 @@
         "repo:NHSDigital/eps-FHIR-validator-lambda:*",
         "repo:NHSDigital/eps-prescription-status-update-api:*",
         "repo:NHSDigital/eps-dynamodb-poc:*",
-        "repo:NHSDigital/eps-prescription-tracker-ui:*"
+        "repo:NHSDigital/eps-prescription-tracker-ui:*",
+        "repo:NHSDigital/eps-aws-dashboards:*"
       ],
       "PrepareChangesetClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-account-resources:*"
