@@ -496,3 +496,5 @@ set_artillery_secrets "NHSDigital/eps-load-test"
 echo
 set_secrets "NHSDigital/eps-prescription-tracker-ui"
 echo
+set_secrets "NHSDigital/eps-aws-dashboards"
+echo
