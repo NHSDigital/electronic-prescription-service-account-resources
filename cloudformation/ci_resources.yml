@@ -396,6 +396,8 @@ Resources:
               - elasticloadbalancing:DeleteSharedTrustStoreAssociation
               - elasticloadbalancing:DescribeTags
               - elasticloadbalancing:DescribeTargetGroupAttributes
+              - elasticloadbalancing:DescribeLoadBalancerAttributes
+              - elasticloadbalancing:RemoveTags
               - ecs:RegisterTaskDefinition
               - ecs:DeregisterTaskDefinition
               - ecs:UpdateService
