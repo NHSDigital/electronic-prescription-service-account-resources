@@ -505,6 +505,7 @@ Resources:
               - sns:Unsubscribe
               - sns:TagResource
               - sns:UntagResource
+              - SNS:GetDataProtectionPolicy
               - sqs:AddPermission
               - sqs:RemovePermission
               - sqs:CreateQueue
