@@ -398,6 +398,12 @@ Resources:
               - elasticloadbalancing:DescribeTargetGroupAttributes
               - elasticloadbalancing:DescribeLoadBalancerAttributes
               - elasticloadbalancing:RemoveTags
+              - elasticloadbalancing:DescribeListenerAttributes
+              - elasticloadbalancing:DescribeListenerCertificates
+              - elasticloadbalancing:GetResourcePolicy
+              - elasticloadbalancing:AddListenerCertificates
+              - elasticloadbalancing:ModifyListenerAttributes
+              - elasticloadbalancing:RemoveListenerCertificates
               - ecs:RegisterTaskDefinition
               - ecs:DeregisterTaskDefinition
               - ecs:UpdateService
@@ -409,6 +415,7 @@ Resources:
               - ecs:DescribeTasks
               - ecs:ListTasks
               - ecs:ListServices
+              - ecs:DescribeTaskDefinition
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyB:
