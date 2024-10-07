@@ -363,7 +363,6 @@ Resources:
               - apigateway:AddCertificateToDomain
               - apigateway:RemoveCertificateFromDomain
               - apigateway:UpdateRestApiPolicy
-              - apigateway:TagResource
               - elasticloadbalancing:CreateLoadBalancer
               - elasticloadbalancing:DeleteLoadBalancer
               - elasticloadbalancing:DescribeLoadBalancers
@@ -386,10 +385,6 @@ Resources:
               - elasticloadbalancing:DeleteRule
               - elasticloadbalancing:DescribeRules
               - elasticloadbalancing:ModifyRule
-              - elasticloadbalancing:CreateListenerRule
-              - elasticloadbalancing:DeleteListenerRule
-              - elasticloadbalancing:DescribeListenerRules
-              - elasticloadbalancing:ModifyListenerRule
               - elasticloadbalancing:CreateTrustStore
               - elasticloadbalancing:DescribeTrustStores
               - elasticloadbalancing:DeleteTrustStore
@@ -399,6 +394,8 @@ Resources:
               - elasticloadbalancing:RemoveTrustStoreRevocations
               - elasticloadbalancing:DescribeTrustStoreAssociations
               - elasticloadbalancing:DeleteSharedTrustStoreAssociation
+              - elasticloadbalancing:DescribeTags
+              - elasticloadbalancing:DescribeTargetGroupAttributes
               - ecs:RegisterTaskDefinition
               - ecs:DeregisterTaskDefinition
               - ecs:UpdateService
