@@ -363,6 +363,7 @@ Resources:
               - apigateway:AddCertificateToDomain
               - apigateway:RemoveCertificateFromDomain
               - apigateway:UpdateRestApiPolicy
+              - apigateway:TagResource
               - elasticloadbalancing:CreateLoadBalancer
               - elasticloadbalancing:DeleteLoadBalancer
               - elasticloadbalancing:DescribeLoadBalancers
