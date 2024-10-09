@@ -6,7 +6,7 @@ Parameters:
   ConcurrencyThreshold:
     Type: Number
     Description: Threshold for the Lambda concurrency.
-    Default: 900
+    Default: 300
     
   EnableAlerts:
     Type: String
@@ -18,7 +18,7 @@ Resources:
   EPSAccountConcurrencyAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties: 
-      AlarmName: EPS_Account_Concurrency_Alarm"
+      AlarmName: EPS_Account_Concurrency_Alarm
       AlarmDescription: "Monitors the concurrency of all traffic coming through the EPS account, and triggers when concurrency exceeds the threshold."
       Namespace: "AWS/Lambda"
       MetricName: "ConcurrentExecutions"
