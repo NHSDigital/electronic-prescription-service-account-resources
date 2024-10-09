@@ -212,6 +212,7 @@ It creates the following resources
 - CertExpiryCheckFunction & common resources - lambda used to check cert expiry
 - SlackAlertsSnsTopic - SNS topic used to pass Cloudwatch (& other) alerts to the Slack Alerter lambda
 - SlackAlerter & common resources - lambda used to process, format and post incoming alerts to eps alert slack channels
+- EPSAccountConcurrencyAlarm - concurrency alarm which monitors all traffic passing through the account, and triggers if it crosses a threshold. Posts to slack.
 - LambdaInsightsCloudwatchLogGroup - log group for lambda insights
 - CertExpiryCheckFunction - lambda function to check certificate expiry dates
 - CertExpiryCheckFunctionScheduleEvent - schedule to run CertExpiryCheckFunction

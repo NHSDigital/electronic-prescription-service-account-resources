@@ -22,6 +22,7 @@ def parse_parameters(env, stack, secrets, dynamic_vars, output_format):
     - Parameter values can be either a string for a single value,
         a list of strings to concatenate for multiple values,
         or a string containing a reference to a secret in the format 'SECRET.<secret_name>'
+        or a number (integer or float) for numerical values.
     """
 
     with open(f"cloudformation/env/{env}.json") as f:
@@ -61,10 +62,15 @@ def parse_parameters(env, stack, secrets, dynamic_vars, output_format):
                 output.append({"ParameterKey": parameter_key, "ParameterValue": concatenated_values})
             else:
                 output = f'{output}ParameterKey="{parameter_key}",ParameterValue="{concatenated_values}" '
+        elif isinstance(raw_value, (int, float)):
+            value = str(raw_value)  # Convert the number to string for output consistency
+            if output_format == "json_file":
+                output.append({"ParameterKey": parameter_key, "ParameterValue": value})
+            else:
+                output = f'{output}ParameterKey="{parameter_key}",ParameterValue="{value}" '
         else:
-            print("invalid value type, skipping...")
+            print(f"invalid value type for {parameter_key}, skipping...")
             continue
-
     if output_format == "json_file":
         file_name = f"{env}-{stack}-params.json"
         with open(file_name, "w") as f:
