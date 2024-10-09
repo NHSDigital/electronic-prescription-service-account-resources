@@ -11,9 +11,9 @@
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^2.8.0",
-    "@aws-sdk/client-firehose": "^3.662.0",
-    "@aws-sdk/client-kinesis": "^3.662.0",
+    "@aws-lambda-powertools/logger": "^2.9.0",
+    "@aws-sdk/client-firehose": "^3.667.0",
+    "@aws-sdk/client-kinesis": "^3.667.0",
     "aws-sdk": "^2.1691.0"
   }
 }

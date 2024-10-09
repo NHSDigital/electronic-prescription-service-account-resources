@@ -386,10 +386,6 @@ Resources:
               - elasticloadbalancing:DeleteRule
               - elasticloadbalancing:DescribeRules
               - elasticloadbalancing:ModifyRule
-              - elasticloadbalancing:CreateListenerRule
-              - elasticloadbalancing:DeleteListenerRule
-              - elasticloadbalancing:DescribeListenerRules
-              - elasticloadbalancing:ModifyListenerRule
               - elasticloadbalancing:CreateTrustStore
               - elasticloadbalancing:DescribeTrustStores
               - elasticloadbalancing:DeleteTrustStore
@@ -399,6 +395,16 @@ Resources:
               - elasticloadbalancing:RemoveTrustStoreRevocations
               - elasticloadbalancing:DescribeTrustStoreAssociations
               - elasticloadbalancing:DeleteSharedTrustStoreAssociation
+              - elasticloadbalancing:DescribeTags
+              - elasticloadbalancing:DescribeTargetGroupAttributes
+              - elasticloadbalancing:DescribeLoadBalancerAttributes
+              - elasticloadbalancing:RemoveTags
+              - elasticloadbalancing:DescribeListenerAttributes
+              - elasticloadbalancing:DescribeListenerCertificates
+              - elasticloadbalancing:GetResourcePolicy
+              - elasticloadbalancing:AddListenerCertificates
+              - elasticloadbalancing:ModifyListenerAttributes
+              - elasticloadbalancing:RemoveListenerCertificates
               - ecs:RegisterTaskDefinition
               - ecs:DeregisterTaskDefinition
               - ecs:UpdateService
@@ -410,6 +416,7 @@ Resources:
               - ecs:DescribeTasks
               - ecs:ListTasks
               - ecs:ListServices
+              - ecs:DescribeTaskDefinition
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyB:
@@ -505,6 +512,7 @@ Resources:
               - sns:Unsubscribe
               - sns:TagResource
               - sns:UntagResource
+              - SNS:GetDataProtectionPolicy
               - sqs:AddPermission
               - sqs:RemovePermission
               - sqs:CreateQueue
@@ -595,6 +603,10 @@ Resources:
               - cloudwatch:DeleteAlarms
               - cloudwatch:TagResource
               - cloudwatch:UntagResource
+              - cloudwatch:DescribeDashboards
+              - cloudwatch:GetDashboard
+              - cloudwatch:PutDashboard
+              - cloudwatch:DeleteDashboards
               - ecr:CreateRepository
               - ecr:DeleteRepository
               - ecr:DeleteRegistryPolicy
