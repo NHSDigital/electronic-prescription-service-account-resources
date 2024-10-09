@@ -54,6 +54,10 @@
       "Environment": "qa"
     },
     "artillery-resources": {},
-    "secrets": {}
+    "secrets": {},
+    "alarms": {
+      "ConcurrencyThreshold": 300,
+      "EnableAlerts": "true"
+    }
   }
 }
