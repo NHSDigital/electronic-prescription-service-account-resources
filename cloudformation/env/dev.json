@@ -60,16 +60,14 @@
       "Env": "dev",
       "CommitId": "VAR.commit_id",
       "VersionNumber": "VAR.VersionNumber",
-      "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name"
+      "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name",
+      "ConcurrencyThreshold": 300,
+      "EnableAlerts": "false"
     },
     "vpc-resources": {
       "Environment": "dev"
     },
     "artillery-resources": {},
-    "secrets": {},
-    "alarms": {
-      "ConcurrencyThreshold": 300,
-      "EnableAlerts": "false"
-    }
+    "secrets": {}
   }
 }

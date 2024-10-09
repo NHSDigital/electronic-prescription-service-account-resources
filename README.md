@@ -212,6 +212,7 @@ It creates the following resources
 - CertExpiryCheckFunction & common resources - lambda used to check cert expiry
 - SlackAlertsSnsTopic - SNS topic used to pass Cloudwatch (& other) alerts to the Slack Alerter lambda
 - SlackAlerter & common resources - lambda used to process, format and post incoming alerts to eps alert slack channels
+- EPSAccountConcurrencyAlarm - concurrency alarm which monitors all traffic passing through the account, and triggers if it crosses a threshold. Posts to slack.
 - LambdaInsightsCloudwatchLogGroup - log group for lambda insights
 - CertExpiryCheckFunction - lambda function to check certificate expiry dates
 - CertExpiryCheckFunctionScheduleEvent - schedule to run CertExpiryCheckFunction
@@ -261,14 +262,6 @@ It creates the following resources
 - log group named "`artilleryio-log-group/artilleryio-cluster`"
 - an ECS cluster named "`artilleryio-cluster`"
 - a security group which allows outbound traffic, but forbids incoming traffic
-
-# alarms
-
-`cloudformation/alarms.yml` contains resources that are account wide. This should be applied to each environment, and should be deployed before the app.
-This is created as part of the CI pipeline.
-It creates the following resources
-
-- A concurrency alarm which monitors all traffic passing through the account, and triggers if it crosses a threshold.
 
 ## Parameters for stacks
 

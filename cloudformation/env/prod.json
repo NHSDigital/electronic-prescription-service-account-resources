@@ -53,16 +53,14 @@
       "LogRetentionDays": "30",
       "Env": "prod",
       "CommitId": "VAR.commit_id",
-      "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name"
+      "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name",
+      "ConcurrencyThreshold": 300,
+      "EnableAlerts": "true"
     },
     "vpc-resources": {
       "Environment": "prod"
     },
     "artillery-resources": {},
-    "secrets": {},
-    "alarms": {
-      "ConcurrencyThreshold": 300,
-      "EnableAlerts": "true"
-    }
+    "secrets": {}
   }
 }
