@@ -18,7 +18,7 @@ Resources:
   EPSAccountConcurrencyAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties: 
-      AlarmName: EPS_Account_Concurrency_Alarm
+      AlarmName: Account_Lambda_Concurrency
       AlarmDescription: "Monitors the concurrency of all traffic coming through the EPS account, and triggers when concurrency exceeds the threshold."
       Namespace: "AWS/Lambda"
       MetricName: "ConcurrentExecutions"
