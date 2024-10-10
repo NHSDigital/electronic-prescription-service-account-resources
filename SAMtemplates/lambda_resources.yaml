@@ -657,11 +657,11 @@ Resources:
       TreatMissingData: notBreaching
       ActionsEnabled: !Ref EnableAlerts
       AlarmActions:
-        - !ImportValue lambda-resources:SlackAlertsSnsTopicArn
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
       InsufficientDataActions:
-        - !ImportValue lambda-resources:SlackAlertsSnsTopicArn
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
       OKActions:
-        - !ImportValue lambda-resources:SlackAlertsSnsTopicArn
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
   #endregion
 
   ##################################################
