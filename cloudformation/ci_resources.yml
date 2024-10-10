@@ -1259,6 +1259,19 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ProxygenProdRoleName"]]
   ##################################################
+  # CDK Utils Role Outputs
+  ##################################################
+  CDKUtilRoleRole:
+    Description: ARN of the IAM Role(CDKUtilRole)
+    Value: !GetAtt CDKUtilRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilRole"]]
+  CDKUtilRoleName:
+    Description: Name of the IAM Role(CDKUtilRole)
+    Value: !Ref CDKUtilRole
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilRoleName"]]
+  ##################################################
   # Managed policy Outputs
   ##################################################
   GrantCloudFormationExecutionAccessIAMPolicy:
