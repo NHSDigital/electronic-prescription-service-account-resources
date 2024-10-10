@@ -74,6 +74,16 @@ get_dev_roles() {
         echo "Can not get DEV_ARTILLERY_RUNNER_ROLE. Setting to unset"
         DEV_ARTILLERY_RUNNER_ROLE="unset"
     fi
+
+    DEV_CDK_UTIL_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-dev \
+        --query 'Exports[?Name==`ci-resources:CDKUtilRole`].Value' \
+        --output text)    
+
+    if [ -z "${DEV_CDK_UTIL_ROLE}" ]; then
+        echo "Can not get DEV_CDK_UTIL_ROLE. Setting to unset"
+        DEV_CDK_UTIL_ROLE="unset"
+    fi
 }
 
 get_ref_roles() {
@@ -116,6 +126,16 @@ get_ref_roles() {
         echo "Can not get REF_ARTILLERY_RUNNER_ROLE. Setting to unset"
         REF_ARTILLERY_RUNNER_ROLE="unset"
     fi
+
+    REF_CDK_UTIL_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-ref \
+        --query 'Exports[?Name==`ci-resources:CDKUtilRole`].Value' \
+        --output text)    
+
+    if [ -z "${REF_CDK_UTIL_ROLE}" ]; then
+        echo "Can not get REF_CDK_UTIL_ROLE. Setting to unset"
+        REF_CDK_UTIL_ROLE="unset"
+    fi
 }
 
 get_qa_roles() {
@@ -148,6 +168,16 @@ get_qa_roles() {
         echo "Can not get QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE. Setting to QA_CLOUD_FORMATION_DEPLOY_ROLE"
         QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${QA_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
+
+    QA_CDK_UTIL_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-qa \
+        --query 'Exports[?Name==`ci-resources:CDKUtilRole`].Value' \
+        --output text)    
+
+    if [ -z "${QA_CDK_UTIL_ROLE}" ]; then
+        echo "Can not get REF_CDK_UTIL_ROLE. Setting to unset"
+        QA_CDK_UTIL_ROLE="unset"
+    fi
 }
 
 get_int_roles() {
@@ -179,6 +209,16 @@ get_int_roles() {
     if [ -z "${INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}" ]; then
         echo "Can not get INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE. Setting to INT_CLOUD_FORMATION_DEPLOY_ROLE"
         INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${INT_CLOUD_FORMATION_DEPLOY_ROLE}
+    fi
+
+    INT_CDK_UTIL_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-int \
+        --query 'Exports[?Name==`ci-resources:CDKUtilRole`].Value' \
+        --output text)    
+
+    if [ -z "${INT_CDK_UTIL_ROLE}" ]; then
+        echo "Can not get INT_CDK_UTIL_ROLE. Setting to unset"
+        INT_CDK_UTIL_ROLE="unset"
     fi
 }
 
@@ -231,6 +271,16 @@ get_prod_roles() {
     if [ -z "${PROXYGEN_PROD_ROLE}" ]; then
         echo "Can not get PROXYGEN_PROD_ROLE. Setting to PROXYGEN_PROD_ROLE"
         PROXYGEN_PTL_ROLE=${PROXYGEN_PROD_ROLE}
+    fi
+
+    PROD_CDK_UTIL_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-prod \
+        --query 'Exports[?Name==`ci-resources:CDKUtilRole`].Value' \
+        --output text)    
+
+    if [ -z "${PROD_CDK_UTIL_ROLE}" ]; then
+        echo "Can not get PROD_CDK_UTIL_ROLE. Setting to unset"
+        PROD_CDK_UTIL_ROLE="unset"
     fi
 }
 
@@ -287,6 +337,18 @@ set_secrets() {
         --app actions \
         --body "$DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE"
 
+    echo "setting DEV_CDK_UTIL_ROLE for actions"
+    gh secret set DEV_CDK_UTIL_ROLE \
+        --repo ${REPO} \
+        --app actions \
+        --body "$DEV_CDK_UTIL_ROLE"
+
+    echo "setting DEV_CDK_UTIL_ROLE for dependabot"
+    gh secret set DEV_CDK_UTIL_ROLE \
+        --repo ${REPO} \
+        --app dependabot \
+        --body "$DEV_CDK_UTIL_ROLE"
+
     # set int secrets
     echo "setting INT_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set INT_CLOUD_FORMATION_DEPLOY_ROLE \
@@ -305,6 +367,18 @@ set_secrets() {
         --repo ${REPO} \
         --app actions \
         --body "$INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
+
+    echo "setting INT_CDK_UTIL_ROLE for actions"
+    gh secret set INT_CDK_UTIL_ROLE \
+        --repo ${REPO} \
+        --app actions \
+        --body "$INT_CDK_UTIL_ROLE"
+
+    echo "setting INT_CDK_UTIL_ROLE for dependabot"
+    gh secret set INT_CDK_UTIL_ROLE \
+        --repo ${REPO} \
+        --app dependabot \
+        --body "$INT_CDK_UTIL_ROLE"
 
     # set prod secrets
     echo "setting PROD_CLOUD_FORMATION_DEPLOY_ROLE for actions"
@@ -325,6 +399,18 @@ set_secrets() {
         --app actions \
         --body "$PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
+    echo "setting PROD_CDK_UTIL_ROLE for actions"
+    gh secret set PROD_CDK_UTIL_ROLE \
+        --repo ${REPO} \
+        --app actions \
+        --body "$PROD_CDK_UTIL_ROLE"
+
+    echo "setting PROD_CDK_UTIL_ROLE for dependabot"
+    gh secret set PROD_CDK_UTIL_ROLE \
+        --repo ${REPO} \
+        --app dependabot \
+        --body "$PROD_CDK_UTIL_ROLE"
+
     # set qa secrets
     echo "setting QA_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set QA_CLOUD_FORMATION_DEPLOY_ROLE \
@@ -343,6 +429,18 @@ set_secrets() {
         --repo ${REPO} \
         --app actions \
         --body "$QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
+
+    echo "setting QA_CDK_UTIL_ROLE for actions"
+    gh secret set QA_CDK_UTIL_ROLE \
+        --repo ${REPO} \
+        --app actions \
+        --body "$QA_CDK_UTIL_ROLE"
+
+    echo "setting QA_CDK_UTIL_ROLE for dependabot"
+    gh secret set QA_CDK_UTIL_ROLE \
+        --repo ${REPO} \
+        --app dependabot \
+        --body "$QA_CDK_UTIL_ROLE"
 
     # set ref secrets
     echo "setting REF_CLOUD_FORMATION_DEPLOY_ROLE for actions"
@@ -363,6 +461,19 @@ set_secrets() {
         --app actions \
         --body "$REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
+    echo "setting REF_CDK_UTIL_ROLE for actions"
+    gh secret set REF_CDK_UTIL_ROLE \
+        --repo ${REPO} \
+        --app actions \
+        --body "$REF_CDK_UTIL_ROLE"
+
+    echo "setting REF_CDK_UTIL_ROLE for dependabot"
+    gh secret set REF_CDK_UTIL_ROLE \
+        --repo ${REPO} \
+        --app dependabot \
+        --body "$REF_CDK_UTIL_ROLE"
+
+    # set proxygen secrets
     echo "setting PROXYGEN_PTL_ROLE for actions"
     gh secret set PROXYGEN_PTL_ROLE \
         --repo ${REPO} \
