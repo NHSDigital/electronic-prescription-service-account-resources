@@ -12,7 +12,8 @@
         "repo:NHSDigital/electronic-prescription-service-api:*",
         "repo:NHSDigital/eps-dynamodb-poc:*",
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
-        "repo:NHSDigital/eps-aws-dashboards:*"
+        "repo:NHSDigital/eps-aws-dashboards:*",
+        "repo:NHSDigital/eps-cdk-utils:*"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -47,6 +48,10 @@
       ],
       "ProxygenPTLClaimFilters": [
         "NONE"
+      ],
+      "CDKUtilClaimFilters": [
+        "repo:NHSDigital/eps-prescription-tracker-ui:*",
+        "repo:NHSDigital/eps-aws-dashboards:*"
       ],
       "ProxygenProdClaimFilters": [
         "NONE"

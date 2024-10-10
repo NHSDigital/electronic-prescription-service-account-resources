@@ -13,7 +13,8 @@
         "repo:NHSDigital/electronic-prescription-service-api:environment:int",
         "repo:NHSDigital/eps-dynamodb-poc:environment:int",
         "repo:NHSDigital/eps-prescription-tracker-ui:environment:int",
-        "repo:NHSDigital/eps-aws-dashboards:environment:int"
+        "repo:NHSDigital/eps-aws-dashboards:environment:int",
+        "repo:NHSDigital/eps-cdk-utils:environment:int"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -40,6 +41,10 @@
       ],
       "ProxygenProdClaimFilters": [
         "NONE"
+      ],
+      "CDKUtilClaimFilters": [
+        "repo:NHSDigital/eps-prescription-tracker-ui:*",
+        "repo:NHSDigital/eps-aws-dashboards:*"
       ],
       "EnableDeleteCNAME": "false"
     },
