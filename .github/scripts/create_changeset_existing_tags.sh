@@ -21,14 +21,14 @@ fi
 
 # upload file to s3
 artifact_bucket=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "account-resources:ArtifactsBucket") | .Value' | grep -o '[^:]*$')
-target_s3_location=s3://${artifact_bucket}/account-resources/$STACK_NAME/$CHANGE_SET_VERSION-current-tag/${TEMPLATE}
+target_s3_location=s3://${artifact_bucket}/account-resources/$CHANGE_SET_VERSION/current-tag/$STACK_NAME/template.yml
 aws s3 cp "${TEMPLATE}" "${target_s3_location}"
 
 aws cloudformation create-change-set \
   --stack-name "$STACK_NAME" \
   --change-set-name "$STACK_NAME-$CHANGE_SET_VERSION-current-tag" \
   --change-set-type UPDATE \
-  --template-uri "$target_s3_location" \
+  --template-url "$target_s3_location" \
   --capabilities "$CAPABILITIES" \
   --parameters "file://$PARAMETERS" \
   --cli-binary-format raw-in-base64-out \
