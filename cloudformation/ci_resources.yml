@@ -640,7 +640,6 @@ Resources:
               - ecr:PutLifecyclePolicy
             Resource: "*"
 
-
   GrantCloudFormationExecutionAccessPolicyD:
     Type: AWS::IAM::ManagedPolicy
     Properties:
