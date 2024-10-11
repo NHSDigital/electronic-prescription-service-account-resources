@@ -85,16 +85,6 @@ get_dev_roles() {
         DEV_CDK_PULL_IMAGE_ROLE="unset"
     fi
 
-    DEV_CDK_PULL_IMAGE_ROLE=$(aws cloudformation list-exports \
-        --profile prescription-dev \
-        --query 'Exports[?Name==`ci-resources:CDKPullImageRole`].Value' \
-        --output text)    
-
-    if [ -z "${DEV_CDK_PULL_IMAGE_ROLE}" ]; then
-        echo "Can not get DEV_CDK_PULL_IMAGE_ROLE. Setting to unset"
-        DEV_CDK_PULL_IMAGE_ROLE="unset"
-    fi
-
     DEV_CDK_PUSH_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-dev \
         --query 'Exports[?Name==`ci-resources:CDKPushImageRole`].Value' \
@@ -450,22 +440,10 @@ set_secrets() {
         --app actions \
         --body "$INT_CDK_PULL_IMAGE_ROLE"
 
-    echo "setting INT_CDK_PULL_IMAGE_ROLE for dependabot"
-    gh secret set INT_CDK_PULL_IMAGE_ROLE \
-        --repo ${REPO} \
-        --app dependabot \
-        --body "$INT_CDK_PULL_IMAGE_ROLE"
-
     echo "setting INT_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set INT_CDK_PUSH_IMAGE_ROLE \
         --repo ${REPO} \
         --app actions \
-        --body "$INT_CDK_PUSH_IMAGE_ROLE"
-
-    echo "setting INT_CDK_PUSH_IMAGE_ROLE for dependabot"
-    gh secret set INT_CDK_PUSH_IMAGE_ROLE \
-        --repo ${REPO} \
-        --app dependabot \
         --body "$INT_CDK_PUSH_IMAGE_ROLE"
 
     # set prod secrets
@@ -493,22 +471,10 @@ set_secrets() {
         --app actions \
         --body "$PROD_CDK_PULL_IMAGE_ROLE"
 
-    echo "setting PROD_CDK_PULL_IMAGE_ROLE for dependabot"
-    gh secret set PROD_CDK_PULL_IMAGE_ROLE \
-        --repo ${REPO} \
-        --app dependabot \
-        --body "$PROD_CDK_PULL_IMAGE_ROLE"
-
     echo "setting PROD_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set PROD_CDK_PUSH_IMAGE_ROLE \
         --repo ${REPO} \
         --app actions \
-        --body "$PROD_CDK_PUSH_IMAGE_ROLE"
-
-    echo "setting PROD_CDK_PUSH_IMAGE_ROLE for dependabot"
-    gh secret set PROD_CDK_PUSH_IMAGE_ROLE \
-        --repo ${REPO} \
-        --app dependabot \
         --body "$PROD_CDK_PUSH_IMAGE_ROLE"
 
     # set qa secrets
@@ -530,17 +496,17 @@ set_secrets() {
         --app actions \
         --body "$QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
-    echo "setting QA_CDK_UTIL_ROLE for actions"
-    gh secret set QA_CDK_UTIL_ROLE \
+    echo "setting QA_CDK_PULL_IMAGE_ROLE for actions"
+    gh secret set QA_CDK_PULL_IMAGE_ROLE \
         --repo ${REPO} \
         --app actions \
-        --body "$QA_CDK_UTIL_ROLE"
+        --body "$QA_CDK_PULL_IMAGE_ROLE"
 
-    echo "setting QA_CDK_UTIL_ROLE for dependabot"
-    gh secret set QA_CDK_UTIL_ROLE \
+    echo "setting QA_CDK_PUSH_IMAGE_ROLE for actions"
+    gh secret set QA_CDK_PUSH_IMAGE_ROLE \
         --repo ${REPO} \
-        --app dependabot \
-        --body "$QA_CDK_UTIL_ROLE"
+        --app actions \
+        --body "$QA_CDK_PUSH_IMAGE_ROLE"
 
     # set ref secrets
     echo "setting REF_CLOUD_FORMATION_DEPLOY_ROLE for actions"
@@ -567,22 +533,10 @@ set_secrets() {
         --app actions \
         --body "$REF_CDK_PULL_IMAGE_ROLE"
 
-    echo "setting REF_CDK_PULL_IMAGE_ROLE for dependabot"
-    gh secret set REF_CDK_PULL_IMAGE_ROLE \
-        --repo ${REPO} \
-        --app dependabot \
-        --body "$REF_CDK_PULL_IMAGE_ROLE"
-
     echo "setting REF_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set REF_CDK_PUSH_IMAGE_ROLE \
         --repo ${REPO} \
         --app actions \
-        --body "$REF_CDK_PUSH_IMAGE_ROLE"
-
-    echo "setting REF_CDK_PUSH_IMAGE_ROLE for dependabot"
-    gh secret set REF_CDK_PUSH_IMAGE_ROLE \
-        --repo ${REPO} \
-        --app dependabot \
         --body "$REF_CDK_PUSH_IMAGE_ROLE"
 
     # set proxygen secrets
@@ -699,27 +653,37 @@ echo "DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE:     ${DEV_CLOUD_FORMATION_CHECK_VE
 echo "DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE:    ${DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE}"
 echo "DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE:  ${DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}"
 echo "DEV_ARTILLERY_RUNNER_ROLE:                  ${DEV_ARTILLERY_RUNNER_ROLE}"
+echo "DEV_CDK_PULL_IMAGE_ROLE:                    ${DEV_CDK_PULL_IMAGE_ROLE}"
+echo "DEV_CDK_PUSH_IMAGE_ROLE:                    ${DEV_CDK_PUSH_IMAGE_ROLE}"
 echo
 
 echo "REF_CLOUD_FORMATION_DEPLOY_ROLE:            ${REF_CLOUD_FORMATION_DEPLOY_ROLE}"
 echo "REF_CLOUD_FORMATION_CHECK_VERSION_ROLE:     ${REF_CLOUD_FORMATION_CHECK_VERSION_ROLE}"
 echo "REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE:  ${REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}"
 echo "REF_ARTILLERY_RUNNER_ROLE:                  ${REF_ARTILLERY_RUNNER_ROLE}"
+echo "REF_CDK_PULL_IMAGE_ROLE:                    ${REF_CDK_PULL_IMAGE_ROLE}"
+echo "REF_CDK_PUSH_IMAGE_ROLE:                    ${REF_CDK_PUSH_IMAGE_ROLE}"
 echo
 
 echo "QA_CLOUD_FORMATION_DEPLOY_ROLE:             ${QA_CLOUD_FORMATION_DEPLOY_ROLE}"
 echo "QA_CLOUD_FORMATION_CHECK_VERSION_ROLE:      ${QA_CLOUD_FORMATION_CHECK_VERSION_ROLE}"
 echo "QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE:   ${QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}"
+echo "QA_CDK_PULL_IMAGE_ROLE:                     ${QA_CDK_PULL_IMAGE_ROLE}"
+echo "QA_CDK_PUSH_IMAGE_ROLE:                     ${QA_CDK_PUSH_IMAGE_ROLE}"
 echo
 
 echo "INT_CLOUD_FORMATION_DEPLOY_ROLE:            ${INT_CLOUD_FORMATION_DEPLOY_ROLE}"
 echo "INT_CLOUD_FORMATION_CHECK_VERSION_ROLE:     ${INT_CLOUD_FORMATION_CHECK_VERSION_ROLE}"
 echo "INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE:  ${INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}"
+echo "INT_CDK_PULL_IMAGE_ROLE:                    ${INT_CDK_PULL_IMAGE_ROLE}"
+echo "INT_CDK_PUSH_IMAGE_ROLE:                    ${INT_CDK_PUSH_IMAGE_ROLE}"
 echo
 
 echo "PROD_CLOUD_FORMATION_DEPLOY_ROLE:           ${PROD_CLOUD_FORMATION_DEPLOY_ROLE}"
 echo "PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE:    ${PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE}"
 echo "PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE: ${PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}"
+echo "PROD_CDK_PULL_IMAGE_ROLE:                   ${PROD_CDK_PULL_IMAGE_ROLE}"
+echo "PROD_CDK_PUSH_IMAGE_ROLE:                   ${PROD_CDK_PUSH_IMAGE_ROLE}"
 echo
 
 echo "GITHUB  eps-administrators GROUP ID:        ${GITHUB_ADMIN_GROUP}"
