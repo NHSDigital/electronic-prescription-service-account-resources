@@ -1160,12 +1160,18 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - ecr:BatchCheckLayerAvailability
-              - ecr:BatchGetImage
               - ecr:DescribeImages
-              - ecr:GetDownloadUrlForLayer
+              - ecr:DescribeRepositories
               - ecr:ListImages
               - ecr:ListTagsForResource
+              - ecr:PutImage
+              - ecr:InitiateLayerUpload
+              - ecr:TagResource
+              - ecr:UntagResource
+              - ecr:UploadLayerPart
+              - ecr:CompleteLayerUpload
+              - ecr:BatchCheckLayerAvailability
+              - ecr:DescribeImageScanFindings
             Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-utils-build-repo"
           - Effect: Allow
             Action:
