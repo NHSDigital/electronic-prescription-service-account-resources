@@ -209,6 +209,7 @@ Resources:
     Properties:
       Roles:
         - !ImportValue ci-resources:CloudFormationExecutionRoleName
+        - !ImportValue ci-resources:CloudFormationPrepareChangesetRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -270,6 +271,7 @@ Resources:
               AWS:
                 - !ImportValue ci-resources:CloudFormationDeployRole
                 - !ImportValue ci-resources:CloudFormationExecutionRole
+                - !ImportValue ci-resources:CloudFormationPrepareChangesetRole
             Action:
               - s3:GetObject*
               - s3:PutObject*
