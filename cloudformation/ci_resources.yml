@@ -1128,7 +1128,7 @@ Resources:
               - ecr:GetDownloadUrlForLayer
               - ecr:ListImages
               - ecr:ListTagsForResource
-            Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-utils-repo"
+            Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-utils-build-repo"
           - Effect: Allow
             Action:
               - ecr:GetAuthorizationToken
@@ -1166,7 +1166,7 @@ Resources:
               - ecr:GetDownloadUrlForLayer
               - ecr:ListImages
               - ecr:ListTagsForResource
-            Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-utils-repo"
+            Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-utils-build-repo"
           - Effect: Allow
             Action:
               - ecr:GetAuthorizationToken

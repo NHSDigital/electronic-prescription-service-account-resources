@@ -621,10 +621,10 @@ Resources:
       ImageScanningConfiguration: 
         ScanOnPush: true
 
-  CDKUtilsRepo:
+  CDKUtilsBuildRepo:
     Type: AWS::ECR::Repository
     Properties: 
-      RepositoryName: cdk-utils-repo
+      RepositoryName: cdk-utils-build-repo
       ImageScanningConfiguration: 
         ScanOnPush: true    
   #endregion
@@ -1315,17 +1315,17 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
 
-  CDKUtilsRepoArn:
+  CDKUtilsBuildRepoArn:
     Description: "The Arn of the Validator repo"
-    Value: !GetAtt CDKUtilsRepo.Arn
+    Value: !GetAtt CDKUtilsBuildRepo.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsRepoArn"]]     
+      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoArn"]]     
 
-  CDKUtilsRepoUri:
+  CDKUtilsBuildRepoUri:
     Description: "The URI of the Validator ECR repo"    
-    Value: !GetAtt CDKUtilsRepo.RepositoryUri
+    Value: !GetAtt CDKUtilsBuildRepo.RepositoryUri
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsRepoUri"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoUri"]]
   #endregion
 
   #region Secrets KMS Outputs
