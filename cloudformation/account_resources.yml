@@ -209,7 +209,7 @@ Resources:
     Properties:
       Roles:
         - !ImportValue ci-resources:CloudFormationExecutionRoleName
-        - !ImportValue ci-resources:CloudFormationPrepareChangesetRole
+        - !ImportValue ci-resources:CloudFormationPrepareChangesetRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
