@@ -46,9 +46,12 @@
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:int",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod"
       ],
-      "CDKUtilClaimFilters": [
+      "CDKPullImageClaimFilters": [
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
         "repo:NHSDigital/eps-aws-dashboards:*"
+      ],
+      "CDKPushImageClaimFilters": [
+        "repo:NHSDigital/eps-cdk-utils:environment:prod"
       ],
       "EnableDeleteCNAME": "false"
     },

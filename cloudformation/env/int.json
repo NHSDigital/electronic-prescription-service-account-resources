@@ -42,9 +42,12 @@
       "ProxygenProdClaimFilters": [
         "NONE"
       ],
-      "CDKUtilClaimFilters": [
+      "CDKPullImageClaimFilters": [
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
         "repo:NHSDigital/eps-aws-dashboards:*"
+      ],
+      "CDKPushImageClaimFilters": [
+        "repo:NHSDigital/eps-cdk-utils:environment:int"
       ],
       "EnableDeleteCNAME": "false"
     },
