@@ -13,12 +13,19 @@ if [ "${status}" != '"CREATE_COMPLETE"' ]; then
   aws cloudformation wait stack-update-complete --stack-name "$STACK_NAME" 
 fi
 
+# upload file to s3
+artifact_bucket=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "account-resources:ArtifactsBucket") | .Value' | grep -o '[^:]*$')
+target_location=account-resources/$CHANGE_SET_VERSION/new-tag/$STACK_NAME/template.yml
+target_s3_location=s3://${artifact_bucket}/${target_location}
+target_uri_location=https://${artifact_bucket}.s3.amazonaws.com/${target_location}
+aws s3 cp "${TEMPLATE}" "${target_s3_location}"
+
 echo "create changeset"
 aws cloudformation create-change-set \
   --stack-name "$STACK_NAME" \
   --change-set-name "$STACK_NAME-$CHANGE_SET_VERSION" \
   --change-set-type UPDATE \
-  --template-body "file://$TEMPLATE" \
+  --template-url "$target_uri_location" \
   --capabilities "$CAPABILITIES" \
   --parameters "file://$PARAMETERS" \
   --cli-binary-format raw-in-base64-out \
