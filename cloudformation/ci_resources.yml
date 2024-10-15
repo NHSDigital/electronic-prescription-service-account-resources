@@ -668,7 +668,6 @@ Resources:
           - cognito-idp:GetSigningCertificate
           - cognito-idp:UpdateResourceServer
           - cognito-idp:DeleteResourceServer
-          - cloudfront:TagResource
           - cognito-idp:DeleteUserPoolClient
           - cognito-idp:UpdateUserPoolClient
           - cognito-idp:GetGroup
@@ -691,9 +690,7 @@ Resources:
           - cognito-idp:DescribeIdentityProvider
           - cognito-identity:SetIdentityPoolRoles
           - cognito-idp:DescribeResourceServer
-          - cloudfront:UpdateDistribution
           - cognito-idp:DescribeUserPoolClient
-          - cloudfront:UntagResource
           - cognito-identity:DescribeIdentityPool
           - cognito-idp:DeleteIdentityProvider
           - cognito-idp:ListTagsForResource
@@ -702,6 +699,71 @@ Resources:
           - cognito-idp:AssociateWebACL
           - cognito-idp:UpdateUserPool
           - cognito-identity:GetCredentialsForIdentity
+          - cloudfront:AssociateAlias
+          - cloudfront:CreateCachePolicy
+          - cloudfront:CreateCloudFrontOriginAccessIdentity
+          - cloudfront:CreateDistribution
+          - cloudfront:CreateFunction
+          - cloudfront:CreateInvalidation
+          - cloudfront:CreateKeyValueStore
+          - cloudfront:CreateMonitoringSubscription
+          - cloudfront:CreateOriginAccessControl
+          - cloudfront:CreateOriginRequestPolicy
+          - cloudfront:CreateRealtimeLogConfig
+          - cloudfront:CreateResponseHeadersPolicy
+          - cloudfront:DeleteCachePolicy
+          - cloudfront:DeleteFunction
+          - cloudfront:DeleteKeyValueStore
+          - cloudfront:DeleteMonitoringSubscription
+          - cloudfront:DeleteOriginAccessControl
+          - cloudfront:DeleteOriginRequestPolicy
+          - cloudfront:DeleteRealtimeLogConfig
+          - cloudfront:DeleteResponseHeadersPolicy
+          - cloudfront:DescribeFunction
+          - cloudfront:DescribeKeyValueStore
+          - cloudfront:GetCachePolicy
+          - cloudfront:GetCachePolicyConfig
+          - cloudfront:GetCloudFrontOriginAccessIdentity
+          - cloudfront:GetCloudFrontOriginAccessIdentityConfig
+          - cloudfront:GetDistribution
+          - cloudfront:GetDistributionConfig
+          - cloudfront:GetFunction
+          - cloudfront:GetInvalidation
+          - cloudfront:GetMonitoringSubscription
+          - cloudfront:GetOriginAccessControl
+          - cloudfront:GetOriginAccessControlConfig
+          - cloudfront:GetOriginRequestPolicy
+          - cloudfront:GetOriginRequestPolicyConfig
+          - cloudfront:GetRealtimeLogConfig
+          - cloudfront:GetResponseHeadersPolicy
+          - cloudfront:GetResponseHeadersPolicyConfig
+          - cloudfront:ListCachePolicies
+          - cloudfront:ListCloudFrontOriginAccessIdentities
+          - cloudfront:ListDistributions
+          - cloudfront:ListDistributionsByCachePolicyId
+          - cloudfront:ListDistributionsByOriginRequestPolicyId
+          - cloudfront:ListDistributionsByRealtimeLogConfig
+          - cloudfront:ListDistributionsByResponseHeadersPolicyId
+          - cloudfront:ListFunctions
+          - cloudfront:ListInvalidations
+          - cloudfront:ListKeyValueStores
+          - cloudfront:ListOriginAccessControls
+          - cloudfront:ListOriginRequestPolicies
+          - cloudfront:ListRealtimeLogsConfig
+          - cloudfront:ListResponseHeadersPolicies
+          - cloudfront:PublishFunction
+          - cloudfront:TagResource
+          - cloudfront:TestFunction
+          - cloudfront:UntagResource
+          - cloudfront:UpdateCachePolicy
+          - cloudfront:UpdateCloudFrontOriginAccessIdentity
+          - cloudfront:UpdateDistribution
+          - cloudfront:UpdateFunction
+          - cloudfront:UpdateKeyValueStore
+          - cloudfront:UpdateOriginAccessControl
+          - cloudfront:UpdateOriginRequestPolicy
+          - cloudfront:UpdateRealtimeLogConfig
+          - cloudfront:UpdateResponseHeadersPolicy
           Resource: "*"
         - Effect: Allow
           Action:
