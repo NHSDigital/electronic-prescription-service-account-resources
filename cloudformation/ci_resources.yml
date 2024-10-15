@@ -353,6 +353,7 @@ Resources:
               - lambda:Tag*
               - lambda:Untag*
               - lambda:Update*
+              - kms:GenerateDataKey*
               - kms:Create*
               - kms:Delete*
               - kms:Describe*
