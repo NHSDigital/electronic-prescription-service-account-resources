@@ -66,6 +66,11 @@ Parameters:
     Description: Threshold for the Lambda concurrency before triggering an alert.
     Default: 300
     
+  WriteCapacityAlertThreshold:
+    Type: Number
+    Description: Threshold for the average consumed write capacity units per minute to trigger an alarm
+    Default: 500
+
   EnableAlerts:
     Type: String
     AllowedValues: [ 'true', 'false' ]
@@ -662,6 +667,41 @@ Resources:
         - !GetAtt SlackAlertsSnsTopic.TopicArn
       OKActions:
         - !GetAtt SlackAlertsSnsTopic.TopicArn
+
+  EPSAccountDynamoConsumptionAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: '!Sub "${AWS::StackName}-PSU_Consumed_Write_Capacity_Units"'
+      ActionsEnabled: !Ref EnableAlerts
+      AlarmActions:
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
+      InsufficientDataActions:
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
+      OKActions:
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      Threshold: !Ref WriteCapacityAlertThreshold
+      Period: 300 # seconds
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      Metrics:
+        - Id: e1
+          Label: Consumed
+          ReturnData: true
+          Expression: m1/PERIOD(m1)
+        - Id: m1
+          ReturnData: false
+          MetricStat:
+            Metric:
+              Namespace: AWS/DynamoDB
+              MetricName: ConsumedWriteCapacityUnits
+              Dimensions:
+                - Name: TableName
+                  Value: psu-PrescriptionStatusUpdates
+            Period: 60
+            Stat: Sum
+
   #endregion
 
   ##################################################
