@@ -317,7 +317,6 @@ Workflows are in the `.github/workflows` folder
 - `pr-link.yaml`: This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
 - `pr_title_check.yml`: Checks title of pull request is valid.
 - `pull_request.yml`: Called when pull request is opened or updated. Creates change sets for stacks against dev. The changesets are named `<stack_name>-pr-<PR_NO>`.
-- `quality_checks.yml`: Runs check-licenses and linting against the repo. Called from pull_request.yml and release.yml.
 - `release_all_stacks.yml`: deploys all stacks to an environment. Called from other workflows.
 - `release.yml`: Runs on demand to create a release and deploy to all environments. Creates versioned changesets that are executed after being reviewed.
 - `sam_package_code.yml`: Packages SAM code for deployment.
