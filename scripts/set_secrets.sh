@@ -25,6 +25,8 @@ check_gh_logged_in() {
 }
 
 get_dev_roles() {
+    # Disable shellcheck, so it doesn't try and lint the queries
+    # shellcheck disable=SC2016
     DEV_CLOUD_FORMATION_DEPLOY_ROLE=$(aws cloudformation list-exports \
         --profile prescription-dev \
         --query 'Exports[?Name==`ci-resources:CloudFormationDeployRole`].Value' \
@@ -35,6 +37,7 @@ get_dev_roles() {
         exit 1
     fi
 
+    # shellcheck disable=SC2016
     DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE=$(aws cloudformation list-exports \
         --profile prescription-dev \
         --query 'Exports[?Name==`ci-resources:CloudFormationCheckVersionRole`].Value' \
@@ -45,6 +48,7 @@ get_dev_roles() {
         DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE=${DEV_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE=$(aws cloudformation list-exports \
         --profile prescription-dev \
         --query 'Exports[?Name==`ci-resources:ReleaseNotesExecuteLambdaRole`].Value' \
@@ -55,6 +59,7 @@ get_dev_roles() {
         DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE=${DEV_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=$(aws cloudformation list-exports \
         --profile prescription-dev \
         --query 'Exports[?Name==`ci-resources:CloudFormationPrepareChangesetRole`].Value' \
@@ -65,6 +70,7 @@ get_dev_roles() {
         DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${DEV_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     DEV_ARTILLERY_RUNNER_ROLE=$(aws cloudformation list-exports \
         --profile prescription-dev \
         --query 'Exports[?Name==`ci-resources:ArtilleryRunnerRole`].Value' \
@@ -75,6 +81,7 @@ get_dev_roles() {
         DEV_ARTILLERY_RUNNER_ROLE="unset"
     fi
 
+    # shellcheck disable=SC2016
     DEV_CDK_PULL_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-dev \
         --query 'Exports[?Name==`ci-resources:CDKPullImageRole`].Value' \
@@ -85,6 +92,7 @@ get_dev_roles() {
         DEV_CDK_PULL_IMAGE_ROLE="unset"
     fi
 
+    # shellcheck disable=SC2016
     DEV_CDK_PUSH_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-dev \
         --query 'Exports[?Name==`ci-resources:CDKPushImageRole`].Value' \
@@ -97,6 +105,7 @@ get_dev_roles() {
 }
 
 get_ref_roles() {
+    # shellcheck disable=SC2016
     REF_CLOUD_FORMATION_DEPLOY_ROLE=$(aws cloudformation list-exports \
         --profile prescription-ref \
         --query 'Exports[?Name==`ci-resources:CloudFormationDeployRole`].Value' \
@@ -107,6 +116,7 @@ get_ref_roles() {
         exit 1
     fi
 
+    # shellcheck disable=SC2016
     REF_CLOUD_FORMATION_CHECK_VERSION_ROLE=$(aws cloudformation list-exports \
         --profile prescription-ref \
         --query 'Exports[?Name==`ci-resources:CloudFormationCheckVersionRole`].Value' \
@@ -117,6 +127,7 @@ get_ref_roles() {
         REF_CLOUD_FORMATION_CHECK_VERSION_ROLE=${REF_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=$(aws cloudformation list-exports \
         --profile prescription-ref \
         --query 'Exports[?Name==`ci-resources:CloudFormationPrepareChangesetRole`].Value' \
@@ -127,6 +138,7 @@ get_ref_roles() {
         REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${REF_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     REF_ARTILLERY_RUNNER_ROLE=$(aws cloudformation list-exports \
         --profile prescription-ref \
         --query 'Exports[?Name==`ci-resources:ArtilleryRunnerRole`].Value' \
@@ -137,6 +149,7 @@ get_ref_roles() {
         REF_ARTILLERY_RUNNER_ROLE="unset"
     fi
 
+    # shellcheck disable=SC2016
     REF_CDK_PULL_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-ref \
         --query 'Exports[?Name==`ci-resources:CDKPullImageRole`].Value' \
@@ -147,6 +160,7 @@ get_ref_roles() {
         REF_CDK_PULL_IMAGE_ROLE="unset"
     fi
 
+    # shellcheck disable=SC2016
     REF_CDK_PUSH_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-ref \
         --query 'Exports[?Name==`ci-resources:CDKPushImageRole`].Value' \
@@ -159,6 +173,7 @@ get_ref_roles() {
 }
 
 get_qa_roles() {
+    # shellcheck disable=SC2016
     QA_CLOUD_FORMATION_DEPLOY_ROLE=$(aws cloudformation list-exports \
         --profile prescription-qa \
         --query 'Exports[?Name==`ci-resources:CloudFormationDeployRole`].Value' \
@@ -169,6 +184,7 @@ get_qa_roles() {
         exit 1
     fi
 
+    # shellcheck disable=SC2016
     QA_CLOUD_FORMATION_CHECK_VERSION_ROLE=$(aws cloudformation list-exports \
         --profile prescription-qa \
         --query 'Exports[?Name==`ci-resources:CloudFormationCheckVersionRole`].Value' \
@@ -179,6 +195,7 @@ get_qa_roles() {
         QA_CLOUD_FORMATION_CHECK_VERSION_ROLE=${QA_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=$(aws cloudformation list-exports \
         --profile prescription-qa \
         --query 'Exports[?Name==`ci-resources:CloudFormationPrepareChangesetRole`].Value' \
@@ -189,6 +206,7 @@ get_qa_roles() {
         QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${QA_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     QA_CDK_PULL_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-qa \
         --query 'Exports[?Name==`ci-resources:CDKPullImageRole`].Value' \
@@ -199,6 +217,7 @@ get_qa_roles() {
         QA_CDK_PULL_IMAGE_ROLE="unset"
     fi
 
+    # shellcheck disable=SC2016
     QA_CDK_PUSH_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-qa \
         --query 'Exports[?Name==`ci-resources:CDKPushImageRole`].Value' \
@@ -211,6 +230,7 @@ get_qa_roles() {
 }
 
 get_int_roles() {
+    # shellcheck disable=SC2016
     INT_CLOUD_FORMATION_DEPLOY_ROLE=$(aws cloudformation list-exports \
         --profile prescription-int \
         --query 'Exports[?Name==`ci-resources:CloudFormationDeployRole`].Value' \
@@ -221,6 +241,7 @@ get_int_roles() {
         exit 1
     fi
 
+    # shellcheck disable=SC2016
     INT_CLOUD_FORMATION_CHECK_VERSION_ROLE=$(aws cloudformation list-exports \
         --profile prescription-int \
         --query 'Exports[?Name==`ci-resources:CloudFormationCheckVersionRole`].Value' \
@@ -231,6 +252,7 @@ get_int_roles() {
         INT_CLOUD_FORMATION_CHECK_VERSION_ROLE=${INT_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=$(aws cloudformation list-exports \
         --profile prescription-int \
         --query 'Exports[?Name==`ci-resources:CloudFormationPrepareChangesetRole`].Value' \
@@ -241,6 +263,7 @@ get_int_roles() {
         INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${INT_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     INT_CDK_PULL_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-int \
         --query 'Exports[?Name==`ci-resources:CDKPullImageRole`].Value' \
@@ -251,6 +274,7 @@ get_int_roles() {
         INT_CDK_PULL_IMAGE_ROLE="unset"
     fi
 
+    # shellcheck disable=SC2016
     INT_CDK_PUSH_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-int \
         --query 'Exports[?Name==`ci-resources:CDKPushImageRole`].Value' \
@@ -263,6 +287,7 @@ get_int_roles() {
 }
 
 get_prod_roles() {
+    # shellcheck disable=SC2016
     PROD_CLOUD_FORMATION_DEPLOY_ROLE=$(aws cloudformation list-exports \
         --profile prescription-prod \
         --query 'Exports[?Name==`ci-resources:CloudFormationDeployRole`].Value' \
@@ -273,6 +298,7 @@ get_prod_roles() {
         exit 1
     fi
 
+    # shellcheck disable=SC2016
     PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE=$(aws cloudformation list-exports \
         --profile prescription-prod \
         --query 'Exports[?Name==`ci-resources:CloudFormationCheckVersionRole`].Value' \
@@ -283,6 +309,7 @@ get_prod_roles() {
         PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE=${PROD_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=$(aws cloudformation list-exports \
         --profile prescription-prod \
         --query 'Exports[?Name==`ci-resources:CloudFormationPrepareChangesetRole`].Value' \
@@ -293,6 +320,7 @@ get_prod_roles() {
         PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${PROD_CLOUD_FORMATION_DEPLOY_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     PROXYGEN_PTL_ROLE=$(aws cloudformation list-exports \
         --profile prescription-prod \
         --query 'Exports[?Name==`ci-resources:ProxygenPTLRole`].Value' \
@@ -303,6 +331,7 @@ get_prod_roles() {
         PROXYGEN_PTL_ROLE=${PROXYGEN_PTL_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     PROXYGEN_PROD_ROLE=$(aws cloudformation list-exports \
         --profile prescription-prod \
         --query 'Exports[?Name==`ci-resources:ProxygenProdRole`].Value' \
@@ -313,6 +342,7 @@ get_prod_roles() {
         PROXYGEN_PTL_ROLE=${PROXYGEN_PROD_ROLE}
     fi
 
+    # shellcheck disable=SC2016
     PROD_CDK_PULL_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-prod \
         --query 'Exports[?Name==`ci-resources:CDKPullImageRole`].Value' \
@@ -323,6 +353,7 @@ get_prod_roles() {
         PROD_CDK_PULL_IMAGE_ROLE="unset"
     fi
 
+    # shellcheck disable=SC2016
     PROD_CDK_PUSH_IMAGE_ROLE=$(aws cloudformation list-exports \
         --profile prescription-prod \
         --query 'Exports[?Name==`ci-resources:CDKPushImageRole`].Value' \
@@ -343,7 +374,7 @@ set_secrets() {
     echo "Setting secrets in ${REPO}"
     echo
 
-    if ! gh secret list --repo ${REPO} >/dev/null 2>&1; then
+    if ! gh secret list --repo "${REPO}" >/dev/null 2>&1; then
         echo "Can not list secrets in repo. Check permissions"
         exit 1
     fi
@@ -351,220 +382,220 @@ set_secrets() {
     # for dev secrets, we need to set for actions and dependabot so dependabot pull requests work
     echo "setting DEV_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set DEV_CLOUD_FORMATION_DEPLOY_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$DEV_CLOUD_FORMATION_DEPLOY_ROLE"
 
     echo "setting DEV_CLOUD_FORMATION_DEPLOY_ROLE for dependabot"
     gh secret set DEV_CLOUD_FORMATION_DEPLOY_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app dependabot \
         --body "$DEV_CLOUD_FORMATION_DEPLOY_ROLE"
 
     echo "setting DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE for actions"
     gh secret set DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
     echo "setting DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE for dependabot"
     gh secret set DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app dependabot \
         --body "$DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
     echo "setting DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for actions"
     gh secret set DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
     echo "setting DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for dependabot"
     gh secret set DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app dependabot \
         --body "$DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
     echo "setting DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE for actions"
     gh secret set DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE"
 
     echo "setting DEV_CDK_PULL_IMAGE_ROLE for actions"
     gh secret set DEV_CDK_PULL_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$DEV_CDK_PULL_IMAGE_ROLE"
 
     echo "setting DEV_CDK_PULL_IMAGE_ROLE for dependabot"
     gh secret set DEV_CDK_PULL_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app dependabot \
         --body "$DEV_CDK_PULL_IMAGE_ROLE"
 
     echo "setting DEV_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set DEV_CDK_PUSH_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$DEV_CDK_PUSH_IMAGE_ROLE"
 
     echo "setting DEV_CDK_PUSH_IMAGE_ROLE for dependabot"
     gh secret set DEV_CDK_PUSH_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app dependabot \
         --body "$DEV_CDK_PUSH_IMAGE_ROLE"
 
     # set int secrets
     echo "setting INT_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set INT_CLOUD_FORMATION_DEPLOY_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$INT_CLOUD_FORMATION_DEPLOY_ROLE"
 
     echo "setting INT_CLOUD_FORMATION_CHECK_VERSION_ROLE for actions"
     gh secret set INT_CLOUD_FORMATION_CHECK_VERSION_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$INT_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
     echo "setting INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for actions"
     gh secret set INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
     echo "setting INT_CDK_PULL_IMAGE_ROLE for actions"
     gh secret set INT_CDK_PULL_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$INT_CDK_PULL_IMAGE_ROLE"
 
     echo "setting INT_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set INT_CDK_PUSH_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$INT_CDK_PUSH_IMAGE_ROLE"
 
     # set prod secrets
     echo "setting PROD_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set PROD_CLOUD_FORMATION_DEPLOY_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$PROD_CLOUD_FORMATION_DEPLOY_ROLE"
 
     echo "setting PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE for actions"
     gh secret set PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
     echo "setting PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for actions"
     gh secret set PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
     echo "setting PROD_CDK_PULL_IMAGE_ROLE for actions"
     gh secret set PROD_CDK_PULL_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$PROD_CDK_PULL_IMAGE_ROLE"
 
     echo "setting PROD_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set PROD_CDK_PUSH_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$PROD_CDK_PUSH_IMAGE_ROLE"
 
     # set qa secrets
     echo "setting QA_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set QA_CLOUD_FORMATION_DEPLOY_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$QA_CLOUD_FORMATION_DEPLOY_ROLE"
 
     echo "setting QA_CLOUD_FORMATION_CHECK_VERSION_ROLE for actions"
     gh secret set QA_CLOUD_FORMATION_CHECK_VERSION_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$QA_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
     echo "setting QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for actions"
     gh secret set QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
     echo "setting QA_CDK_PULL_IMAGE_ROLE for actions"
     gh secret set QA_CDK_PULL_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$QA_CDK_PULL_IMAGE_ROLE"
 
     echo "setting QA_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set QA_CDK_PUSH_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$QA_CDK_PUSH_IMAGE_ROLE"
 
     # set ref secrets
     echo "setting REF_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set REF_CLOUD_FORMATION_DEPLOY_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$REF_CLOUD_FORMATION_DEPLOY_ROLE"
 
     echo "setting REF_CLOUD_FORMATION_CHECK_VERSION_ROLE for actions"
     gh secret set REF_CLOUD_FORMATION_CHECK_VERSION_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$REF_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
     echo "setting REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for actions"
     gh secret set REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
     echo "setting REF_CDK_PULL_IMAGE_ROLE for actions"
     gh secret set REF_CDK_PULL_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$REF_CDK_PULL_IMAGE_ROLE"
 
     echo "setting REF_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set REF_CDK_PUSH_IMAGE_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$REF_CDK_PUSH_IMAGE_ROLE"
 
     # set proxygen secrets
     echo "setting PROXYGEN_PTL_ROLE for actions"
     gh secret set PROXYGEN_PTL_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$PROXYGEN_PTL_ROLE"
 
     echo "setting PROXYGEN_PTL_ROLE for dependabot"
     gh secret set PROXYGEN_PTL_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app dependabot \
         --body "$PROXYGEN_PTL_ROLE"
 
     echo "setting PROXYGEN_PROD_ROLE for actions"
     gh secret set PROXYGEN_PROD_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$PROXYGEN_PROD_ROLE"
 
     echo "setting PROXYGEN_PROD_ROLE for dependabot"
     gh secret set PROXYGEN_PROD_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app dependabot \
         --body "$PROXYGEN_PROD_ROLE"
 
-    echo "setting envrionments"
+    echo "setting environments"
 
     # dev has no protection
     gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev"
@@ -588,7 +619,7 @@ set_secrets() {
         '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
         gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int" --input -
 
-    # rprod allows admins
+    # prod allows admins
     jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
         '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
         gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod" --input -
@@ -599,7 +630,7 @@ set_artillery_secrets() {
     echo "Setting secrets in ${REPO}"
     echo
 
-    if ! gh secret list --repo ${REPO} >/dev/null 2>&1; then
+    if ! gh secret list --repo "${REPO}" >/dev/null 2>&1; then
         echo "Can not list secrets in repo. Check permissions"
         exit 1
     fi
@@ -607,19 +638,19 @@ set_artillery_secrets() {
     # for dev secrets, we need to set for actions and dependabot so dependabot pull requests work
     echo "setting DEV_ARTILLERY_RUNNER_ROLE for actions"
     gh secret set DEV_ARTILLERY_RUNNER_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$DEV_ARTILLERY_RUNNER_ROLE"
 
     echo "setting DEV_ARTILLERY_RUNNER_ROLE for dependabot"
     gh secret set DEV_ARTILLERY_RUNNER_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app dependabot \
         --body "$DEV_ARTILLERY_RUNNER_ROLE"
 
     echo "setting REF_ARTILLERY_RUNNER_ROLE for actions"
     gh secret set REF_ARTILLERY_RUNNER_ROLE \
-        --repo ${REPO} \
+        --repo "${REPO}" \
         --app actions \
         --body "$REF_ARTILLERY_RUNNER_ROLE"
 }
@@ -689,7 +720,7 @@ echo
 echo "GITHUB  eps-administrators GROUP ID:        ${GITHUB_ADMIN_GROUP}"
 echo "GITHUB  eps-testers GROUP ID:               ${GITHUB_TESTERS_GROUP}"
 
-read -p "Press Enter to start setting secrets or ctrl+c to exit"
+read -r -p "Press Enter to start setting secrets or ctrl+c to exit"
 
 echo
 echo "************************************************"
