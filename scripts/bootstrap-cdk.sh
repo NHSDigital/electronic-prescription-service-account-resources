@@ -26,12 +26,12 @@ echo "GrantCloudFormationExecutionAccessPolicyD: ${GrantCloudFormationExecutionA
 echo "ALL_POLICIES: ${ALL_POLICIES}"
 echo "AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}"
 
-read -p "Press any key to resume or press ctrl+c to exit ..."
+read -r -p "Press any key to resume or press ctrl+c to exit ..."
 
-cdk bootstrap aws://${AWS_ACCOUNT_ID}/eu-west-2 \
+cdk bootstrap "aws://${AWS_ACCOUNT_ID}/eu-west-2" \
   --bootstrap-customer-key \
   --cloudformation-execution-policies "${ALL_POLICIES}" 
 
-cdk bootstrap aws://${AWS_ACCOUNT_ID}/us-east-1 \
+cdk bootstrap "aws://${AWS_ACCOUNT_ID}/us-east-1" \
   --bootstrap-customer-key \
   --cloudformation-execution-policies "${ALL_POLICIES}" 
