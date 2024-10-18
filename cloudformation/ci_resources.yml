@@ -778,7 +778,7 @@ Resources:
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2/*
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/*
-          - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-east-1
+          - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomCrossRegionExport*
         - Effect: Allow
           Action: s3:List*
@@ -786,7 +786,7 @@ Resources:
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2/*
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/*
-          - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-east-1
+          - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1
 
   GrantCloudFormationExecutionEc2AccessPolicy:
     Type: AWS::IAM::ManagedPolicy
