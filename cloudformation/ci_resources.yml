@@ -468,6 +468,7 @@ Resources:
               - s3:GetBucketObjectLockConfiguration
               - s3:GetBucketVersioning
               - s3:GetBucketWebsite
+              - s3:PutBucketOwnershipControls
               - firehose:CreateDeliveryStream
               - firehose:DescribeDeliveryStream
               - firehose:DeleteDeliveryStream
@@ -783,6 +784,8 @@ Resources:
           Resource:
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2/*
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2
+          - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/*
+          - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-east-1
 
   GrantCloudFormationExecutionEc2AccessPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -1419,3 +1422,8 @@ Outputs:
     Value: !Ref GrantCloudFormationExecutionAccessPolicyD
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyD"]]
+  AllowCloudFormationSecretsAccessManagedPolicy:
+    Description: ARN of the IAM policy AllowCloudFormationSecretsAccessManagedPolicy
+    Value: !Ref AllowCloudFormationSecretsAccessManagedPolicy
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AllowCloudFormationSecretsAccessManagedPolicy"]]
