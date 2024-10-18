@@ -6,6 +6,7 @@ GrantCloudFormationExecutionAccessPolicyA=$(aws cloudformation list-exports --ou
 GrantCloudFormationExecutionAccessPolicyB=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyB") | .Value')
 GrantCloudFormationExecutionAccessPolicyC=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyC") | .Value')
 GrantCloudFormationExecutionAccessPolicyD=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:GrantCloudFormationExecutionAccessPolicyD") | .Value')
+AllowCloudFormationSecretsAccessManagedPolicy=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:AllowCloudFormationSecretsAccessManagedPolicy") | .Value')
 
 # get the current aws account id
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -15,6 +16,7 @@ ALL_POLICIES="${ALL_POLICIES},${GrantCloudFormationExecutionAccessPolicyA}"
 ALL_POLICIES="${ALL_POLICIES},${GrantCloudFormationExecutionAccessPolicyB}"
 ALL_POLICIES="${ALL_POLICIES},${GrantCloudFormationExecutionAccessPolicyC}"
 ALL_POLICIES="${ALL_POLICIES},${GrantCloudFormationExecutionAccessPolicyD}"
+ALL_POLICIES="${ALL_POLICIES},${AllowCloudFormationSecretsAccessManagedPolicy}"
 
 
 echo "Going to run cdk bootstrap with these parameters"
@@ -23,6 +25,7 @@ echo "GrantCloudFormationExecutionAccessPolicyA: ${GrantCloudFormationExecutionA
 echo "GrantCloudFormationExecutionAccessPolicyB: ${GrantCloudFormationExecutionAccessPolicyB}"
 echo "GrantCloudFormationExecutionAccessPolicyC: ${GrantCloudFormationExecutionAccessPolicyC}"
 echo "GrantCloudFormationExecutionAccessPolicyD: ${GrantCloudFormationExecutionAccessPolicyD}"
+echo "AllowCloudFormationSecretsAccessManagedPolicy: ${AllowCloudFormationSecretsAccessManagedPolicy}"
 echo "ALL_POLICIES: ${ALL_POLICIES}"
 echo "AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}"
 
