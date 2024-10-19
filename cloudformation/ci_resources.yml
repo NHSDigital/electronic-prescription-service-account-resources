@@ -767,6 +767,7 @@ Resources:
           - cloudfront:UpdateOriginRequestPolicy
           - cloudfront:UpdateRealtimeLogConfig
           - cloudfront:UpdateResponseHeadersPolicy
+          - cloudfront:ListTagsForResource
           Resource: "*"
         - Effect: Allow
           Action:
