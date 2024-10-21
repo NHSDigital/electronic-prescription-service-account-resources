@@ -80,9 +80,6 @@ readonly CERT_PREFIX_CI
 CERT_PREFIX_SANDBOX="sandbox"
 readonly CERT_PREFIX_SANDBOX
 
-CLIENT_CERT_SUBJECT_PREFIX="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=${app_name_lowercase} private CA/CN=client-cert-"
-readonly CLIENT_CERT_SUBJECT_PREFIX
-
 SECRET_OUTPUT_PREFIX="${secret_output_prefix}"
 readonly SECRET_OUTPUT_PREFIX
 
@@ -91,6 +88,11 @@ readonly BUCKET_PREFIX
 
 FILE_PREFIX="${app_name_lowercase// /_}"
 readonly FILE_PREFIX
+
+CLIENT_CERT_SUBJECT_PREFIX="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=${app_name_lowercase} private CA/CN=client-cert-"
+readonly CLIENT_CERT_SUBJECT_PREFIX
+
+# v3 extensions (unused)
 
 V3_EXT="$BASE_DIR/v3.ext"
 readonly V3_EXT
