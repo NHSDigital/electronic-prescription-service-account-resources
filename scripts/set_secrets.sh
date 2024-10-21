@@ -328,7 +328,7 @@ get_prod_roles() {
 
     if [ -z "${PROXYGEN_PTL_ROLE}" ]; then
         echo "Can not get PROXYGEN_PTL_ROLE. Setting to PROXYGEN_PTL_ROLE"
-        PROXYGEN_PTL_ROLE=${PROXYGEN_PTL_ROLE}
+        PROXYGEN_PTL_ROLE="unset"
     fi
 
     # shellcheck disable=SC2016
@@ -339,7 +339,7 @@ get_prod_roles() {
 
     if [ -z "${PROXYGEN_PROD_ROLE}" ]; then
         echo "Can not get PROXYGEN_PROD_ROLE. Setting to PROXYGEN_PROD_ROLE"
-        PROXYGEN_PTL_ROLE=${PROXYGEN_PROD_ROLE}
+        PROXYGEN_PROD_ROLE="unset"
     fi
 
     # shellcheck disable=SC2016
