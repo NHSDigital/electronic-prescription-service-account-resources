@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-while getopts e:d:a flag
+while getopts e:d:a: flag
 do
   case "$flag" in
     e) environment=${OPTARG};;
     d) dry_run_param=${OPTARG};;
     a) app_name=${OPTARG};;
-    *) echo "usage: $0 [-e] environment [-d] dry run" >&2
+    *) echo "usage: $0 [-e] environment [-d] dry run [-a] application name" >&2
        exit 1 ;;
   esac
 done
