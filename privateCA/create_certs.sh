@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-while getopts e:d: flag
+while getopts e:d:a flag
 do
   case "$flag" in
     e) environment=${OPTARG};;
     d) dry_run_param=${OPTARG};;
+    a) app_name=${OPTARG};;
     *) echo "usage: $0 [-e] environment [-d] dry run" >&2
        exit 1 ;;
   esac
@@ -20,6 +21,17 @@ if [ "$environment" = "" ]; then
     echo "You must pass in an environment name using the e flag"
     exit 1
 fi
+
+if [ "$app_name" = "" ]; then
+    echo "You must pass in the application name using the a flag"
+    exit 1
+fi
+
+# Convert the app_name to all lowercase
+app_name_lowercase=$(echo "$app_name" | tr '[:upper:]' '[:lower:]')
+
+# Capitalise the first letter of each word and remove spaces
+secret_output_prefix=$(echo "$app_name_lowercase" | sed -e 's/\([[:alpha:]]\)\([[:alpha:]]*\)/\u\1\L\2/g' -e 's/ //g')
 
 BASE_DIR=$(pwd)
 readonly BASE_DIR
@@ -56,7 +68,7 @@ readonly CERT_VALIDITY_DAYS
 CA_NAME="ca"
 readonly CA_NAME
 
-CA_CERTIFICATE_SUBJECT="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=prescriptions for patients private CA/CN=prescriptions for patients Private CA $(date +%Y%m%d_%H%M%S)"
+CA_CERTIFICATE_SUBJECT="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=${app_name_lowercase} private CA/CN=${app_name_lowercase} Private CA $(date +%Y%m%d_%H%M%S)"
 readonly CA_CERTIFICATE_SUBJECT
 
 CERT_PREFIX="${environment}-"
@@ -68,8 +80,20 @@ readonly CERT_PREFIX_CI
 CERT_PREFIX_SANDBOX="sandbox"
 readonly CERT_PREFIX_SANDBOX
 
-CLIENT_CERT_SUBJECT_PREFIX="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=prescriptions for patients private CA/CN=client-cert-"
+CLIENT_CERT_SUBJECT_PREFIX="${secret_output_prefix}"
 readonly CLIENT_CERT_SUBJECT_PREFIX
+
+SECRET_OUTPUT_PREFIX="${secret_output_prefix}"
+readonly SECRET_OUTPUT_PREFIX
+
+BUCKET_PREFIX="${app_name_lowercase// /-}"
+readonly BUCKET_PREFIX
+
+FILE_PREFIX="${app_name_lowercase// /_}"
+readonly FILE_PREFIX
+
+V3_EXT="$BASE_DIR/v3.ext"
+readonly V3_EXT
 
 function generate_crl {
     openssl ca -config openssl-ca.conf -gencrl -out "$CRL_DIR/$CA_NAME.crl"
@@ -101,18 +125,20 @@ function create_csr {
     local -r key_name="$1"
     local -r client_description="$2"
 
-    if [ "$key_name" = "apigee_client_cert" ]; then
-        echo "@ Creating CSR for \"$key_name\"..."
+    if [ "$key_name" = "apigee_client_cert" ]
+    then
+        echo "@ Creating CSR for '$key_name'..."
         openssl req -config "$BASE_DIR/$SMARTCARD_CERT_SIGNING_CONFIG" -new \
-            -key "$KEYS_DIR/$key_name.key" \
-            -out "$CERTS_DIR/$key_name.csr" -outform PEM \
-            -subj "${CLIENT_CERT_SUBJECT_PREFIX}${CERT_PREFIX}${CERT_PREFIX_CI}${client_description}"
-    elif [ "$key_name" = "apigee_client_cert_sandbox" ]; then
-        echo "@ Creating CSR for \"$key_name\"..."
+        -key "$KEYS_DIR/$key_name.key" \
+        -out "$CERTS_DIR/$key_name.csr" -outform PEM \
+        -subj "${CLIENT_CERT_SUBJECT_PREFIX}${CERT_PREFIX}${CERT_PREFIX_CI}${client_description}"
+    elif [ "$key_name" = "apigee_client_cert_sandbox" ]
+    then
+        echo "@ Creating CSR for '$key_name'..."
         openssl req -config "$BASE_DIR/$SMARTCARD_CERT_SIGNING_CONFIG" -new \
-            -key "$KEYS_DIR/$key_name.key" \
-            -out "$CERTS_DIR/$key_name.csr" -outform PEM \
-            -subj "${CLIENT_CERT_SUBJECT_PREFIX}${CERT_PREFIX}${CERT_PREFIX_SANDBOX}${client_description}"
+        -key "$KEYS_DIR/$key_name.key" \
+        -out "$CERTS_DIR/$key_name.csr" -outform PEM \
+        -subj "${CLIENT_CERT_SUBJECT_PREFIX}${CERT_PREFIX}${CERT_PREFIX_SANDBOX}${client_description}"
     fi
 }
 
@@ -146,6 +172,9 @@ function generate_client_cert {
 echo "Going to create mutual TLS certs with these details"
 echo "AWS_PROFILE: ${AWS_PROFILE}"
 echo "CERT_PREFIX: ${CERT_PREFIX}"
+echo "SECRET_OUTPUT_PREFIX: ${SECRET_OUTPUT_PREFIX}"
+echo "BUCKET_PREFIX: ${BUCKET_PREFIX}"
+echo "FILE_PREFIX: ${FILE_PREFIX}"
 echo "DRY_RUN: ${DRY_RUN}"
 read -r -p "Press any key to resume or press ctrl+c to exit ..."
 
@@ -171,27 +200,27 @@ generate_client_cert "apigee_client_cert_sandbox"
 # shellcheck disable=SC2016
 CA_KEY_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`CAKeySecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'CAKeySecret`].OutputValue' --output text)
 # shellcheck disable=SC2016
 CA_CERT_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`CACertSecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'CACertSecret`].OutputValue' --output text)
 # shellcheck disable=SC2016
 CLIENT_KEY_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`ClientKeySecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'ClientKeySecret`].OutputValue' --output text)
 # shellcheck disable=SC2016
 CLIENT_CERT_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`ClientCertSecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'ClientCertSecret`].OutputValue' --output text)
 # shellcheck disable=SC2016
 CLIENT_SANDBOX_KEY_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`ClientSandboxKeySecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'ClientSandboxKeySecret`].OutputValue' --output text)
 # shellcheck disable=SC2016
 CLIENT_SANDBOX_CERT_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
-    --query 'Stacks[0].Outputs[?OutputKey==`ClientSandboxCertSecret`].OutputValue' --output text)
+    --query 'Stacks[0].Outputs[?OutputKey==`'"${SECRET_OUTPUT_PREFIX}"'ClientSandboxCertSecret`].OutputValue' --output text)
 # shellcheck disable=SC2016
 TRUSTSTORE_BUCKET_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
@@ -232,24 +261,22 @@ aws secretsmanager get-secret-value \
 
 echo "Creating new combined truststore files for upload"
 
-NOT_EXIST=false
-aws s3api head-object --bucket "${TRUSTSTORE_BUCKET_NAME}" --key truststore.pem || NOT_EXIST=true
-if [ "$NOT_EXIST" = true ]; then
-  echo "" > "${BACKUP_CERTS_DIR}/s3_truststore.pem"
+aws s3api head-object --bucket "${TRUSTSTORE_BUCKET_NAME}" --key "${BUCKET_PREFIX}"-truststore.pem || NOT_EXIST=true
+if [ "$NOT_EXIST" ]; then
+  echo "" > "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem"
 else
-  aws s3 cp "s3://${TRUSTSTORE_BUCKET_NAME}/truststore.pem" "${BACKUP_CERTS_DIR}/s3_truststore.pem"
+    aws s3 cp "s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-truststore.pem ${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem"
 fi
 
-NOT_EXIST=false
-aws s3api head-object --bucket "${TRUSTSTORE_BUCKET_NAME}" --key sandbox-truststore.pem || NOT_EXIST=true
-if [ "$NOT_EXIST" = true ]; then
-  echo "" > "${BACKUP_CERTS_DIR}/s3_sandbox_truststore.pem"
+aws s3api head-object --bucket "${TRUSTSTORE_BUCKET_NAME}" --key "${BUCKET_PREFIX}"-sandbox-truststore.pem || NOT_EXIST=true
+if [ "$NOT_EXIST" ]; then
+  echo "" > "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_sandbox_truststore.pem"
 else
-  aws s3 cp "s3://${TRUSTSTORE_BUCKET_NAME}/sandbox-truststore.pem" "${BACKUP_CERTS_DIR}/s3_sandbox_truststore.pem"
+    aws s3 cp "s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-sandbox-truststore.pem ${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_sandbox_truststore.pem"
 fi
 
-cat "${BACKUP_CERTS_DIR}/s3_truststore.pem" "${CERTS_DIR}/${CA_NAME}.pem" > "${CERTS_DIR}/truststore.pem"
-cat "${BACKUP_CERTS_DIR}/s3_sandbox_truststore.pem" "${CERTS_DIR}/${CA_NAME}.pem" > "${CERTS_DIR}/sandbox_truststore.pem"
+cat "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem ${CERTS_DIR}/${CA_NAME}.pem" > "${CERTS_DIR}/${FILE_PREFIX}_truststore.pem"
+cat "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_sandbox_truststore.pem" "${CERTS_DIR}/${CA_NAME}.pem" > "${CERTS_DIR}/${FILE_PREFIX}_sandbox_truststore.pem"
 
 if [ "$DRY_RUN" = "false" ]; then
     echo "Setting new keys in secrets manager"
@@ -278,8 +305,8 @@ if [ "$DRY_RUN" = "false" ]; then
     echo "Going to create new truststore files on S3"
     read -r -p "Press any key to resume or press ctrl+c to exit ..."
 
-    aws s3 cp "${CERTS_DIR}/truststore.pem" "s3://${TRUSTSTORE_BUCKET_NAME}/truststore.pem"
-    aws s3 cp "${CERTS_DIR}/sandbox_truststore.pem" "s3://${TRUSTSTORE_BUCKET_NAME}/sandbox-truststore.pem"
+    aws s3 cp "${CERTS_DIR}/${FILE_PREFIX}_truststore.pem" "s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-truststore.pem"
+    aws s3 cp "${CERTS_DIR}/${FILE_PREFIX}_sandbox_truststore.pem" "s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-sandbox-truststore.pem"
 
 else
     echo "Not setting new secrets or uploading truststore files as dry run set to true"
