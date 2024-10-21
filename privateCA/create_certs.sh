@@ -110,7 +110,7 @@ function convert_cert_to_der {
 
 function generate_key {
     local -r key_name="$1"
-    echo "@ Generating key \"$key_name\"..."
+    echo "@ Generating key '$key_name'..."
     openssl genrsa -out "$KEYS_DIR/$key_name.key" 2048
 }
 
