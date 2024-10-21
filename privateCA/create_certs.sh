@@ -94,6 +94,7 @@ readonly FILE_PREFIX
 
 V3_EXT="$BASE_DIR/v3.ext"
 readonly V3_EXT
+export V3_EXT
 
 function generate_crl {
     openssl ca -config openssl-ca.conf -gencrl -out "$CRL_DIR/$CA_NAME.crl"
