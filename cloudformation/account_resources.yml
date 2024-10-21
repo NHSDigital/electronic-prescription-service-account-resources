@@ -465,6 +465,19 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
+          # add this in once cpt-ui gets released to all environments
+          # - Effect: Allow
+          #   Principal:
+          #     Service: logging.s3.amazonaws.com
+          #   Action:
+          #     - s3:PutObject*
+          #   Resource:
+          #     - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/static-content/*"]]
+          #   Condition:
+          #     StringEquals:
+          #       aws:SourceAccount: !Ref "AWS::AccountId"
+          #     ArnLike:
+          #       aws:SourceArn: !ImportValue "cpt-ui-shared-resources:StaticContentBucket:Arn"
   #endregion
 
   #region Splunk Delivery Stream Backup Bucket
