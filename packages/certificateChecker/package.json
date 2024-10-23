@@ -7,7 +7,7 @@
     "license": "MIT",
     "dependencies": {
         "@aws-sdk/client-cloudwatch-logs": "^3.677.0",
-        "@aws-sdk/client-secrets-manager": "^3.675.0",
+        "@aws-sdk/client-secrets-manager": "^3.677.0",
         "@middy/core": "^5.5.1",
         "@middy/input-output-logger": "^5.5.1"
     },
