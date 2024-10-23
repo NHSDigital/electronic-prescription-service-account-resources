@@ -604,6 +604,8 @@ Resources:
               - ssm:DescribeParameters
               - ssm:ListTagsForResource
               - ssm:RemoveTagsFromResource
+              - cloudformation:CreateStack
+              - cloudformation:DescribeStacks
               - cloudwatch:DescribeAlarms
               - cloudwatch:DescribeAlarmsForMetric
               - cloudwatch:EnableAlarmActions
