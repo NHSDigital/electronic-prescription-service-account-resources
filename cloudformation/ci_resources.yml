@@ -314,7 +314,6 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - cloudformation:CreateChangeSet
               - logs:AssociateKmsKey
               - logs:DisassociateKmsKey
               - logs:CreateLogGroup
@@ -606,6 +605,11 @@ Resources:
               - ssm:DescribeParameters
               - ssm:ListTagsForResource
               - ssm:RemoveTagsFromResource
+              - cloudformation:CreateStack
+              - cloudformation:DescribeStacks
+              - cloudformation:CreateChangeSet
+              - cloudformation:UpdateStack
+              - cloudformation:DeleteStack
               - cloudwatch:DescribeAlarms
               - cloudwatch:DescribeAlarmsForMetric
               - cloudwatch:EnableAlarmActions
