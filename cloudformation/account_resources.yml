@@ -480,6 +480,68 @@ Resources:
           #       aws:SourceArn: !ImportValue "cpt-ui-shared-resources:StaticContentBucket:Arn"
   #endregion
 
+  #region Cloudfront Logs Bucket
+  CloudfrontLoggingBucket:
+    Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_LOGGING_ENABLED
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+
+  CloudfrontLoggingBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
+    Properties:
+      Bucket: !Ref CloudfrontLoggingBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action:
+              - "s3:*"
+            Resource:
+              - !Join ["", [!GetAtt CloudfrontLoggingBucket.Arn, "/*"]]
+              - !GetAtt CloudfrontLoggingBucket.Arn
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action:
+              - s3:PutObject*
+            Resource:
+              - !Join [
+                  "",
+                  [
+                    !GetAtt CloudfrontLoggingBucket.Arn,
+                    "/*",
+                  ],
+                ]
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+              ArnLike:
+                aws:SourceArn:  !Sub arn:aws:cloudfront:${AWS::AccountId}:distribution:*
+  #end region
+
   #region Splunk Delivery Stream Backup Bucket
   SplunkDeliveryStreamBackupKMSKey:
     Type: AWS::KMS::Key
@@ -1265,6 +1327,14 @@ Outputs:
     Value: !GetAtt AuditLoggingBucket.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AuditLoggingBucket"]]
+  #endregion
+
+  #region Cloudfront Logging Bucket Outputs
+  CloudfrontLoggingBucket:
+    Description: ARN of the cloudfront logging bucket
+    Value: !GetAtt CloudfrontLoggingBucket.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CloudfrontLoggingBucket"]]
   #endregion
 
   #region Splunk Delivery Stream Backup Bucket Outputs
