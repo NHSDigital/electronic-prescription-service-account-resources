@@ -489,10 +489,10 @@ Resources:
         - S3_BUCKET_REPLICATION_ENABLED    
         - S3_BUCKET_LOGGING_ENABLED
         - S3_BUCKET_DEFAULT_LOCK_ENABLED
-      cfn-lint:
-        config:
-          ignore_checks:
-            - W3045
+      # cfn-lint:
+      #   config:
+      #     ignore_checks:
+      #       - W3045
     Properties:
       VersioningConfiguration:
         Status: Enabled
@@ -507,8 +507,7 @@ Resources:
               SSEAlgorithm: "AES256"
       OwnershipControls:
         Rules:
-          - ObjectOwnership: ObjectWriter
-      AccessControl: LogDeliveryWrite 
+          - ObjectOwnership: BucketOwnerPreferred
 
 
   CloudfrontLoggingBucketPolicy:
