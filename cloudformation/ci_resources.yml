@@ -161,6 +161,12 @@ Resources:
               - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
               - !ImportValue account-resources:ClinicalTrackerProxygenPrivateKey
               - !ImportValue account-resources:ClinicalTrackerProxygenPublicKey
+              - !ImportValue account-resources:FhirFacadeClientKeySecret
+              - !ImportValue account-resources:FhirFacadeClientSandboxKeySecret
+              - !ImportValue account-resources:FhirFacadeCACertSecret
+              - !ImportValue account-resources:FhirFacadeCAKeySecret
+              - !ImportValue account-resources:FhirFacadeClientCertSecret
+              - !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
           - Effect: Allow
             Action:
               - kms:Decrypt
