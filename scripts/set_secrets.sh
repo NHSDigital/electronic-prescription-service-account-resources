@@ -337,6 +337,7 @@ get_prod_roles() {
 get_gh_details() {
     GITHUB_ADMIN_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/eps-administrators --jq ".id")
     GITHUB_TESTERS_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/eps-testers --jq ".id")
+    GITHUB_DEV_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/EPS --jq ".id")
 }
 set_secrets() {
     REPO=$1
@@ -572,23 +573,25 @@ set_secrets() {
     # dev-pr has no protection
     gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev-pr"
 
-    # qa allows admins and testers
+    # qa allows admins and devs
     jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-            --argjson GITHUB_TESTERS_GROUP "${GITHUB_TESTERS_GROUP}" \
-        '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_TESTERS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+        '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
         gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/qa" --input -
 
-    # ref allows admins
+    # ref allows admins and devs
     jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-        '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+        '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
         gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/ref" --input -
 
-    # int allows admins
+    # int allows admins and devs
     jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-        '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+        '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
         gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int" --input -
 
-    # rprod allows admins
+    # prod only allows admins
     jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
         '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
         gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod" --input -
@@ -688,6 +691,7 @@ echo
 
 echo "GITHUB  eps-administrators GROUP ID:        ${GITHUB_ADMIN_GROUP}"
 echo "GITHUB  eps-testers GROUP ID:               ${GITHUB_TESTERS_GROUP}"
+echo "GITHUB  EPS GROUP ID:                       ${GITHUB_DEV_GROUP}"
 
 read -p "Press Enter to start setting secrets or ctrl+c to exit"
 
