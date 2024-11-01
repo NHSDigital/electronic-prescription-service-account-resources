@@ -218,6 +218,23 @@ Resources:
               - route53:ListResourceRecordSets
             Resource: "*"
 
+  UpdateCloudfrontKVS:
+    Condition: ShouldCreateDeleteCNAMEpermissions
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationDeployRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudfront-keyvaluestore:DescribeKeyValueStore
+              - cloudfront-keyvaluestore:ListKeys
+              - cloudfront-keyvaluestore:PutKey
+              - cloudfront-keyvaluestore:UpdateKeys
+            Resource: "*"
+  
   ##################################################
   # Cloudformation Execution Role
   ##################################################
@@ -780,10 +797,6 @@ Resources:
           - cloudfront:UpdateResponseHeadersPolicy
           - cloudfront:ListTagsForResource
           - cloudfront:DeleteDistribution
-          - cloudfront-keyvaluestore:DescribeKeyValueStore
-          - cloudfront-keyvaluestore:ListKeys
-          - cloudfront-keyvaluestore:PutKey
-          - cloudfront-keyvaluestore:UpdateKeys
           Resource: "*"
         - Effect: Allow
           Action:
