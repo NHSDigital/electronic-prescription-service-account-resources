@@ -337,6 +337,7 @@ get_prod_roles() {
 get_gh_details() {
     GITHUB_ADMIN_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/eps-administrators --jq ".id")
     GITHUB_TESTERS_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/eps-testers --jq ".id")
+    GITHUB_DEV_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/EPS --jq ".id")
 }
 set_secrets() {
     REPO=$1
@@ -348,67 +349,80 @@ set_secrets() {
         exit 1
     fi
 
+    # there is a sleep between each command to avoid rate limiting
+
     # for dev secrets, we need to set for actions and dependabot so dependabot pull requests work
+    sleep 1
     echo "setting DEV_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set DEV_CLOUD_FORMATION_DEPLOY_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$DEV_CLOUD_FORMATION_DEPLOY_ROLE"
 
+    sleep 1
     echo "setting DEV_CLOUD_FORMATION_DEPLOY_ROLE for dependabot"
     gh secret set DEV_CLOUD_FORMATION_DEPLOY_ROLE \
         --repo ${REPO} \
         --app dependabot \
         --body "$DEV_CLOUD_FORMATION_DEPLOY_ROLE"
 
+    sleep 1
     echo "setting DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE for actions"
     gh secret set DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
+    sleep 1
     echo "setting DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE for dependabot"
     gh secret set DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE \
         --repo ${REPO} \
         --app dependabot \
         --body "$DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
+    sleep 1
     echo "setting DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for actions"
     gh secret set DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
+    sleep 1
     echo "setting DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for dependabot"
     gh secret set DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
         --repo ${REPO} \
         --app dependabot \
         --body "$DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
+    sleep 1
     echo "setting DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE for actions"
     gh secret set DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE"
 
+    sleep 1
     echo "setting DEV_CDK_PULL_IMAGE_ROLE for actions"
     gh secret set DEV_CDK_PULL_IMAGE_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$DEV_CDK_PULL_IMAGE_ROLE"
 
+    sleep 1
     echo "setting DEV_CDK_PULL_IMAGE_ROLE for dependabot"
     gh secret set DEV_CDK_PULL_IMAGE_ROLE \
         --repo ${REPO} \
         --app dependabot \
         --body "$DEV_CDK_PULL_IMAGE_ROLE"
 
+    sleep 1
     echo "setting DEV_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set DEV_CDK_PUSH_IMAGE_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$DEV_CDK_PUSH_IMAGE_ROLE"
 
+    sleep 1
     echo "setting DEV_CDK_PUSH_IMAGE_ROLE for dependabot"
     gh secret set DEV_CDK_PUSH_IMAGE_ROLE \
         --repo ${REPO} \
@@ -416,30 +430,35 @@ set_secrets() {
         --body "$DEV_CDK_PUSH_IMAGE_ROLE"
 
     # set int secrets
+    sleep 1
     echo "setting INT_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set INT_CLOUD_FORMATION_DEPLOY_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$INT_CLOUD_FORMATION_DEPLOY_ROLE"
 
+    sleep 1
     echo "setting INT_CLOUD_FORMATION_CHECK_VERSION_ROLE for actions"
     gh secret set INT_CLOUD_FORMATION_CHECK_VERSION_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$INT_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
+    sleep 1
     echo "setting INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for actions"
     gh secret set INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
+    sleep 1
     echo "setting INT_CDK_PULL_IMAGE_ROLE for actions"
     gh secret set INT_CDK_PULL_IMAGE_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$INT_CDK_PULL_IMAGE_ROLE"
 
+    sleep 1
     echo "setting INT_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set INT_CDK_PUSH_IMAGE_ROLE \
         --repo ${REPO} \
@@ -447,30 +466,35 @@ set_secrets() {
         --body "$INT_CDK_PUSH_IMAGE_ROLE"
 
     # set prod secrets
+    sleep 1
     echo "setting PROD_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set PROD_CLOUD_FORMATION_DEPLOY_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$PROD_CLOUD_FORMATION_DEPLOY_ROLE"
 
+    sleep 1
     echo "setting PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE for actions"
     gh secret set PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
+    sleep 1
     echo "setting PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for actions"
     gh secret set PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
+    sleep 1
     echo "setting PROD_CDK_PULL_IMAGE_ROLE for actions"
     gh secret set PROD_CDK_PULL_IMAGE_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$PROD_CDK_PULL_IMAGE_ROLE"
 
+    sleep 1
     echo "setting PROD_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set PROD_CDK_PUSH_IMAGE_ROLE \
         --repo ${REPO} \
@@ -478,30 +502,35 @@ set_secrets() {
         --body "$PROD_CDK_PUSH_IMAGE_ROLE"
 
     # set qa secrets
+    sleep 1
     echo "setting QA_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set QA_CLOUD_FORMATION_DEPLOY_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$QA_CLOUD_FORMATION_DEPLOY_ROLE"
 
+    sleep 1
     echo "setting QA_CLOUD_FORMATION_CHECK_VERSION_ROLE for actions"
     gh secret set QA_CLOUD_FORMATION_CHECK_VERSION_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$QA_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
+    sleep 1
     echo "setting QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for actions"
     gh secret set QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
+    sleep 1
     echo "setting QA_CDK_PULL_IMAGE_ROLE for actions"
     gh secret set QA_CDK_PULL_IMAGE_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$QA_CDK_PULL_IMAGE_ROLE"
 
+    sleep 1
     echo "setting QA_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set QA_CDK_PUSH_IMAGE_ROLE \
         --repo ${REPO} \
@@ -509,30 +538,35 @@ set_secrets() {
         --body "$QA_CDK_PUSH_IMAGE_ROLE"
 
     # set ref secrets
+    sleep 1
     echo "setting REF_CLOUD_FORMATION_DEPLOY_ROLE for actions"
     gh secret set REF_CLOUD_FORMATION_DEPLOY_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$REF_CLOUD_FORMATION_DEPLOY_ROLE"
 
+    sleep 1
     echo "setting REF_CLOUD_FORMATION_CHECK_VERSION_ROLE for actions"
     gh secret set REF_CLOUD_FORMATION_CHECK_VERSION_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$REF_CLOUD_FORMATION_CHECK_VERSION_ROLE"
 
+    sleep 1
     echo "setting REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE for actions"
     gh secret set REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE"
 
+    sleep 1
     echo "setting REF_CDK_PULL_IMAGE_ROLE for actions"
     gh secret set REF_CDK_PULL_IMAGE_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$REF_CDK_PULL_IMAGE_ROLE"
 
+    sleep 1
     echo "setting REF_CDK_PUSH_IMAGE_ROLE for actions"
     gh secret set REF_CDK_PUSH_IMAGE_ROLE \
         --repo ${REPO} \
@@ -540,24 +574,28 @@ set_secrets() {
         --body "$REF_CDK_PUSH_IMAGE_ROLE"
 
     # set proxygen secrets
+    sleep 1
     echo "setting PROXYGEN_PTL_ROLE for actions"
     gh secret set PROXYGEN_PTL_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$PROXYGEN_PTL_ROLE"
 
+    sleep 1
     echo "setting PROXYGEN_PTL_ROLE for dependabot"
     gh secret set PROXYGEN_PTL_ROLE \
         --repo ${REPO} \
         --app dependabot \
         --body "$PROXYGEN_PTL_ROLE"
 
+    sleep 1
     echo "setting PROXYGEN_PROD_ROLE for actions"
     gh secret set PROXYGEN_PROD_ROLE \
         --repo ${REPO} \
         --app actions \
         --body "$PROXYGEN_PROD_ROLE"
 
+    sleep 1
     echo "setting PROXYGEN_PROD_ROLE for dependabot"
     gh secret set PROXYGEN_PROD_ROLE \
         --repo ${REPO} \
@@ -566,32 +604,117 @@ set_secrets() {
 
     echo "setting envrionments"
 
-    # dev has no protection
-    gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev"
+    if [ "$REPO" = "NHSDigital/electronic-prescription-service-account-resources" ]; then
+        # dev has no protection
+        sleep 1
+        gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev-ci"
+        sleep 1
+        gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev-account"
+        sleep 1
+        gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev-lambda"
 
-    # dev-pr has no protection
-    gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev-pr"
+        # qa allows admins and devs
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/qa-ci" --input -
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/qa-account" --input -
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/qa-lambda" --input -
 
-    # qa allows admins and testers
-    jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-            --argjson GITHUB_TESTERS_GROUP "${GITHUB_TESTERS_GROUP}" \
-        '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_TESTERS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
-        gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/qa" --input -
+        # ref allows admins and devs
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/ref-ci" --input -
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/ref-account" --input -
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/ref-lambda" --input -
 
-    # ref allows admins
-    jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-        '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
-        gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/ref" --input -
+        # int allows admins and devs
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int-ci" --input -
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int-account" --input -
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int-lambda" --input -
 
-    # int allows admins
-    jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-        '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
-        gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int" --input -
+        # prod only allows admins
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod-ci" --input -
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod-account" --input -
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod-lamdbda" --input -
 
-    # rprod allows admins
-    jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-        '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
-        gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod" --input -
+    else
+        # dev has no protection
+        sleep 1
+        gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev"
+
+        # dev-pr has no protection
+        sleep 1
+        gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev-pr"
+
+        # qa allows admins and devs
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/qa" --input -
+
+        # ref allows admins and devs
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/ref" --input -
+
+        # int allows admins and devs
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int" --input -
+
+        # prod only allows admins
+        sleep 1
+        jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+            gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod" --input -
+
+    fi
 }
 
 set_artillery_secrets() {
@@ -688,6 +811,7 @@ echo
 
 echo "GITHUB  eps-administrators GROUP ID:        ${GITHUB_ADMIN_GROUP}"
 echo "GITHUB  eps-testers GROUP ID:               ${GITHUB_TESTERS_GROUP}"
+echo "GITHUB  EPS GROUP ID:                       ${GITHUB_DEV_GROUP}"
 
 read -p "Press Enter to start setting secrets or ctrl+c to exit"
 
