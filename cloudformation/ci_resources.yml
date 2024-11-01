@@ -780,6 +780,10 @@ Resources:
           - cloudfront:UpdateResponseHeadersPolicy
           - cloudfront:ListTagsForResource
           - cloudfront:DeleteDistribution
+          - cloudfront-keyvaluestore:DescribeKeyValueStore
+          - cloudfront-keyvaluestore:ListKeys
+          - cloudfront-keyvaluestore:PutKey
+          - cloudfront-keyvaluestore:UpdateKeys
           Resource: "*"
         - Effect: Allow
           Action:
