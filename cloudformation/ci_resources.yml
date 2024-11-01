@@ -219,7 +219,6 @@ Resources:
             Resource: "*"
 
   UpdateCloudfrontKVS:
-    Condition: ShouldCreateDeleteCNAMEpermissions
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -233,6 +232,7 @@ Resources:
               - cloudfront-keyvaluestore:ListKeys
               - cloudfront-keyvaluestore:PutKey
               - cloudfront-keyvaluestore:UpdateKeys
+              - cloudfront:CreateInvalidation
             Resource: "*"
   
   ##################################################
