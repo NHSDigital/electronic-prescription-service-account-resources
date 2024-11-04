@@ -524,6 +524,7 @@ Resources:
               - secretsmanager:Tag*
               - secretsmanager:Untag*
               - secretsmanager:GetSecretValue
+              - secretsmanager:PutResourcePolicy 
               - scheduler:GetSchedule
               - scheduler:CreateSchedule
               - scheduler:DeleteSchedule
