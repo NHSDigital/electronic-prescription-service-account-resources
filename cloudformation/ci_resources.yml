@@ -811,6 +811,7 @@ Resources:
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomCrossRegionExport*
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomS3AutoDeleteObject*
+          - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*AWS679f53fac002430cb0da5*
         - Effect: Allow
           Action: s3:List*
           Resource:
