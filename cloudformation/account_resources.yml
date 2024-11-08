@@ -1321,10 +1321,23 @@ Resources:
               - sqs:GetQueueUrl
               - sqs:ListQueues
               - tag:GetResources
-            Resource: !Sub "arn:aws:*:*:${AWS::AccountId}:*"
+            Resource: 
+            - !Sub "arn:aws:cloudwatch:*:${AWS::AccountId}:*"
+            - !Sub "arn:aws:cloudfront::${AWS::AccountId}:*"
+            - !Sub "arn:aws:dynamodb::${AWS::AccountId}:*"
+            - !Sub "arn:aws:ecs:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:elasticloadbalancing:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:kinesis:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:lambda:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:resource-groups:eu-west-2:${AWS::AccountId}:*"
+            - "arn:aws:route53:::*"
+            - "arn:aws:s3:::*"
+            - !Sub "arn:aws:sns:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:sqs:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:tag::${AWS::AccountId}:*"
           - Effect: Allow
             Resource:
-            - !Sub arn:aws:apigateway:*:${AWS::AccountId}:/restapis*
+            - arn:aws:apigateway:eu-west-2::/restapis*
             Action:
             - apigateway:GET
   #endregion
