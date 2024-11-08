@@ -1278,6 +1278,54 @@ Resources:
               - !Ref SlackWebHookUrl
   #endregion
 
+  #region DashboardViewerPolicy
+  DashboardViewerPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: DashboardViewer
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudwatch:GetMetricData
+              - cloudwatch:GetMetricStatistics
+              - cloudwatch:DescribeAlarmHistory
+              - cloudwatch:DescribeAlarms
+              - cloudwatch:ListDashboards
+              - cloudfront:GetDistribution
+              - cloudfront:ListDistributions
+              - dynamodb:DescribeTable
+              - dynamodb:ListTables
+              - ecs:DescribeClusters
+              - ecs:DescribeContainerInstances
+              - ecs:ListClusters
+              - ecs:ListContainerInstances
+              - ecs:ListServices
+              - elasticloadbalancing:DescribeLoadBalancers
+              - kinesis:DescribeStream
+              - kinesis:ListStreams
+              - lambda:GetFunction
+              - lambda:ListFunctions
+              - resource-groups:ListGroupResources
+              - resource-groups:ListGroups
+              - route53:GetHealthCheck
+              - route53:ListHealthChecks
+              - s3:ListAllMyBuckets
+              - s3:ListBucket
+              - sns:ListTopics
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:ListQueues
+              - tag:GetResources
+            Resource: !Sub "arn:aws:*:*:${AWS::AccountId}:*"
+          - Effect: Allow
+            Resource:
+            - !Sub arn:aws:apigateway:*:${AWS::AccountId}:/restapis*
+            Action:
+            - apigateway:GET
+  #endregion
+
 Outputs:
   #region Cloudwatch Outputs
   CloudwatchLogsKmsKeyArn:
