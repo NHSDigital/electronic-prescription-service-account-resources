@@ -1279,6 +1279,9 @@ Resources:
   #endregion
 
   #region DashboardViewerPolicy
+  # policy to allow access to dashboards
+  # adapted from AWS managed policy CloudWatchAutomaticDashboardsAccess
+  # and https://repost.aws/questions/QUnUkhd8loQ92Axnzd_EvLCw/how-to-grant-someone-else-cloudwatch-dashboard-view-access
   DashboardViewerPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
