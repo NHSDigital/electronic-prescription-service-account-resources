@@ -1291,35 +1291,23 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - cloudwatch:GetMetricData
-              - cloudwatch:GetMetricStatistics
               - cloudwatch:DescribeAlarmHistory
               - cloudwatch:DescribeAlarms
-              - cloudwatch:ListDashboards
+              - cloudwatch:GetDashboard
               - cloudfront:GetDistribution
-              - cloudfront:ListDistributions
               - dynamodb:DescribeTable
-              - dynamodb:ListTables
               - ecs:DescribeClusters
               - ecs:DescribeContainerInstances
-              - ecs:ListClusters
               - ecs:ListContainerInstances
-              - ecs:ListServices
               - elasticloadbalancing:DescribeLoadBalancers
               - kinesis:DescribeStream
-              - kinesis:ListStreams
               - lambda:GetFunction
-              - lambda:ListFunctions
               - resource-groups:ListGroupResources
-              - resource-groups:ListGroups
               - route53:GetHealthCheck
-              - route53:ListHealthChecks
-              - s3:ListAllMyBuckets
               - s3:ListBucket
               - sns:ListTopics
               - sqs:GetQueueAttributes
               - sqs:GetQueueUrl
-              - sqs:ListQueues
               - tag:GetResources
             Resource: 
             - !Sub "arn:aws:cloudwatch:*:${AWS::AccountId}:*"
@@ -1340,6 +1328,23 @@ Resources:
             - arn:aws:apigateway:eu-west-2::/restapis*
             Action:
             - apigateway:GET
+          - Effect: Allow
+            Action:
+              - cloudfront:ListDistributions
+              - cloudwatch:GetMetricData
+              - cloudwatch:GetMetricStatistics
+              - cloudwatch:ListDashboards
+              - cloudwatch:ListMetrics
+              - dynamodb:ListTables
+              - ecs:ListClusters
+              - ecs:ListServices
+              - kinesis:ListStreams
+              - lambda:ListFunctions
+              - resource-groups:ListGroups
+              - route53:ListHealthChecks
+              - s3:ListAllMyBuckets
+              - sqs:ListQueues
+            Resource: "*"
   #endregion
 
 Outputs:
