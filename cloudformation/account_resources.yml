@@ -1477,7 +1477,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketArn"]]
 
   ALBLoggingBucketName:
-    Description: ARN of the ALB logging bucket
+    Description: Name of the ALB logging bucket
     Value: !Ref ALBLoggingBucket
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketName"]]
