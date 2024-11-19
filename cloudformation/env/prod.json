@@ -13,7 +13,7 @@
         "repo:NHSDigital/electronic-prescription-service-api:environment:prod",
         "repo:NHSDigital/eps-prescription-tracker-ui:environment:prod",
         "repo:NHSDigital/eps-aws-dashboards:environment:prod",
-        "repo:NHSDigital/eps-vpc-resources:prod"
+        "repo:NHSDigital/eps-vpc-resources:environment:prod"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
