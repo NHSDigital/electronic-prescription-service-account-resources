@@ -599,9 +599,6 @@ Resources:
                     "/*",
                   ],
                 ]
-            Condition:
-              StringEquals:
-                aws:SourceAccount: !Ref "AWS::AccountId"
 
   #end region
 
