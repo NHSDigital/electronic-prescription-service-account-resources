@@ -1469,6 +1469,14 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "CloudfrontLoggingBucket"]]
   #endregion
 
+  #region ALB Logging Bucket Outputs
+  ALBLoggingBucket:
+    Description: ARN of the ALB logging bucket
+    Value: !GetAtt ALBLoggingBucket.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucket"]]
+  #endregion
+
   #region Splunk Delivery Stream Backup Bucket Outputs
   SplunkDeliveryStreamBackupKMSKey:
     Description: SplunkDeliveryStreamBackupKMSKey
