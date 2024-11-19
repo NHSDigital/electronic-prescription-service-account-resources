@@ -1470,11 +1470,18 @@ Outputs:
   #endregion
 
   #region ALB Logging Bucket Outputs
-  ALBLoggingBucket:
+  ALBLoggingBucketArn:
     Description: ARN of the ALB logging bucket
     Value: !GetAtt ALBLoggingBucket.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucket"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketArn"]]
+
+  ALBLoggingBucketName:
+    Description: ARN of the ALB logging bucket
+    Value: !Ref ALBLoggingBucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketName"]]
+
   #endregion
 
   #region Splunk Delivery Stream Backup Bucket Outputs
