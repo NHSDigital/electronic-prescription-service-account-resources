@@ -11,7 +11,8 @@
         "repo:NHSDigital/electronic-prescription-service-api:*",
         "repo:NHSDigital/eps-dynamodb-poc:*",
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
-        "repo:NHSDigital/eps-aws-dashboards:*"
+        "repo:NHSDigital/eps-aws-dashboards:*",
+        "repo:NHSDigital/eps-vpc-resources:*"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -23,7 +24,8 @@
         "repo:NHSDigital/electronic-prescription-service-api:*",
         "repo:NHSDigital/eps-dynamodb-poc:*",
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
-        "repo:NHSDigital/eps-aws-dashboards:*"
+        "repo:NHSDigital/eps-aws-dashboards:*",
+        "repo:NHSDigital/eps-vpc-resources:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "NONE"
@@ -42,7 +44,8 @@
       ],
       "CDKPullImageClaimFilters": [
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
-        "repo:NHSDigital/eps-aws-dashboards:*"
+        "repo:NHSDigital/eps-aws-dashboards:*",
+        "repo:NHSDigital/eps-vpc-resources:*"
       ],
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:*"
