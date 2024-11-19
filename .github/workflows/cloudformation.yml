@@ -158,12 +158,12 @@ jobs:
         --stack-name ${{ inputs.stack_name }} \
         --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
 
-    # - name: Delete Change Set for existing tag
-    #   shell: bash
-    #   run: |
-    #     aws cloudformation delete-change-set \
-    #     --stack-name ${{ inputs.stack_name }} \
-    #     --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}-current-tag
+    - name: Delete Change Set for existing tag
+      shell: bash
+      run: |
+        aws cloudformation delete-change-set \
+        --stack-name ${{ inputs.stack_name }} \
+        --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}-current-tag
   
   execute_change_set:
     name: Execute Change Set
