@@ -846,3 +846,5 @@ set_secrets "NHSDigital/eps-aws-dashboards"
 echo
 set_secrets "NHSDigital/eps-cdk-utils"
 echo
+set_secrets "NHSDigital/eps-vpc-resources"
+echo
