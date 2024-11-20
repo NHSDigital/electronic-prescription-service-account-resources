@@ -830,6 +830,8 @@ Resources:
               - !ImportValue account-resources:ClinicalTrackerProxygenPrivateKey
               - !ImportValue secrets:PrescribingProxygenPrivateKey
               - !ImportValue secrets:DispensingProxygenPrivateKey
+              - !ImportValue secrets:FhirPrescribingProxygenPrivateKey
+              - !ImportValue secrets:FhirDispensingProxygenPrivateKey
 
   ProxygenPTLInstancePutFunctionResources:
     Type: AWS::Serverless::Application
