@@ -481,6 +481,7 @@ Resources:
   #endregion
 
   #region Cloudfront Logs Bucket
+
   CloudfrontLoggingBucket:
     Type: AWS::S3::Bucket
     Metadata:
@@ -504,7 +505,6 @@ Resources:
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerPreferred
-
 
   CloudfrontLoggingBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -544,6 +544,62 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn:  !Sub arn:aws:cloudfront:${AWS::AccountId}:distribution:*
+
+  ALBLoggingBucket:
+    Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_LOGGING_ENABLED
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+
+  ALBLoggingBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
+    Properties:
+      Bucket: !Ref ALBLoggingBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action:
+              - "s3:*"
+            Resource:
+              - !Join ["", [!GetAtt ALBLoggingBucket.Arn, "/*"]]
+              - !GetAtt ALBLoggingBucket.Arn
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::652711504416:root
+            Action:
+              - s3:PutObject
+            Resource:
+              - !Join [
+                  "",
+                  [
+                    !GetAtt ALBLoggingBucket.Arn,
+                    "/*",
+                  ],
+                ]
+
   #end region
 
   #region Splunk Delivery Stream Backup Bucket
@@ -1408,6 +1464,21 @@ Outputs:
     Value: !GetAtt CloudfrontLoggingBucket.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CloudfrontLoggingBucket"]]
+  #endregion
+
+  #region ALB Logging Bucket Outputs
+  ALBLoggingBucketArn:
+    Description: ARN of the ALB logging bucket
+    Value: !GetAtt ALBLoggingBucket.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketArn"]]
+
+  ALBLoggingBucketName:
+    Description: Name of the ALB logging bucket
+    Value: !Ref ALBLoggingBucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketName"]]
+
   #endregion
 
   #region Splunk Delivery Stream Backup Bucket Outputs
