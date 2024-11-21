@@ -35,7 +35,7 @@
     "semantic-release": "^24.2.0"
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^2.10.0",
+    "@aws-lambda-powertools/logger": "^2.11.0",
     "archiver": "^7.0.1",
     "conventional-changelog-eslint": "^6.0.0",
     "esbuild": "^0.24.0",
