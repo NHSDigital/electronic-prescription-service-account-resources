@@ -602,6 +602,73 @@ Resources:
 
   #end region
 
+  #region athena results Bucket
+  AthenaResultsBucketKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-s3
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
+            Resource: "*"
+
+  AthenaResultsBucketKMSKeyKMSKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/AthenaResultsBucketKMSKeyAlias
+      TargetKeyId: !Ref AthenaResultsBucketKMSKey
+
+  AthenaResultsBucket:
+    Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_LOGGING_ENABLED
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${AthenaResultsBucketKMSKeyKMSKeyAlias}"
+              SSEAlgorithm: "aws:kms"
+
+  AthenaResultsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
+    Properties:
+      Bucket: !Ref AthenaResultsBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action:
+              - "s3:*"
+            Resource:
+              - !Join ["", [!GetAtt AthenaResultsBucket.Arn, "/*"]]
+              - !GetAtt AthenaResultsBucket.Arn
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+  #end region
+
   #region Splunk Delivery Stream Backup Bucket
   SplunkDeliveryStreamBackupKMSKey:
     Type: AWS::KMS::Key
@@ -1480,6 +1547,23 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketName"]]
 
   #endregion
+
+
+  #region athena results Bucket Outputs
+  AthenaResultsBucketArn:
+    Description: ARN of the Athena results bucket
+    Value: !GetAtt AthenaResultsBucket.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AthenaResultsBucketArn"]]
+
+  AthenaResultsBucketName:
+    Description: Name of the Athena results bucket
+    Value: !Ref AthenaResultsBucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AthenaResultsBucketName"]]
+
+  #endregion
+
 
   #region Splunk Delivery Stream Backup Bucket Outputs
   SplunkDeliveryStreamBackupKMSKey:
