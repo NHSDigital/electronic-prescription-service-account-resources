@@ -8,7 +8,7 @@
     "dependencies": {
         "@aws-sdk/client-cloudwatch-logs": "^3.699.0",
         "@aws-sdk/client-secrets-manager": "^3.699.0",
-        "@middy/core": "^5.5.1",
+        "@middy/core": "^6.0.0",
         "@middy/input-output-logger": "^6.0.0"
     },
     "scripts": {
