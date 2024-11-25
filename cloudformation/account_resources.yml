@@ -92,6 +92,7 @@ Resources:
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/stepfunctions/*"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/ecs/*"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:artilleryio-log-group/artilleryio-cluster"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/vpc/*"
           - Sid: Allow API Gateway Role
             Effect: Allow
             Principal:
