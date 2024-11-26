@@ -848,3 +848,5 @@ set_secrets "NHSDigital/eps-cdk-utils"
 echo
 set_secrets "NHSDigital/eps-vpc-resources"
 echo
+set_secrets "NHSDigital/eps-storage-resources"
+echo
