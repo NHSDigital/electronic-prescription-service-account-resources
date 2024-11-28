@@ -68,9 +68,6 @@
       "ConcurrencyThreshold": 300,
       "EnableAlerts": "true"
     },
-    "vpc-resources": {
-      "Environment": "ref"
-    },
     "artillery-resources": {},
     "secrets": {}
   }
