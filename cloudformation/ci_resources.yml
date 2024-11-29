@@ -813,6 +813,7 @@ Resources:
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomCrossRegionExport*
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomS3AutoDeleteObject*
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*AWS679f53fac002430cb0da5*
+          - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomVpcRestrictDefaultSG*
         - Effect: Allow
           Action: s3:List*
           Resource:
