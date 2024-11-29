@@ -1457,6 +1457,11 @@ Outputs:
     Value: !Ref GrantCloudFormationExecutionAccessPolicyD
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyD"]]
+  GrantCloudFormationExecutionEc2AccessPolicy:
+    Description: ARN of the IAM policy GrantCloudFormationExecutionEc2AccessPolicy
+    Value: !Ref GrantCloudFormationExecutionEc2AccessPolicy
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionEc2AccessPolicy"]]
   AllowCloudFormationSecretsAccessManagedPolicy:
     Description: ARN of the IAM policy AllowCloudFormationSecretsAccessManagedPolicy
     Value: !Ref AllowCloudFormationSecretsAccessManagedPolicy
