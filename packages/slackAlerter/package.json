@@ -12,10 +12,10 @@
         "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
     },
     "dependencies": {
-        "@aws-lambda-powertools/logger": "^2.9.0"
+        "@aws-lambda-powertools/logger": "^2.11.0"
     },
     "devDependencies": {
-        "@types/aws-lambda": "^8.10.145",
+        "@types/aws-lambda": "^8.10.146",
         "jest-fetch-mock": "^3.0.3"
     }
 }

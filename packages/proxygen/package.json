@@ -6,13 +6,13 @@
     "author": "NHS England",
     "license": "MIT",
     "dependencies": {
-        "@aws-sdk/client-cloudwatch-logs": "^3.674.0",
-        "@aws-sdk/client-secrets-manager": "^3.675.0",
-        "@middy/core": "^5.5.1",
-        "@middy/input-output-logger": "^5.5.1",
-        "axios": "^1.7.7",
+        "@aws-sdk/client-cloudwatch-logs": "^3.703.0",
+        "@aws-sdk/client-secrets-manager": "^3.699.0",
+        "@middy/core": "^6.0.0",
+        "@middy/input-output-logger": "^6.0.0",
+        "axios": "^1.7.8",
         "jsonwebtoken": "^9.0.2",
-        "uuid": "^10.0.0"
+        "uuid": "^11.0.3"
     },
     "scripts": {
         "compile": "tsc",
@@ -23,10 +23,10 @@
     "devDependencies": {
         "@types/jsonwebtoken": "^9.0.7",
         "@types/uuid": "^10.0.0",
-        "aws-sdk-client-mock": "^4.0.1",
+        "aws-sdk-client-mock": "^4.1.0",
         "aws-sdk-client-mock-jest": "^4.0.2",
         "jest-mock": "^29.7.0",
-        "nock": "^13.5.5",
+        "nock": "^13.5.6",
         "ts-jest": "^29.2.5",
         "ts-jest-mock": "^1.4.2"
     }

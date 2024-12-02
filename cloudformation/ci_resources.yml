@@ -161,11 +161,18 @@ Resources:
               - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
               - !ImportValue account-resources:ClinicalTrackerProxygenPrivateKey
               - !ImportValue account-resources:ClinicalTrackerProxygenPublicKey
+              - !ImportValue account-resources:FhirFacadeClientKeySecret
+              - !ImportValue account-resources:FhirFacadeClientSandboxKeySecret
+              - !ImportValue account-resources:FhirFacadeCACertSecret
+              - !ImportValue account-resources:FhirFacadeCAKeySecret
+              - !ImportValue account-resources:FhirFacadeClientCertSecret
+              - !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
           - Effect: Allow
             Action:
               - kms:Decrypt
             Resource:
-              - !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/*"
+              - !Sub "arn:aws:kms:eu-west-2:${AWS::AccountId}:key/*"
+              - !Sub "arn:aws:kms:us-east-1:${AWS::AccountId}:key/*"
 
   ECRPushImagePolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -211,6 +218,23 @@ Resources:
               - route53:ListResourceRecordSets
             Resource: "*"
 
+  UpdateCloudfrontKVS:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationDeployRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudfront-keyvaluestore:DescribeKeyValueStore
+              - cloudfront-keyvaluestore:ListKeys
+              - cloudfront-keyvaluestore:PutKey
+              - cloudfront-keyvaluestore:UpdateKeys
+              - cloudfront:CreateInvalidation
+            Resource: "*"
+  
   ##################################################
   # Cloudformation Execution Role
   ##################################################
@@ -313,7 +337,6 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - cloudformation:CreateChangeSet
               - logs:AssociateKmsKey
               - logs:DisassociateKmsKey
               - logs:CreateLogGroup
@@ -445,6 +468,7 @@ Resources:
               - s3:PutBucketAcl
               - s3:PutEncryptionConfiguration
               - s3:PutBucketVersioning
+              - s3:GetBucketAcl
               - s3:GetBucketTagging
               - s3:PutBucketTagging
               - s3:GetBucketPolicy
@@ -468,6 +492,7 @@ Resources:
               - s3:GetBucketObjectLockConfiguration
               - s3:GetBucketVersioning
               - s3:GetBucketWebsite
+              - s3:PutBucketOwnershipControls
               - firehose:CreateDeliveryStream
               - firehose:DescribeDeliveryStream
               - firehose:DeleteDeliveryStream
@@ -499,6 +524,7 @@ Resources:
               - secretsmanager:Tag*
               - secretsmanager:Untag*
               - secretsmanager:GetSecretValue
+              - secretsmanager:PutResourcePolicy 
               - scheduler:GetSchedule
               - scheduler:CreateSchedule
               - scheduler:DeleteSchedule
@@ -604,6 +630,11 @@ Resources:
               - ssm:DescribeParameters
               - ssm:ListTagsForResource
               - ssm:RemoveTagsFromResource
+              - cloudformation:CreateStack
+              - cloudformation:DescribeStacks
+              - cloudformation:CreateChangeSet
+              - cloudformation:UpdateStack
+              - cloudformation:DeleteStack
               - cloudwatch:DescribeAlarms
               - cloudwatch:DescribeAlarmsForMetric
               - cloudwatch:EnableAlarmActions
@@ -765,6 +796,8 @@ Resources:
           - cloudfront:UpdateOriginRequestPolicy
           - cloudfront:UpdateRealtimeLogConfig
           - cloudfront:UpdateResponseHeadersPolicy
+          - cloudfront:ListTagsForResource
+          - cloudfront:DeleteDistribution
           Resource: "*"
         - Effect: Allow
           Action:
@@ -776,13 +809,18 @@ Resources:
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2/*
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/*
-          - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-east-1
+          - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomCrossRegionExport*
+          - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomS3AutoDeleteObject*
+          - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*AWS679f53fac002430cb0da5*
+          - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomVpcRestrictDefaultSG*
         - Effect: Allow
           Action: s3:List*
           Resource:
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2/*
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2
+          - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/*
+          - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1
 
   GrantCloudFormationExecutionEc2AccessPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -880,6 +918,7 @@ Resources:
               - ec2:DeleteNetworkAclEntry
               - ec2:ReplaceNetworkAclEntry
               - ec2:DescribeAccountAttributes
+              - ec2:ReplaceNetworkAclAssociation
               - ecs:DescribeClusters
               - ecs:CreateCluster
               - ecs:TagResource
@@ -1419,3 +1458,13 @@ Outputs:
     Value: !Ref GrantCloudFormationExecutionAccessPolicyD
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyD"]]
+  GrantCloudFormationExecutionEc2AccessPolicy:
+    Description: ARN of the IAM policy GrantCloudFormationExecutionEc2AccessPolicy
+    Value: !Ref GrantCloudFormationExecutionEc2AccessPolicy
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionEc2AccessPolicy"]]
+  AllowCloudFormationSecretsAccessManagedPolicy:
+    Description: ARN of the IAM policy AllowCloudFormationSecretsAccessManagedPolicy
+    Value: !Ref AllowCloudFormationSecretsAccessManagedPolicy
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AllowCloudFormationSecretsAccessManagedPolicy"]]

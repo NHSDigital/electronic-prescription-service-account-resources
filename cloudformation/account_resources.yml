@@ -92,6 +92,7 @@ Resources:
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/stepfunctions/*"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/ecs/*"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:artilleryio-log-group/artilleryio-cluster"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/vpc/*"
           - Sid: Allow API Gateway Role
             Effect: Allow
             Principal:
@@ -465,7 +466,209 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
+          # add this in once cpt-ui gets released to all environments
+          # - Effect: Allow
+          #   Principal:
+          #     Service: logging.s3.amazonaws.com
+          #   Action:
+          #     - s3:PutObject*
+          #   Resource:
+          #     - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/static-content/*"]]
+          #   Condition:
+          #     StringEquals:
+          #       aws:SourceAccount: !Ref "AWS::AccountId"
+          #     ArnLike:
+          #       aws:SourceArn: !ImportValue "cpt-ui-shared-resources:StaticContentBucket:Arn"
   #endregion
+
+  #region Cloudfront Logs Bucket
+
+  CloudfrontLoggingBucket:
+    Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_LOGGING_ENABLED
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+
+  CloudfrontLoggingBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
+    Properties:
+      Bucket: !Ref CloudfrontLoggingBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action:
+              - "s3:*"
+            Resource:
+              - !Join ["", [!GetAtt CloudfrontLoggingBucket.Arn, "/*"]]
+              - !GetAtt CloudfrontLoggingBucket.Arn
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action:
+              - s3:PutObject*
+            Resource:
+              - !Join [
+                  "",
+                  [
+                    !GetAtt CloudfrontLoggingBucket.Arn,
+                    "/*",
+                  ],
+                ]
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+              ArnLike:
+                aws:SourceArn:  !Sub arn:aws:cloudfront:${AWS::AccountId}:distribution:*
+
+  ALBLoggingBucket:
+    Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_LOGGING_ENABLED
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+
+  ALBLoggingBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
+    Properties:
+      Bucket: !Ref ALBLoggingBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action:
+              - "s3:*"
+            Resource:
+              - !Join ["", [!GetAtt ALBLoggingBucket.Arn, "/*"]]
+              - !GetAtt ALBLoggingBucket.Arn
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::652711504416:root
+            Action:
+              - s3:PutObject
+            Resource:
+              - !Join [
+                  "",
+                  [
+                    !GetAtt ALBLoggingBucket.Arn,
+                    "/*",
+                  ],
+                ]
+
+  #end region
+
+  #region athena results Bucket
+  AthenaResultsBucketKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-s3
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
+            Resource: "*"
+
+  AthenaResultsBucketKMSKeyKMSKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/AthenaResultsBucketKMSKeyAlias
+      TargetKeyId: !Ref AthenaResultsBucketKMSKey
+
+  AthenaResultsBucket:
+    Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_LOGGING_ENABLED
+        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${AthenaResultsBucketKMSKeyKMSKeyAlias}"
+              SSEAlgorithm: "aws:kms"
+
+  AthenaResultsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+        - S3_BUCKET_SSL_REQUESTS_ONLY    
+    Properties:
+      Bucket: !Ref AthenaResultsBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action:
+              - "s3:*"
+            Resource:
+              - !Join ["", [!GetAtt AthenaResultsBucket.Arn, "/*"]]
+              - !GetAtt AthenaResultsBucket.Arn
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+  #end region
 
   #region Splunk Delivery Stream Backup Bucket
   SplunkDeliveryStreamBackupKMSKey:
@@ -1199,6 +1402,75 @@ Resources:
               - !Ref SlackWebHookUrl
   #endregion
 
+  #region DashboardViewerPolicy
+  # policy to allow access to dashboards
+  # adapted from AWS managed policy CloudWatchAutomaticDashboardsAccess
+  # and https://repost.aws/questions/QUnUkhd8loQ92Axnzd_EvLCw/how-to-grant-someone-else-cloudwatch-dashboard-view-access
+  DashboardViewerPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: DashboardViewer
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudwatch:DescribeAlarmHistory
+              - cloudwatch:DescribeAlarms
+              - cloudwatch:GetDashboard
+              - cloudfront:GetDistribution
+              - dynamodb:DescribeTable
+              - ecs:DescribeClusters
+              - ecs:DescribeContainerInstances
+              - ecs:ListContainerInstances
+              - elasticloadbalancing:DescribeLoadBalancers
+              - kinesis:DescribeStream
+              - lambda:GetFunction
+              - resource-groups:ListGroupResources
+              - route53:GetHealthCheck
+              - s3:ListBucket
+              - sns:ListTopics
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - tag:GetResources
+            Resource: 
+            - !Sub "arn:aws:cloudwatch:*:${AWS::AccountId}:*"
+            - !Sub "arn:aws:cloudfront::${AWS::AccountId}:*"
+            - !Sub "arn:aws:dynamodb::${AWS::AccountId}:*"
+            - !Sub "arn:aws:ecs:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:elasticloadbalancing:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:kinesis:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:lambda:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:resource-groups:eu-west-2:${AWS::AccountId}:*"
+            - "arn:aws:route53:::*"
+            - "arn:aws:s3:::*"
+            - !Sub "arn:aws:sns:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:sqs:eu-west-2:${AWS::AccountId}:*"
+            - !Sub "arn:aws:tag::${AWS::AccountId}:*"
+          - Effect: Allow
+            Resource:
+            - arn:aws:apigateway:eu-west-2::/restapis*
+            Action:
+            - apigateway:GET
+          - Effect: Allow
+            Action:
+              - cloudfront:ListDistributions
+              - cloudwatch:GetMetricData
+              - cloudwatch:GetMetricStatistics
+              - cloudwatch:ListDashboards
+              - cloudwatch:ListMetrics
+              - dynamodb:ListTables
+              - ecs:ListClusters
+              - ecs:ListServices
+              - kinesis:ListStreams
+              - lambda:ListFunctions
+              - resource-groups:ListGroups
+              - route53:ListHealthChecks
+              - s3:ListAllMyBuckets
+              - sqs:ListQueues
+            Resource: "*"
+  #endregion
+
 Outputs:
   #region Cloudwatch Outputs
   CloudwatchLogsKmsKeyArn:
@@ -1253,6 +1525,46 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AuditLoggingBucket"]]
   #endregion
+
+  #region Cloudfront Logging Bucket Outputs
+  CloudfrontLoggingBucket:
+    Description: ARN of the cloudfront logging bucket
+    Value: !GetAtt CloudfrontLoggingBucket.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CloudfrontLoggingBucket"]]
+  #endregion
+
+  #region ALB Logging Bucket Outputs
+  ALBLoggingBucketArn:
+    Description: ARN of the ALB logging bucket
+    Value: !GetAtt ALBLoggingBucket.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketArn"]]
+
+  ALBLoggingBucketName:
+    Description: Name of the ALB logging bucket
+    Value: !Ref ALBLoggingBucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketName"]]
+
+  #endregion
+
+
+  #region athena results Bucket Outputs
+  AthenaResultsBucketArn:
+    Description: ARN of the Athena results bucket
+    Value: !GetAtt AthenaResultsBucket.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AthenaResultsBucketArn"]]
+
+  AthenaResultsBucketName:
+    Description: Name of the Athena results bucket
+    Value: !Ref AthenaResultsBucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AthenaResultsBucketName"]]
+
+  #endregion
+
 
   #region Splunk Delivery Stream Backup Bucket Outputs
   SplunkDeliveryStreamBackupKMSKey:

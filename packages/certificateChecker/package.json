@@ -6,10 +6,10 @@
     "author": "NHS England",
     "license": "MIT",
     "dependencies": {
-        "@aws-sdk/client-cloudwatch-logs": "^3.674.0",
-        "@aws-sdk/client-secrets-manager": "^3.675.0",
-        "@middy/core": "^5.5.1",
-        "@middy/input-output-logger": "^5.5.1"
+        "@aws-sdk/client-cloudwatch-logs": "^3.703.0",
+        "@aws-sdk/client-secrets-manager": "^3.699.0",
+        "@middy/core": "^6.0.0",
+        "@middy/input-output-logger": "^6.0.0"
     },
     "scripts": {
         "compile": "tsc",
@@ -18,6 +18,6 @@
         "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
     },
     "devDependencies": {
-        "aws-sdk-client-mock": "^4.0.1"
+        "aws-sdk-client-mock": "^4.1.0"
     }
 }
