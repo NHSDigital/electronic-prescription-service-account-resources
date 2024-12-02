@@ -584,6 +584,7 @@ Resources:
               - dynamodb:ListTables
               - dynamodb:ListTagsOfResource
               - dynamodb:GetResourcePolicy
+              - dynamodb:PutResourcePolicy
               - dynamodb:DescribeContributorInsights
               - dynamodb:DescribeContinuousBackups
               - dynamodb:DescribeKinesisStreamingDestination
