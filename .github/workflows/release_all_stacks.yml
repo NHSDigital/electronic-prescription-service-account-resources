@@ -96,22 +96,6 @@ jobs:
       parameter_secrets: "{}"
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
-  
-  list_vpc_resources_cf_changes:
-    uses: ./.github/workflows/cloudformation.yml
-    with:
-      env: ${{ inputs.target_environment }}
-      target_environment: ${{inputs.target_environment}}-account
-      version: ${{ inputs.version }}
-      change_set_version: ${{ inputs.change_set_version }}
-      stack_name: vpc-resources
-      template: ./cloudformation/vpc_resources.yml
-      capabilities: CAPABILITY_NAMED_IAM
-      execute_change_set: ${{ inputs.execute_change_set }}
-    secrets:
-      parameter_secrets: "{}"
-      cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
-      cf_deploy_role: ${{ secrets.cf_deploy_role }}
 
   list_artillery_resources_cf_changes:
     if: ${{ inputs.deploy_artillery == true }}
