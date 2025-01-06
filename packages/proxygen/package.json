@@ -12,7 +12,7 @@
         "@middy/input-output-logger": "^6.0.0",
         "axios": "^1.7.9",
         "jsonwebtoken": "^9.0.2",
-        "uuid": "^11.0.3"
+        "uuid": "^11.0.4"
     },
     "scripts": {
         "compile": "tsc",
