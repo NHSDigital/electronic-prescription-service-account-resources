@@ -24,7 +24,7 @@
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/release-notes-generator": "^14.0.3",
     "@types/jest": "^29.5.14",
-    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
     "@typescript-eslint/parser": "^8.19.1",
     "aws-cdk": "^2.174.1",
     "aws-lambda": "^1.0.7",
