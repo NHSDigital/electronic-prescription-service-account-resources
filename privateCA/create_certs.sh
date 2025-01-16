@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+set -eE -o functrace
+
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
 while getopts e:d:a: flag
 do
@@ -172,32 +180,6 @@ function generate_client_cert {
     convert_cert_to_der "$name"
 }
 
-echo "Going to create mutual TLS certs with these details"
-echo "AWS_PROFILE: ${AWS_PROFILE}"
-echo "CERT_PREFIX: ${CERT_PREFIX}"
-echo "SECRET_OUTPUT_PREFIX: ${SECRET_OUTPUT_PREFIX}"
-echo "BUCKET_PREFIX: ${BUCKET_PREFIX}"
-echo "FILE_PREFIX: ${FILE_PREFIX}"
-echo "DRY_RUN: ${DRY_RUN}"
-read -r -p "Press any key to resume or press ctrl+c to exit ..."
-
-# Recreate output dirs
-rm -rf "$CERTS_DIR" "$KEYS_DIR" "$CRL_DIR" "$CONFIG_DIR"
-mkdir "$CERTS_DIR" "$KEYS_DIR" "$CRL_DIR" "$CONFIG_DIR" "$BACKUP_CERTS_DIR" "$BACKUP_KEYS_DIR"
-
-# Create database and serial files
-touch "$CONFIG_DIR/index.txt"
-echo '1000' > "$CONFIG_DIR/crlnumber.txt"
-echo '01' > "$CONFIG_DIR/serial.txt"
-
-# Generate CA key and self-signed cert
-echo "Generating CA credentials..."
-generate_key "$CA_NAME"
-generate_ca_cert "$CA_NAME"
-
-generate_client_cert "apigee_client_cert"
-generate_client_cert "apigee_client_cert_sandbox"
-
 # These shellcheck disables are to prevent the linter from trying to analyse 
 # the query string in the commands below
 # shellcheck disable=SC2016
@@ -229,6 +211,43 @@ TRUSTSTORE_BUCKET_ARN=$(aws cloudformation describe-stacks \
     --stack-name account-resources \
     --query 'Stacks[0].Outputs[?OutputKey==`TrustStoreBucket`].OutputValue' --output text)
 TRUSTSTORE_BUCKET_NAME=$(echo "${TRUSTSTORE_BUCKET_ARN}" | cut -d ":" -f 6)
+
+
+echo "Going to create mutual TLS certs with these details"
+echo "AWS_PROFILE: ${AWS_PROFILE}"
+echo "CERT_PREFIX: ${CERT_PREFIX}"
+echo "SECRET_OUTPUT_PREFIX: ${SECRET_OUTPUT_PREFIX}"
+echo "BUCKET_PREFIX: ${BUCKET_PREFIX}"
+echo "FILE_PREFIX: ${FILE_PREFIX}"
+echo "DRY_RUN: ${DRY_RUN}"
+echo "CA_KEY_ARN: ${CA_KEY_ARN}"
+echo "CA_CERT_ARN: ${CA_CERT_ARN}"
+echo "CLIENT_KEY_ARN: ${CLIENT_KEY_ARN}"
+echo "CLIENT_CERT_ARN: ${CLIENT_CERT_ARN}"
+echo "CLIENT_SANDBOX_KEY_ARN: ${CLIENT_SANDBOX_KEY_ARN}"
+echo "CLIENT_SANDBOX_CERT_ARN: ${CLIENT_SANDBOX_CERT_ARN}"
+echo "TRUSTSTORE_BUCKET_ARN: ${TRUSTSTORE_BUCKET_ARN}"
+echo "TRUSTSTORE_BUCKET_NAME: ${TRUSTSTORE_BUCKET_NAME}"
+echo "BACKUP_CERTS_DIR: ${BACKUP_CERTS_DIR}"
+read -r -p "Press any key to resume or press ctrl+c to exit ..."
+
+# Recreate output dirs
+rm -rf "$CERTS_DIR" "$KEYS_DIR" "$CRL_DIR" "$CONFIG_DIR"
+mkdir "$CERTS_DIR" "$KEYS_DIR" "$CRL_DIR" "$CONFIG_DIR" "$BACKUP_CERTS_DIR" "$BACKUP_KEYS_DIR"
+
+# Create database and serial files
+touch "$CONFIG_DIR/index.txt"
+echo '1000' > "$CONFIG_DIR/crlnumber.txt"
+echo '01' > "$CONFIG_DIR/serial.txt"
+
+# Generate CA key and self-signed cert
+echo "Generating CA credentials..."
+generate_key "$CA_NAME"
+generate_ca_cert "$CA_NAME"
+
+generate_client_cert "apigee_client_cert"
+generate_client_cert "apigee_client_cert_sandbox"
+
 
 echo "Backing up existing secrets to local file"
 
@@ -268,17 +287,17 @@ aws s3api head-object --bucket "${TRUSTSTORE_BUCKET_NAME}" --key "${BUCKET_PREFI
 if [ "$NOT_EXIST" ]; then
   echo "" > "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem"
 else
-    aws s3 cp "s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-truststore.pem ${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem"
+    aws s3 cp "s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-truststore.pem" "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem"
 fi
 
 aws s3api head-object --bucket "${TRUSTSTORE_BUCKET_NAME}" --key "${BUCKET_PREFIX}"-sandbox-truststore.pem || NOT_EXIST=true
 if [ "$NOT_EXIST" ]; then
   echo "" > "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_sandbox_truststore.pem"
 else
-    aws s3 cp "s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-sandbox-truststore.pem ${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_sandbox_truststore.pem"
+    aws s3 cp "s3://${TRUSTSTORE_BUCKET_NAME}/${BUCKET_PREFIX}-sandbox-truststore.pem" "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_sandbox_truststore.pem"
 fi
 
-cat "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem ${CERTS_DIR}/${CA_NAME}.pem" > "${CERTS_DIR}/${FILE_PREFIX}_truststore.pem"
+cat "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_truststore.pem" "${CERTS_DIR}/${CA_NAME}.pem" > "${CERTS_DIR}/${FILE_PREFIX}_truststore.pem"
 cat "${BACKUP_CERTS_DIR}/s3_${FILE_PREFIX}_sandbox_truststore.pem" "${CERTS_DIR}/${CA_NAME}.pem" > "${CERTS_DIR}/${FILE_PREFIX}_sandbox_truststore.pem"
 
 if [ "$DRY_RUN" = "false" ]; then
