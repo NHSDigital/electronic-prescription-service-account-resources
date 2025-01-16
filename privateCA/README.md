@@ -9,6 +9,13 @@ Before running the script, you should set environment variable AWS_PROFILE to in
 You should pass the environment name using the `-e` flag and the application name using the `-a` flag when calling the script.  
 By default the script does not upload new secrets or truststore files. If you want to do this, you must pass flag `-d false`.
 
+The application name passed in is camel cased in the script, so if you want ClinicalTracker you should pass in "clinical tracker"
+
 Existing certificates and keys are backed up locally before new ones are uploaded.
 
 To get API gateway to use the new truststore, you must do a redeploy of the cloud formation stack using github action.
+
+Example calls
+```
+./create_certs.sh -e dev -a "Clinical tracker"
+```
