@@ -145,13 +145,13 @@ files = [
 
 [[package]]
 name = "cfn-lint"
-version = "1.22.1"
+version = "1.22.5"
 description = "Checks CloudFormation templates for practices and behaviour that could potentially be improved"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "cfn_lint-1.22.1-py3-none-any.whl", hash = "sha256:33f976cdbc4cdeaf9d939821e906baac91e615588574aecaa7033811297496a9"},
-    {file = "cfn_lint-1.22.1.tar.gz", hash = "sha256:11085a8196ca1f381735782b4977be62a5860e26d3e0b578d2d4a244b9031b16"},
+    {file = "cfn_lint-1.22.5-py3-none-any.whl", hash = "sha256:18309e59cc03ff18b02676688df7eb1a17f5276da3776f31946fc0d9aa9b8fe7"},
+    {file = "cfn_lint-1.22.5.tar.gz", hash = "sha256:8b4f55e283143e99d8d331627637226c291cecfb936606f7aab2d940e71e566d"},
 ]
 
 [package.dependencies]
@@ -274,20 +274,20 @@ smmap = ">=3.0.1,<6"
 
 [[package]]
 name = "gitpython"
-version = "3.1.43"
+version = "3.1.44"
 description = "GitPython is a Python library used to interact with Git repositories"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "GitPython-3.1.43-py3-none-any.whl", hash = "sha256:eec7ec56b92aad751f9912a73404bc02ba212a23adb2c7098ee668417051a1ff"},
-    {file = "GitPython-3.1.43.tar.gz", hash = "sha256:35f314a9f878467f5453cc1fee295c3e18e52f1b99f10f6cf5b1682e968a9e7c"},
+    {file = "GitPython-3.1.44-py3-none-any.whl", hash = "sha256:9e0e10cda9bed1ee64bc9a6de50e7e38a9c9943241cd7f585f6df3ed28011110"},
+    {file = "gitpython-3.1.44.tar.gz", hash = "sha256:c87e30b26253bf5418b01b0660f818967f3c503193838337fe5e573331249269"},
 ]
 
 [package.dependencies]
 gitdb = ">=4.0.1,<5"
 
 [package.extras]
-doc = ["sphinx (==4.3.2)", "sphinx-autodoc-typehints", "sphinx-rtd-theme", "sphinxcontrib-applehelp (>=1.0.2,<=1.0.4)", "sphinxcontrib-devhelp (==1.0.2)", "sphinxcontrib-htmlhelp (>=2.0.0,<=2.0.1)", "sphinxcontrib-qthelp (==1.0.3)", "sphinxcontrib-serializinghtml (==1.1.5)"]
+doc = ["sphinx (>=7.1.2,<7.2)", "sphinx-autodoc-typehints", "sphinx_rtd_theme"]
 test = ["coverage[toml]", "ddt (>=1.1.1,!=1.4.3)", "mock", "mypy", "pre-commit", "pytest (>=7.3.1)", "pytest-cov", "pytest-instafail", "pytest-mock", "pytest-sugar", "typing-extensions"]
 
 [[package]]
@@ -1015,13 +1015,13 @@ crt = ["botocore[crt] (>=1.33.2,<2.0a.0)"]
 
 [[package]]
 name = "semver"
-version = "3.0.2"
+version = "3.0.3"
 description = "Python helper for Semantic Versioning (https://semver.org)"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "semver-3.0.2-py3-none-any.whl", hash = "sha256:b1ea4686fe70b981f85359eda33199d60c53964284e0cfb4977d243e37cf4bf4"},
-    {file = "semver-3.0.2.tar.gz", hash = "sha256:6253adb39c70f6e51afed2fa7152bcd414c411286088fb4b9effb133885ab4cc"},
+    {file = "semver-3.0.3-py3-none-any.whl", hash = "sha256:4bf5e5a52f98cd8377cfb99088eb743722f3d47cefc8a37e503c1e5806846b17"},
+    {file = "semver-3.0.3.tar.gz", hash = "sha256:8769a03a93507fecdf19b6eefb08d5e95b462504871a61e29e09798822888c94"},
 ]
 
 [[package]]
@@ -1104,13 +1104,13 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.26.3"
+version = "20.26.6"
 description = "Virtual Python Environment builder"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "virtualenv-20.26.3-py3-none-any.whl", hash = "sha256:8cc4a31139e796e9a7de2cd5cf2489de1217193116a8fd42328f1bd65f434589"},
-    {file = "virtualenv-20.26.3.tar.gz", hash = "sha256:4c43a2a236279d9ea36a0d76f98d84bd6ca94ac4e0f4a3b9d46d05e10fea542a"},
+    {file = "virtualenv-20.26.6-py3-none-any.whl", hash = "sha256:7345cc5b25405607a624d8418154577459c3e0277f5466dd79c49d5e492995f2"},
+    {file = "virtualenv-20.26.6.tar.gz", hash = "sha256:280aede09a2a5c317e409a00102e7077c6432c5a38f0ef938e643805a7ad2c48"},
 ]
 
 [package.dependencies]
@@ -1136,4 +1136,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "cfbe350f48e1818d53172a7224e7f46ff00a1bc7233c6406a5d5a6279ef57d57"
+content-hash = "044aa4e2d49384dfa076a7586f8304c1b2c740b78028521966f207eaed4b37d8"
