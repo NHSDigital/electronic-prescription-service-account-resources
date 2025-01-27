@@ -7,7 +7,7 @@
     "license": "MIT",
     "dependencies": {
         "@aws-lambda-powertools/logger": "^2.13.0",
-        "@aws-sdk/client-lambda": "^3.731.1"
+        "@aws-sdk/client-lambda": "^3.734.0"
     },
     "scripts": {
         "compile": "tsc",
