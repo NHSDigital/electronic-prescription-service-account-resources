@@ -384,7 +384,6 @@ set_repository_secret() {
     echo "*****************************************"
     echo
     echo "setting value for ${secret_name} for ${app}"
-    read -r -p "Press Enter to set secret or ctrl+c to exit"
     gh secret set "${secret_name}" \
         --repo "${repo}" \
         --app "${app}" \
