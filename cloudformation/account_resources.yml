@@ -372,6 +372,7 @@ Resources:
               AWS:
                 - !ImportValue ci-resources:CloudFormationDeployRole
                 - !ImportValue ci-resources:CloudFormationExecutionRole
+                - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-2
             Action:
               - s3:GetObject*
               - s3:PutObject*
