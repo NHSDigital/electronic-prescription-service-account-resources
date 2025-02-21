@@ -601,6 +601,8 @@ Resources:
               - application-autoscaling:UntagResource
               - application-autoscaling:ListTagsForResource
               - application-autoscaling:DescribeScheduledActions
+              - application-autoscaling:PutScheduledAction
+              - application-autoscaling:DeleteScheduledAction
               - states:CreateActivity
               - states:CreateStateMachine
               - states:CreateStateMachineAlias
