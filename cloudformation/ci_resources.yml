@@ -929,6 +929,7 @@ Resources:
               - ecs:UntagResource
               - ecs:ListTagsForResource
               - ecs:DeleteCluster
+              - ecs:UpdateCluster
             Resource: "*"
 
   ##################################################
