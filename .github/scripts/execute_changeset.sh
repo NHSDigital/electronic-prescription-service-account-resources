@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 aws cloudformation execute-change-set \
   --stack-name "$STACK_NAME" \
