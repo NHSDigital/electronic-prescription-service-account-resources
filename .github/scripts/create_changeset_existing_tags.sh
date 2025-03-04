@@ -2,6 +2,9 @@
 
 cd ../..
 
+AWS_MAX_ATTEMPTS=10
+export AWS_MAX_ATTEMPTS
+
 current_deployed_tag=$(aws cloudformation describe-stacks --stack-name  "$STACK_NAME" --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
 if [ "${current_deployed_tag}" == "" ]; then
   echo "Can not find target tag. Using initial tag in repo"

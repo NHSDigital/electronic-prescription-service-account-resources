@@ -2,6 +2,9 @@
 
 echo "$COMMIT_ID"
 
+AWS_MAX_ATTEMPTS=10
+export AWS_MAX_ATTEMPTS
+
 artifact_bucket=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "account-resources:ArtifactsBucket") | .Value' | grep -o '[^:]*$')
 export artifact_bucket
 

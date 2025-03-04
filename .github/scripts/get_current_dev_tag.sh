@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+AWS_MAX_ATTEMPTS=10
+export AWS_MAX_ATTEMPTS
+
 dev_account_resources_tag=$(aws cloudformation describe-stacks --stack-name account-resources --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
 export dev_account_resources_tag
 

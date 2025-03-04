@@ -2,6 +2,8 @@
 
 cd ../..
 
+AWS_MAX_ATTEMPTS=10
+export AWS_MAX_ATTEMPTS
 ROLE=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
 
 # wait for stack to finish creating or updating
