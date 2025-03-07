@@ -13,8 +13,9 @@ describe("transformLogEvent tests for lambda log groups", () => {
       id: 1
     }
     const logGroup = "/aws/lambda/foo"
+    const logStream = "bar"
     const accountNumber = 1234
-    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, accountNumber)
+    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, logStream, accountNumber)
     const expectedResult = {
       host: "AWS:AccountNumber:1234",
       source: "AWS:LogGroup:/aws/lambda/foo",
@@ -37,8 +38,9 @@ describe("transformLogEvent tests for lambda log groups", () => {
       id: 1
     }
     const logGroup = "/aws/lambda/foo"
+    const logStream = "bar"
     const accountNumber = 1234
-    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, accountNumber)
+    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, logStream, accountNumber)
     const expectedResult = {
       host: "AWS:AccountNumber:1234",
       source: "AWS:LogGroup:/aws/lambda/foo",
@@ -61,8 +63,9 @@ describe("transformLogEvent tests for lambda log groups", () => {
       id: 1
     }
     const logGroup = "/aws/lambda/foo"
+    const logStream = "bar"
     const accountNumber = 1234
-    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, accountNumber)
+    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, logStream, accountNumber)
     const expectedResult = {
       host: "AWS:AccountNumber:1234",
       source: "AWS:LogGroup:/aws/lambda/foo",
@@ -86,8 +89,9 @@ describe("transformLogEvent tests for lambda log groups", () => {
       id: 1
     }
     const logGroup = "/aws/lambda/foo"
+    const logStream = "bar"
     const accountNumber = 1234
-    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, accountNumber)
+    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, logStream, accountNumber)
     const expectedResult = {
       host: "AWS:AccountNumber:1234",
       source: "AWS:LogGroup:/aws/lambda/foo",
@@ -111,8 +115,9 @@ describe("transformLogEvent tests for lambda log groups", () => {
       id: 1
     }
     const logGroup = "/aws/lambda/foo"
+    const logStream = "bar"
     const accountNumber = 1234
-    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, accountNumber)
+    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, logStream, accountNumber)
     const expectedResult = {
       host: "AWS:AccountNumber:1234",
       source: "AWS:LogGroup:/aws/lambda/foo",
@@ -135,8 +140,9 @@ describe("transformLogEvent tests for lambda log groups", () => {
       id: 1
     }
     const logGroup = "/aws/lambda/foo"
+    const logStream = "bar"
     const accountNumber = 1234
-    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, accountNumber)
+    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, logStream, accountNumber)
     const expectedResult = {
       host: "AWS:AccountNumber:1234",
       source: "AWS:LogGroup:/aws/lambda/foo",
@@ -156,8 +162,9 @@ describe("transformLogEvent tests for lambda log groups", () => {
       id: 1
     }
     const logGroup = "/aws/foo"
+    const logStream = "bar"
     const accountNumber = 1234
-    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, accountNumber)
+    const transformedLogEvent = await transformLogEvent(logEvent, logGroup, logStream, accountNumber)
     const expectedResult = {
       host: "AWS:AccountNumber:1234",
       source: "AWS:LogGroup:/aws/foo",
