@@ -128,7 +128,7 @@ function transformEcsLogEvent(logEvent, logStream) {
     eventMessage.containerName = containerName
     eventMessage.ecsTaskId = ecsTaskId
   } catch (_) {
-    // we cant parse it to JSON so just set msg to the message
+    // we cant parse it to JSON so just log the message
     // and add container name and ecs task id
     eventMessage = {
       message: logEvent.message,
@@ -138,6 +138,7 @@ function transformEcsLogEvent(logEvent, logStream) {
   }
   return eventMessage
 }
+
 function transformStepFunctionsLogEvent(logEvent) {
   let eventMessage
   try {
@@ -186,7 +187,7 @@ function transformLogEvent(logEvent, logGroup, logStream, accountNumber) {
     eventMessage = transformEcsLogEvent(logEvent, logStream)
   } else {
     /*
-    its not a lambda or stepfunction log so try to parse it to JSON,
+    its not a lambda, stepfunction or ecs log so try to parse it to JSON,
     but if it cant then just use the raw message
     */
     try {
