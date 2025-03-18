@@ -293,6 +293,22 @@ Resources:
       Type: String
       Value: ChangeMe
 
+  ArtilleryFhirClientId:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: API client id used for FHIR api load testing
+      Name: /artilleryio/fhirClientId
+      Type: String
+      Value: ChangeMe
+
+  ArtilleryFhirClientSecret:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: API client secret used for FHIR api load testing
+      Name: /artilleryio/fhirClientSecret
+      Type: String
+      Value: ChangeMe
+
   ##################################################
   # VPC Security group, allowing outbound traffic (i.e. hit the test target), but forbids inbound traffic
   ##################################################

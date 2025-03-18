@@ -115,6 +115,30 @@ function transformLambdaLogEvent(logEvent) {
   return eventMessage
 }
 
+function transformEcsLogEvent(logEvent, logStream) {
+  // for ECS log events, we just want to extract the container name from the log stream
+  const splitLogStreamNames = logStream.split("/")
+  const containerName = splitLogStreamNames[1] || "unknown"
+  const ecsTaskId = splitLogStreamNames[2] || "unknown"
+
+  let eventMessage
+  try {
+    // First try and parse message as JSON
+    eventMessage = JSON.parse(logEvent.message)
+    eventMessage.containerName = containerName
+    eventMessage.ecsTaskId = ecsTaskId
+  } catch (_) {
+    // we cant parse it to JSON so just log the message
+    // and add container name and ecs task id
+    eventMessage = {
+      message: logEvent.message,
+      containerName: containerName,
+      ecsTaskId: ecsTaskId
+    }
+  }
+  return eventMessage
+}
+
 function transformStepFunctionsLogEvent(logEvent) {
   let eventMessage
   try {
@@ -153,15 +177,17 @@ function transformStepFunctionsLogEvent(logEvent) {
   return eventMessage
 }
 
-function transformLogEvent(logEvent, logGroup, accountNumber) {
+function transformLogEvent(logEvent, logGroup, logStream, accountNumber) {
   let eventMessage = ""
   if (logGroup.startsWith("/aws/lambda/")) {
     eventMessage = transformLambdaLogEvent(logEvent)
   } else if (logGroup.startsWith("/aws/stepfunctions/")) {
     eventMessage = transformStepFunctionsLogEvent(logEvent)
+  } else if (logGroup.startsWith("/aws/ecs/")) {
+    eventMessage = transformEcsLogEvent(logEvent, logStream)
   } else {
     /*
-    its not a lambda or stepfunction log so try to parse it to JSON,
+    its not a lambda, stepfunction or ecs log so try to parse it to JSON,
     but if it cant then just use the raw message
     */
     try {
@@ -314,9 +340,10 @@ exports.handler = (event, context, callback) => {
       }
       if (data.messageType === "DATA_MESSAGE") {
         const logGroup = data.logGroup
+        const logStream = data.logStream
         const accountNumber = data.owner
         if (logGroup && accountNumber) {
-          const promises = data.logEvents.map((logEvent) => transformLogEvent(logEvent, logGroup, accountNumber))
+          const promises = data.logEvents.map((logEvent) => transformLogEvent(logEvent, logGroup, logStream, accountNumber))
           return Promise.all(promises).then((transformed) => {
             const payload = transformed.reduce((a, v) => a + v, "")
             const encoded = Buffer.from(payload).toString("base64")
