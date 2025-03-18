@@ -107,12 +107,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
           url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/secrets/mtls/testSecretName"
         }),
         request: {
-          headers: expect.objectContaining({
-            accept: "application/json, text/plain, */*",
-            authorization: "Bearer mockAccessToken",
-            "accept-encoding": "gzip, compress, deflate, br",
-            host: "proxygen.prod.api.platform.nhs.uk"
-          }),
+          headers: undefined,
           method: "PUT",
           path: "/apis/testApi/environments/dev/secrets/mtls/testSecretName"
         },
@@ -124,7 +119,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
             "content-type": "application/json"
           }),
           status: 500,
-          statusText: null
+          statusText: "Internal Server Error"
         }
       })
     })

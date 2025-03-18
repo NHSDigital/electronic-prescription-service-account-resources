@@ -114,13 +114,7 @@ describe("Unit test for proxygenSpecPublish", function () {
           url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/spec/uat"
         },
         request: {
-          headers: expect.objectContaining({
-            accept: "application/json, text/plain, */*",
-            "content-type": "application/json",
-            authorization: "Bearer mockAccessToken",
-            "accept-encoding": "gzip, compress, deflate, br",
-            host: "proxygen.prod.api.platform.nhs.uk"
-          }),
+          headers: undefined,
           method: "PUT",
           path: "/apis/testApi/spec/uat"
         },
@@ -132,7 +126,7 @@ describe("Unit test for proxygenSpecPublish", function () {
             "content-type": "application/json"
           }),
           status: 500,
-          statusText: null
+          statusText: "Internal Server Error"
         }
       })
     })

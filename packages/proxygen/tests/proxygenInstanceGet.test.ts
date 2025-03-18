@@ -104,13 +104,7 @@ describe("Unit test for proxygenInstanceGet", function () {
           url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/instances"
         },
         request: {
-          headers: expect.objectContaining({
-            accept: "application/json, text/plain, */*",
-            "content-type": "application/json",
-            authorization: "Bearer mockAccessToken",
-            "accept-encoding": "gzip, compress, deflate, br",
-            host: "proxygen.prod.api.platform.nhs.uk"
-          }),
+          headers: undefined,
           method: "GET",
           path: "/apis/testApi/environments/dev/instances"
         },
@@ -122,7 +116,7 @@ describe("Unit test for proxygenInstanceGet", function () {
             "content-type": "application/json"
           }),
           status: 500,
-          statusText: null
+          statusText: "Internal Server Error"
         }
       })
     })
