@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+set -e
+
+AWS_MAX_ATTEMPTS=10
+export AWS_MAX_ATTEMPTS
 
 STATUS="CREATE_IN_PROGRESS"
 while [ "$STATUS" == "CREATE_IN_PROGRESS" ]
