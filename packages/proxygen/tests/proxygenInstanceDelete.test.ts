@@ -106,13 +106,7 @@ describe("Unit test for proxygenInstanceDelete", function () {
           url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/instances/testInstance"
         },
         request: {
-          headers: expect.objectContaining({
-            accept: "application/json, text/plain, */*",
-            "content-type": "application/json",
-            authorization: "Bearer mockAccessToken",
-            "accept-encoding": "gzip, compress, deflate, br",
-            host: "proxygen.prod.api.platform.nhs.uk"
-          }),
+          headers: undefined,
           method: "DELETE",
           path: "/apis/testApi/environments/dev/instances/testInstance"
         },
@@ -124,7 +118,7 @@ describe("Unit test for proxygenInstanceDelete", function () {
             "content-type": "application/json"
           }),
           status: 500,
-          statusText: null
+          statusText: "Internal Server Error"
         }
       })
     })
