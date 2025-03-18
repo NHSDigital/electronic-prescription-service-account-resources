@@ -42,7 +42,14 @@ describe("checkCertificateExpiry", () => {
     const formattedDateWithoutComma = formattedDate.replace(/,/g, "")
 
     const testString = `Certificate valid-certificate is valid. Expiry date: ${formattedDateWithoutComma}`
-    expect(mockLoggerInfo).toHaveBeenCalledWith(testString)
+    const contextInfo = {
+      "secret": {
+        "Arn": "valid-arn",
+        "Name": "valid-certificate",
+        "formattedEndDate": formattedDateWithoutComma
+      }
+    }
+    expect(mockLoggerInfo).toHaveBeenCalledWith(testString, contextInfo)
   })
 
   it("should log error for expiring certificate", () => {
@@ -59,10 +66,37 @@ describe("checkCertificateExpiry", () => {
       VersionId: "expiring-version-id",
       VersionStages: ["expiring-stage"]
     }
+    const today = new Date()
+
+    const futureDate = new Date(today)
+    futureDate.setDate(today.getDate() + 23)
+
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "short",
+      month: "short",
+      day: "2-digit",
+      year: "numeric"
+    }
+
+    const formattedDate = futureDate.toLocaleDateString("en-US", options)
+
+    const formattedDateWithoutComma = formattedDate.replace(/,/g, "")
+
     checkCertificateExpiry(expiringSecret, logger)
+    const contextInfo = {
+      "secret": {
+        "Arn": "expiring-arn",
+        "Name": "expiring-certificate",
+        "daysToExpiry": 23,
+        "formattedEndDate": formattedDateWithoutComma
+      }
+    }
 
     expect(mockLoggerInfo).toHaveBeenCalled()
-    expect(mockLoggerInfo).toHaveBeenCalledWith("Certificate expiring-certificate expires in 23 days")
+    expect(mockLoggerInfo).toHaveBeenCalledWith(
+      "Certificate expiring-certificate expires in 23 days",
+      contextInfo
+    )
   })
 
   it("should log a critical warning if a certificate is checked and has expired", () => {
@@ -79,7 +113,57 @@ describe("checkCertificateExpiry", () => {
     }
     checkCertificateExpiry(expiredSecret, logger)
 
-    expect(mockLoggerInfo).toHaveBeenCalledWith("Certificate expired-certificate has expired")
+    const today = new Date()
 
+    const pastDate = new Date(today)
+    pastDate.setDate(today.getDate() - 2)
+
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "short",
+      month: "short",
+      day: "2-digit",
+      year: "numeric"
+    }
+
+    const formattedDate = pastDate.toLocaleDateString("en-US", options)
+
+    const formattedDateWithoutComma = formattedDate.replace(/,/g, "")
+
+    const contextInfo = {
+      "secret": {
+        "Arn": "expired-arn",
+        "Name": "expired-certificate",
+        "formattedEndDate": formattedDateWithoutComma
+      }
+    }
+
+    expect(mockLoggerInfo).toHaveBeenCalledWith(
+      "Certificate expired-certificate has expired",
+      contextInfo
+    )
+
+  })
+
+  it("should log a warning if secret is set to ChangeMe", () => {
+    const mockLoggerWarn = jest.spyOn(Logger.prototype, "warn")
+
+    const validSecret: Secret = {
+      ARN: "change-me-arn",
+      CreatedDate: new Date(),
+      Name: "change-me-secret",
+      SecretString: "ChangeMe",
+      VersionId: "valid-version-id",
+      VersionStages: ["valid-stage"]
+    }
+    checkCertificateExpiry(validSecret, logger)
+
+    const testString = `Secret change-me-secret is still set to ChangeMe`
+    const contextInfo = {
+      "secret": {
+        "Arn": "change-me-arn",
+        "Name": "change-me-secret"
+      }
+    }
+    expect(mockLoggerWarn).toHaveBeenCalledWith(testString, contextInfo)
   })
 })

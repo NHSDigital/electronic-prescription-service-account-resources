@@ -57,7 +57,14 @@ describe("Unit test for app handler", function () {
     const formattedDateWithoutComma = formattedDate.replace(/,/g, "")
 
     const testString = `Certificate valid-certificate is valid. Expiry date: ${formattedDateWithoutComma}`
-    expect(mockLoggerInfo).toHaveBeenCalledWith(testString)
+    const contextInfo = {
+      "secret": {
+        "Arn": "valid-arn",
+        "Name": "valid-certificate",
+        "formattedEndDate": formattedDateWithoutComma
+      }
+    }
+    expect(mockLoggerInfo).toHaveBeenCalledWith(testString, contextInfo)
   })
 
   it("Log an error when something is wrong", async () => {
