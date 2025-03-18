@@ -1,5 +1,6 @@
 [project]
 python = "^3.12"
+name = "electronic-prescription-service-account-resources"
 
 [tool.poetry]
 name = "electronic-prescription-service-account-resources"
@@ -26,14 +27,14 @@ python = "^3.12"
 pyyaml = "^6.0"
 docopt = "^0.6.2"
 jsonpath-rw = "^1.4.0"
-semver = "^3.0.2"
-gitpython = "^3.1.43"
-pre-commit = "^4.0.1"
-cfn-lint = "^1.18.4"
+semver = "^3.0.4"
+gitpython = "^3.1.44"
+pre-commit = "^4.1.0"
+cfn-lint = "^1.29.1"
 
 [tool.poetry.dev-dependencies]
-flake8 = "^7.1.1"
-black = "^24.10"
+flake8 = "^7.1.2"
+black = "^25.1"
 pip-licenses = "^5.0.0"
 
 [tool.poetry.scripts]

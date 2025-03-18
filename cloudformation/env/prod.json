@@ -12,7 +12,9 @@
         "repo:NHSDigital/eps-prescription-status-update-api:environment:prod",
         "repo:NHSDigital/electronic-prescription-service-api:environment:prod",
         "repo:NHSDigital/eps-prescription-tracker-ui:environment:prod",
-        "repo:NHSDigital/eps-aws-dashboards:environment:prod"
+        "repo:NHSDigital/eps-aws-dashboards:environment:prod",
+        "repo:NHSDigital/eps-vpc-resources:environment:prod",
+        "repo:NHSDigital/eps-storage-resources:environment:prod"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -23,7 +25,9 @@
         "repo:NHSDigital/eps-prescription-status-update-api:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
-        "repo:NHSDigital/eps-aws-dashboards:*"
+        "repo:NHSDigital/eps-aws-dashboards:*",
+        "repo:NHSDigital/eps-vpc-resources:*",
+        "repo:NHSDigital/eps-storage-resources:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "NONE"
@@ -50,7 +54,11 @@
       ],
       "CDKPullImageClaimFilters": [
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
-        "repo:NHSDigital/eps-aws-dashboards:*"
+        "repo:NHSDigital/eps-aws-dashboards:*",
+        "repo:NHSDigital/eps-vpc-resources:*",
+        "repo:NHSDigital/eps-storage-resources:*",
+        "repo:NHSDigital/electronic-prescription-service-api:*",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
       ],
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:environment:prod"
@@ -66,9 +74,6 @@
       "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name",
       "ConcurrencyThreshold": 300,
       "EnableAlerts": "true"
-    },
-    "vpc-resources": {
-      "Environment": "prod"
     },
     "artillery-resources": {},
     "secrets": {}

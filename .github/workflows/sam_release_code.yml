@@ -42,7 +42,7 @@ on:
 
 jobs:
   sam_release_code:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: ${{ inputs.TARGET_ENVIRONMENT }}
     permissions:
       id-token: write
@@ -62,7 +62,7 @@ jobs:
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
-          role-session-name: github-actions
+          role-session-name: account-resources-deploy-sam-stack
 
       - name: download build artifact
         uses: actions/download-artifact@v4

@@ -8,7 +8,7 @@ env:
 
 jobs:
   quality_checks:
-    uses: ./.github/workflows/quality_checks.yml
+    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@v4.0.5
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -16,7 +16,7 @@ jobs:
     uses: ./.github/workflows/sam_package_code.yml
 
   get_commit_id:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       commit_id: ${{ steps.commit_id.outputs.commit_id }}
     steps:
@@ -27,7 +27,7 @@ jobs:
     
   tag_release:
     needs: [quality_checks, package_code, get_commit_id]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       version_tag: ${{ steps.output_version_tag.outputs.VERSION_TAG }}
       change_set_version: ${{ steps.output_change_set_version.outputs.CHANGE_SET_VERSION }}

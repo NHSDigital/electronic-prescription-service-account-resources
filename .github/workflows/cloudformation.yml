@@ -42,7 +42,7 @@ on:
 jobs:
   create_change_set:
     name: Create CF Change Set
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       id-token: write
       contents: read
@@ -67,7 +67,7 @@ jobs:
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_create_changeset_role}}
-        role-session-name: github-actions
+        role-session-name: account-resources-create-changeset
 
     - name: check stack exists
       id: check_stack_exists
@@ -87,7 +87,7 @@ jobs:
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_deploy_role}}
-        role-session-name: github-actions
+        role-session-name: account-resources-create-empty-stack
 
     - name: create stack
       if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
@@ -102,7 +102,7 @@ jobs:
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_create_changeset_role}}
-        role-session-name: github-actions
+        role-session-name: account-resources-create-changeset
         
     - name: Parse Parameters
       env:
@@ -169,7 +169,7 @@ jobs:
     name: Execute Change Set
     if: ${{ inputs.execute_change_set == true }}
     needs: create_change_set
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: ${{ inputs.target_environment }}
     permissions:
       id-token: write
@@ -190,7 +190,7 @@ jobs:
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.cf_deploy_role }}
-          role-session-name: github-actions
+          role-session-name: account-resources-deploy-changeset
 
       - name: Execute Change Set
         shell: bash

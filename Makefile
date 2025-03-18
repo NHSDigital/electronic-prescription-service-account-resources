@@ -9,6 +9,7 @@ guard-%:
 .PHONY: install check-licenses lint
 
 install: install-python install-node install-hooks
+	sudo apt install faketime
 
 install-python:
 	poetry install

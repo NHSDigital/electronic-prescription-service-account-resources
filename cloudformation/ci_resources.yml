@@ -66,6 +66,7 @@ Resources:
         - 6938fd4d98bab03faadb97b34396831e3780aea1
       ClientIdList:
         - sts.amazonaws.com
+        - eps-storage-terraform
 
   AllowOpenIDProviderPermissionsPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -365,6 +366,7 @@ Resources:
               - logs:DescribeMetricFilters
               - logs:FilterLogEvents
               - logs:PutMetricFilter
+              - logs:DescribeIndexPolicies
               - lambda:Add*
               - lambda:Create*
               - lambda:Delete*
@@ -439,6 +441,7 @@ Resources:
               - elasticloadbalancing:AddListenerCertificates
               - elasticloadbalancing:ModifyListenerAttributes
               - elasticloadbalancing:RemoveListenerCertificates
+              - elasticloadbalancing:DescribeCapacityReservation
               - ecs:RegisterTaskDefinition
               - ecs:DeregisterTaskDefinition
               - ecs:UpdateService
@@ -584,6 +587,7 @@ Resources:
               - dynamodb:ListTables
               - dynamodb:ListTagsOfResource
               - dynamodb:GetResourcePolicy
+              - dynamodb:PutResourcePolicy
               - dynamodb:DescribeContributorInsights
               - dynamodb:DescribeContinuousBackups
               - dynamodb:DescribeKinesisStreamingDestination
@@ -599,6 +603,8 @@ Resources:
               - application-autoscaling:UntagResource
               - application-autoscaling:ListTagsForResource
               - application-autoscaling:DescribeScheduledActions
+              - application-autoscaling:PutScheduledAction
+              - application-autoscaling:DeleteScheduledAction
               - states:CreateActivity
               - states:CreateStateMachine
               - states:CreateStateMachineAlias
@@ -649,6 +655,7 @@ Resources:
               - cloudwatch:GetDashboard
               - cloudwatch:PutDashboard
               - cloudwatch:DeleteDashboards
+              - cloudwatch:ListTagsForResource
               - ecr:CreateRepository
               - ecr:DeleteRepository
               - ecr:DeleteRegistryPolicy
@@ -730,6 +737,7 @@ Resources:
           - cognito-identity:ListTagsForResource
           - cognito-idp:AssociateWebACL
           - cognito-idp:UpdateUserPool
+          - cognito-idp:GetUserPoolMfaConfig
           - cognito-identity:GetCredentialsForIdentity
           - cloudfront:AssociateAlias
           - cloudfront:CreateCachePolicy
@@ -813,6 +821,7 @@ Resources:
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomCrossRegionExport*
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomS3AutoDeleteObject*
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*AWS679f53fac002430cb0da5*
+          - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomVpcRestrictDefaultSG*
         - Effect: Allow
           Action: s3:List*
           Resource:
@@ -924,6 +933,7 @@ Resources:
               - ecs:UntagResource
               - ecs:ListTagsForResource
               - ecs:DeleteCluster
+              - ecs:UpdateCluster
             Resource: "*"
 
   ##################################################
@@ -1457,6 +1467,11 @@ Outputs:
     Value: !Ref GrantCloudFormationExecutionAccessPolicyD
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyD"]]
+  GrantCloudFormationExecutionEc2AccessPolicy:
+    Description: ARN of the IAM policy GrantCloudFormationExecutionEc2AccessPolicy
+    Value: !Ref GrantCloudFormationExecutionEc2AccessPolicy
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionEc2AccessPolicy"]]
   AllowCloudFormationSecretsAccessManagedPolicy:
     Description: ARN of the IAM policy AllowCloudFormationSecretsAccessManagedPolicy
     Value: !Ref AllowCloudFormationSecretsAccessManagedPolicy

@@ -384,6 +384,7 @@ Resources:
               - !ImportValue account-resources:FhirFacadeClientCertSecret
               - !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
               - !ImportValue account-resources:SpinePublicCertificate
+              - !ImportValue secrets:ptlPrescriptionSigningPublicKey
           - Effect: Allow
             Action:
               - secretsmanager:BatchGetSecretValue
@@ -458,7 +459,8 @@ Resources:
                 \"${FhirFacadeCACertSecret}\", \
                 \"${FhirFacadeClientCertSecret}\", \
                 \"${FhirFacadeClientSandboxCertSecret}\", \
-                \"${SpinePublicCertificate}\" ]}"
+                \"${SpinePublicCertificate}\", \
+                \"${ptlPrescriptionSigningPublicKey}\" ]}"
               - ClinicalTrackerCACertSecret: !ImportValue account-resources:ClinicalTrackerCACertSecret
                 ClinicalTrackerClientCertSecret: !ImportValue account-resources:ClinicalTrackerClientCertSecret
                 ClinicalTrackerClientSandboxCertSecret: !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
@@ -472,6 +474,7 @@ Resources:
                 FhirFacadeClientCertSecret: !ImportValue account-resources:FhirFacadeClientCertSecret
                 FhirFacadeClientSandboxCertSecret: !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
                 SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
+                ptlPrescriptionSigningPublicKey: !ImportValue secrets:ptlPrescriptionSigningPublicKey
     Metadata:
       BuildMethod: esbuild
       guard:
@@ -830,6 +833,8 @@ Resources:
               - !ImportValue account-resources:ClinicalTrackerProxygenPrivateKey
               - !ImportValue secrets:PrescribingProxygenPrivateKey
               - !ImportValue secrets:DispensingProxygenPrivateKey
+              - !ImportValue secrets:FhirPrescribingProxygenPrivateKey
+              - !ImportValue secrets:FhirDispensingProxygenPrivateKey
 
   ProxygenPTLInstancePutFunctionResources:
     Type: AWS::Serverless::Application
