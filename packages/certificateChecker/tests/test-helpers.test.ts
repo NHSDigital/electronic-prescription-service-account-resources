@@ -143,4 +143,27 @@ describe("checkCertificateExpiry", () => {
     )
 
   })
+
+  it("should log a warning if secret is set to ChangeMe", () => {
+    const mockLoggerWarn = jest.spyOn(Logger.prototype, "warn")
+
+    const validSecret: Secret = {
+      ARN: "change-me-arn",
+      CreatedDate: new Date(),
+      Name: "change-me-secret",
+      SecretString: "ChangeMe",
+      VersionId: "valid-version-id",
+      VersionStages: ["valid-stage"]
+    }
+    checkCertificateExpiry(validSecret, logger)
+
+    const testString = `Secret change-me-secret is still set to ChangeMe`
+    const contextInfo = {
+      "secret": {
+        "Arn": "change-me-arn",
+        "Name": "change-me-secret"
+      }
+    }
+    expect(mockLoggerWarn).toHaveBeenCalledWith(testString, contextInfo)
+  })
 })
