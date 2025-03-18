@@ -330,6 +330,12 @@ Resources:
 
   GrantCloudFormationExecutionAccessPolicyA:
     Type: AWS::IAM::ManagedPolicy
+    Metadata:
+      # ignore warning about invalid policies as AWS source does not reflect policies that are available
+      cfn-lint:
+        config:
+          ignore_checks:
+            - W3037
     Properties:
       Roles:
         - Ref: CloudFormationExecutionRole
@@ -569,6 +575,12 @@ Resources:
 
   GrantCloudFormationExecutionAccessPolicyC:
     Type: AWS::IAM::ManagedPolicy
+    Metadata:
+      # ignore warning about invalid policies as AWS source does not reflect policies that are available
+      cfn-lint:
+        config:
+          ignore_checks:
+            - W3037
     Properties:
       Roles:
         - Ref: CloudFormationExecutionRole
@@ -681,6 +693,12 @@ Resources:
 
   GrantCloudFormationExecutionAccessPolicyD:
     Type: AWS::IAM::ManagedPolicy
+    Metadata:
+      # ignore warning about invalid policies as AWS source does not reflect policies that are available
+      cfn-lint:
+        config:
+          ignore_checks:
+            - W3037
     Properties:
       Roles:
         - Ref: CloudFormationExecutionRole
@@ -832,6 +850,12 @@ Resources:
 
   GrantCloudFormationExecutionEc2AccessPolicy:
     Type: AWS::IAM::ManagedPolicy
+    Metadata:
+      # ignore warning about invalid policies as AWS source does not reflect policies that are available
+      cfn-lint:
+        config:
+          ignore_checks:
+            - W3037
     Properties:
       Roles:
         - Ref: CloudFormationExecutionRole
