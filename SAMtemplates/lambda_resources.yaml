@@ -384,7 +384,7 @@ Resources:
               - !ImportValue account-resources:FhirFacadeClientCertSecret
               - !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
               - !ImportValue account-resources:SpinePublicCertificate
-              - !ImportValue secret-resources:ptlPrescriptionSigningPublicKey
+              - !ImportValue secrets:ptlPrescriptionSigningPublicKey
           - Effect: Allow
             Action:
               - secretsmanager:BatchGetSecretValue
@@ -474,7 +474,7 @@ Resources:
                 FhirFacadeClientCertSecret: !ImportValue account-resources:FhirFacadeClientCertSecret
                 FhirFacadeClientSandboxCertSecret: !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
                 SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
-                ptlPrescriptionSigningPublicKey: !ImportValue secret-resources:ptlPrescriptionSigningPublicKey
+                ptlPrescriptionSigningPublicKey: !ImportValue secrets:ptlPrescriptionSigningPublicKey
     Metadata:
       BuildMethod: esbuild
       guard:
