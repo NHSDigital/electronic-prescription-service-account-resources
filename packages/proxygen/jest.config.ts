@@ -3,7 +3,11 @@ import defaultConfig from "../../jest.default.config"
 
 const jestConfig: JestConfigWithTsJest = {
   ...defaultConfig,
-  rootDir: "./"
+  rootDir: "./",
+  moduleNameMapper: {
+    ...defaultConfig.moduleNameMapper,
+    "^aws-sdk-client-mock-jest$": "<rootDir>/../../node_modules/aws-sdk-client-mock-jest/dist/cjs/jest.js"
+  },
 }
 
 export default jestConfig
