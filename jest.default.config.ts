@@ -5,8 +5,7 @@ const jestConfig: JestConfigWithTsJest = {
   preset: "ts-jest/presets/default-esm",
   moduleFileExtensions: ["js", "json", "ts", "d.ts"],
   moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
-    "^aws-sdk-client-mock-jest$": "<rootDir>/../../node_modules/aws-sdk-client-mock-jest/dist/cjs/jest.js"
+    "^(\\.{1,2}/.*)\\.js$": "$1"
   },
   transform: {
     "^.+\\.ts?$": [
