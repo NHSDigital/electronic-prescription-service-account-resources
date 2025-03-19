@@ -152,18 +152,18 @@ files = [
 
 [[package]]
 name = "cfn-lint"
-version = "1.30.0"
+version = "1.31.3"
 description = "Checks CloudFormation templates for practices and behaviour that could potentially be improved"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "cfn_lint-1.30.0-py3-none-any.whl", hash = "sha256:d568262b4595c2b5db58985ba3cde8fe7cebe3288c4f56312c22220b4b4efac9"},
-    {file = "cfn_lint-1.30.0.tar.gz", hash = "sha256:3ca7625e915941b38b44f3329f1d35e8c8a250a157a95e0f5b99c8ce8b17c1b8"},
+    {file = "cfn_lint-1.31.3-py3-none-any.whl", hash = "sha256:06b5e87e9dc64e34ac96cdc8763a96b0d15dd4d792df9992b3fd71629152ea6a"},
+    {file = "cfn_lint-1.31.3.tar.gz", hash = "sha256:94fdd8ae154af77750c2502e4d78bbfcfeeaa9437d883de72adda91c3ee0d957"},
 ]
 
 [package.dependencies]
-aws-sam-translator = ">=1.94.0"
+aws-sam-translator = ">=1.95.0"
 jsonpatch = "*"
 networkx = ">=2.4,<4"
 pyyaml = ">5.4"
@@ -1248,4 +1248,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "48f5d0be7a4f5478f7f96266019c72e00375216e26e19c4b5109d296c87b6592"
+content-hash = "d4b40c03ba4e0fd0266bf010b07c4f6be198430f81c21230aec2bde0326e05d0"
