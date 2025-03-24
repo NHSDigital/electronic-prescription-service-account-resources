@@ -824,6 +824,21 @@ Resources:
           - cloudfront:UpdateResponseHeadersPolicy
           - cloudfront:ListTagsForResource
           - cloudfront:DeleteDistribution
+          - rum:CreateAppMonitor
+          - rum:DeleteAppMonitor
+          - rum:DeleteResourcePolicy
+          - rum:DeleteRumMetricsDestination
+          - rum:GetAppMonitor
+          - rum:GetResourcePolicy
+          - rum:ListAppMonitors
+          - rum:ListRumMetricsDestinations
+          - rum:ListTagsForResource
+          - rum:PutResourcePolicy
+          - rum:PutRumMetricsDestination
+          - rum:TagResource
+          - rum:UntagResource
+          - rum:UpdateAppMonitor
+          - rum:UpdateRumMetricDefinition
           Resource: "*"
         - Effect: Allow
           Action:
@@ -840,6 +855,7 @@ Resources:
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomS3AutoDeleteObject*
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*AWS679f53fac002430cb0da5*
           - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*CustomVpcRestrictDefaultSG*
+          - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*uploadRum*
         - Effect: Allow
           Action: s3:List*
           Resource:
