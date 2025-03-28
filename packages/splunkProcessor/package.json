@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.17.0",
-    "@aws-sdk/client-firehose": "^3.775.0",
+    "@aws-sdk/client-firehose": "^3.777.0",
     "@aws-sdk/client-kinesis": "^3.777.0",
     "aws-sdk": "^2.1692.0"
   }
