@@ -824,6 +824,21 @@ Resources:
           - cloudfront:UpdateResponseHeadersPolicy
           - cloudfront:ListTagsForResource
           - cloudfront:DeleteDistribution
+          - rum:CreateAppMonitor
+          - rum:DeleteAppMonitor
+          - rum:DeleteResourcePolicy
+          - rum:DeleteRumMetricsDestination
+          - rum:GetAppMonitor
+          - rum:GetResourcePolicy
+          - rum:ListAppMonitors
+          - rum:ListRumMetricsDestinations
+          - rum:ListTagsForResource
+          - rum:PutResourcePolicy
+          - rum:PutRumMetricsDestination
+          - rum:TagResource
+          - rum:UntagResource
+          - rum:UpdateAppMonitor
+          - rum:UpdateRumMetricDefinition
           Resource: "*"
         - Effect: Allow
           Action:
