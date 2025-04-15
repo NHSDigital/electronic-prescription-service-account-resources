@@ -689,6 +689,12 @@ Resources:
               - ecr:GetLifecyclePolicy
               - ecr:DeleteLifecyclePolicy
               - ecr:PutLifecyclePolicy
+              - events:DescribeRule
+              - events:PutRule
+              - events:DeleteRule
+              - events:PutTargets
+              - events:RemoveTargets
+              - events:ListRules
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyD:
