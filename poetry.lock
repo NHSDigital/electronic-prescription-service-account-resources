@@ -34,21 +34,21 @@ tests-mypy = ["mypy (>=1.11.1) ; platform_python_implementation == \"CPython\" a
 
 [[package]]
 name = "aws-sam-translator"
-version = "1.95.0"
+version = "1.96.0"
 description = "AWS SAM Translator is a library that transform SAM templates into AWS CloudFormation templates"
 optional = false
 python-versions = "!=4.0,<=4.0,>=3.8"
 groups = ["main"]
 files = [
-    {file = "aws_sam_translator-1.95.0-py3-none-any.whl", hash = "sha256:c9e0f22cbe83c768f7d20a3afb7e654bd6bfc087b387528bd48e98366b82ae40"},
-    {file = "aws_sam_translator-1.95.0.tar.gz", hash = "sha256:fd2b891fc4cbdde1e06130eaf2710de5cc74442a656b7859b3840691144494cf"},
+    {file = "aws_sam_translator-1.96.0-py3-none-any.whl", hash = "sha256:dd61017ec5cf35f69fbd596fade27d3e19959bba61f835ea0e083588bbcdfc70"},
+    {file = "aws_sam_translator-1.96.0.tar.gz", hash = "sha256:0c6c36dac13bff7df4f24896fa9ce3da2de4cdc4d10909e1fca7359ec5bc49c1"},
 ]
 
 [package.dependencies]
 boto3 = ">=1.19.5,<2.dev0"
 jsonschema = ">=3.2,<5"
 pydantic = ">=1.8,<1.10.15 || >1.10.15,<1.10.17 || >1.10.17,<3"
-typing-extensions = ">=4.4"
+typing_extensions = ">=4.4"
 
 [package.extras]
 dev = ["black (==24.3.0)", "boto3 (>=1.23,<2)", "boto3-stubs[appconfig,serverlessrepo] (>=1.19.5,<2.dev0)", "coverage (>=5.3,<8)", "dateparser (>=1.1,<2.0)", "mypy (>=1.3.0,<1.4.0)", "parameterized (>=0.7,<1.0)", "pytest (>=6.2,<8)", "pytest-cov (>=2.10,<5)", "pytest-env (>=0.6,<1)", "pytest-rerunfailures (>=9.1,<12)", "pytest-xdist (>=2.5,<4)", "pyyaml (>=6.0,<7.0)", "requests (>=2.28,<3.0)", "ruamel.yaml (==0.17.21)", "ruff (>=0.4.5,<0.5.0)", "tenacity (>=8.0,<9.0)", "types-PyYAML (>=6.0,<7.0)", "types-jsonschema (>=3.2,<4.0)"]
@@ -152,18 +152,18 @@ files = [
 
 [[package]]
 name = "cfn-lint"
-version = "1.32.0"
+version = "1.33.2"
 description = "Checks CloudFormation templates for practices and behaviour that could potentially be improved"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "cfn_lint-1.32.0-py3-none-any.whl", hash = "sha256:b3e8cae8b37ef6794efa6cd747f3398a8c8f4dc4d39d69b068be2fec277545a2"},
-    {file = "cfn_lint-1.32.0.tar.gz", hash = "sha256:1289184aaca0275dd62638598fd07c6f01023fa6a37d966b3b6f089e30a3d194"},
+    {file = "cfn_lint-1.33.2-py3-none-any.whl", hash = "sha256:0e67f921b190166bf66118526c4889cbd6eb49864fbb8ba8b5042930b6fa436c"},
+    {file = "cfn_lint-1.33.2.tar.gz", hash = "sha256:46336435eb39cd39b50809ee1c88e1c74c5312e37268af791b691011e0a851fa"},
 ]
 
 [package.dependencies]
-aws-sam-translator = ">=1.95.0"
+aws-sam-translator = ">=1.96.0"
 jsonpatch = "*"
 networkx = ">=2.4,<4"
 pyyaml = ">5.4"
@@ -259,20 +259,20 @@ typing = ["typing-extensions (>=4.12.2) ; python_version < \"3.11\""]
 
 [[package]]
 name = "flake8"
-version = "7.1.2"
+version = "7.2.0"
 description = "the modular source code checker: pep8 pyflakes and co"
 optional = false
-python-versions = ">=3.8.1"
+python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "flake8-7.1.2-py2.py3-none-any.whl", hash = "sha256:1cbc62e65536f65e6d754dfe6f1bada7f5cf392d6f5db3c2b85892466c3e7c1a"},
-    {file = "flake8-7.1.2.tar.gz", hash = "sha256:c586ffd0b41540951ae41af572e6790dbd49fc12b3aa2541685d253d9bd504bd"},
+    {file = "flake8-7.2.0-py2.py3-none-any.whl", hash = "sha256:93b92ba5bdb60754a6da14fa3b93a9361fd00a59632ada61fd7b130436c40343"},
+    {file = "flake8-7.2.0.tar.gz", hash = "sha256:fa558ae3f6f7dbf2b4f22663e5343b6b6023620461f8d4ff2019ef4b5ee70426"},
 ]
 
 [package.dependencies]
 mccabe = ">=0.7.0,<0.8.0"
-pycodestyle = ">=2.12.0,<2.13.0"
-pyflakes = ">=3.2.0,<3.3.0"
+pycodestyle = ">=2.13.0,<2.14.0"
+pyflakes = ">=3.3.0,<3.4.0"
 
 [[package]]
 name = "gitdb"
@@ -600,14 +600,14 @@ tests = ["pytest", "pytest-cov", "pytest-lazy-fixtures"]
 
 [[package]]
 name = "pycodestyle"
-version = "2.12.1"
+version = "2.13.0"
 description = "Python style guide checker"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "pycodestyle-2.12.1-py2.py3-none-any.whl", hash = "sha256:46f0fb92069a7c28ab7bb558f05bfc0110dac69a0cd23c61ea0040283a9d78b3"},
-    {file = "pycodestyle-2.12.1.tar.gz", hash = "sha256:6838eae08bbce4f6accd5d5572075c63626a15ee3e6f842df996bf62f6d73521"},
+    {file = "pycodestyle-2.13.0-py2.py3-none-any.whl", hash = "sha256:35863c5974a271c7a726ed228a14a4f6daf49df369d8c50cd9a6f58a5e143ba9"},
+    {file = "pycodestyle-2.13.0.tar.gz", hash = "sha256:c8415bf09abe81d9c7f872502a6eee881fbe85d8763dd5b9924bb0a01d67efae"},
 ]
 
 [[package]]
@@ -746,14 +746,14 @@ typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
 name = "pyflakes"
-version = "3.2.0"
+version = "3.3.1"
 description = "passive checker of Python programs"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "pyflakes-3.2.0-py2.py3-none-any.whl", hash = "sha256:84b5be138a2dfbb40689ca07e2152deb896a65c3a3e24c251c5c62489568074a"},
-    {file = "pyflakes-3.2.0.tar.gz", hash = "sha256:1c61603ff154621fb2a9172037d84dca3500def8c8b630657d1701f026f8af3f"},
+    {file = "pyflakes-3.3.1-py2.py3-none-any.whl", hash = "sha256:af4d63344d478524956e9950a9ae11da51414622479b8c148647fe9722e96837"},
+    {file = "pyflakes-3.3.1.tar.gz", hash = "sha256:8752eee11d4ef3a4be642d774863047864b47406cba906fabf8dd892cf98d5b3"},
 ]
 
 [[package]]
@@ -1248,4 +1248,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "123a60ac2e2fe7ebf95e5924ee7e5082e23f784d28443458ad5ee19512e09441"
+content-hash = "0f61229776f098dda4f40dbc14c311b274f8563b057c2d55de2f491bfea307c0"
