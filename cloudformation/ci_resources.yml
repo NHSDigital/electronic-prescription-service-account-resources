@@ -1332,6 +1332,12 @@ Resources:
             Action:
               - ecr:GetAuthorizationToken
             Resource: "*"
+          - Effect: Allow
+            Action:
+              - inspector2:ListCoverage
+              - inspector2:ListFindings
+            Resource: !Sub "arn:aws:inspector2:${AWS::Region}:${AWS::AccountId}:*"
+
 Outputs:
   ##################################################
   # Cloudformation Deployment Role Outputs
