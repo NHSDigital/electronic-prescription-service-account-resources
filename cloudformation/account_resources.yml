@@ -1,5 +1,4 @@
 AWSTemplateFormatVersion: "2010-09-09"
-
 Resources:
   #region API Gateway
   ApiGwCloudWatchRole:
@@ -1477,6 +1476,9 @@ Resources:
   #endregion
 
   # region inspector filters
+  # these are CVEs that should be ignored when scanning container images uploaded to ECR
+  # we should only add items into here when the vulnerability is not one that affects us,
+  # or there is agreement that we will not fix it and it is not a critical vulnerability for us
 
   SuppressCVE202522235:
     Type: AWS::InspectorV2::Filter
@@ -1630,7 +1632,8 @@ Resources:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2021-35515
-      Name: suppress_CVE-2021-35515 
+      Name: suppress_CVE-2021-35515
+
   #endregion
 
 Outputs:
