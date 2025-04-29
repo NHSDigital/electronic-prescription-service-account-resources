@@ -1,11 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: 'AWS::LanguageExtensions'
-Parameters:
-  InspectorFilters:
-    Type: CommaDelimitedList
-    Description: >
-      List of CVEs to suppress in inspector
-    Default: ""
 Mappings:
   InspectorFilterNames:
     InspectorFilterName:
@@ -1492,7 +1486,7 @@ Resources:
   Fn::ForEach::Filters:
     - CVEReference
     - [CVE202522235, CVE202521587]
-    - 'Instance${CVEReference}':
+    - 'InspectorFilter${CVEReference}':
         Type: AWS::InspectorV2::Filter
         Properties:
           Description: !FindInMap [InspectorFilterNames, InspectorFilterName, !Ref 'CVEReference']
