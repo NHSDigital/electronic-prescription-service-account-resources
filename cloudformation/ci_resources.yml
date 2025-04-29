@@ -845,6 +845,12 @@ Resources:
           - rum:UntagResource
           - rum:UpdateAppMonitor
           - rum:UpdateRumMetricDefinition
+          - inspector2:CreateFilter
+          - inspector2:DeleteFilter
+          - inspector2:ListFilters
+          - inspector2:UpdateFilter
+          - inspector2:TagResource
+          - inspector2:UntagResource
           Resource: "*"
         - Effect: Allow
           Action:
