@@ -538,6 +538,7 @@ Resources:
               - secretsmanager:Tag*
               - secretsmanager:Untag*
               - secretsmanager:GetSecretValue
+              - secretsmanager:GetRandomPassword
               - secretsmanager:PutResourcePolicy 
               - scheduler:GetSchedule
               - scheduler:CreateSchedule
