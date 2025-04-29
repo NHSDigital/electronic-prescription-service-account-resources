@@ -1,4 +1,16 @@
 AWSTemplateFormatVersion: "2010-09-09"
+Transform: 'AWS::LanguageExtensions'
+Parameters:
+  InspectorFilters:
+    Type: CommaDelimitedList
+    Description: >
+      List of CVEs to suppress in inspector
+    Default: ""
+Mappings:
+  InspectorFilterNames:
+    InspectorFilterName:
+      CVE202522235: CVE-2025-22235
+      CVE202521587: CVE-2025-21587
 Resources:
   #region API Gateway
   ApiGwCloudWatchRole:
@@ -1477,16 +1489,19 @@ Resources:
 
   # region inspector filters
 
-  SingleFilter:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-22235
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-22235
-      Name: suppress_CVE-2025-22235
+  Fn::ForEach::Filters:
+    - CVEReference
+    - [CVE202522235, CVE202521587]
+    - 'Instance${CVEReference}':
+        Type: AWS::InspectorV2::Filter
+        Properties:
+          Description: !FindInMap [InspectorFilterNames, InspectorFilterName, !Ref 'CVEReference']
+          FilterAction: SUPPRESS
+          FilterCriteria: 
+            VulnerabilityId:
+              - Comparison: EQUALS
+                Value: !FindInMap [InspectorFilterNames, InspectorFilterName, !Ref 'CVEReference']
+          Name: suppress_${CVEReference}
   #endregion
 
 Outputs:
