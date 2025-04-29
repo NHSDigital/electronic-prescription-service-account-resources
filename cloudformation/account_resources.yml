@@ -1495,7 +1495,7 @@ Resources:
             VulnerabilityId:
               - Comparison: EQUALS
                 Value: !FindInMap [InspectorFilterNames, InspectorFilterName, !Ref 'CVEReference']
-          Name: suppress_${CVEReference}
+          Name: 'suppress_${CVEReference}'
   #endregion
 
 Outputs:
