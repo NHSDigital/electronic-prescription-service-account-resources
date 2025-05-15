@@ -1845,6 +1845,20 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "PsuClientSandboxCertSecret"]]
   #endregion
 
+  #region NHS Notify secrets
+  PSUNotifyCallbackAppName:
+    Description: PSUNotifyCallbackAppName
+    Value: !GetAtt PSUNotifyCallbackAppName.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PSUNotifyCallbackAppName"]]
+
+  PSUNotifyCallbackApiKey:
+    Description: PSUNotifyCallbackApiKey
+    Value: !GetAtt PSUNotifyCallbackApiKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PSUNotifyCallbackApiKey"]]
+  #endregion
+
   #region EPS FHIR Facade CA Secrets Outputs
   FhirFacadeCAKeySecret:
     Description: ARN of the EPS FHIR facade CA key secret
@@ -1982,18 +1996,6 @@ Outputs:
     Value: !GetAtt ClinicalTrackerProxygenPublicKey.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPublicKey"]]
-
-  PSUNotifyCallbackAppName:
-    Description: PSUNotifyCallbackAppName
-    Value: !GetAtt PSUNotifyCallbackAppName.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "PSUNotifyCallbackAppName"]]
-
-  PSUNotifyCallbackApiKey:
-    Description: PSUNotifyCallbackApiKey
-    Value: !GetAtt PSUNotifyCallbackApiKey.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "PSUNotifyCallbackApiKey"]]
 
   SlackWebHookUrl:
     Description: Slack webhook url
