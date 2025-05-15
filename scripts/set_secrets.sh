@@ -369,6 +369,7 @@ get_gh_details() {
     GITHUB_ADMIN_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/eps-administrators --jq ".id")
     GITHUB_TESTERS_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/eps-testers --jq ".id")
     GITHUB_DEV_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/EPS --jq ".id")
+    GITHUB_DEPLOYMENTS_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/eps-deployments --jq ".id")
 }
 
 set_repository_secret() {
@@ -612,9 +613,12 @@ set_secrets() {
         PROXYGEN_PROD_ROLE \
         "$PROXYGEN_PROD_ROLE" \
         dependabot
+}
 
-
-    echo "setting environments"
+set_deployment_permissions() {
+    REPO=$1
+    echo "Setting deployment permissions in ${REPO}"
+    echo
 
     if [ "$REPO" = "NHSDigital/electronic-prescription-service-account-resources" ]; then
         # dev has no protection
@@ -624,70 +628,81 @@ set_secrets() {
         gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev-account"
         sleep 1
         gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev-lambda"
-
-        # qa allows admins and devs
+        # qa allows admins, devs and deployment groups
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/qa-ci" --input -
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/qa-account" --input -
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/qa-lambda" --input -
 
-        # ref allows admins and devs
+        # ref allows admins, devs and deployment groups
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/ref-ci" --input -
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/ref-account" --input -
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEV_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/ref-lambda" --input -
 
-        # int allows admins and devs
+        # int allows admins, devs and deployments group
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEPLOYMENTS_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int-ci" --input -
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEPLOYMENTS_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int-account" --input -
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEPLOYMENTS_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int-lambda" --input -
 
-        # prod only allows admins
+        # prod only allows admins and deployments group
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEPLOYMENTS_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod-ci" --input -
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEPLOYMENTS_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod-account" --input -
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEPLOYMENTS_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod-lamdbda" --input -
 
     else
@@ -699,34 +714,43 @@ set_secrets() {
         sleep 1
         gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${REPO}/environments/dev-pr"
 
-        # qa allows admins and devs
+        # qa allows admins, devs and deployment groups
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEPLOYMENTS_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/qa" --input -
 
-        # ref allows admins and devs
+        # ref allows admins, devs and deployments group
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEPLOYMENTS_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/ref" --input -
 
-        # int allows admins and devs
+        # int allows admins, devs and deployments group
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
                 --argjson GITHUB_DEV_GROUP "${GITHUB_DEV_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEPLOYMENTS_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEV_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/int" --input -
 
-        # prod only allows admins
+        # prod only allows admins and deployments group
         sleep 1
         jq -n   --argjson GITHUB_ADMIN_GROUP "${GITHUB_ADMIN_GROUP}" \
-            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
+                --argjson GITHUB_DEPLOYMENTS_GROUP "${GITHUB_DEPLOYMENTS_GROUP}" \
+            '{"prevent_self_review":false,"reviewers":[{"type":"Team","id":$GITHUB_ADMIN_GROUP}, {"type":"Team","id":$GITHUB_DEPLOYMENTS_GROUP}], "deployment_branch_policy":{"protected_branches":true,"custom_branch_policies":false}}' | \
             gh api -H "Accept: application/vnd.github+json" -X PUT "/repos/${REPO}/environments/prod" --input -
 
     fi
+}
+
+set_secrets_and_deployment_permissions() {
+    set_secrets "$1"
+    set_deployment_permissions "$1"
 }
 
 set_artillery_secrets() {
@@ -835,35 +859,33 @@ read -r -p "Press Enter to start setting secrets or ctrl+c to exit"
 echo
 echo "************************************************"
 echo
-set_secrets "NHSDigital/electronic-prescription-service-clinical-prescription-tracker"
+set_secrets_and_deployment_permissions "NHSDigital/electronic-prescription-service-clinical-prescription-tracker"
 echo
-set_secrets "NHSDigital/prescriptionsforpatients"
+set_secrets_and_deployment_permissions "NHSDigital/prescriptionsforpatients"
 echo
-set_secrets "NHSDigital/prescriptions-for-patients"
+set_secrets_and_deployment_permissions "NHSDigital/prescriptions-for-patients"
 echo
-set_secrets "NHSDigital/electronic-prescription-service-api"
+set_secrets_and_deployment_permissions "NHSDigital/electronic-prescription-service-api"
 echo
-set_secrets "NHSDigital/electronic-prescription-service-release-notes"
+set_secrets_and_deployment_permissions "NHSDigital/electronic-prescription-service-release-notes"
 echo
-set_secrets "NHSDigital/electronic-prescription-service-account-resources"
+set_secrets_and_deployment_permissions "NHSDigital/electronic-prescription-service-account-resources"
 echo
-set_secrets "NHSDigital/eps-prescription-status-update-api"
+set_secrets_and_deployment_permissions "NHSDigital/eps-prescription-status-update-api"
 echo
-set_secrets "NHSDigital/eps-FHIR-validator-lambda"
+set_secrets_and_deployment_permissions "NHSDigital/eps-FHIR-validator-lambda"
 echo
-set_secrets "NHSDigital/eps-dynamodb-poc"
-echo
-set_secrets "NHSDigital/eps-load-test"
+set_secrets_and_deployment_permissions "NHSDigital/eps-load-test"
 echo
 set_artillery_secrets "NHSDigital/eps-load-test"
 echo
-set_secrets "NHSDigital/eps-prescription-tracker-ui"
+set_secrets_and_deployment_permissions "NHSDigital/eps-prescription-tracker-ui"
 echo
-set_secrets "NHSDigital/eps-aws-dashboards"
+set_secrets_and_deployment_permissions "NHSDigital/eps-aws-dashboards"
 echo
 set_secrets "NHSDigital/eps-cdk-utils"
 echo
-set_secrets "NHSDigital/eps-vpc-resources"
+set_secrets_and_deployment_permissions "NHSDigital/eps-vpc-resources"
 echo
-set_secrets "NHSDigital/eps-storage-resources"
+set_secrets_and_deployment_permissions "NHSDigital/eps-storage-resources"
 echo
