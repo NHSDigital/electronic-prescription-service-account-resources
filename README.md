@@ -145,6 +145,8 @@ It creates the following resources
     - ProxgenPublicKey - used to store the public key for proxygen
     - PSUProxygenPrivateKey - used to store the private key for deploying the PSU proxy via proxygen
     - PSUProxygenPublicKey - used to store the public key for deploying the PSU proxy via proxygen
+    - PSUNotifyCallbackAppName - used to store the DOS application name, for computing the NHS notify callback signature
+    - PSUNotifyCallbackApiKey - used to store NHS notify API key, for computing the NHS notify callback signature
     - CPSUProxygenPrivateKey - used to store the private key for deploying the CPSU proxy via proxygen
     - CPSUProxygenPublicKey - used to store the public key for deploying the CPSU proxy via proxygen
     - SlackWebHookUrl - used to store the slack webhook url needed for the Slack Alerter lambda to post to eps alert slack channels

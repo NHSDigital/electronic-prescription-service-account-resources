@@ -152,6 +152,8 @@ Resources:
               - !ImportValue account-resources:PsuClientSandboxCertSecret
               - !ImportValue account-resources:PSUProxygenPrivateKey
               - !ImportValue account-resources:PSUProxygenPublicKey
+              - !ImportValue account-resources:PSUNotifyCallbackAppName
+              - !ImportValue account-resources:PSUNotifyCallbackApiKey
               - !ImportValue account-resources:CPSUProxygenPrivateKey
               - !ImportValue account-resources:CPSUProxygenPublicKey
               - !ImportValue account-resources:ClinicalTrackerClientKeySecret
