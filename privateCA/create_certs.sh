@@ -92,9 +92,13 @@ SECRET_OUTPUT_PREFIX="${secret_output_prefix}"
 readonly SECRET_OUTPUT_PREFIX
 
 BUCKET_PREFIX="${app_name_lowercase// /-}"
+if [ "$BUCKET_PREFIX" == "fhir-facade" ]; then  
+    BUCKET_PREFIX=fhirfacade
+fi
 readonly BUCKET_PREFIX
 
 FILE_PREFIX="${app_name_lowercase// /_}"
+
 readonly FILE_PREFIX
 
 CLIENT_CERT_SUBJECT_PREFIX="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=${app_name_lowercase} private CA/CN=client-cert-"
