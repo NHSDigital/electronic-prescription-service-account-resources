@@ -31,4 +31,3 @@ _site/
 .jekyll-metadata
 vendor
 .secrets
-privateCA/

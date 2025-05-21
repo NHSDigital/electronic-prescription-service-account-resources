@@ -5,6 +5,7 @@ sync-main:
 	git checkout main .tool-versions
 	git checkout main .pre-commit-config.yaml
 	git checkout main .gitignore
+	git checkout main privateCA/.gitignore
 	git checkout main .devcontainer
 	git checkout main pyproject.toml
 	git checkout main poetry.lock
