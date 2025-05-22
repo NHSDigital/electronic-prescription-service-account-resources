@@ -540,6 +540,7 @@ Resources:
               - secretsmanager:GetSecretValue
               - secretsmanager:GetRandomPassword
               - secretsmanager:PutResourcePolicy 
+              - secretsmanager:GetResourcePolicy 
               - scheduler:GetSchedule
               - scheduler:CreateSchedule
               - scheduler:DeleteSchedule
@@ -577,6 +578,20 @@ Resources:
               - sqs:TagQueue
               - sqs:UntagQueue
               - sqs:SetQueueAttributes
+              - backup:CreateRestoreTestingPlan
+              - backup:CreateRestoreTestingSelection
+              - backup:DeleteRestoreTestingPlan
+              - backup:DeleteRestoreTestingSelection
+              - backup:GetRestoreTestingInferredMetadata
+              - backup:GetRestoreTestingPlan
+              - backup:GetRestoreTestingSelection
+              - backup:ListRestoreTestingPlans
+              - backup:ListRestoreTestingSelections
+              - backup:ListTags
+              - backup:TagResource
+              - backup:UntagResource
+              - backup:UpdateRestoreTestingPlan
+              - backup:UpdateRestoreTestingSelection
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyC:
