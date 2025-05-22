@@ -592,6 +592,18 @@ Resources:
               - backup:UntagResource
               - backup:UpdateRestoreTestingPlan
               - backup:UpdateRestoreTestingSelection
+              - events:DeleteRule
+              - events:DescribeRule
+              - events:DisableRule
+              - events:EnableRule
+              - events:ListRules
+              - events:ListTagsForResource
+              - events:ListTargetsByRule
+              - events:PutRule
+              - events:PutTargets
+              - events:RemoveTargets
+              - events:TagResource
+              - events:UntagResource
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyC:
