@@ -2019,4 +2019,11 @@ Outputs:
     Value: !GetAtt AccessSlackSecretsManagedPolicy.PolicyArn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AccessSlackSecretsManagedPolicy"]]
+  
+  GetNotifySecretsManagedPolicy:
+    Description: "Access Notify Secrets Policy ARN"
+    Value: !GetAtt GetNotifySecretsManagedPolicy.PolicyArn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "GetNotifySecretsManagedPolicy"]]
+  
   #endregion
