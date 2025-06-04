@@ -1274,7 +1274,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
   #endregion
-  
+
   #region Other Secrets
   ServiceSearchApiKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
