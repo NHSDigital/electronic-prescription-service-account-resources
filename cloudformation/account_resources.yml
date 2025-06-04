@@ -1274,6 +1274,24 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
   #endregion
+  
+  #region Notify Secrets
+  PSUNotifyCallbackAppName:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: The Digital Onboarding Service application name used when calculating the signature for the notify callback
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-PSU-Notify-Application-Name"
+
+  PSUNotifyCallbackApiKey:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: The API key used when calculating the signature for the NHS notify callback
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-PSU-Notify-API-Key"
+  #endregion
 
   #region Other Secrets
   ServiceSearchApiKey:
@@ -1404,6 +1422,19 @@ Resources:
               - secretsmanager:GetSecretValue
             Resource:
               - !Ref SlackWebHookUrl
+  
+  GetNotifySecretsManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !Ref PSUNotifyCallbackAppName
+              - !Ref PSUNotifyCallbackApiKey
   #endregion
 
   #region DashboardViewerPolicy
@@ -1894,6 +1925,20 @@ Outputs:
     Value: !GetAtt SpineCAChain.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SpineCAChain"]]
+  #endregion
+
+  #region Notify Secrets Outputs
+  PSUNotifyCallbackAppName:
+    Description: PSUNotifyCallbackAppName
+    Value: !GetAtt PSUNotifyCallbackAppName.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PSUNotifyCallbackAppName"]]
+
+  PSUNotifyCallbackApiKey:
+    Description: PSUNotifyCallbackApiKey
+    Value: !GetAtt PSUNotifyCallbackApiKey.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PSUNotifyCallbackApiKey"]]
   #endregion
 
   #region Other Secrets Outputs
