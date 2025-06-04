@@ -6,7 +6,7 @@
     "author": "NHS England",
     "license": "MIT",
     "dependencies": {
-        "@aws-lambda-powertools/logger": "^2.20.0",
+        "@aws-lambda-powertools/logger": "^2.21.0",
         "@aws-sdk/client-lambda": "^3.823.0"
     },
     "scripts": {
