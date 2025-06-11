@@ -868,7 +868,7 @@ Resources:
           - wafv2:GetRuleGroup
           - wafv2:UntagResource
           - wafv2:GetPermissionPolicy
-          - wafv2:ListTagsForResource"
+          - wafv2:ListTagsForResource
           - wafv2:ListIPSets
           - wafv2:GetIPSet
           - wafv2:CreateIPSet
