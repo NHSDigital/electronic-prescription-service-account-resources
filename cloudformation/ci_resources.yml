@@ -695,6 +695,28 @@ Resources:
               - ecr:GetLifecyclePolicy
               - ecr:DeleteLifecyclePolicy
               - ecr:PutLifecyclePolicy
+              - wafv2:TagResource
+              - wafv2:ListRuleGroups
+              - wafv2:ListWebACLs
+              - wafv2:AssociateWebACL
+              - wafv2:DeleteRuleGroup
+              - wafv2:DisassociateWebACL
+              - wafv2:CreateRuleGroup
+              - wafv2:GetWebACLForResource
+              - wafv2:UpdateWebACL
+              - wafv2:DeleteWebACL
+              - wafv2:UpdateRuleGroup
+              - wafv2:GetWebACL
+              - wafv2:CreateWebACL
+              - wafv2:GetRuleGroup
+              - wafv2:UntagResource
+              - wafv2:GetPermissionPolicy
+              - wafv2:ListTagsForResource
+              - wafv2:ListIPSets
+              - wafv2:GetIPSet
+              - wafv2:CreateIPSet
+              - wafv2:DeleteIPSet
+              - wafv2:UpdateIPSet
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyD:
@@ -830,6 +852,7 @@ Resources:
           - cloudfront:UpdateResponseHeadersPolicy
           - cloudfront:ListTagsForResource
           - cloudfront:DeleteDistribution
+          - cloudfront:ListDistributionsByWebACLId
           - rum:CreateAppMonitor
           - rum:DeleteAppMonitor
           - rum:DeleteResourcePolicy

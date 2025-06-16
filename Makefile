@@ -46,6 +46,7 @@ lint-githubaction-scripts:
 	shellcheck .github/scripts/*.sh
 
 test: generate-mock-certs
+	poetry run scripts/check_policy_length.py
 	npm run test --workspace packages/splunkProcessor
 	npm run test --workspace packages/certificateChecker
 	npm run test --workspace packages/slackAlerter
