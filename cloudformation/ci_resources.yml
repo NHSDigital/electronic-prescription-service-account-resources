@@ -378,6 +378,8 @@ Resources:
               - logs:FilterLogEvents
               - logs:PutMetricFilter
               - logs:DescribeIndexPolicies
+              - logs:DeleteResourcePolicy
+              - logs:PutResourcePolicy
               - lambda:Add*
               - lambda:Create*
               - lambda:Delete*
