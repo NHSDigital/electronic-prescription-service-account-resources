@@ -46,6 +46,7 @@ lint-githubaction-scripts:
 	shellcheck .github/scripts/*.sh
 
 test: generate-mock-certs
+	poetry run scripts/check_policy_length.py
 	npm run test --workspace packages/splunkProcessor
 	npm run test --workspace packages/certificateChecker
 	npm run test --workspace packages/slackAlerter
@@ -143,6 +144,14 @@ show-eps-route-53-nameservers: guard-env
 	aws cloudformation describe-stacks \
 		--stack-name eps-route53-resources \
 		--query "Stacks[*].Outputs[?OutputKey=='NameServers'].{OutputKey: OutputKey, OutputValue: OutputValue, Description: Description}" \
+		--profile prescription-$${env}
+	aws cloudformation describe-stacks \
+		--stack-name eps-route53-resources \
+		--query "Stacks[*].Outputs[?OutputKey=='IntCPTNameServers'].{OutputKey: OutputKey, OutputValue: OutputValue, Description: Description}" \
+		--profile prescription-$${env}
+	aws cloudformation describe-stacks \
+		--stack-name eps-route53-resources \
+		--query "Stacks[*].Outputs[?OutputKey=='ProdCPTNameServers'].{OutputKey: OutputKey, OutputValue: OutputValue, Description: Description}" \
 		--profile prescription-$${env}
 
 cfn-guard:

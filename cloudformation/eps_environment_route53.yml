@@ -5,7 +5,13 @@ Parameters:
     Description: >
       Environment we are creating route 53 hosted zone in
     AllowedValues: [dev, ref, qa, int, prod]
-
+Conditions:
+  CreateProdCPTDomain: !Equals 
+    - !Ref environment
+    - prod
+  CreateIntCPTDomain: !Equals 
+    - !Ref environment
+    - int
 Resources:
   DNSRecordHostedZoneEPS:
     Type: "AWS::Route53::HostedZone"
@@ -17,6 +23,26 @@ Resources:
           - "hosted zone for ${Domain}"
           - Domain: !Join [".", [!Ref environment, "eps.national.nhs.uk"]]
       Name: !Join [".", [!Ref environment, "eps.national.nhs.uk"]]
+
+  CPTProdDNSRecordHostedZone:
+    Type: "AWS::Route53::HostedZone"
+    Condition: CreateProdCPTDomain
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneConfig:
+        Comment: "hosted zone for prescriptiontracker.nhs.uk"
+      Name: prescriptiontracker.nhs.uk
+
+  CPTIntDNSRecordHostedZone:
+    Type: "AWS::Route53::HostedZone"
+    Condition: CreateIntCPTDomain
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneConfig:
+        Comment: "hosted zone for int-prescriptiontracker.nhs.uk"
+      Name: int-prescriptiontracker.nhs.uk
 
 Outputs:
   ZoneID:
@@ -34,3 +60,39 @@ Outputs:
     Value: !Join 
       - ", "
       - !GetAtt DNSRecordHostedZoneEPS.NameServers
+  ProdCPTZoneID:
+    Description: The ZoneID of the PROD CPT hosted zone
+    Condition: CreateProdCPTDomain
+    Value: !Ref CPTProdDNSRecordHostedZone
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CPT-ZoneID"]]
+  ProdCPTdomain:
+    Description: The domain of the PROD CPT hosted zone
+    Condition: CreateProdCPTDomain
+    Value: prescriptiontracker.nhs.uk
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CPT-domain"]]
+  ProdCPTNameServers:
+    Description: The name servers of the PROD CPT hosted zone
+    Condition: CreateProdCPTDomain
+    Value: !Join 
+      - ", "
+      - !GetAtt CPTProdDNSRecordHostedZone.NameServers
+  IntCPTZoneID:
+    Description: The ZoneID of the INT CPT hosted zone
+    Condition: CreateIntCPTDomain
+    Value: !Ref CPTIntDNSRecordHostedZone
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CPT-ZoneID"]]
+  IntCPTdomain:
+    Description: The domain of the INT CPT hosted zone
+    Condition: CreateIntCPTDomain
+    Value: int-prescriptiontracker.nhs.uk
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CPT-domain"]]
+  IntCPTNameServers:
+    Description: The name servers of the INT CPT hosted zone
+    Condition: CreateIntCPTDomain
+    Value: !Join 
+      - ", "
+      - !GetAtt CPTIntDNSRecordHostedZone.NameServers
