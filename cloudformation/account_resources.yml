@@ -1678,6 +1678,27 @@ Resources:
             Value: CVE-2025-46701
       Name: suppress_CVE-2025-46701
 
+  SuppressCVE202548988:
+    Type: AWS::InspectorV2::Filter
+    Properties:
+      Description: CVE-2025-48988
+      FilterAction: SUPPRESS
+      FilterCriteria: 
+        VulnerabilityId:
+          - Comparison: EQUALS
+            Value: CVE-2025-48988
+      Name: suppress_CVE-2025-48988
+
+  SuppressCVE202549125:
+    Type: AWS::InspectorV2::Filter
+    Properties:
+      Description: CVE-2025-49125
+      FilterAction: SUPPRESS
+      FilterCriteria: 
+        VulnerabilityId:
+          - Comparison: EQUALS
+            Value: CVE-2025-49125
+      Name: suppress_CVE-2025-49125
   #endregion
 
 Outputs:
