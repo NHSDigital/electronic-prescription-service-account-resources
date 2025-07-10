@@ -867,3 +867,5 @@ set_secrets "NHSDigital/eps-vpc-resources"
 echo
 set_secrets "NHSDigital/eps-storage-resources"
 echo
+set_secrets "NHSDigital/eps-assist-me"
+echo
