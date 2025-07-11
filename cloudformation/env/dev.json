@@ -14,7 +14,8 @@
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
         "repo:NHSDigital/eps-aws-dashboards:*",
         "repo:NHSDigital/eps-vpc-resources:*",
-        "repo:NHSDigital/eps-storage-resources:*"
+        "repo:NHSDigital/eps-storage-resources:*",
+        "repo:NHSDigital/eps-assist-me:*"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -28,7 +29,8 @@
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
         "repo:NHSDigital/eps-aws-dashboards:*",
         "repo:NHSDigital/eps-vpc-resources:*",
-        "repo:NHSDigital/eps-storage-resources:*"
+        "repo:NHSDigital/eps-storage-resources:*",
+        "repo:NHSDigital/eps-assist-me:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -43,7 +45,8 @@
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
         "repo:NHSDigital/eps-aws-dashboards:*",
         "repo:NHSDigital/eps-vpc-resources:*",
-        "repo:NHSDigital/eps-storage-resources:*"
+        "repo:NHSDigital/eps-storage-resources:*",
+        "repo:NHSDigital/eps-assist-me:*"
       ],
       "PrepareChangesetClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-account-resources:*"
@@ -60,7 +63,8 @@
         "repo:NHSDigital/eps-vpc-resources:*",
         "repo:NHSDigital/eps-storage-resources:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/eps-assist-me:*"
       ],
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:*"
