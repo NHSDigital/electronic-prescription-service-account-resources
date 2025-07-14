@@ -468,6 +468,51 @@ Resources:
               - ecs:ListTasks
               - ecs:ListServices
               - ecs:DescribeTaskDefinition
+              - aoss:CreateSecurityPolicy
+              - aoss:DeleteSecurityPolicy
+              - aoss:GetSecurityPolicy
+              - aoss:UpdateSecurityPolicy
+              - aoss:CreateAccessPolicy
+              - aoss:DeleteAccessPolicy 
+              - aoss:GetAccessPolicy
+              - aoss:UpdateAccessPolicy
+              - aoss:CreateCollection
+              - aoss:DeleteCollection
+              - aoss:ListCollections
+              - aoss:UpdateCollection
+              - aoss:BatchGetCollection
+              - aoss:TagResource
+              - aoss:UntagResource
+              - aoss:ListTagsForResource
+              - bedrock:ApplyGuardrail
+              - bedrock:CreateGuardrail
+              - bedrock:ListGuardrails
+              - bedrock:UpdateGuardrail
+              - bedrock:GetGuardrail
+              - bedrock:DeleteGuardrail
+              - bedrock:AssociateAgentKnowledgeBase 
+              - bedrock:CreateKnowledgeBase
+              - bedrock:DeleteKnowledgeBase
+              - bedrock:DeleteKnowledgeBaseDocuments
+              - bedrock:DisassociateAgentKnowledgeBase
+              - bedrock:GetAgentKnowledgeBase
+              - bedrock:GetKnowledgeBase
+              - bedrock:GetKnowledgeBaseDocuments
+              - bedrock:IngestKnowledgeBaseDocuments
+              - bedrock:ListAgentKnowledgeBases
+              - bedrock:ListKnowledgeBaseDocuments 
+              - bedrock:ListKnowledgeBases
+              - bedrock:UpdateAgentKnowledgeBase
+              - bedrock:UpdateKnowledgeBase
+              - bedrock:CreateDataSource
+              - bedrock:DeleteDataSource
+              - bedrock:GetDataSource
+              - bedrock:ListDataSources
+              - bedrock:UpdateDataSource
+              - bedrock:ListTagsForResource
+              - bedrock:TagResource
+              - bedrock:UntagResource
+              - bedrock:CreateGuardrailVersion
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyB:
