@@ -138,9 +138,9 @@ def get_role_exports(all_exports: list) -> Roles:
     return all_roles
 
 
-def get_github_teams(g: Github) -> GithubTeams:
+def get_github_teams(github: Github) -> GithubTeams:
     print("Getting github teams")
-    org = g.get_organization("NHSDigital")
+    org = github.get_organization("NHSDigital")
     eps_administrator_team = org.get_team_by_slug("eps-administrators")
     eps_testers_team = org.get_team_by_slug("eps-testers")
     eps_team = org.get_team_by_slug("EPS")
@@ -152,8 +152,8 @@ def get_github_teams(g: Github) -> GithubTeams:
     return github_teams
 
 
-def set_secret(g: Github, repo_name: str, secret_name: str, secret_value: str, set_dependabot: bool):
-    repo = g.get_repo(repo_name)
+def set_secret(github: Github, repo_name: str, secret_name: str, secret_value: str, set_dependabot: bool):
+    repo = github.get_repo(repo_name)
     print(f"Setting value for {secret_name} in repo {repo_name}")
     repo.create_secret(secret_name=secret_name,
                        unencrypted_value=secret_value,
@@ -167,26 +167,25 @@ def set_secret(g: Github, repo_name: str, secret_name: str, secret_value: str, s
         time.sleep(1)  # Sleep for 1 second to avoid rate limiting
 
 
-def set_role_secrets(g: Github, repo_name: str, roles: Roles, env_name: str, set_dependabot: bool):
-    # int roles
-    set_secret(g=g, repo_name=repo_name, secret_name=f"{env_name}_CLOUD_FORMATION_DEPLOY_ROLE",
+def set_role_secrets(github: Github, repo_name: str, roles: Roles, env_name: str, set_dependabot: bool):
+    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CLOUD_FORMATION_DEPLOY_ROLE",
                secret_value=roles["cloud_formation_deploy_role"],
                set_dependabot=set_dependabot)
-    set_secret(g=g, repo_name=repo_name, secret_name=f"{env_name}_CLOUD_FORMATION_CHECK_VERSION_ROLE",
+    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CLOUD_FORMATION_CHECK_VERSION_ROLE",
                secret_value=roles["cloud_formation_check_version_role"],
                set_dependabot=set_dependabot)
-    set_secret(g=g, repo_name=repo_name, secret_name=f"{env_name}_CLOUD_FORMATION_CREATE_CHANGESET_ROLE",
+    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CLOUD_FORMATION_CREATE_CHANGESET_ROLE",
                secret_value=roles["cloud_formation_prepare_changeset_role"],
                set_dependabot=set_dependabot)
-    set_secret(g=g, repo_name=repo_name, secret_name=f"{env_name}_CDK_PULL_IMAGE_ROLE",
+    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CDK_PULL_IMAGE_ROLE",
                secret_value=roles["CDK_pull_image_role"],
                set_dependabot=set_dependabot)
-    set_secret(g=g, repo_name=repo_name, secret_name=f"{env_name}_CDK_PUSH_IMAGE_ROLE",
+    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CDK_PUSH_IMAGE_ROLE",
                secret_value=roles["CDK_push_image_role"],
                set_dependabot=set_dependabot)
 
 
-def set_all_secrets(g: Github,
+def set_all_secrets(github: Github,
                     repo_name: str,
                     secrets: Secrets,
                     ):
@@ -198,42 +197,50 @@ def set_all_secrets(g: Github,
         print("Returning.")
         return
     # common secrets
-    set_secret(g=g, repo_name=repo_name, secret_name="REGRESSION_TESTS_PEM",
+    set_secret(github=github, repo_name=repo_name, secret_name="REGRESSION_TESTS_PEM",
                secret_value=secrets["regression_test_pem"],
                set_dependabot=True)
-    set_secret(g=g, repo_name=repo_name, secret_name="AUTOMERGE_PEM",
+    set_secret(github=github, repo_name=repo_name, secret_name="AUTOMERGE_PEM",
                secret_value=secrets["automerge_pem"],
                set_dependabot=True)
-    set_secret(g=g, repo_name=repo_name, secret_name="AUTOMERGE_APP_ID", secret_value="420347", set_dependabot=True)
+    set_secret(github=github, repo_name=repo_name, secret_name="AUTOMERGE_APP_ID",
+               secret_value="420347",
+               set_dependabot=True)
 
     # dev secrets
-    set_secret(g=g, repo_name=repo_name, secret_name="DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE",
+    set_secret(github=github, repo_name=repo_name, secret_name="DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE",
                secret_value=secrets["dev_roles"]["release_notes_execute_lambda_role"],
                set_dependabot=False)
 
     # proxygen roles
-    set_secret(g=g, repo_name=repo_name, secret_name="PROXYGEN_PTL_ROLE",
+    set_secret(github=github, repo_name=repo_name, secret_name="PROXYGEN_PTL_ROLE",
                secret_value=secrets["proxygen_ptl_role"],
                set_dependabot=True)
-    set_secret(g=g, repo_name=repo_name, secret_name="PROXYGEN_PROD_ROLE",
+    set_secret(github=github, repo_name=repo_name, secret_name="PROXYGEN_PROD_ROLE",
                secret_value=secrets["proxygen_prod_role"],
                set_dependabot=True)
 
     # artillery role
-    set_secret(g=g, repo_name=repo_name, secret_name="DEV_ARTILLERY_RUNNER_ROLE",
+    set_secret(github=github, repo_name=repo_name, secret_name="DEV_ARTILLERY_RUNNER_ROLE",
                secret_value=secrets["dev_roles"]["artillery_runner_role"],
                set_dependabot=True)
-    set_secret(g=g, repo_name=repo_name, secret_name="REF_ARTILLERY_RUNNER_ROLE",
+    set_secret(github=github, repo_name=repo_name, secret_name="REF_ARTILLERY_RUNNER_ROLE",
                secret_value=secrets["ref_roles"]["artillery_runner_role"],
                set_dependabot=False)
 
-    set_role_secrets(g=g, repo_name=repo_name, roles=secrets["dev_roles"], env_name="DEV", set_dependabot=True)
-    set_role_secrets(g=g, repo_name=repo_name, roles=secrets["int_roles"], env_name="INT", set_dependabot=False)
-    set_role_secrets(g=g, repo_name=repo_name, roles=secrets["prod_roles"], env_name="PROD", set_dependabot=False)
-    set_role_secrets(g=g, repo_name=repo_name, roles=secrets["qa_roles"], env_name="QA", set_dependabot=False)
-    set_role_secrets(g=g, repo_name=repo_name, roles=secrets["ref_roles"], env_name="REF", set_dependabot=False)
-    set_role_secrets(g=g, repo_name=repo_name, roles=secrets["ref_roles"], env_name="REF", set_dependabot=False)
-    set_role_secrets(g=g, repo_name=repo_name, roles=secrets["recovery_roles"], env_name="RECOVERY",
+    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["dev_roles"], env_name="DEV",
+                     set_dependabot=True)
+    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["int_roles"], env_name="INT",
+                     set_dependabot=False)
+    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["prod_roles"], env_name="PROD",
+                     set_dependabot=False)
+    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["qa_roles"], env_name="QA",
+                     set_dependabot=False)
+    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["ref_roles"], env_name="REF",
+                     set_dependabot=False)
+    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["ref_roles"], env_name="REF",
+                     set_dependabot=False)
+    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["recovery_roles"], env_name="RECOVERY",
                      set_dependabot=False)
 
 
@@ -252,14 +259,14 @@ def setup_account_resources_environments(repo: Repository,
                             reviewers=reviewers,
                             deployment_branch_policy=deployment_branch_policy)
     time.sleep(1)  # Sleep for 1 second to avoid rate
-    print(f"Creating {environment_name}-lambda environment in repo")
+    print(f"Creating {environment_name}-lambda environment")
     repo.create_environment(f"{environment_name}-lambda",
                             reviewers=reviewers,
                             deployment_branch_policy=deployment_branch_policy)
     time.sleep(1)  # Sleep for 1 second to avoid rate
 
 
-def setup_environments(g: Github, repo_name: str, github_teams: GithubTeams):
+def setup_environments(github: Github, repo_name: str, github_teams: GithubTeams):
     response = input(f"Setting environments in repo {repo_name}. Do you want to continue? (y/N): ")
 
     if response.lower() == "y":
@@ -267,12 +274,13 @@ def setup_environments(g: Github, repo_name: str, github_teams: GithubTeams):
     else:
         print("Returning.")
         return
-    repo = g.get_repo(repo_name)
+    repo = github.get_repo(repo_name)
     eps_administrator_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_administrator_team"])
     eps_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_team"])
     deployment_branch_policy = EnvironmentDeploymentBranchPolicyParams(protected_branches=True,
                                                                        custom_branch_policies=False)
     if (repo_name == "NHSDigital/electronic-prescription-service-account-resources"):
+        print(f"Setting up account-resources environments in repo {repo_name}")
         setup_account_resources_environments(repo=repo, environment_name="dev")
         setup_account_resources_environments(repo=repo,
                                              environment_name="qa",
@@ -342,9 +350,9 @@ def setup_environments(g: Github, repo_name: str, github_teams: GithubTeams):
         time.sleep(1)  # Sleep for 1 second to avoid rate
 
 
-def setup_repo(g: Github, repo_name: str, secrets: Secrets, github_teams: GithubTeams):
-    set_all_secrets(g=g, repo_name=repo_name, secrets=secrets)
-    setup_environments(g=g, repo_name=repo_name, github_teams=github_teams)
+def setup_repo(github: Github, repo_name: str, secrets: Secrets, github_teams: GithubTeams):
+    set_all_secrets(github=github, repo_name=repo_name, secrets=secrets)
+    setup_environments(github=github, repo_name=repo_name, github_teams=github_teams)
     # TODO - setup other things automatically
     # see https://nhsd-confluence.digital.nhs.uk/spaces/APIMC/pages/693753388/Git+repository+checklist
 
@@ -359,8 +367,8 @@ def main():
     )
 
     arguments = parser.parse_args()
-    g = Github(arguments.gh_auth_token)
-    github_teams = get_github_teams(g)
+    github = Github(arguments.gh_auth_token)
+    github_teams = get_github_teams(github=github)
 
     # get all the exports for each environment
     dev_exports = get_all_exports("prescription-dev")
@@ -441,11 +449,10 @@ def main():
         "NHSDigital/eps-aws-dashboards",
         "NHSDigital/eps-cdk-utils",
         "NHSDigital/eps-vpc-resources",
-        "NHSDigital/eps-storage-resources",
         "NHSDigital/eps-assist-me"
     ]
     for repo_name in repos:
-        setup_repo(g=g,
+        setup_repo(github=github,
                    repo_name=repo_name,
                    secrets=secrets,
                    github_teams=github_teams)
