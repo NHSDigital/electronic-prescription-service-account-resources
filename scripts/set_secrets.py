@@ -4,6 +4,11 @@ from typing import TypedDict
 import time
 import boto3
 from github import Github
+from github.Repository import Repository
+from github.EnvironmentProtectionRuleReviewer import ReviewerParams
+from github.EnvironmentDeploymentBranchPolicy import (
+        EnvironmentDeploymentBranchPolicyParams,
+    )
 
 
 class Roles(TypedDict):
@@ -29,7 +34,13 @@ class Secrets(TypedDict):
     proxygen_ptl_role: str
 
 
-def get_named_export(all_exports: list, export_name: str, required: bool):
+class GithubTeams(TypedDict):
+    eps_administrator_team: str
+    eps_testers_team: str
+    eps_team: str
+
+
+def get_named_export(all_exports: list, export_name: str, required: bool) -> str | None:
     export_value = None
 
     for export in all_exports:
@@ -103,13 +114,13 @@ def get_role_exports(all_exports: list) -> Roles:
     return all_roles
 
 
-def get_github_teams(g: Github):
+def get_github_teams(g: Github) -> GithubTeams:
     print("Getting github teams")
     org = g.get_organization("NHSDigital")
     eps_administrator_team = org.get_team_by_slug("eps-administrators")
     eps_testers_team = org.get_team_by_slug("eps-testers")
     eps_team = org.get_team_by_slug("EPS")
-    github_teams = {
+    github_teams: GithubTeams = {
         "eps_administrator_team": eps_administrator_team.id,
         "eps_testers_team": eps_testers_team.id,
         "eps_team": eps_team.id
@@ -184,6 +195,14 @@ def set_all_secrets(g: Github,
                secret_value=secrets["proxygen_prod_role"],
                set_dependabot=True)
 
+    # artillery role
+    set_secret(g=g, repo_name=repo_name, secret_name="DEV_ARTILLERY_RUNNER_ROLE",
+               secret_value=secrets["dev_roles"]["artillery_runner_role"],
+               set_dependabot=True)
+    set_secret(g=g, repo_name=repo_name, secret_name="REF_ARTILLERY_RUNNER_ROLE",
+               secret_value=secrets["ref_roles"]["artillery_runner_role"],
+               set_dependabot=False)
+
     set_role_secrets(g=g, repo_name=repo_name, roles=secrets["dev_roles"], env_name="DEV", set_dependabot=True)
     set_role_secrets(g=g, repo_name=repo_name, roles=secrets["int_roles"], env_name="INT", set_dependabot=False)
     set_role_secrets(g=g, repo_name=repo_name, roles=secrets["prod_roles"], env_name="PROD", set_dependabot=False)
@@ -194,7 +213,29 @@ def set_all_secrets(g: Github,
                      set_dependabot=False)
 
 
-def setup_environments(g: Github, repo_name: str):
+def setup_account_resources_environments(repo: Repository,
+                                         environment_name: str,
+                                         reviewers: list[ReviewerParams] = [],
+                                         deployment_branch_policy: EnvironmentDeploymentBranchPolicyParams | None = None, # noqa E501
+                                         ):
+    print(f"Creating {environment_name}-ci environment")
+    repo.create_environment(f"{environment_name}-ci",
+                            reviewers=reviewers,
+                            deployment_branch_policy=deployment_branch_policy)
+    time.sleep(1)  # Sleep for 1 second to avoid rate
+    print(f"Creating {environment_name}-account environment")
+    repo.create_environment(f"{environment_name}-account",
+                            reviewers=reviewers,
+                            deployment_branch_policy=deployment_branch_policy)
+    time.sleep(1)  # Sleep for 1 second to avoid rate
+    print(f"Creating {environment_name}-lambda environment in repo")
+    repo.create_environment(f"{environment_name}-lambda",
+                            reviewers=reviewers,
+                            deployment_branch_policy=deployment_branch_policy)
+    time.sleep(1)  # Sleep for 1 second to avoid rate
+
+
+def setup_environments(g: Github, repo_name: str, github_teams: GithubTeams):
     response = input(f"Setting environments in repo {repo_name}. Do you want to continue? (y/N): ")
 
     if response.lower() == "y":
@@ -203,17 +244,85 @@ def setup_environments(g: Github, repo_name: str):
         print("Returning.")
         return
     repo = g.get_repo(repo_name)
+    eps_administrator_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_administrator_team"])
+    eps_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_team"])
+    deployment_branch_policy = EnvironmentDeploymentBranchPolicyParams(protected_branches=True,
+                                                                       custom_branch_policies=False)
     if (repo_name == "NHSDigital/electronic-prescription-service-account-resources"):
-        repo.create_environment("dev-ci", wait_timer=1)
-        repo.create_environment("dev-account", wait_timer=1)
-        repo.create_environment("dev-lambda", wait_timer=1)
+        setup_account_resources_environments(repo=repo, environment_name="dev")
+        setup_account_resources_environments(repo=repo,
+                                             environment_name="qa",
+                                             reviewers=[eps_administrator_team_reviewer, eps_team_reviewer],
+                                             deployment_branch_policy=deployment_branch_policy
+                                             )
+        setup_account_resources_environments(repo=repo,
+                                             environment_name="ref",
+                                             reviewers=[eps_administrator_team_reviewer, eps_team_reviewer],
+                                             deployment_branch_policy=deployment_branch_policy
+                                             )
+        setup_account_resources_environments(repo=repo,
+                                             environment_name="int",
+                                             reviewers=[eps_administrator_team_reviewer, eps_team_reviewer],
+                                             deployment_branch_policy=deployment_branch_policy
+                                             )
+        setup_account_resources_environments(repo=repo,
+                                             environment_name="recovery",
+                                             reviewers=[eps_administrator_team_reviewer, eps_team_reviewer],
+                                             deployment_branch_policy=deployment_branch_policy
+                                             )
+        setup_account_resources_environments(repo=repo,
+                                             environment_name="prod",
+                                             reviewers=[eps_administrator_team_reviewer],
+                                             deployment_branch_policy=deployment_branch_policy
+                                             )
     else:
+        print(f"Creating dev environment in repo {repo_name}")
         repo.create_environment("dev")
+        time.sleep(1)  # Sleep for 1 second to avoid rate limiting
+        print(f"Creating dev-pr environment in repo {repo_name}")
+        repo.create_environment("dev-pr")
+        time.sleep(1)  # Sleep for 1 second to avoid rate
+
+        print(f"Creating qa environment in repo {repo_name}")
+        repo.create_environment("qa", reviewers=[
+            eps_administrator_team_reviewer,
+            eps_team_reviewer
+        ], deployment_branch_policy=deployment_branch_policy)
+        time.sleep(1)  # Sleep for 1 second to avoid rate
+
+        print(f"Creating ref environment in repo {repo_name}")
+        repo.create_environment("ref", reviewers=[
+            eps_administrator_team_reviewer,
+            eps_team_reviewer
+        ], deployment_branch_policy=deployment_branch_policy)
+        time.sleep(1)  # Sleep for 1 second to avoid rate
+
+        print(f"Creating int environment in repo {repo_name}")
+        repo.create_environment("int", reviewers=[
+            eps_administrator_team_reviewer,
+            eps_team_reviewer
+        ], deployment_branch_policy=deployment_branch_policy)
+        time.sleep(1)  # Sleep for 1 second to avoid rate
+
+        print(f"Creating recovery environment in repo {repo_name}")
+        repo.create_environment("recovery", reviewers=[
+            eps_administrator_team_reviewer,
+            eps_team_reviewer
+        ], deployment_branch_policy=deployment_branch_policy)
+        time.sleep(1)  # Sleep for 1 second to avoid rate
+
+        print(f"Creating prod environment in repo {repo_name}")
+        repo.create_environment("prod", reviewers=[
+            eps_administrator_team_reviewer
+        ], deployment_branch_policy=deployment_branch_policy)
+        time.sleep(1)  # Sleep for 1 second to avoid rate
 
 
-def setup_repo(g: Github, repo_name: str, secrets: Secrets):
+def setup_repo(g: Github, repo_name: str, secrets: Secrets, github_teams: GithubTeams):
     set_all_secrets(g=g, repo_name=repo_name, secrets=secrets)
-    setup_environments(g=g, repo_name=repo_name)
+    setup_environments(g=g, repo_name=repo_name, github_teams=github_teams)
+    # TODO - setup other things automatically
+    # see https://nhsd-confluence.digital.nhs.uk/spaces/APIMC/pages/693753388/Git+repository+checklist
 
 
 def main():
@@ -289,9 +398,28 @@ def main():
     print(f"automerge_pem: \n{automerge_pem}")
     print("\n\n************************************************")
 
-    setup_repo(g=g,
-               repo_name="NHSDigital/eps-assist-me",
-               secrets=secrets)
+    repos = [
+        "NHSDigital/electronic-prescription-service-clinical-prescription-tracker",
+        "NHSDigital/prescriptionsforpatients",
+        "NHSDigital/prescriptions-for-patients",
+        "NHSDigital/electronic-prescription-service-api",
+        "NHSDigital/electronic-prescription-service-release-notes",
+        "NHSDigital/electronic-prescription-service-account-resources",
+        "NHSDigital/eps-prescription-status-update-api",
+        "NHSDigital/eps-FHIR-validator-lambda",
+        "NHSDigital/eps-load-test",
+        "NHSDigital/eps-prescription-tracker-ui",
+        "NHSDigital/eps-aws-dashboards",
+        "NHSDigital/eps-cdk-utils",
+        "NHSDigital/eps-vpc-resources",
+        "NHSDigital/eps-storage-resources",
+        "NHSDigital/eps-assist-me"
+    ]
+    for repo_name in repos:
+        setup_repo(g=g,
+                   repo_name=repo_name,
+                   secrets=secrets,
+                   github_teams=github_teams)
 
 
 if __name__ == "__main__":
