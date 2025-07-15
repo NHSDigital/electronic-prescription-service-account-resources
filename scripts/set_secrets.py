@@ -195,11 +195,25 @@ def set_all_secrets(g: Github,
 
 
 def setup_environments(g: Github, repo_name: str):
+    response = input(f"Setting environments in repo {repo_name}. Do you want to continue? (y/N): ")
+
+    if response.lower() == "y":
+        print("Continuing...")
+    else:
+        print("Returning.")
+        return
     repo = g.get_repo(repo_name)
     if (repo_name == "NHSDigital/electronic-prescription-service-account-resources"):
         repo.create_environment("dev-ci", wait_timer=1)
         repo.create_environment("dev-account", wait_timer=1)
         repo.create_environment("dev-lambda", wait_timer=1)
+    else:
+        repo.create_environment("dev")
+
+
+def setup_repo(g: Github, repo_name: str, secrets: Secrets):
+    set_all_secrets(g=g, repo_name=repo_name, secrets=secrets)
+    setup_environments(g=g, repo_name=repo_name)
 
 
 def main():
@@ -275,9 +289,9 @@ def main():
     print(f"automerge_pem: \n{automerge_pem}")
     print("\n\n************************************************")
 
-    set_all_secrets(g=g,
-                    repo_name="NHSDigital/eps-assist-me",
-                    secrets=secrets)
+    setup_repo(g=g,
+               repo_name="NHSDigital/eps-assist-me",
+               secrets=secrets)
 
 
 if __name__ == "__main__":

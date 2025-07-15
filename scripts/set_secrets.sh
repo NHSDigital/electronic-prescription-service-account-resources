@@ -365,6 +365,63 @@ get_prod_roles() {
     fi
 }
 
+get_recovery_roles() {
+    # shellcheck disable=SC2016
+    RECOVERY_CLOUD_FORMATION_DEPLOY_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-recovery \
+        --query 'Exports[?Name==`ci-resources:CloudFormationDeployRole`].Value' \
+        --output text)
+
+    if [ -z "${RECOVERY_CLOUD_FORMATION_DEPLOY_ROLE}" ]; then
+        echo "Can not get RECOVERY_CLOUD_FORMATION_DEPLOY_ROLE. Check you are logged into aws using make aws-login and you have prescription-qa profile set up"
+        exit 1
+    fi
+
+    # shellcheck disable=SC2016
+    RECOVERY_CLOUD_FORMATION_CHECK_VERSION_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-recovery \
+        --query 'Exports[?Name==`ci-resources:CloudFormationCheckVersionRole`].Value' \
+        --output text)
+
+    if [ -z "${RECOVERY_CLOUD_FORMATION_CHECK_VERSION_ROLE}" ]; then
+        echo "Can not get RECOVERY_CLOUD_FORMATION_CHECK_VERSION_ROLE. Setting to QA_CLOUD_FORMATION_DEPLOY_ROLE"
+        RECOVERY_CLOUD_FORMATION_CHECK_VERSION_ROLE=${RECOVERY_CLOUD_FORMATION_DEPLOY_ROLE}
+    fi
+
+    # shellcheck disable=SC2016
+    RECOVERY_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-recovery \
+        --query 'Exports[?Name==`ci-resources:CloudFormationPrepareChangesetRole`].Value' \
+        --output text)
+
+    if [ -z "${RECOVERY_CLOUD_FORMATION_CREATE_CHANGESET_ROLE}" ]; then
+        echo "Can not get RECOVERY_CLOUD_FORMATION_CREATE_CHANGESET_ROLE. Setting to RECOVERY_CLOUD_FORMATION_DEPLOY_ROLE"
+        RECOVERY_CLOUD_FORMATION_CREATE_CHANGESET_ROLE=${RECOVERY_CLOUD_FORMATION_DEPLOY_ROLE}
+    fi
+
+    # shellcheck disable=SC2016
+    RECOVERY_CDK_PULL_IMAGE_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-recovery \
+        --query 'Exports[?Name==`ci-resources:CDKPullImageRole`].Value' \
+        --output text)    
+
+    if [ -z "${RECOVERY_CDK_PULL_IMAGE_ROLE}" ]; then
+        echo "Can not get RECOVERY_CDK_PULL_IMAGE_ROLE. Setting to unset"
+        RECOVERY_CDK_PULL_IMAGE_ROLE="unset"
+    fi
+
+    # shellcheck disable=SC2016
+    RECOVERY_CDK_PUSH_IMAGE_ROLE=$(aws cloudformation list-exports \
+        --profile prescription-recovery \
+        --query 'Exports[?Name==`ci-resources:CDKPushImageRole`].Value' \
+        --output text)    
+
+    if [ -z "${RECOVERY_CDK_PUSH_IMAGE_ROLE}" ]; then
+        echo "Can not get RECOVERY_CDK_PUSH_IMAGE_ROLE. Setting to unset"
+        RECOVERY_CDK_PUSH_IMAGE_ROLE="unset"
+    fi
+}
+
 get_gh_details() {
     GITHUB_ADMIN_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/eps-administrators --jq ".id")
     GITHUB_TESTERS_GROUP=$(gh api -H "Accept: application/vnd.github+json" -X GET /orgs/NHSDigital/teams/eps-testers --jq ".id")
