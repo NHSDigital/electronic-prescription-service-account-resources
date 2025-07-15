@@ -72,3 +72,21 @@ jobs:
     secrets:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+
+  deploy_recovery:
+    needs: [quality_checks, package_code, get_issue_number, get_commit_id]
+    uses: ./.github/workflows/release_all_stacks.yml
+    with:
+      target_environment: recovery
+      version: ${{github.event.number}}
+      change_set_version: ${{github.event.number}}
+      execute_change_set: true
+      lambda_stack_suffix: ""
+      artifact_bucket_prefix: ${{needs.get_issue_number.outputs.issue_number}}
+      version_number: ${{ needs.get_issue_number.outputs.issue_number }}
+      commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
+      lambda_insights_log_group_name: /aws/lambda-insights
+      deploy_artillery: false
+    secrets:
+      cf_create_changeset_role: ${{ secrets.RECOVERY_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_deploy_role: ${{ secrets.RECOVERY_CLOUD_FORMATION_DEPLOY_ROLE }}
