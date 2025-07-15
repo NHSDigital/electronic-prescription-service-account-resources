@@ -1,0 +1,79 @@
+{
+  "env": "ref",
+  "parameters": {
+    "ci-resources": {
+      "DeploySubjectClaimFilters": [
+        "repo:NHSDigital/prescriptionsforpatients:*",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:*",
+        "repo:NHSDigital/eps-prescription-status-update-api:*",
+        "repo:NHSDigital/electronic-prescription-service-api:*",
+        "repo:NHSDigital/eps-dynamodb-poc:*",
+        "repo:NHSDigital/eps-load-test:*",
+        "repo:NHSDigital/eps-prescription-tracker-ui:*",
+        "repo:NHSDigital/eps-aws-dashboards:*",
+        "repo:NHSDigital/eps-vpc-resources:*",
+        "repo:NHSDigital/eps-storage-resources:*",
+        "repo:NHSDigital/eps-assist-me:*"
+      ],
+      "CheckVersionSubjectClaimFilters": [
+        "repo:NHSDigital/prescriptionsforpatients:*",
+        "repo:NHSDigital/electronic-prescription-service-release-notes:*",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:*",
+        "repo:NHSDigital/eps-prescription-status-update-api:*",
+        "repo:NHSDigital/electronic-prescription-service-api:*",
+        "repo:NHSDigital/eps-dynamodb-poc:*",
+        "repo:NHSDigital/eps-load-test:*",
+        "repo:NHSDigital/eps-prescription-tracker-ui:*",
+        "repo:NHSDigital/eps-aws-dashboards:*",
+        "repo:NHSDigital/eps-vpc-resources:*",
+        "repo:NHSDigital/eps-storage-resources:*",
+        "repo:NHSDigital/eps-assist-me:*"
+      ],
+      "ReleaseNotesExecuteLambdaClaimFilters": [
+        "NONE"
+      ],
+      "PrepareChangesetClaimFilters": [
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
+        "repo:NHSDigital/eps-load-test:*"
+      ],
+      "ArtilleryLoadTestRoleClaimFilters": [
+        "repo:NHSDigital/eps-load-test:*"
+      ],
+      "ProxygenPTLClaimFilters": [
+        "NONE"
+      ],
+      "ProxygenProdClaimFilters": [
+        "NONE"
+      ],
+      "CDKPullImageClaimFilters": [
+        "repo:NHSDigital/eps-prescription-tracker-ui:*",
+        "repo:NHSDigital/eps-aws-dashboards:*",
+        "repo:NHSDigital/eps-vpc-resources:*",
+        "repo:NHSDigital/eps-storage-resources:*",
+        "repo:NHSDigital/electronic-prescription-service-api:*",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/eps-assist-me:*"
+      ],
+      "CDKPushImageClaimFilters": [
+        "repo:NHSDigital/eps-cdk-utils:*"
+      ],
+      "EnableDeleteCNAME": "false"
+    },
+    "account-resources": {},
+    "lambda-resources": {
+      "SplunkHECEndpoint": "https://firehose.inputs.splunk.aws.digital.nhs.uk/services/collector/event",
+      "LogRetentionDays": "30",
+      "Env": "ref",
+      "CommitId": "VAR.commit_id",
+      "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name",
+      "ConcurrencyThreshold": 300,
+      "EnableAlerts": "true"
+    },
+    "artillery-resources": {},
+    "secrets": {}
+  }
+}
