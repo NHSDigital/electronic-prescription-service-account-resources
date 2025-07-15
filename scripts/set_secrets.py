@@ -10,6 +10,30 @@ from github.EnvironmentDeploymentBranchPolicy import (
         EnvironmentDeploymentBranchPolicyParams,
     )
 
+"""
+This script is used to set common secrets in all repositories
+When we add a new repository, add it to the repos list in the main function
+When we add a new environment, you need to do the following
+  - modify Secrets class to have roles for the new environment
+  - modify main function so all exports are retrieved for the new environment
+  - modify main function so roles are retrieved from exports for the new environment
+  - modify set_all_secrets function to set variables for the new environment
+
+You need a github token to run this and have aws config setup for each environment
+You can get a github token by first authenticating with github cli
+
+gh auth login
+
+and then get the token
+
+gh auth token
+
+This must be passed to this script as gh_auth_token param - eg
+
+GH_TOKEN=`gh auth token`
+poetry run python scripts/set_secrets.py --gh_auth_token $GH_TOKEN
+"""
+
 
 class Roles(TypedDict):
     cloud_formation_deploy_role: str
@@ -338,12 +362,15 @@ def main():
     g = Github(arguments.gh_auth_token)
     github_teams = get_github_teams(g)
 
+    # get all the exports for each environment
     dev_exports = get_all_exports("prescription-dev")
     qa_exports = get_all_exports("prescription-qa")
     ref_exports = get_all_exports("prescription-ref")
     int_exports = get_all_exports("prescription-int")
     prod_exports = get_all_exports("prescription-prod")
     recovery_exports = get_all_exports("prescription-recovery")
+
+    # get the roles from the exports
     dev_roles = get_role_exports(dev_exports)
     qa_roles = get_role_exports(qa_exports)
     ref_roles = get_role_exports(ref_exports)
@@ -357,11 +384,13 @@ def main():
                                           export_name="ci-resources:ProxygenProdRole",
                                           required=True)
 
+    # read in secret files
     f = open(".secrets/regression_test_app.pem")
     regression_test_pem = f.read()
     f = open(".secrets/automerge.pem")
     automerge_pem = f.read()
 
+    # set up a variable with all the roles and secrets for all environments
     secrets: Secrets = {
         "regression_test_pem": regression_test_pem,
         "automerge_pem": automerge_pem,
