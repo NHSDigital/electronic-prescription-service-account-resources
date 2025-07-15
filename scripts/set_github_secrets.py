@@ -31,7 +31,7 @@ gh auth token
 This must be passed to this script as gh_auth_token param - eg
 
 GH_TOKEN=`gh auth token`
-poetry run python scripts/set_secrets.py --gh_auth_token $GH_TOKEN
+poetry run python scripts/set_github_secrets.py --gh_auth_token $GH_TOKEN
 """
 
 
