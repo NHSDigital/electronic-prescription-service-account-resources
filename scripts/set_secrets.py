@@ -299,8 +299,7 @@ def setup_environments(github: Github, repo_name: str, github_teams: GithubTeams
                                              )
         setup_account_resources_environments(repo=repo,
                                              environment_name="recovery",
-                                             reviewers=[eps_administrator_team_reviewer, eps_team_reviewer],
-                                             deployment_branch_policy=deployment_branch_policy
+                                             reviewers=[eps_administrator_team_reviewer, eps_team_reviewer]
                                              )
         setup_account_resources_environments(repo=repo,
                                              environment_name="prod",
@@ -326,7 +325,7 @@ def setup_environments(github: Github, repo_name: str, github_teams: GithubTeams
         repo.create_environment("ref", reviewers=[
             eps_administrator_team_reviewer,
             eps_team_reviewer
-        ], deployment_branch_policy=deployment_branch_policy)
+        ])
         time.sleep(1)  # Sleep for 1 second to avoid rate
 
         print(f"Creating int environment in repo {repo_name}")
@@ -340,7 +339,7 @@ def setup_environments(github: Github, repo_name: str, github_teams: GithubTeams
         repo.create_environment("recovery", reviewers=[
             eps_administrator_team_reviewer,
             eps_team_reviewer
-        ], deployment_branch_policy=deployment_branch_policy)
+        ])
         time.sleep(1)  # Sleep for 1 second to avoid rate
 
         print(f"Creating prod environment in repo {repo_name}")
