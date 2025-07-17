@@ -56,12 +56,31 @@ class Secrets(TypedDict):
     recovery_roles: Roles
     proxygen_prod_role: str
     proxygen_ptl_role: str
+    dev_target_spine_server: str
+    int_target_spine_server: str
+    prod_target_spine_server: str
+    qa_target_spine_server: str
+    ref_target_spine_server: str
+    recovery_target_spine_server: str
+    dev_target_service_search_server: str
+    int_target_service_search_server: str
+    prod_target_service_search_server: str
+    qa_target_service_search_server: str
+    ref_target_service_search_server: str
+    recovery_target_service_search_server: str
 
 
 class GithubTeams(TypedDict):
     eps_administrator_team: str
     eps_testers_team: str
     eps_team: str
+
+
+class RepoConfig(TypedDict):
+    repo_name: str
+    set_target_spine_servers: bool
+    set_account_resources_environments: bool
+    set_target_service_search_servers: bool
 
 
 def get_named_export(all_exports: list, export_name: str, required: bool) -> str | None:
@@ -102,39 +121,48 @@ def get_all_exports(profile_name: str) -> list:
 
 
 def get_role_exports(all_exports: list) -> Roles:
-    cloud_formation_deploy_role = get_named_export(all_exports,
-                                                   export_name="ci-resources:CloudFormationDeployRole",
-                                                   required=True)
-    cloud_formation_check_version_role = get_named_export(all_exports,
-                                                          export_name="ci-resources:CloudFormationCheckVersionRole",
-                                                          required=True)
-    cloud_formation_prepare_changeset_role = get_named_export(all_exports,
-                                                              export_name="ci-resources:CloudFormationPrepareChangesetRole", # noqa E501 
-                                                              required=True)
-    CDK_pull_image_role = get_named_export(all_exports,
-                                           export_name="ci-resources:CDKPullImageRole",
-                                           required=True)
-    CDK_push_image_role = get_named_export(all_exports,
-                                           export_name="ci-resources:CDKPushImageRole",
-                                           required=True)
-    CDK_push_image_role = get_named_export(all_exports,
-                                           export_name="ci-resources:CDKPushImageRole",
-                                           required=True)
-    release_notes_execute_lambda_role = get_named_export(all_exports,
-                                                         export_name="ci-resources:ReleaseNotesExecuteLambdaRole",
-                                                         required=False)
-    artillery_runner_role = get_named_export(all_exports,
-                                             export_name="ci-resources:ArtilleryRunnerRole",
-                                             required=False)
-    all_roles: Roles = {
-        "cloud_formation_deploy_role": cloud_formation_deploy_role,
-        "cloud_formation_check_version_role": cloud_formation_check_version_role,
-        "cloud_formation_prepare_changeset_role": cloud_formation_prepare_changeset_role,
-        "CDK_pull_image_role": CDK_pull_image_role,
-        "CDK_push_image_role": CDK_push_image_role,
-        "release_notes_execute_lambda_role": release_notes_execute_lambda_role,
-        "artillery_runner_role": artillery_runner_role
-    }
+    role_exports = [
+        {
+            "variable_name": "cloud_formation_deploy_role",
+            "export_name": "ci-resources:CloudFormationDeployRole",
+            "required": True
+        },
+        {
+            "variable_name": "cloud_formation_check_version_role",
+            "export_name": "ci-resources:CloudFormationCheckVersionRole",
+            "required": True
+        },
+        {
+            "variable_name": "cloud_formation_prepare_changeset_role",
+            "export_name": "ci-resources:CloudFormationPrepareChangesetRole",
+            "required": True
+        },
+        {
+            "variable_name": "CDK_pull_image_role",
+            "export_name": "ci-resources:CDKPullImageRole",
+            "required": True
+        },
+        {
+            "variable_name": "CDK_push_image_role",
+            "export_name": "ci-resources:CDKPushImageRole",
+            "required": True
+        },
+        {
+            "variable_name": "release_notes_execute_lambda_role",
+            "export_name": "ci-resources:ReleaseNotesExecuteLambdaRole",
+            "required": False
+        },
+        {
+            "variable_name": "artillery_runner_role",
+            "export_name": "ci-resources:ArtilleryRunnerRole",
+            "required": False
+        },
+    ]
+    all_roles = {}
+    for role_export in role_exports:
+        all_roles[role_export["variable_name"]] = get_named_export(all_exports,
+                                                                   export_name=role_export["export_name"],
+                                                                   required=role_export["required"])
     return all_roles
 
 
@@ -187,6 +215,8 @@ def set_role_secrets(github: Github, repo_name: str, roles: Roles, env_name: str
 
 def set_all_secrets(github: Github,
                     repo_name: str,
+                    set_target_spine_servers: bool,
+                    set_target_service_search_servers: bool,
                     secrets: Secrets,
                     ):
     response = input(f"Setting secrets in repo {repo_name}. Do you want to continue? (y/N): ")
@@ -242,6 +272,68 @@ def set_all_secrets(github: Github,
                      set_dependabot=False)
     set_role_secrets(github=github, repo_name=repo_name, roles=secrets["recovery_roles"], env_name="RECOVERY",
                      set_dependabot=False)
+    if set_target_spine_servers:
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="DEV_TARGET_SPINE_SERVER",
+                   secret_value=secrets["dev_target_spine_server"],
+                   set_dependabot=True)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="REF_TARGET_SPINE_SERVER",
+                   secret_value=secrets["ref_target_spine_server"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="QA_TARGET_SPINE_SERVER",
+                   secret_value=secrets["qa_target_spine_server"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="INT_TARGET_SPINE_SERVER",
+                   secret_value=secrets["int_target_spine_server"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="PROD_TARGET_SPINE_SERVER",
+                   secret_value=secrets["prod_target_spine_server"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="RECOVERY_TARGET_SPINE_SERVER",
+                   secret_value=secrets["recovery_target_spine_server"],
+                   set_dependabot=False)
+    if set_target_service_search_servers:
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="DEV_TARGET_SERVICE_SEARCH_SERVER",
+                   secret_value=secrets["dev_target_service_search_server"],
+                   set_dependabot=True)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="INT_TARGET_SERVICE_SEARCH_SERVER",
+                   secret_value=secrets["int_target_service_search_server"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="REF_TARGET_SERVICE_SEARCH_SERVER",
+                   secret_value=secrets["ref_target_service_search_server"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="QA_TARGET_SERVICE_SEARCH_SERVER",
+                   secret_value=secrets["qa_target_service_search_server"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="PROD_TARGET_SERVICE_SEARCH_SERVER",
+                   secret_value=secrets["prod_target_service_search_server"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="RECOVERY_TARGET_SERVICE_SEARCH_SERVER",
+                   secret_value=secrets["recovery_target_service_search_server"],
+                   set_dependabot=False)
 
 
 def setup_account_resources_environments(repo: Repository,
@@ -266,7 +358,10 @@ def setup_account_resources_environments(repo: Repository,
     time.sleep(1)  # Sleep for 1 second to avoid rate
 
 
-def setup_environments(github: Github, repo_name: str, github_teams: GithubTeams):
+def setup_environments(github: Github,
+                       repo_name: str,
+                       set_account_resources_environments: bool,
+                       github_teams: GithubTeams):
     response = input(f"Setting environments in repo {repo_name}. Do you want to continue? (y/N): ")
 
     if response.lower() == "y":
@@ -279,7 +374,7 @@ def setup_environments(github: Github, repo_name: str, github_teams: GithubTeams
     eps_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_team"])
     deployment_branch_policy = EnvironmentDeploymentBranchPolicyParams(protected_branches=True,
                                                                        custom_branch_policies=False)
-    if (repo_name == "NHSDigital/electronic-prescription-service-account-resources"):
+    if set_account_resources_environments:
         print(f"Setting up account-resources environments in repo {repo_name}")
         setup_account_resources_environments(repo=repo, environment_name="dev")
         setup_account_resources_environments(repo=repo,
@@ -349,9 +444,19 @@ def setup_environments(github: Github, repo_name: str, github_teams: GithubTeams
         time.sleep(1)  # Sleep for 1 second to avoid rate
 
 
-def setup_repo(github: Github, repo_name: str, secrets: Secrets, github_teams: GithubTeams):
-    set_all_secrets(github=github, repo_name=repo_name, secrets=secrets)
-    setup_environments(github=github, repo_name=repo_name, github_teams=github_teams)
+def setup_repo(github: Github,
+               repo: RepoConfig,
+               secrets: Secrets,
+               github_teams: GithubTeams):
+    set_all_secrets(github=github,
+                    repo_name=repo["repo_name"],
+                    set_target_spine_servers=repo["set_target_spine_servers"],
+                    set_target_service_search_servers=repo["set_target_service_search_servers"],
+                    secrets=secrets)
+    setup_environments(github=github,
+                       repo_name=repo["repo_name"],
+                       set_account_resources_environments=repo["set_account_resources_environments"],
+                       github_teams=github_teams)
     # TODO - setup other things automatically
     # see https://nhsd-confluence.digital.nhs.uk/spaces/APIMC/pages/693753388/Git+repository+checklist
 
@@ -408,7 +513,19 @@ def main():
         "ref_roles": ref_roles,
         "recovery_roles": recovery_roles,
         "proxygen_prod_role": proxygen_prod_role,
-        "proxygen_ptl_role": proxygen_ptl_role
+        "proxygen_ptl_role": proxygen_ptl_role,
+        "dev_target_spine_server": "msg.veit07.devspineservices.nhs.uk",
+        "int_target_spine_server": "msg.intspineservices.nhs.uk",
+        "prod_target_spine_server": "prescriptions.spineservices.nhs.uk",
+        "qa_target_spine_server": "msg.intspineservices.nhs.uk",
+        "ref_target_spine_server": "prescriptions.refspineservices.nhs.uk",
+        "recovery_target_spine_server": "msg.intspineservices.nhs.uk",
+        "dev_target_service_search_server": "nhsuk-apim-stag-uks.azure-api.net",
+        "int_target_service_search_server": "api.nhs.uk",
+        "prod_target_service_search_server": "api.nhs.uk",
+        "qa_target_service_search_server": "api.nhs.uk",
+        "ref_target_service_search_server": "api.nhs.uk",
+        "recovery_target_service_search_server": "api.nhs.uk"
     }
 
     print("\n\n************************************************")
@@ -434,25 +551,95 @@ def main():
     print(f"automerge_pem: \n{automerge_pem}")
     print("\n\n************************************************")
 
-    repos = [
-        "NHSDigital/electronic-prescription-service-clinical-prescription-tracker",
-        "NHSDigital/prescriptionsforpatients",
-        "NHSDigital/prescriptions-for-patients",
-        "NHSDigital/electronic-prescription-service-api",
-        "NHSDigital/electronic-prescription-service-release-notes",
-        "NHSDigital/electronic-prescription-service-account-resources",
-        "NHSDigital/eps-prescription-status-update-api",
-        "NHSDigital/eps-FHIR-validator-lambda",
-        "NHSDigital/eps-load-test",
-        "NHSDigital/eps-prescription-tracker-ui",
-        "NHSDigital/eps-aws-dashboards",
-        "NHSDigital/eps-cdk-utils",
-        "NHSDigital/eps-vpc-resources",
-        "NHSDigital/eps-assist-me"
+    repos: list[RepoConfig] = [
+        {
+            "repo_name": "NHSDigital/electronic-prescription-service-clinical-prescription-tracker",
+            "set_target_spine_servers": True,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/prescriptionsforpatients",
+            "set_target_spine_servers": True,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": True
+        },
+        {
+            "repo_name": "NHSDigital/prescriptions-for-patients",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/electronic-prescription-service-api",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/electronic-prescription-service-release-notes",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/electronic-prescription-service-account-resources",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": True,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-prescription-status-update-api",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-FHIR-validator-lambda",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-load-test",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-prescription-tracker-ui",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-aws-dashboards",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-cdk-utils",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-vpc-resources",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-assist-me",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_service_search_servers": False
+        }
     ]
-    for repo_name in repos:
+    for repo in repos:
         setup_repo(github=github,
-                   repo_name=repo_name,
+                   repo=repo,
                    secrets=secrets,
                    github_teams=github_teams)
 
