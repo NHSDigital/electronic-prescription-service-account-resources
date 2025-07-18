@@ -356,6 +356,19 @@ Resources:
               - !GetAtt SplunkDeliveryStreamProcessor.Arn
   #endregion
 
+  ##################################################
+  #region Slack Alerter
+  ###################################################
+  SlackAlertsSnsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${AWS::StackName}-SlackAlerts
+      KmsMasterKeyId: !ImportValue account-resources:SnsKMSKey
+      DeliveryStatusLogging:
+        - Protocol: sqs
+          SuccessFeedbackRoleArn: !ImportValue account-resources:SNSFeedbackLoggingRoleArn
+          FailureFeedbackRoleArn: !ImportValue account-resources:SNSFeedbackLoggingRoleArn
+
 #region outputs
 Outputs:
   #################################################
@@ -384,5 +397,14 @@ Outputs:
     Value: !GetAtt SplunkDeliveryStream.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStream"]]
+
+  ##################################################
+  # Slack Alerter Outputs
+  ##################################################
+  SlackAlertsSnsTopicArn:
+    Description: "SlackAlertsSnsTopic ARN"
+    Value: !GetAtt SlackAlertsSnsTopic.TopicArn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SlackAlertsSnsTopicArn"]]
 
 #endregion
