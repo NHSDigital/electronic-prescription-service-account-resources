@@ -2,6 +2,7 @@ import argparse
 import json
 from typing import TypedDict
 import time
+import os
 import boto3
 from github import Github
 from github.Repository import Repository
@@ -68,6 +69,12 @@ class Secrets(TypedDict):
     qa_target_service_search_server: str
     ref_target_service_search_server: str
     recovery_target_service_search_server: str
+    dev_splunk_hec_token: str
+    int_splunk_hec_token: str
+    prod_splunk_hec_token: str
+    qa_splunk_hec_token: str
+    ref_splunk_hec_token: str
+    recovery_splunk_hec_token: str
 
 
 class GithubTeams(TypedDict):
@@ -81,6 +88,7 @@ class RepoConfig(TypedDict):
     set_target_spine_servers: bool
     set_account_resources_environments: bool
     set_target_service_search_servers: bool
+    set_splunk_hec_token: bool
 
 
 def get_named_export(all_exports: list, export_name: str, required: bool) -> str | None:
@@ -182,6 +190,9 @@ def get_github_teams(github: Github) -> GithubTeams:
 
 def set_secret(github: Github, repo_name: str, secret_name: str, secret_value: str, set_dependabot: bool):
     repo = github.get_repo(repo_name)
+    if secret_value is None:
+        print(f"Secret value for {secret_name} in repo {repo_name} is not set. Not setting")
+        return
     print(f"Setting value for {secret_name} in repo {repo_name}")
     repo.create_secret(secret_name=secret_name,
                        unencrypted_value=secret_value,
@@ -217,6 +228,7 @@ def set_all_secrets(github: Github,
                     repo_name: str,
                     set_target_spine_servers: bool,
                     set_target_service_search_servers: bool,
+                    set_splunk_hec_token: bool,
                     secrets: Secrets,
                     ):
     response = input(f"Setting secrets in repo {repo_name}. Do you want to continue? (y/N): ")
@@ -303,6 +315,7 @@ def set_all_secrets(github: Github,
                    secret_name="RECOVERY_TARGET_SPINE_SERVER",
                    secret_value=secrets["recovery_target_spine_server"],
                    set_dependabot=False)
+
     if set_target_service_search_servers:
         set_secret(github=github,
                    repo_name=repo_name,
@@ -333,6 +346,37 @@ def set_all_secrets(github: Github,
                    repo_name=repo_name,
                    secret_name="RECOVERY_TARGET_SERVICE_SEARCH_SERVER",
                    secret_value=secrets["recovery_target_service_search_server"],
+                   set_dependabot=False)
+    if set_splunk_hec_token:
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="DEV_SPLUNK_HEC_TOKEN",
+                   secret_value=secrets["dev_splunk_hec_token"],
+                   set_dependabot=True)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="INT_SPLUNK_HEC_TOKEN",
+                   secret_value=secrets["int_splunk_hec_token"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="REF_SPLUNK_HEC_TOKEN",
+                   secret_value=secrets["ref_splunk_hec_token"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="QA_SPLUNK_HEC_TOKEN",
+                   secret_value=secrets["qa_splunk_hec_token"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="PROD_SPLUNK_HEC_TOKEN",
+                   secret_value=secrets["prod_splunk_hec_token"],
+                   set_dependabot=False)
+        set_secret(github=github,
+                   repo_name=repo_name,
+                   secret_name="RECOVERY_SPLUNK_HEC_TOKEN",
+                   secret_value=secrets["recovery_splunk_hec_token"],
                    set_dependabot=False)
 
 
@@ -452,6 +496,7 @@ def setup_repo(github: Github,
                     repo_name=repo["repo_name"],
                     set_target_spine_servers=repo["set_target_spine_servers"],
                     set_target_service_search_servers=repo["set_target_service_search_servers"],
+                    set_splunk_hec_token=repo["set_splunk_hec_token"],
                     secrets=secrets)
     setup_environments(github=github,
                        repo_name=repo["repo_name"],
@@ -525,30 +570,21 @@ def main():
         "prod_target_service_search_server": "api.nhs.uk",
         "qa_target_service_search_server": "api.nhs.uk",
         "ref_target_service_search_server": "api.nhs.uk",
-        "recovery_target_service_search_server": "api.nhs.uk"
+        "recovery_target_service_search_server": "api.nhs.uk",
+        "dev_splunk_hec_token": os.environ.get("dev_splunk_hec_token"),
+        "int_splunk_hec_token": os.environ.get("int_splunk_hec_token"),
+        "ref_splunk_hec_token": os.environ.get("ref_splunk_hec_token"),
+        "qa_splunk_hec_token": os.environ.get("qa_splunk_hec_token"),
+        "prod_splunk_hec_token": os.environ.get("prod_splunk_hec_token"),
+        "recovery_splunk_hec_token": os.environ.get("recovery_splunk_hec_token"),
     }
 
     print("\n\n************************************************")
     print("************************************************")
     print(f"github_teams: {json.dumps(github_teams, indent=2)}")
     print("************************************************")
-    print(f"dev_roles: {json.dumps(dev_roles, indent=2)}")
+    print(f"secrets: {json.dumps(secrets, indent=2)}")
     print("************************************************")
-    print(f"qa_roles: {json.dumps(qa_roles, indent=2)}")
-    print("************************************************")
-    print(f"ref_roles: {json.dumps(ref_roles, indent=2)}")
-    print("************************************************")
-    print(f"int_roles: {json.dumps(int_roles, indent=2)}")
-    print("************************************************")
-    print(f"prod_roles: {json.dumps(prod_roles, indent=2)}")
-    print("************************************************")
-    print(f"recovery_roles: {json.dumps(recovery_roles, indent=2)}")
-    print("************************************************")
-    print(f"proxygen_ptl_role: {proxygen_ptl_role}")
-    print(f"proxygen_prod_role: {proxygen_prod_role}")
-    print(f"regression_test_pem: \n{regression_test_pem}")
-    print("************************************************")
-    print(f"automerge_pem: \n{automerge_pem}")
     print("\n\n************************************************")
 
     repos: list[RepoConfig] = [
@@ -556,85 +592,99 @@ def main():
             "repo_name": "NHSDigital/electronic-prescription-service-clinical-prescription-tracker",
             "set_target_spine_servers": True,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/prescriptionsforpatients",
             "set_target_spine_servers": True,
             "set_account_resources_environments": False,
-            "set_service_search_servers": True
+            "set_target_service_search_servers": True,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/prescriptions-for-patients",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/electronic-prescription-service-api",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/electronic-prescription-service-release-notes",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/electronic-prescription-service-account-resources",
             "set_target_spine_servers": False,
             "set_account_resources_environments": True,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": True
         },
         {
             "repo_name": "NHSDigital/eps-prescription-status-update-api",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/eps-FHIR-validator-lambda",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/eps-load-test",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/eps-prescription-tracker-ui",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/eps-aws-dashboards",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/eps-cdk-utils",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/eps-vpc-resources",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         },
         {
             "repo_name": "NHSDigital/eps-assist-me",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
-            "set_service_search_servers": False
+            "set_target_service_search_servers": False,
+            "set_splunk_hec_token": False
         }
     ]
     for repo in repos:
