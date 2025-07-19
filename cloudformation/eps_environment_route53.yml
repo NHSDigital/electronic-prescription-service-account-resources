@@ -4,7 +4,7 @@ Parameters:
     Type: String
     Description: >
       Environment we are creating route 53 hosted zone in
-    AllowedValues: [dev, ref, qa, int, prod]
+    AllowedValues: [dev, ref, qa, int, prod, recovery]
 Conditions:
   CreateProdCPTDomain: !Equals 
     - !Ref environment
