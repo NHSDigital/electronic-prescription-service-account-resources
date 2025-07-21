@@ -501,10 +501,10 @@ def main():
                                           required=True)
 
     # read in secret files
-    f = open(".secrets/regression_test_app.pem")
-    regression_test_pem = f.read()
-    f = open(".secrets/automerge.pem")
-    automerge_pem = f.read()
+    with open(".secrets/regression_test_app.pem") as f:
+        regression_test_pem = f.read()
+    with open(".secrets/automerge.pem") as f:
+        automerge_pem = f.read()
 
     # set up a variable with all the roles and secrets for all environments
     secrets: Secrets = {

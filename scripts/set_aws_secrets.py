@@ -1,6 +1,4 @@
 import argparse
-import json
-from typing import TypedDict
 import os
 import boto3
 
@@ -11,34 +9,6 @@ This must be passed to this script as gh_auth_token param - eg
 
 poetry run python scripts/set_aws_secrets.py
 """
-
-
-class Secrets(TypedDict):
-    slack_webhook_url: str
-    splunk_hec_token: str
-    jira_token: str
-    confluence_token: str
-    spine_asid: str
-    spine_ca_chain: str
-    spine_public_certificate: str
-    spine_private_key: str
-    spine_party_key: str
-    eps_signing_cert_chain: str
-    service_search_api_key: str
-    PSU_proxygen_private_key: str
-    PSU_proxygen_public_key: str
-    CPSU_proxygen_private_key: str
-    CPSU_proxygen_public_key: str
-    ClinicalTracker_proxygen_private_key: str
-    ClinicalTracker_proxygen_public_key: str
-    FhirDispensing_proxygen_private_key: str
-    FhirDispensing_proxygen_public_key: str
-    ptl_prescription_signing_public_key: str
-    ptl_prescription_signing_private_key: str
-    PSUNotify_callback_api_key: str
-    PSUNotify_callback_app_name: str
-    PSUNotify_kid_secret: str
-    PSUNotify_private_key_secret: str
 
 
 def get_named_export(all_exports: list, export_name: str, required: bool) -> str | None:
@@ -78,180 +48,213 @@ def get_all_exports(profile_name: str) -> list:
     return all_exports
 
 
-def get_secret_arns(all_exports: list) -> Secrets:
-    slack_webhook_url = get_named_export(all_exports=all_exports,
-                                         export_name="account-resources:SlackWebHookUrl",
-                                         required=True)
-    splunk_hec_token = get_named_export(all_exports=all_exports,
-                                        export_name="account-resources:SplunkHECToken",
-                                        required=True)
-    jira_token = get_named_export(all_exports=all_exports,
-                                  export_name="account-resources:JiraToken",
-                                  required=True)
-    confluence_token = get_named_export(all_exports=all_exports,
-                                        export_name="account-resources:ConfluenceToken",
-                                        required=True)
+def get_secret_arns_and_local_values(all_exports: list, environment: str) -> list:
+    secret_exports = [
+        {
+            "variable_name": "slack_webhook_url",
+            "export_name": "account-resources:SlackWebHookUrl",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_slack_webhook_url")
+        },
+        {
+            "variable_name": "splunk_hec_token",
+            "export_name": "account-resources:SplunkHECToken",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_splunk_hec_token")
+        },
+        {
+            "variable_name": "jira_token",
+            "export_name": "account-resources:JiraToken",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_jira_token")
+        },
+        {
+            "variable_name": "confluence_token",
+            "export_name": "account-resources:ConfluenceToken",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_confluence_token")
+        },
+        {
+            "variable_name": "spine_asid",
+            "export_name": "account-resources:SpineASID",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_spine_asid")
+        },
+        {
+            "variable_name": "spine_ca_chain",
+            "export_name": "account-resources:SpineCAChain",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/spine_ca_chain")
+        },
+        {
+            "variable_name": "spine_public_certificate",
+            "export_name": "account-resources:SpinePublicCertificate",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/spine_public_certificate")
+        },
+        {
+            "variable_name": "spine_private_key",
+            "export_name": "account-resources:SpinePrivateKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/spine_private_key")
+        },
+        {
+            "variable_name": "spine_party_key",
+            "export_name": "account-resources:SpinePartyKey",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_spine_party_key")
+        },
+        {
+            "variable_name": "eps_signing_cert_chain",
+            "export_name": "secrets:epsSigningCertChain",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/eps_signing_cert_chain")
+        },
+        {
+            "variable_name": "service_search_api_key",
+            "export_name": "account-resources:ServiceSearchApiKey",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_service_search_api_key")
+        },
+        {
+            "variable_name": "PSU_proxygen_private_key",
+            "export_name": "account-resources:PSUProxygenPrivateKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/PSU_proxygen_private_key")
+        },
+        {
+            "variable_name": "PSU_proxygen_public_key",
+            "export_name": "account-resources:PSUProxygenPublicKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/PSU_proxygen_public_key")
+        },
+        {
+            "variable_name": "CPSU_proxygen_private_key",
+            "export_name": "account-resources:CPSUProxygenPrivateKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/CPSU_proxygen_private_key")
+        },
+        {
+            "variable_name": "CPSU_proxygen_public_key",
+            "export_name": "account-resources:CPSUProxygenPublicKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/CPSU_proxygen_public_key")
+        },
+        {
+            "variable_name": "ClinicalTracker_proxygen_private_key",
+            "export_name": "account-resources:ClinicalTrackerProxygenPrivateKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/ClinicalTracker_proxygen_private_key")
+        },
+        {
+            "variable_name": "ClinicalTracker_proxygen_public_key",
+            "export_name": "account-resources:ClinicalTrackerProxygenPublicKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/ClinicalTracker_proxygen_public_key")
+        },
+        {
+            "variable_name": "FhirDispensing_proxygen_private_key",
+            "export_name": "secrets:FhirDispensingProxygenPrivateKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/FhirDispensing_proxygen_private_key")
+        },
+        {
+            "variable_name": "FhirDispensing_proxygen_public_key",
+            "export_name": "secrets:FhirDispensingProxygenPublicKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/FhirDispensing_proxygen_public_key")
+        },
+        {
+            "variable_name": "ptl_prescription_signing_public_key",
+            "export_name": "secrets:ptlPrescriptionSigningPublicKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/ptl_prescription_signing_public_key")
+        },
+        {
+            "variable_name": "ptl_prescription_signing_private_key",
+            "export_name": "secrets:ptlPrescriptionSigningPrivateKey",
+            "required": False,
+            "local_value": read_local_secret(f"{environment}/ptl_prescription_signing_private_key")
+        },
+        {
+            "variable_name": "PSUNotify_callback_api_key",
+            "export_name": "secrets:PSUNotifyCallbackApiKey",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_PSUNotify_callback_api_key")
+        },
+        {
+            "variable_name": "PSUNotify_callback_app_name",
+            "export_name": "secrets:PSUNotifyCallbackAppName",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_PSUNotify_callback_app_name")
+        },
+        {
+            "variable_name": "PSUNotify_kid_secret",
+            "export_name": "secrets:PSUNotifyKidSecret",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_PSUNotify_kid_secret")
+        },
+        {
+            "variable_name": "PSUNotify_private_key_secret",
+            "export_name": "secrets:PSUNotifyPrivateKeySecret",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/PSUNotify_private_key_secret")
 
-    spine_asid = get_named_export(all_exports=all_exports,
-                                  export_name="account-resources:SpineASID",
-                                  required=True)
-    spine_ca_chain = get_named_export(all_exports=all_exports,
-                                      export_name="account-resources:SpineCAChain",
-                                      required=True)
-    spine_public_certificate = get_named_export(all_exports=all_exports,
-                                                export_name="account-resources:SpinePublicCertificate",
-                                                required=True)
-    spine_private_key = get_named_export(all_exports=all_exports,
-                                         export_name="account-resources:SpinePrivateKey",
-                                         required=True)
-    spine_party_key = get_named_export(all_exports=all_exports,
-                                       export_name="account-resources:SpinePartyKey",
-                                       required=True)
-    eps_signing_cert_chain = get_named_export(all_exports=all_exports,
-                                              export_name="secrets:epsSigningCertChain",
-                                              required=True)
+        },
+    ]
 
-    service_search_api_key = get_named_export(all_exports=all_exports,
-                                              export_name="account-resources:ServiceSearchApiKey",
-                                              required=True)
+    secret_arns = []
+    for secret_export in secret_exports:
+        secret_arn = get_named_export(all_exports,
+                                      export_name=secret_export["export_name"],
+                                      required=secret_export["required"])
 
-    PSU_proxygen_private_key = get_named_export(all_exports=all_exports,
-                                                export_name="account-resources:PSUProxygenPrivateKey",
-                                                required=True)
-    PSU_proxygen_public_Key = get_named_export(all_exports=all_exports,
-                                               export_name="account-resources:PSUProxygenPublicKey",
-                                               required=True)
-    CPSU_proxygen_private_key = get_named_export(all_exports=all_exports,
-                                                 export_name="account-resources:CPSUProxygenPrivateKey",
-                                                 required=True)
-    CPSU_proxygen_public_key = get_named_export(all_exports=all_exports,
-                                                export_name="account-resources:CPSUProxygenPublicKey",
-                                                required=True)
-
-    ClinicalTracker_proxygen_private_key = get_named_export(all_exports=all_exports,
-                                                            export_name="account-resources:ClinicalTrackerProxygenPrivateKey", # noqa E501
-                                                            required=True)
-    ClinicalTracker_proxygen_public_key = get_named_export(all_exports=all_exports,
-                                                           export_name="account-resources:ClinicalTrackerProxygenPublicKey", # noqa E501
-                                                           required=True)
-
-    FhirDispensing_proxygen_private_key = get_named_export(all_exports=all_exports,
-                                                           export_name="secrets:FhirDispensingProxygenPrivateKey",
-                                                           required=True)
-    FhirDispensing_proxygen_public_key = get_named_export(all_exports=all_exports,
-                                                          export_name="secrets:FhirDispensingProxygenPublicKey",
-                                                          required=True)
-
-    ptl_prescription_signing_public_key = get_named_export(all_exports=all_exports,
-                                                           export_name="secrets:ptlPrescriptionSigningPublicKey",
-                                                           required=True)
-    ptl_prescription_signing_private_key = get_named_export(all_exports=all_exports,
-                                                            export_name="secrets:ptlPrescriptionSigningPrivateKey",
-                                                            required=False)  # this should be true
-
-    PSUNotify_callback_api_key = get_named_export(all_exports=all_exports,
-                                                  export_name="secrets:PSUNotifyCallbackApiKey",
-                                                  required=True)
-    PSUNotify_callback_app_name = get_named_export(all_exports=all_exports,
-                                                   export_name="secrets:PSUNotifyCallbackAppName",
-                                                   required=True)
-    PSUNotify_kid_secret = get_named_export(all_exports=all_exports,
-                                            export_name="secrets:PSUNotifyKidSecret",
-                                            required=True)
-    PSUNotify_private_key_secret = get_named_export(all_exports=all_exports,
-                                                    export_name="secrets:PSUNotifyPrivateKeySecret",
-                                                    required=True)
-
-    secret_arns: Secrets = {
-        "slack_webhook_url": slack_webhook_url,
-        "splunk_hec_token": splunk_hec_token,
-        "jira_token": jira_token,
-        "confluence_token": confluence_token,
-        "spine_asid": spine_asid,
-        "spine_ca_chain": spine_ca_chain,
-        "spine_public_certificate": spine_public_certificate,
-        "spine_private_key": spine_private_key,
-        "spine_party_key": spine_party_key,
-        "eps_signing_cert_chain": eps_signing_cert_chain,
-        'service_search_api_key': service_search_api_key,
-        "PSU_proxygen_private_key": PSU_proxygen_private_key,
-        "PSU_proxygen_public_key": PSU_proxygen_public_Key,
-        "CPSU_proxygen_private_key": CPSU_proxygen_private_key,
-        'CPSU_proxygen_public_key': CPSU_proxygen_public_key,
-        "ClinicalTracker_proxygen_private_key": ClinicalTracker_proxygen_private_key,
-        "ClinicalTracker_proxygen_public_key": ClinicalTracker_proxygen_public_key,
-        "FhirDispensing_proxygen_private_key": FhirDispensing_proxygen_private_key,
-        "FhirDispensing_proxygen_public_key": FhirDispensing_proxygen_public_key,
-        "ptl_prescription_signing_public_key": ptl_prescription_signing_public_key,
-        "ptl_prescription_signing_private_key": ptl_prescription_signing_private_key,
-        "PSUNotify_callback_api_key": PSUNotify_callback_api_key,
-        "PSUNotify_callback_app_name": PSUNotify_callback_app_name,
-        "PSUNotify_kid_secret": PSUNotify_kid_secret,
-        'PSUNotify_private_key_secret': PSUNotify_private_key_secret
-    }
+        secret_arns.append({
+            "secret_arn": secret_arn,
+            "local_value": secret_export["local_value"],
+            "variable_name": secret_export["variable_name"]
+        })
     return secret_arns
 
 
 def read_local_secret(filename: str) -> str:
-    f = open(f".secrets/{filename}")
-    return f.read()
+    print(f"Reading file {filename}")
+    try:
+        with open(f".secrets/{filename}") as f:
+            return f.read()
+    except IOError:
+        print(f"Can non read file {filename}")
+        return None
 
 
-def get_local_secret_values(environment: str) -> Secrets:
-    slack_webhook_url = os.environ.get(f"{environment}_slack_webhook_url")
-    splunk_hec_token = os.environ.get(f"{environment}_splunk_hec_token")
-    jira_token = os.environ.get(f"{environment}_jira_token")
-    confluence_token = os.environ.get(f"{environment}_confluence_token")
-    spine_asid = os.environ.get(f"{environment}_spine_asid")
-    spine_ca_chain = read_local_secret(f"{environment}_spine_ca_chain")
-    spine_public_certificate = read_local_secret(f"{environment}_spine_public_certificate")
-    spine_private_key = read_local_secret(f"{environment}_spine_private_key")
-    spine_party_key = os.environ.get(f"{environment}_spine_party_key")
-    eps_signing_cert_chain = read_local_secret(f"{environment}_eps_signing_cert_chain")
-    service_search_api_key = os.environ.get(f"{environment}_service_search_api_key")
-    PSU_proxygen_private_key = read_local_secret(f"{environment}_PSU_proxygen_private_key")
-    PSU_proxygen_public_Key = read_local_secret(f"{environment}_PSU_proxygen_public_key")
-    CPSU_proxygen_private_key = read_local_secret(f"{environment}_CPSU_proxygen_private_key")
-    CPSU_proxygen_public_key = read_local_secret(f"{environment}_CPSU_proxygen_public_key")
-    ClinicalTracker_proxygen_private_key = read_local_secret(f"{environment}_ClinicalTracker_proxygen_private_key")
-    ClinicalTracker_proxygen_public_key = read_local_secret(f"{environment}_ClinicalTracker_proxygen_public_key")
-    FhirDispensing_proxygen_private_key = read_local_secret(f"{environment}_FhirDispensing_proxygen_private_key")
-    FhirDispensing_proxygen_public_key = read_local_secret(f"{environment}_FhirDispensing_proxygen_public_key")
-    ptl_prescription_signing_public_key = read_local_secret(f"{environment}_ptl_prescription_signing_public_key")
-    ptl_prescription_signing_private_key = read_local_secret(f"{environment}_ptl_prescription_signing_private_key")
-    PSUNotify_callback_api_key = os.environ.get(f"{environment}_PSUNotify_callback_api_key")
-    PSUNotify_callback_app_name = os.environ.get(f"{environment}_PSUNotify_callback_app_name")
-    PSUNotify_kid_secret = os.environ.get(f"{environment}_PSUNotify_kid_secret")
-    PSUNotify_private_key_secret = read_local_secret(f"{environment}_PSUNotify_private_key_secret")
+def set_secrets(profile_name: str, secret_arns_and_local_values: list):
+    session = boto3.Session(profile_name=profile_name)
+    # Create a secret client
+    secret_client = session.client('secretsmanager')
+    for secret_arn_and_local_value in secret_arns_and_local_values:
+        if secret_arn_and_local_value["secret_arn"] is not None:
+            aws_secret_value = secret_client.get_secret_value(SecretId=secret_arn_and_local_value["secret_arn"])
+            if aws_secret_value["SecretString"] != secret_arn_and_local_value["local_value"]:
+                print(f"Variable {secret_arn_and_local_value["variable_name"]} values are different")
+                print(f"Secret arn: {secret_arn_and_local_value["secret_arn"]}")
+                print(f"Local value: {secret_arn_and_local_value["local_value"]}")
+                print(f"Secret value: {aws_secret_value["SecretString"]}")
+                print("Use this to set local values")
+                print(f'export {secret_arn_and_local_value["variable_name"]}={aws_secret_value["SecretString"]}')
+                print(f'echo -n """{aws_secret_value["SecretString"]}""" > .secrets/{secret_arn_and_local_value["variable_name"]}') # noqa E501
+                response = input("Do you want to update the secret? (y/N): ")
 
-    secret_values: Secrets = {
-        "slack_webhook_url": slack_webhook_url,
-        "splunk_hec_token": splunk_hec_token,
-        "jira_token": jira_token,
-        "confluence_token": confluence_token,
-        "spine_asid": spine_asid,
-        "spine_ca_chain": spine_ca_chain,
-        "spine_public_certificate": spine_public_certificate,
-        "spine_private_key": spine_private_key,
-        "spine_party_key": spine_party_key,
-        "eps_signing_cert_chain": eps_signing_cert_chain,
-        'service_search_api_key': service_search_api_key,
-        "PSU_proxygen_private_key": PSU_proxygen_private_key,
-        "PSU_proxygen_public_key": PSU_proxygen_public_Key,
-        "CPSU_proxygen_private_key": CPSU_proxygen_private_key,
-        'CPSU_proxygen_public_key': CPSU_proxygen_public_key,
-        "ClinicalTracker_proxygen_private_key": ClinicalTracker_proxygen_private_key,
-        "ClinicalTracker_proxygen_public_key": ClinicalTracker_proxygen_public_key,
-        "FhirDispensing_proxygen_private_key": FhirDispensing_proxygen_private_key,
-        "FhirDispensing_proxygen_public_key": FhirDispensing_proxygen_public_key,
-        "ptl_prescription_signing_public_key": ptl_prescription_signing_public_key,
-        "ptl_prescription_signing_private_key": ptl_prescription_signing_private_key,
-        "PSUNotify_callback_api_key": PSUNotify_callback_api_key,
-        "PSUNotify_callback_app_name": PSUNotify_callback_app_name,
-        "PSUNotify_kid_secret": PSUNotify_kid_secret,
-        'PSUNotify_private_key_secret': PSUNotify_private_key_secret
-    }
-    return secret_values
+                if response.lower() == "y":
+                    print("Setting secret...")
+                    secret_client.put_secret_value(SecretId=secret_arn_and_local_value["secret_arn"],
+                                                   SecretString=secret_arn_and_local_value["local_value"])
+                else:
+                    print("Continuing...")
+                    next
+            else:
+                print(f"Variable {secret_arn_and_local_value["variable_name"]} values are the same. Continuing...")
+            print("\n\n************************************************")
+            print("************************************************\n\n")
 
 
 def main():
@@ -266,11 +269,15 @@ def main():
 
     arguments = parser.parse_args()
     # get all the exports for each environment
-    all_exports = get_all_exports(f"prescription-{arguments.environment}")
-    secret_arns = get_secret_arns(all_exports=all_exports)
-    secret_values = get_local_secret_values(all_exports=all_exports)
-    print(f"secret_arns: {json.dumps(secret_arns, indent=2)}")
-    print(f"secret_values: {json.dumps(secret_values, indent=2)}")
+    all_exports = get_all_exports(profile_name=f"prescription-{arguments.environment}")
+    print("Getting secret arns and local values")
+    secret_arns_and_local_values = get_secret_arns_and_local_values(all_exports=all_exports,
+                                                                    environment=arguments.environment)
+    print("Setting secrets")
+    print("************************************************")
+    print("************************************************\n\n")
+    set_secrets(profile_name=f"prescription-{arguments.environment}",
+                secret_arns_and_local_values=secret_arns_and_local_values)
 
 
 if __name__ == "__main__":
