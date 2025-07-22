@@ -1477,10 +1477,11 @@ Resources:
 
   #region EPSReadOnlyKMSPolicy
   # policy to allow readonly role access to decrypt using kms keys
-  EPSReadOnlyKMSDecryptPolicy:
+  # and to allow write access to athena bucket
+  EPSReadOnlyExtraPermissions:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: EPSReadOnlyKMSDecryptPolicy
+      ManagedPolicyName: EPSReadOnlyExtraPermissions
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -1489,6 +1490,23 @@ Resources:
               - kms:Decrypt
             Resource: 
               - !Sub arn:aws:kms:eu-west-2:${AWS::AccountId}:key/*
+          - Effect: Allow
+            Action:
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:Encrypt
+              - kms:ReEncrypt*
+            Resource: 
+              - !GetAtt AthenaResultsBucketKMSKey.Arn
+          - Effect: Allow
+            Action:
+              - s3:GetObject*
+              - s3:PutObject*
+              - s3:GetBucket*
+              - s3:List*
+            Resource:
+              - !Join ["", [!GetAtt AthenaResultsBucket.Arn, "/*"]]
+              - !GetAtt AthenaResultsBucket.Arn
   #endregion
 
   # region inspector filters
