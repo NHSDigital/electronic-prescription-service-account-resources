@@ -1475,7 +1475,7 @@ Resources:
             Resource: "*"
   #endregion
 
-  #region EPSReadOnlyKMSPolicy
+  #region EPSReadOnlyExtraPermissions
   # policy to allow readonly role access to decrypt using kms keys
   # and to allow write access to athena bucket
   EPSReadOnlyExtraPermissions:
