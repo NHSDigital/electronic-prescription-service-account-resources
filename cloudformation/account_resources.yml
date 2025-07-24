@@ -1507,6 +1507,11 @@ Resources:
             Resource:
               - !Join ["", [!GetAtt AthenaResultsBucket.Arn, "/*"]]
               - !GetAtt AthenaResultsBucket.Arn
+          - Effect: Allow
+            Action:
+              - athena:StartQueryExecution
+              - athena:StopQueryExecution
+            Resource: "*"
   #endregion
 
   # region inspector filters
