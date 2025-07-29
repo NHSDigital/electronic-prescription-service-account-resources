@@ -1213,9 +1213,6 @@ Resources:
             - !GetAtt FHIRValidatorDeleteVersionPolicy.PolicyArn
 
   DriftDetectorLambdaInvokePermission:
-    DependsOn:
-      - DriftDetector
-      - DriftDetectorChangeRule
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
