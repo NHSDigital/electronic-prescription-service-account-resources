@@ -1165,6 +1165,78 @@ Resources:
           - proxygen/src/proxygenInstanceDelete.ts
   #endregion
 
+
+  ##################################################
+  # drift detector
+  ##################################################
+  DriftDetector:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-DriftDetector
+      CodeUri: ../packages
+      Handler: driftDetector.handler
+      Role: !GetAtt DriftDetectorResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          LOG_LEVEL: !Ref LogLevel
+    Metadata:
+      BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+        - LAMBDA_DLQ_CHECK
+        - LAMBDA_INSIDE_VPC
+        - LAMBDA_CONCURRENCY_CHECK
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        tsconfig: driftDetector/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - driftDetector/src/driftDetector.ts
+
+  DriftDetectorResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: common_lambda_resources.yml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
+        SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
+        LambdaName: !Sub "${AWS::StackName}-DriftDetector"
+        LogRetentionDays: !Ref LogRetentionDays
+        EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt FHIRValidatorListLambdaPolicy.PolicyArn
+            - !GetAtt FHIRValidatorDeleteVersionPolicy.PolicyArn
+
+  DriftDetectorLambdaInvokePermission:
+    DependsOn:
+      - DriftDetector
+      - DriftDetectorChangeRule
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt DriftDetector.Arn
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt DriftDetectorChangeRule.Arn
+
+  # EventBridge Rule for config changes
+  DriftDetectorChangeRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      EventPattern:
+        source:
+          - "aws.config"
+        detail-type:
+          - "Config Rules Compliance Change"
+      Targets:
+        - Arn: !GetAtt DriftDetector.Arn
+          Id: "DriftDetectorFunction"
+  #endregion
+
 #region outputs
 Outputs:
   #################################################
