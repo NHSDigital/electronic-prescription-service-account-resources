@@ -1212,6 +1212,24 @@ Resources:
           - - !GetAtt FHIRValidatorListLambdaPolicy.PolicyArn
             - !GetAtt FHIRValidatorDeleteVersionPolicy.PolicyArn
 
+  DetectStackDriftPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudformation:DetectStackResourceDrift
+              - cloudformation:DetectStackDrift
+              - cloudformation:DescribeStacks
+              - cloudformation:DescribeStackResources
+              - cloudformation:BatchDescribeTypeConfigurations
+              - cloudformation:DescribeStackResourceDrifts
+              - cloudformation:DescribeStackDriftDetectionStatus
+            Resource: !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:*"
+
+
   IamRoleForConfig:
     Type: AWS::IAM::Role
     Properties:
@@ -1227,21 +1245,7 @@ Resources:
               - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/ReadOnlyAccess
-      Policies:
-        - PolicyName: CloudFormationDriftDetectionPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - cloudformation:DetectStackResourceDrift
-                  - cloudformation:DetectStackDrift
-                  - cloudformation:DescribeStacks
-                  - cloudformation:DescribeStackResources
-                  - cloudformation:BatchDescribeTypeConfigurations
-                  - cloudformation:DescribeStackResourceDrifts
-                  - cloudformation:DescribeStackDriftDetectionStatus
-                Resource: !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:*"
+        - !Ref DetectStackDriftPolicy
 
   ConfigRuleToDetectCfnDrift:
     Type: AWS::Config::ConfigRule
