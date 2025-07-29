@@ -39,6 +39,13 @@ target_s3_location=s3://${artifact_bucket}/${target_location}
 target_uri_location=https://${artifact_bucket}.s3.amazonaws.com/${target_location}
 aws s3 cp "${TEMPLATE}" "${target_s3_location}"
 
+cat > tags.json <<EOF
+[
+  {"Key": "version", "Value": "${current_deployed_tag}"},
+  {"Key": "repo", "Value": "account-resources"}
+]
+EOF
+
 aws cloudformation create-change-set \
   --stack-name "$STACK_NAME" \
   --change-set-name "$STACK_NAME-$CHANGE_SET_VERSION-current-tag" \
@@ -47,5 +54,5 @@ aws cloudformation create-change-set \
   --capabilities "$CAPABILITIES" \
   --parameters "file://$PARAMETERS" \
   --cli-binary-format raw-in-base64-out \
-  --tags "Key=\"version\",Value=\"${current_deployed_tag}\"" \
+  --tags file://tags.json \
   --role-arn="$ROLE"

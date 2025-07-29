@@ -371,6 +371,7 @@ Resources:
               - logs:UntagLogGroup
               - logs:ListTagsForResource
               - logs:TagResource
+              - logs:UntagResource
               - logs:DescribeLogStreams
               - logs:DescribeResourcePolicies
               - logs:DeleteMetricFilter

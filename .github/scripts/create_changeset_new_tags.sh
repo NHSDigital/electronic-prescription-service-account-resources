@@ -33,6 +33,13 @@ target_uri_location=https://${artifact_bucket}.s3.amazonaws.com/${target_locatio
 aws s3 cp "${TEMPLATE}" "${target_s3_location}"
 
 echo "create changeset"
+cat > tags.json <<EOF
+[
+  {"Key": "version", "Value": "${VERSION}"},
+  {"Key": "repo", "Value": "account-resources"}
+]
+EOF
+
 aws cloudformation create-change-set \
   --stack-name "$STACK_NAME" \
   --change-set-name "$STACK_NAME-$CHANGE_SET_VERSION" \
@@ -41,5 +48,5 @@ aws cloudformation create-change-set \
   --capabilities "$CAPABILITIES" \
   --parameters "file://$PARAMETERS" \
   --cli-binary-format raw-in-base64-out \
-  --tags "Key=\"version\",Value=\"$VERSION\" Key=\"repo\",Value=\"account-resources\"" \
+  --tags file://tags.json \
   --role-arn="$ROLE"
