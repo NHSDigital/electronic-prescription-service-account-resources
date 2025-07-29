@@ -1167,8 +1167,10 @@ Resources:
 
 
   ##################################################
-  # drift detector
+  #region drift detector
   ##################################################
+
+  # lambda that handles config for drift detection
   DriftDetector:
     Type: AWS::Serverless::Function
     Properties:
@@ -1212,6 +1214,7 @@ Resources:
           - - !GetAtt FHIRValidatorListLambdaPolicy.PolicyArn
             - !GetAtt FHIRValidatorDeleteVersionPolicy.PolicyArn
 
+  # policy that config uses to check for drift detection
   DetectStackDriftPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -1229,7 +1232,7 @@ Resources:
               - cloudformation:DescribeStackDriftDetectionStatus
             Resource: !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:*"
 
-
+  # role for drift detection
   IamRoleForDriftDetection:
     Type: AWS::IAM::Role
     Properties:
@@ -1247,6 +1250,7 @@ Resources:
         - arn:aws:iam::aws:policy/ReadOnlyAccess
         - !Ref DetectStackDriftPolicy
 
+  # rules to check drift on all our stacks
   ConfigRuleToDetectCfnDriftPSU:
     Type: AWS::Config::ConfigRule
     Properties:
@@ -1405,7 +1409,7 @@ Resources:
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt DriftDetectorChangeRule.Arn
 
-  # EventBridge Rule for config changes
+  # EventBridge Rule that triggers lambda when we get an aws.config event for one of our rules
   DriftDetectorChangeRule:
     Type: "AWS::Events::Rule"
     Properties:
