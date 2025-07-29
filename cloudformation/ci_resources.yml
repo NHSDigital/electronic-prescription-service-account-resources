@@ -588,6 +588,7 @@ Resources:
               - secretsmanager:GetSecretValue
               - secretsmanager:GetRandomPassword
               - secretsmanager:PutResourcePolicy 
+              - secretsmanager:GetResourcePolicy 
               - scheduler:GetSchedule
               - scheduler:CreateSchedule
               - scheduler:DeleteSchedule
@@ -625,6 +626,18 @@ Resources:
               - sqs:TagQueue
               - sqs:UntagQueue
               - sqs:SetQueueAttributes
+              - events:DeleteRule
+              - events:DescribeRule
+              - events:DisableRule
+              - events:EnableRule
+              - events:ListRules
+              - events:ListTagsForResource
+              - events:ListTargetsByRule
+              - events:PutRule
+              - events:PutTargets
+              - events:RemoveTargets
+              - events:TagResource
+              - events:UntagResource
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyC:
