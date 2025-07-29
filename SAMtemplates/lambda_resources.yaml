@@ -1277,7 +1277,7 @@ Resources:
           - "Config Rules Compliance Change"
         detail:
           configRuleName:
-            - "cloudformation-stack-drift-detection-check"
+            - !Sub ${AWS::StackName}-CloudFormationDriftDetector
       Targets:
         - Arn: !GetAtt DriftDetector.Arn
           Id: "DriftDetectorFunction"
