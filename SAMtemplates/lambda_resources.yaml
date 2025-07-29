@@ -1229,6 +1229,9 @@ Resources:
           - "aws.config"
         detail-type:
           - "Config Rules Compliance Change"
+        detail:
+          configRuleName:
+            - "cloudformation-stack-drift-detection-check"
       Targets:
         - Arn: !GetAtt DriftDetector.Arn
           Id: "DriftDetectorFunction"
