@@ -638,6 +638,11 @@ Resources:
               - events:RemoveTargets
               - events:TagResource
               - events:UntagResource
+              - config:DeleteConfigRule
+              - config:DescribeConfigRules
+              - config:PutConfigRule
+              - config:TagResource
+              - config:UntagResource
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyC:

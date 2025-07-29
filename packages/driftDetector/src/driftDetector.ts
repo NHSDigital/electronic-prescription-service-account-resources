@@ -8,8 +8,17 @@ const logger = new Logger({serviceName: "driftDetector"})
 //eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
 const lambdaHandler = async (event: any) => {
   try {
-    logger.info("Lambda execution started.")
-    logger.info("Lambda execution completed.")
+    const details = {
+      awsAccountId: event.detail?.awsAccountId,
+      awsRegion: event.detail?.awsRegion,
+      complianceType: event.detail?.newEvaluationResult?.complianceType,
+      resourceId: event.detail?.resourceId
+    }
+    if (details.complianceType === "COMPLIANT") {
+      logger.info("No stack drift detected", {details})
+    } else {
+      logger.error("Stack drift detected", {details})
+    }
   } catch (error) {
     logger.error("Lambda execution failed:", {error})
     throw error

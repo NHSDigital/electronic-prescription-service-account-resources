@@ -7,7 +7,7 @@ const jestConfig: JestConfigWithTsJest = {
   moduleNameMapper: {
     ...defaultConfig.moduleNameMapper,
     "^aws-sdk-client-mock-jest$": "<rootDir>/../../node_modules/aws-sdk-client-mock-jest/dist/cjs/jest.js"
-  },
+  }
 }
 
 export default jestConfig

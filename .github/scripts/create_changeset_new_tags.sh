@@ -41,5 +41,5 @@ aws cloudformation create-change-set \
   --capabilities "$CAPABILITIES" \
   --parameters "file://$PARAMETERS" \
   --cli-binary-format raw-in-base64-out \
-  --tags "Key=\"version\",Value=\"$VERSION\"" \
+  --tags "Key=\"version\",Value=\"$VERSION\" Key=\"repo\",Value=\"account-resources\"" \
   --role-arn="$ROLE"
