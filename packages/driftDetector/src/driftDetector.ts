@@ -26,7 +26,15 @@ const lambdaHandler = async (event: any) => {
           StackResourceDriftStatusFilters: ["MODIFIED", "DELETED", "NOT_CHECKED", "IN_SYNC"]
         })
       )
-      logger.error("Drift details", {drifts: driftDetailsResponse.StackResourceDrifts})
+      logger.error("Drift details", {
+        drifts: driftDetailsResponse.StackResourceDrifts
+      })
+      for (const drift of driftDetailsResponse.StackResourceDrifts || []) {
+        logger.error("Drift resource details", {
+          resource: drift.LogicalResourceId,
+          status: drift.StackResourceDriftStatus
+        })
+      }
     }
   } catch (error) {
     logger.error("Lambda execution failed:", {error})
