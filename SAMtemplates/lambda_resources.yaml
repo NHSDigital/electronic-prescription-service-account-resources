@@ -1418,7 +1418,8 @@ Resources:
         detail-type:
           - "Config Rules Compliance Change"
         detail:
-           configRuleARN:
+           configRuleARN: !Join
+            - ","
             - - !GetAtt ConfigRuleToDetectCfnDriftPSU.Arn
               - !GetAtt ConfigRuleToDetectCfnDriftCPT.Arn
               - !GetAtt ConfigRuleToDetectCfnDriftCPTUI.Arn
