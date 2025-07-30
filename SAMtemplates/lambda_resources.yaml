@@ -1208,11 +1208,7 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-DriftDetector"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
-        IncludeAdditionalPolicies: true
-        AdditionalPolicies: !Join
-          - ","
-          - - !GetAtt FHIRValidatorListLambdaPolicy.PolicyArn
-            - !GetAtt FHIRValidatorDeleteVersionPolicy.PolicyArn
+        IncludeAdditionalPolicies: false
 
   # policy that config uses to check for drift detection
   DetectStackDriftPolicy:
@@ -1236,7 +1232,6 @@ Resources:
   IamRoleForDriftDetection:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: CloudFormationDriftDetectionRole
       Description: IAM role for AWS Config to access CloudFormation drift detection
       AssumeRolePolicyDocument:
         Version: '2012-10-17'

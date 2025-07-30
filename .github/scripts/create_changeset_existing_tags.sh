@@ -39,10 +39,17 @@ target_s3_location=s3://${artifact_bucket}/${target_location}
 target_uri_location=https://${artifact_bucket}.s3.amazonaws.com/${target_location}
 aws s3 cp "${TEMPLATE}" "${target_s3_location}"
 
+CFN_DRIFT_DETECTION_GROUP="account-resources"
+if [[ "$STACK_NAME" =~ -pr-[0-9]+$ ]]; then
+  CFN_DRIFT_DETECTION_GROUP="account-resources-pull-request"
+fi
+
 cat > tags.json <<EOF
 [
   {"Key": "version", "Value": "${current_deployed_tag}"},
-  {"Key": "repo", "Value": "account-resources"}
+  {"Key": "repo", "Value": "electronic-prescription-service-account-resources"}
+  {"Key": "stack", "Value": "${STACK_NAME}"}
+  {"Key": "cfnDriftDetectionGroup", "Value": "${CFN_DRIFT_DETECTION_GROUP}"}
 ]
 EOF
 
