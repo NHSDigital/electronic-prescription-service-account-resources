@@ -1267,8 +1267,8 @@ Resources:
       ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-CPT
       Description: AWS Config rule to detect drift in CloudFormation stacks
       Scope:
-        TagKey: cdkApp
-        TagValue: CptsApiApp
+        TagKey: cfnDriftDetectionGroup
+        TagValue: cpt-api
       Source:
         Owner: AWS
         SourceIdentifier: CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK
@@ -1282,7 +1282,7 @@ Resources:
       ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-CPT-UI
       Description: AWS Config rule to detect drift in CloudFormation stacks
       Scope:
-        TagKey: serviceName
+        TagKey: cfnDriftDetectionGroup
         TagValue: cpt-ui
       Source:
         Owner: AWS
@@ -1297,7 +1297,7 @@ Resources:
       ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-Prescribe-Dispense
       Description: AWS Config rule to detect drift in CloudFormation stacks
       Scope:
-        TagKey: serviceName
+        TagKey: cfnDriftDetectionGroup
         TagValue: prescribe-dispense
       Source:
         Owner: AWS
@@ -1312,8 +1312,8 @@ Resources:
       ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-Vpc-Resources
       Description: AWS Config rule to detect drift in CloudFormation stacks
       Scope:
-        TagKey: cdkApp
-        TagValue: VpcResourcesApp
+        TagKey: cfnDriftDetectionGroup
+        TagValue: vpc-resources
       Source:
         Owner: AWS
         SourceIdentifier: CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK
@@ -1327,7 +1327,7 @@ Resources:
       ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-Dashboards
       Description: AWS Config rule to detect drift in CloudFormation stacks
       Scope:
-        TagKey: stackName
+        TagKey: cfnDriftDetectionGroup
         TagValue: dashboards
       Source:
         Owner: AWS
@@ -1342,7 +1342,7 @@ Resources:
       ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-Account-Resources
       Description: AWS Config rule to detect drift in CloudFormation stacks
       Scope:
-        TagKey: repo
+        TagKey: cfnDriftDetectionGroup
         TagValue: account-resources
       Source:
         Owner: AWS
@@ -1357,7 +1357,7 @@ Resources:
       ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-PFP
       Description: AWS Config rule to detect drift in CloudFormation stacks
       Scope:
-        TagKey: cloudFormationStack
+        TagKey: cfnDriftDetectionGroup
         TagValue: pfp
       Source:
         Owner: AWS
@@ -1372,7 +1372,7 @@ Resources:
       ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-Fhir-Validator
       Description: AWS Config rule to detect drift in CloudFormation stacks
       Scope:
-        TagKey: cloudFormationStack
+        TagKey: cfnDriftDetectionGroup
         TagValue: fhir-validator
       Source:
         Owner: AWS
@@ -1387,7 +1387,7 @@ Resources:
       ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-Route-53
       Description: AWS Config rule to detect drift in CloudFormation stacks
       Scope:
-        TagKey: cloudFormationStack
+        TagKey: cfnDriftDetectionGroup
         TagValue: eps-route53-resources
       Source:
         Owner: AWS
