@@ -17,7 +17,7 @@ const lambdaHandler = async (event: any) => {
       newEvaluationTime: event.detail?.newEvaluationResult?.resultRecordedTime,
       oldComplianceType: event.detail?.oldEvaluationResult?.complianceType,
       oldEvaluationTime: event.detail?.oldEvaluationResult?.resultRecordedTime,
-      resourceId: event.detail?.resourceId
+      stack: event.detail?.resourceId
     }
     if (details.newComplianceType === "COMPLIANT") {
       if (details.oldComplianceType === "NON_COMPLIANT") {
@@ -28,12 +28,13 @@ const lambdaHandler = async (event: any) => {
       logger.error("Stack drift detected", {details})
       const driftDetailsResponse = await cloudFormationClient.send(
         new DescribeStackResourceDriftsCommand({
-          StackName: details.resourceId,
+          StackName: details.stack,
           StackResourceDriftStatusFilters: ["MODIFIED", "DELETED", "NOT_CHECKED", "IN_SYNC"]
         })
       )
       logger.error("Drift details", {
-        drifts: driftDetailsResponse.StackResourceDrifts
+        drifts: driftDetailsResponse.StackResourceDrifts,
+        details
       })
       for (const drift of driftDetailsResponse.StackResourceDrifts || []) {
         if (drift.StackResourceDriftStatus !== "IN_SYNC") {
@@ -44,7 +45,8 @@ const lambdaHandler = async (event: any) => {
             difference: {
               actualProperties: drift.ActualProperties,
               expectedProperties: drift.ExpectedProperties
-            }
+            },
+            details
           })
         }
       }
