@@ -13,10 +13,16 @@ const lambdaHandler = async (event: any) => {
     const details = {
       awsAccountId: event.detail?.awsAccountId,
       awsRegion: event.detail?.awsRegion,
-      complianceType: event.detail?.newEvaluationResult?.complianceType,
+      newComplianceType: event.detail?.newEvaluationResult?.complianceType,
+      newEvaluationTime: event.detail?.newEvaluationResult?.resultRecordedTime,
+      oldComplianceType: event.detail?.oldEvaluationResult?.complianceType,
+      oldEvaluationTime: event.detail?.oldEvaluationResult?.resultRecordedTime,
       resourceId: event.detail?.resourceId
     }
-    if (details.complianceType === "COMPLIANT") {
+    if (details.newComplianceType === "COMPLIANT") {
+      if (details.oldComplianceType === "NON_COMPLIANT") {
+        logger.info("Stack drift now resolved", {details})
+      }
       logger.info("No stack drift detected", {details})
     } else {
       logger.error("Stack drift detected", {details})
@@ -30,10 +36,17 @@ const lambdaHandler = async (event: any) => {
         drifts: driftDetailsResponse.StackResourceDrifts
       })
       for (const drift of driftDetailsResponse.StackResourceDrifts || []) {
-        logger.error("Drift resource details", {
-          resource: drift.LogicalResourceId,
-          status: drift.StackResourceDriftStatus
-        })
+        if (drift.StackResourceDriftStatus !== "IN_SYNC") {
+          logger.error("Drift resource details", {
+            logicalResourceId: drift.LogicalResourceId,
+            physicalResourceId: drift.PhysicalResourceId,
+            status: drift.StackResourceDriftStatus,
+            difference: {
+              actualProperties: drift.ActualProperties,
+              expectedProperties: drift.ExpectedProperties
+            }
+          })
+        }
       }
     }
   } catch (error) {
