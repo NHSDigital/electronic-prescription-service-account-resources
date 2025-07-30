@@ -40,4 +40,4 @@ sam deploy \
     --no-confirm-changeset \
     --force-upload \
     --tags "version=$VERSION_NUMBER stack=$STACK_NAME repo=$REPO cfnDriftDetectionGroup=$CFN_DRIFT_DETECTION_GROUP" \
-    --parameter-overrides $$PARAMETERS
+    --parameter-overrides "$PARAMETERS"

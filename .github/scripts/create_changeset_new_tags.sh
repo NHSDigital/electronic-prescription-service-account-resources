@@ -40,8 +40,8 @@ fi
 cat > tags.json <<EOF
 [
   {"Key": "version", "Value": "${VERSION}"},
-  {"Key": "repo", "Value": "account-resources"}
-  {"Key": "stack", "Value": "${STACK_NAME}"}
+  {"Key": "repo", "Value": "account-resources"},
+  {"Key": "stack", "Value": "${STACK_NAME}"},
   {"Key": "cfnDriftDetectionGroup", "Value": "${CFN_DRIFT_DETECTION_GROUP}"}
 ]
 EOF

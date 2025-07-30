@@ -47,8 +47,8 @@ fi
 cat > tags.json <<EOF
 [
   {"Key": "version", "Value": "${current_deployed_tag}"},
-  {"Key": "repo", "Value": "electronic-prescription-service-account-resources"}
-  {"Key": "stack", "Value": "${STACK_NAME}"}
+  {"Key": "repo", "Value": "electronic-prescription-service-account-resources"},
+  {"Key": "stack", "Value": "${STACK_NAME}"},
   {"Key": "cfnDriftDetectionGroup", "Value": "${CFN_DRIFT_DETECTION_GROUP}"}
 ]
 EOF
