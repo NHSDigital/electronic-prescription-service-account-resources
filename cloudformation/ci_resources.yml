@@ -644,6 +644,7 @@ Resources:
               - config:PutConfigRule
               - config:TagResource
               - config:UntagResource
+              - config:DescribeComplianceByConfigRule
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyC:

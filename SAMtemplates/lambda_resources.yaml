@@ -1208,7 +1208,10 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-DriftDetector"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
-        IncludeAdditionalPolicies: false
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt DetectStackDriftPolicy.PolicyArn
 
   # policy that config uses to check for drift detection
   DetectStackDriftPolicy:
@@ -1226,6 +1229,7 @@ Resources:
               - cloudformation:BatchDescribeTypeConfigurations
               - cloudformation:DescribeStackResourceDrifts
               - cloudformation:DescribeStackDriftDetectionStatus
+              - cloudformation:ListStackInstanceResourceDrifts
             Resource: !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:*"
 
   # role for drift detection

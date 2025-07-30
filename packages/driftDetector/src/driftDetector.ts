@@ -1,11 +1,13 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
+import { CloudFormationClient, DescribeStackResourceDriftsCommand } from "@aws-sdk/client-cloudformation"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 
 const logger = new Logger({serviceName: "driftDetector"})
+const cloudFormationClient = new CloudFormationClient()
 
-//eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lambdaHandler = async (event: any) => {
   try {
     const details = {
@@ -18,6 +20,13 @@ const lambdaHandler = async (event: any) => {
       logger.info("No stack drift detected", {details})
     } else {
       logger.error("Stack drift detected", {details})
+      const driftDetailsResponse = await cloudFormationClient.send(
+        new DescribeStackResourceDriftsCommand({
+          StackName: details.resourceId,
+          StackResourceDriftStatusFilters: ["MODIFIED", "DELETED", "NOT_CHECKED", "IN_SYNC"]
+        })
+      )
+      logger.error("Drift details", {drifts: driftDetailsResponse.StackResourceDrifts})
     }
   } catch (error) {
     logger.error("Lambda execution failed:", {error})
