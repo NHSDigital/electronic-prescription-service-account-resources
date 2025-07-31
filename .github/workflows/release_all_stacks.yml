@@ -39,6 +39,9 @@ on:
         deploy_artillery:
           required: true
           type: boolean
+        deploy_drift_detection:
+          required: true
+          type: boolean
       secrets:
         cf_create_changeset_role:
           required: false
@@ -132,7 +135,7 @@ jobs:
       COMMIT_ID: ${{ inputs.commit_id }}
       LOG_LEVEL: DEBUG
       LOG_RETENTION_DAYS: 30
-      dynamic_vars: '{"CommitId": "${{ inputs.commit_id }}", "VersionNumber": "${{ inputs.version_number }}", "lambda_insights_log_group_name": "${{ inputs.lambda_insights_log_group_name }}"}'
+      dynamic_vars: '{"CommitId": "${{ inputs.commit_id }}", "VersionNumber": "${{ inputs.version_number }}", "lambda_insights_log_group_name": "${{ inputs.lambda_insights_log_group_name }}", "DeployDriftDetection": "${{ inputs.deploy_drift_detection }}"}'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
       parameter_secrets: "{}"
