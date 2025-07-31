@@ -93,7 +93,7 @@ sam-deploy-package: guard-artifact_bucket guard-ARTIFACT_BUCKET_PREFIX guard-STA
 		--role-arn $$cloud_formation_execution_role \
 		--no-confirm-changeset \
 		--force-upload \
-		--tags "version=$$VERSION_NUMBER repo=account-resources" \
+		--tags "version=$$VERSION_NUMBER" \
 		--parameter-overrides $$PARAMETERS
 
 
