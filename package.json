@@ -18,7 +18,8 @@
     "packages/certificateChecker",
     "packages/slackAlerter",
     "packages/proxygen",
-    "packages/lambdaJanitor"
+    "packages/lambdaJanitor",
+    "packages/driftDetector"
   ],
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",

@@ -20,5 +20,24 @@ if [ -z "${cloud_formation_execution_role}" ]; then
 fi
 export cloud_formation_execution_role
 
+REPO=electronic-prescription-service-account-resources
+CFN_DRIFT_DETECTION_GROUP="account-resources"
+if [[ "$STACK_NAME" =~ -pr-[0-9]+$ ]]; then
+  CFN_DRIFT_DETECTION_GROUP="account-resources-pull-request"
+fi
+
 cd ../..
-make sam-deploy-package
+sam deploy \
+    --template-file "$TEMPLATE_FILE" \
+    --stack-name "$STACK_NAME" \
+    --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+    --region eu-west-2 \
+    --s3-bucket "$artifact_bucket" \
+    --s3-prefix "$ARTIFACT_BUCKET_PREFIX" \
+    --config-file samconfig_package_and_deploy.toml \
+    --no-fail-on-empty-changeset \
+    --role-arn "$cloud_formation_execution_role" \
+    --no-confirm-changeset \
+    --force-upload \
+    --tags "version=$VERSION_NUMBER stack=$STACK_NAME repo=$REPO cfnDriftDetectionGroup=$CFN_DRIFT_DETECTION_GROUP" \
+    --parameter-overrides "$PARAMETERS"

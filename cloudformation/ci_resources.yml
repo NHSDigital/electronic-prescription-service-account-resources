@@ -371,6 +371,7 @@ Resources:
               - logs:UntagLogGroup
               - logs:ListTagsForResource
               - logs:TagResource
+              - logs:UntagResource
               - logs:DescribeLogStreams
               - logs:DescribeResourcePolicies
               - logs:DeleteMetricFilter
@@ -638,6 +639,12 @@ Resources:
               - events:RemoveTargets
               - events:TagResource
               - events:UntagResource
+              - config:DeleteConfigRule
+              - config:DescribeConfigRules
+              - config:PutConfigRule
+              - config:TagResource
+              - config:UntagResource
+              - config:DescribeComplianceByConfigRule
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyC:
