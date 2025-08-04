@@ -410,6 +410,7 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-CertificateChecker"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        IncludeAdditionalPolicies: true
         AdditionalPolicies: !Join
           - ","
           - - !GetAtt CertificateCheckerManagedPolicy.PolicyArn
