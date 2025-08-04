@@ -1,18 +1,23 @@
 {
-    "name": "lambdaJanitor",
+    "name": "driftDetector",
     "version": "1.0.0",
-    "description": "Lambda to remove old versions of FHIR Validator lambda",
-    "main": "janitor.ts",
+    "description": "Lambda to check for cloudformation drift",
+    "main": "driftDetector.ts",
     "author": "NHS England",
     "license": "MIT",
     "dependencies": {
-        "@aws-lambda-powertools/logger": "^2.24.1",
-        "@aws-sdk/client-lambda": "^3.858.0"
+        "@aws-sdk/client-cloudformation": "^3.856.0",
+        "@aws-sdk/client-cloudwatch-logs": "^3.855.0",
+        "@middy/core": "^6.4.1",
+        "@middy/input-output-logger": "^6.4.1"
     },
     "scripts": {
         "compile": "tsc",
         "test": "npm run compile && npm run unit",
         "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
         "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
+    },
+    "devDependencies": {
+        "aws-sdk-client-mock": "^4.1.0"
     }
 }

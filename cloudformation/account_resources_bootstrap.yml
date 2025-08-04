@@ -504,6 +504,22 @@ Resources:
               - !Ref SlackWebHookUrl
   #endregion
 
+  #region EPSReadOnlyExtraPermissions
+  # policy to allow readonly role access to decrypt using kms keys
+  EPSReadOnlyExtraPermissions:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: EPSReadOnlyExtraPermissions
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource: 
+              - !Sub arn:aws:kms:eu-west-2:${AWS::AccountId}:key/*
+  #endregion
+
 Outputs:
   #region Artifacts Bucket Outputs
   ArtifactsBucket:
