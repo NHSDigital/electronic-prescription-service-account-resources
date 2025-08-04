@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# this template is used to create resources needed in EPS AWS accounts that are not deployed to via github pipelines
+# currently these accounts are management and backup accounts
+# If it changes, it should be manually released using cli commands following kop-002a
+
+Resources:
+  #region EPSReadOnlyExtraPermissions
+  # policy to allow readonly role access to decrypt using kms keys
+  # this policy is added to eps-prod-readonly role so needs to exist
+  EPSReadOnlyExtraPermissions:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: EPSReadOnlyExtraPermissions
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource: 
+              - !Sub arn:aws:kms:eu-west-2:${AWS::AccountId}:key/*
+  #endregion

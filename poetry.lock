@@ -169,14 +169,14 @@ six = "*"
 
 [[package]]
 name = "cfn-lint"
-version = "1.38.0"
+version = "1.38.1"
 description = "Checks CloudFormation templates for practices and behaviour that could potentially be improved"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "cfn_lint-1.38.0-py3-none-any.whl", hash = "sha256:336753eb5259022f6581e26cece84ef729ef3d06ca1445d02ade9a966474d915"},
-    {file = "cfn_lint-1.38.0.tar.gz", hash = "sha256:356275ec13a1f9cd20f87ef4ff7396a34aefad633f4783126d8f5507400b925d"},
+    {file = "cfn_lint-1.38.1-py3-none-any.whl", hash = "sha256:20ccd4e69b20c16126a55a0b7a17d4027129a24c7f2068ac56f2888f191786ed"},
+    {file = "cfn_lint-1.38.1.tar.gz", hash = "sha256:cda697ee6a34a50646dcf9dc8beb1f39492ca24824d7f3481925643851312fe3"},
 ]
 
 [package.dependencies]
@@ -308,14 +308,14 @@ smmap = ">=3.0.1,<6"
 
 [[package]]
 name = "gitpython"
-version = "3.1.44"
+version = "3.1.45"
 description = "GitPython is a Python library used to interact with Git repositories"
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "GitPython-3.1.44-py3-none-any.whl", hash = "sha256:9e0e10cda9bed1ee64bc9a6de50e7e38a9c9943241cd7f585f6df3ed28011110"},
-    {file = "gitpython-3.1.44.tar.gz", hash = "sha256:c87e30b26253bf5418b01b0660f818967f3c503193838337fe5e573331249269"},
+    {file = "gitpython-3.1.45-py3-none-any.whl", hash = "sha256:8908cb2e02fb3b93b7eb0f2827125cb699869470432cc885f019b8fd0fccff77"},
+    {file = "gitpython-3.1.45.tar.gz", hash = "sha256:85b0ee964ceddf211c41b9f27a49086010a190fd8132a24e21f362a4b36a791c"},
 ]
 
 [package.dependencies]
@@ -1265,4 +1265,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "1854dfe8ef2fedc5875b1282cce0d0373bb6b86ef38962d1defda5b30c14a73b"
+content-hash = "e56e670969b5ca8c7a83b742c80460086798ecde493733a047bbd34b73e9c790"

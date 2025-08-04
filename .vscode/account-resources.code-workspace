@@ -23,6 +23,10 @@
     {
       "name": "packages/lambdaJanitor",
       "path": "../packages/lambdaJanitor",
+    },
+    {
+      "name": "packages/driftDetector",
+      "path": "../packages/driftDetector",
     }
   ],
   "settings": {

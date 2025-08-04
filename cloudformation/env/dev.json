@@ -83,7 +83,8 @@
       "VersionNumber": "VAR.VersionNumber",
       "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name",
       "ConcurrencyThreshold": 300,
-      "EnableAlerts": "false"
+      "EnableAlerts": "false",
+      "DeployDriftDetection": "VAR.deploy_drift_detection"
     },
     "artillery-resources": {},
     "secrets": {}
