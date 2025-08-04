@@ -368,11 +368,9 @@ Resources:
   ##################################################
   #region Certificate Checker
   ##################################################
-  LambdaManagedPolicy:
+  CertificateCheckerManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      Roles:
-        - !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -412,6 +410,10 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-CertificateChecker"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt CertificateCheckerManagedPolicy.PolicyArn
 
   CertExpiryCheckFunctionScheduleEventRole:
     Type: AWS::IAM::Role
@@ -821,15 +823,6 @@ Resources:
   ProxygenManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      Roles:
-        - !GetAtt ProxygenPTLInstancePutFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenProdInstancePutFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenPTLMTLSSecretPutFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenProdMTLSSecretPutFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenPTLSpecPublishFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenProdSpecPublishFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenPTLInstanceGetFunctionResources.Outputs.LambdaRoleName
-        - !GetAtt ProxygenPTLInstanceDeleteFunctionResources.Outputs.LambdaRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -858,6 +851,11 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstancePut"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt ProxygenManagedPolicy.PolicyArn
+
 
   ProxygenPTLInstancePutFunction:
     Type: AWS::Serverless::Function
@@ -899,6 +897,10 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-ProxygenProdInstancePut"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt ProxygenManagedPolicy.PolicyArn
 
   ProxygenProdInstancePutFunction:
     Type: AWS::Serverless::Function
@@ -940,6 +942,10 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-ProxygenPTLMTLSSecretPut"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt ProxygenManagedPolicy.PolicyArn
 
   ProxygenPTLMTLSSecretPutFunction:
     Type: AWS::Serverless::Function
@@ -981,6 +987,10 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-ProxygenProdMTLSSecretPut"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt ProxygenManagedPolicy.PolicyArn
 
   ProxygenProdMTLSSecretPutFunction:
     Type: AWS::Serverless::Function
@@ -1022,6 +1032,10 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-ProxygenPTLSpecPublish"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt ProxygenManagedPolicy.PolicyArn
 
   ProxygenPTLSpecPublishFunction:
     Type: AWS::Serverless::Function
@@ -1063,6 +1077,10 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-ProxygenProdSpecPublish"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt ProxygenManagedPolicy.PolicyArn
 
   ProxygenProdSpecPublishFunction:
     Type: AWS::Serverless::Function
@@ -1104,6 +1122,10 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstanceGet"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt ProxygenManagedPolicy.PolicyArn
 
   ProxygenPTLInstanceGetFunction:
     Type: AWS::Serverless::Function
@@ -1145,6 +1167,10 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstanceDelete"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt ProxygenManagedPolicy.PolicyArn
 
   ProxygenPTLInstanceDeleteFunction:
     Type: AWS::Serverless::Function
