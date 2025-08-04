@@ -368,11 +368,9 @@ Resources:
   ##################################################
   #region Certificate Checker
   ##################################################
-  LambdaManagedPolicy:
+  CertificateCheckerManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      Roles:
-        - !GetAtt ExpiryFunctionResources.Outputs.LambdaRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -412,6 +410,9 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-CertificateChecker"
         LogRetentionDays: !Ref LogRetentionDays
         EnableSplunk: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !GetAtt CertificateCheckerManagedPolicy.PolicyArn
 
   CertExpiryCheckFunctionScheduleEventRole:
     Type: AWS::IAM::Role
