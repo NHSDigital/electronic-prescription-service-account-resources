@@ -27,7 +27,7 @@
     "@types/jest": "^29.5.14",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.37.0",
-    "aws-cdk": "^2.1023.0",
+    "aws-cdk": "^2.1024.0",
     "aws-lambda": "^1.0.7",
     "eslint": "^9.32.0",
     "eslint-plugin-import-newlines": "^1.4.0",
@@ -41,8 +41,8 @@
     "archiver": "^7.0.1",
     "conventional-changelog-eslint": "^6.0.0",
     "esbuild": "^0.25.8",
-    "ts-jest": "^29.4.0",
+    "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   }
 }
