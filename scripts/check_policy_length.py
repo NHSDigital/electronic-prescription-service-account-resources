@@ -17,7 +17,7 @@ policy_d_length = len(str(policy_d))
 # estimate at max length due to replacement in cloudformation template
 # and how it is rendered
 # max size in policy is 6144
-max_length = 6300
+max_length = 6400
 if (policy_a_length > max_length
         or policy_b_length > max_length
         or policy_c_length > max_length
