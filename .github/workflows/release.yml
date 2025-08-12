@@ -33,7 +33,7 @@ jobs:
       change_set_version: ${{ steps.output_change_set_version.outputs.CHANGE_SET_VERSION }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ env.BRANCH_NAME }}
           fetch-depth: 0
