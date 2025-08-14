@@ -483,7 +483,7 @@ def main():
     qa_exports = get_all_exports("prescription-qa")
     ref_exports = get_all_exports("prescription-ref")
     int_exports = get_all_exports("prescription-int")
-    prod_exports = get_all_exports("prescription-prod")
+    prod_exports = get_all_exports("prescription-prod-readonly")
     recovery_exports = get_all_exports("prescription-recovery")
 
     # get the roles from the exports
@@ -523,7 +523,7 @@ def main():
         "prod_target_spine_server": "prescriptions.spineservices.nhs.uk",
         "qa_target_spine_server": "msg.intspineservices.nhs.uk",
         "ref_target_spine_server": "prescriptions.refspineservices.nhs.uk",
-        "recovery_target_spine_server": "msg.intspineservices.nhs.uk",
+        "recovery_target_spine_server": "msg.veit07.devspineservices.nhs.uk",
         "dev_target_service_search_server": "nhsuk-apim-stag-uks.azure-api.net",
         "int_target_service_search_server": "api.nhs.uk",
         "prod_target_service_search_server": "api.nhs.uk",
