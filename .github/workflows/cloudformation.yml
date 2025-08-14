@@ -57,7 +57,7 @@ jobs:
       parameters_file_name: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
     steps:
     - name: checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
@@ -179,7 +179,7 @@ jobs:
       STACK_NAME: ${{ inputs.stack_name }}
     steps:
       - name: Checkout scripts
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ env.BRANCH_NAME }}
           sparse-checkout: |
@@ -198,7 +198,7 @@ jobs:
         run: ./execute_changeset.sh
 
       - name: Checkout gh-pages
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: gh-pages
           path: gh-pages
