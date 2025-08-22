@@ -785,7 +785,10 @@ Resources:
               - wafv2:CreateIPSet
               - wafv2:DeleteIPSet
               - wafv2:UpdateIPSet
-            Resource: "*"
+              - lambda:InvokeFunction
+            Resource: 
+              - "*"
+              - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*BucketNotificationsHandler*
 
   GrantCloudFormationExecutionAccessPolicyD:
     Type: AWS::IAM::ManagedPolicy
@@ -965,20 +968,6 @@ Resources:
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-2
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/*
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1
-
-  GrantCloudFormationExecutionAccessPolicyE:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      Roles:
-        - Ref: CloudFormationExecutionRole
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - lambda:InvokeFunction
-            Resource:
-              - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*BucketNotificationsHandler*
 
   GrantCloudFormationExecutionEc2AccessPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -1629,11 +1618,7 @@ Outputs:
     Value: !Ref GrantCloudFormationExecutionAccessPolicyD
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyD"]]
-  GrantCloudFormationExecutionAccessPolicyE:
-    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessPolicyE
-    Value: !Ref GrantCloudFormationExecutionAccessPolicyE
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyE"]]
+
   GrantCloudFormationExecutionEc2AccessPolicy:
     Description: ARN of the IAM policy GrantCloudFormationExecutionEc2AccessPolicy
     Value: !Ref GrantCloudFormationExecutionEc2AccessPolicy
