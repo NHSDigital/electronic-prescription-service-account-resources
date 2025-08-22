@@ -1771,6 +1771,51 @@ Resources:
           - Comparison: EQUALS
             Value: CVE-2025-50106
       Name: suppress_CVE-2025-50106
+
+  # only applies to windows
+  SuppressCVE202527210:
+    Type: AWS::InspectorV2::Filter
+    Properties:
+      Description: CVE-2025-27210
+      FilterAction: SUPPRESS
+      FilterCriteria: 
+        VulnerabilityId:
+          - Comparison: EQUALS
+            Value: CVE-2025-27210
+      Name: suppress_CVE-2025-27210
+
+  SuppressCVE202552520:
+    Type: AWS::InspectorV2::Filter
+    Properties:
+      Description: CVE-2025-52520
+      FilterAction: SUPPRESS
+      FilterCriteria: 
+        VulnerabilityId:
+          - Comparison: EQUALS
+            Value: CVE-2025-52520
+      Name: suppress_CVE-2025-52520
+
+  SuppressCVE202548989:
+    Type: AWS::InspectorV2::Filter
+    Properties:
+      Description: CVE-2025-48989
+      FilterAction: SUPPRESS
+      FilterCriteria: 
+        VulnerabilityId:
+          - Comparison: EQUALS
+            Value: CVE-2025-48989
+      Name: suppress_CVE-2025-48989
+
+  SuppressCVE202553506:
+    Type: AWS::InspectorV2::Filter
+    Properties:
+      Description: CVE-2025-53506
+      FilterAction: SUPPRESS
+      FilterCriteria: 
+        VulnerabilityId:
+          - Comparison: EQUALS
+            Value: CVE-2025-53506
+      Name: suppress_CVE-2025-53506
   #endregion
 
 Outputs:
