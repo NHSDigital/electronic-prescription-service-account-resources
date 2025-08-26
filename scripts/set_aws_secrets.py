@@ -173,7 +173,7 @@ def get_secret_arns_and_local_values(all_exports: list, environment: str) -> lis
         {
             "variable_name": "ptl_prescription_signing_private_key",
             "export_name": "secrets:ptlPrescriptionSigningPrivateKey",
-            "required": False,
+            "required": True,
             "local_value": read_local_secret(f"{environment}/ptl_prescription_signing_private_key")
         },
         {
