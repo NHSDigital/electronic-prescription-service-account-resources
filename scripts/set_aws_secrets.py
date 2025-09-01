@@ -190,7 +190,7 @@ def get_secret_arns_and_local_values(all_exports: list, environment: str) -> lis
         },
         {
             "variable_name": "PSUNotify_kid_secret",
-            "export_name": "secrets:PSUNotifyKidSecret",
+            "export_name": "secrets:PSUNotifyAppIdSecret",
             "required": True,
             "local_value": os.environ.get(f"{environment}_PSUNotify_kid_secret")
         },
