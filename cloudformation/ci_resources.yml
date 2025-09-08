@@ -396,6 +396,7 @@ Resources:
               - logs:UpdateDeliveryConfiguration
               - logs:CreateDelivery
               - logs:DeleteDelivery
+              - logs:DescribeDeliveries
               - lambda:Add*
               - lambda:Create*
               - lambda:Delete*
