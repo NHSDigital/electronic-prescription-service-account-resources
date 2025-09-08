@@ -381,6 +381,21 @@ Resources:
               - logs:DescribeIndexPolicies
               - logs:DeleteResourcePolicy
               - logs:PutResourcePolicy
+              - logs:GetDeliveryDestination
+              - logs:PutDeliveryDestination
+              - logs:GetDeliveryDestinationPolicy
+              - logs:PutDeliveryDestinationPolicy
+              - logs:DeleteDeliveryDestination
+              - logs:DeleteDeliveryDestinationPolicy
+              - logs:DescribeDeliveryDestinations
+              - logs:DescribeDeliverySources
+              - logs:PutDeliverySource
+              - logs:DeleteDeliverySource
+              - logs:GetDeliverySource
+              - logs:GetDelivery
+              - logs:UpdateDeliveryConfiguration
+              - logs:CreateDelivery
+              - logs:DeleteDelivery
               - lambda:Add*
               - lambda:Create*
               - lambda:Delete*
