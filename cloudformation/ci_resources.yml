@@ -936,6 +936,7 @@ Resources:
           - cloudfront:ListTagsForResource
           - cloudfront:DeleteDistribution
           - cloudfront:ListDistributionsByWebACLId
+          - cloudfront:AllowVendedLogDeliveryForResource
           - rum:CreateAppMonitor
           - rum:DeleteAppMonitor
           - rum:DeleteResourcePolicy
