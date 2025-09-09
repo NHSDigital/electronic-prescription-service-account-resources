@@ -785,7 +785,10 @@ Resources:
               - wafv2:CreateIPSet
               - wafv2:DeleteIPSet
               - wafv2:UpdateIPSet
-            Resource: "*"
+              - lambda:InvokeFunction
+            Resource: 
+              - "*"
+              - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*BucketNotificationsHandler*
 
   GrantCloudFormationExecutionAccessPolicyD:
     Type: AWS::IAM::ManagedPolicy
