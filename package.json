@@ -23,9 +23,9 @@
   ],
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/release-notes-generator": "^14.0.3",
+    "@semantic-release/release-notes-generator": "^14.1.0",
     "@types/jest": "^29.5.14",
-    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.42.0",
     "aws-cdk": "^2.1029.0",
     "aws-lambda": "^1.0.7",
