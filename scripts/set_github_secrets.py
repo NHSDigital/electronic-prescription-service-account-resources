@@ -624,6 +624,12 @@ def main():
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
             "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-workflow-semantic-release",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
         }
     ]
     for repo in repos:
