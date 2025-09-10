@@ -255,7 +255,7 @@ def set_all_secrets(github: Github,
                set_dependabot=False)
 
     if echo_repos:
-        print("All required secrets set for echo repo.")
+        print(f"All required secrets set for echo repo {repo_name}.")
         return
 
     # proxygen roles
