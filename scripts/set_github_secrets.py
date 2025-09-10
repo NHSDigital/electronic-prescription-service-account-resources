@@ -238,10 +238,7 @@ def set_all_secrets(github: Github,
         print("Returning.")
         return
 
-    # common secrets
-    set_secret(github=github, repo_name=repo_name, secret_name="REGRESSION_TESTS_PEM",
-               secret_value=secrets["regression_test_pem"],
-               set_dependabot=True)
+    # automerge secrets
     set_secret(github=github, repo_name=repo_name, secret_name="AUTOMERGE_PEM",
                secret_value=secrets["automerge_pem"],
                set_dependabot=True)
@@ -257,6 +254,11 @@ def set_all_secrets(github: Github,
     if echo_repos:
         print(f"All required secrets set for echo repo {repo_name}.")
         return
+
+    # common secrets
+    set_secret(github=github, repo_name=repo_name, secret_name="REGRESSION_TESTS_PEM",
+               secret_value=secrets["regression_test_pem"],
+               set_dependabot=True)
 
     # proxygen roles
     set_secret(github=github, repo_name=repo_name, secret_name="PROXYGEN_PTL_ROLE",
