@@ -1453,7 +1453,7 @@ Resources:
     Condition: ShouldDeployDriftDetection
     Type: AWS::Config::ConfigRule
     Properties:
-      ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-Route-53
+      ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-epsam
       Description: AWS Config rule to detect drift in CloudFormation stacks
       Scope:
         TagKey: cfnDriftDetectionGroup
