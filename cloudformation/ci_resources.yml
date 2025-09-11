@@ -501,6 +501,11 @@ Resources:
               - aoss:TagResource
               - aoss:UntagResource
               - aoss:ListTagsForResource
+              - aoss:CreateIndex
+              - aoss:DeleteIndex
+              - aoss:UpdateIndex
+              - aoss:GetIndex
+              - aoss:APIAccessAll
               - bedrock:ApplyGuardrail
               - bedrock:CreateGuardrail
               - bedrock:ListGuardrails
