@@ -429,7 +429,7 @@ def setup_repo(github: Github,
                repo: RepoConfig,
                secrets: Secrets,
                github_teams: GithubTeams,
-               echo_repos: bool):
+               echo_repos: bool = False):
     set_all_secrets(github=github,
                     repo_name=repo["repo_name"],
                     set_target_spine_servers=repo["set_target_spine_servers"],
@@ -452,14 +452,6 @@ def main():
         "--gh_auth_token",
         required=True,
         help="Please provide a github auth token. If authenticated with github cli this can be retrieved using 'gh auth token'", # noqa E501
-    )
-
-    parser.add_argument(
-        "--echo_repos",
-        required=False,
-        action=argparse.BooleanOptionalAction,
-        default=False,
-        help="Option to run this script against echo repositories"
     )
 
     arguments = parser.parse_args()
@@ -630,12 +622,18 @@ def main():
         }
     ]
 
-    for repo in repos if not arguments.echo_repos else echo_repos:
+    for repo in repos:
+        setup_repo(github=github,
+                   repo=repo,
+                   secrets=secrets,
+                   github_teams=github_teams)
+
+    for repo in echo_repos:
         setup_repo(github=github,
                    repo=repo,
                    secrets=secrets,
                    github_teams=github_teams,
-                   echo_repos=arguments.echo_repos)
+                   echo_repos=True)
 
 
 if __name__ == "__main__":
