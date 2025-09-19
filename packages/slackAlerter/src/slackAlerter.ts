@@ -20,7 +20,9 @@ const ENV: string = process.env.ENV || "not-set"
 
 const logger: Logger = new Logger({serviceName: "slackAlerter"})
 
-export const handler: SQSHandler = async(event: SQSEvent): Promise<SQSBatchResponse> => {
+export const handler: SQSHandler = async(event: SQSEvent, context): Promise<SQSBatchResponse> => {
+  logger.addContext(context)
+  logger.resetKeys()
   logger.info("Received SQS message...")
   const batchItemFailures: Array<SQSBatchItemFailure> = []
 
