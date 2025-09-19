@@ -12,7 +12,7 @@
         "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
     },
     "dependencies": {
-        "@aws-lambda-powertools/logger": "^2.26.0"
+        "@aws-lambda-powertools/logger": "^2.26.1"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.152",
