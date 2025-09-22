@@ -1449,6 +1449,22 @@ Resources:
       InputParameters:
         cloudformationRoleArn: !GetAtt IamRoleForDriftDetection.Arn
 
+  ConfigRuleToDetectCfnDriftEpsam:
+    Condition: ShouldDeployDriftDetection
+    Type: AWS::Config::ConfigRule
+    Properties:
+      ConfigRuleName: !Sub ${AWS::StackName}-CloudFormationDriftDetector-epsam
+      Description: AWS Config rule to detect drift in CloudFormation stacks
+      Scope:
+        TagKey: cfnDriftDetectionGroup
+        TagValue: epsam
+      Source:
+        Owner: AWS
+        SourceIdentifier: CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK
+      MaximumExecutionFrequency: TwentyFour_Hours
+      InputParameters:
+        cloudformationRoleArn: !GetAtt IamRoleForDriftDetection.Arn
+
   DriftDetectorLambdaInvokePermission:
     Condition: ShouldDeployDriftDetection
     Type: "AWS::Lambda::Permission"

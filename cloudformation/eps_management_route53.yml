@@ -94,3 +94,21 @@ Resources:
           "ns-91.awsdns-11.com", 
           "ns-651.awsdns-17.net",
         ]
+
+
+  nsRecoveryHstedEPSZoneRecordSet:
+    Type: "AWS::Route53::RecordSet"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Delete
+    Properties:
+      HostedZoneId: !Ref EPSZone
+      Name: "recovery.eps.national.nhs.uk"
+      Type: NS
+      TTL: "900"
+      ResourceRecords:
+        [
+          "ns-1986.awsdns-56.co.uk",
+          "ns-798.awsdns-35.net",
+          "ns-346.awsdns-43.com", 
+          "ns-1395.awsdns-46.org",
+        ]

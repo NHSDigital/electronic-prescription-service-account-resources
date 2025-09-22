@@ -58,10 +58,10 @@
         ],
         "eslint.useFlatConfig": true,
         "eslint.format.enable": true,
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint"    
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
       }
     }
   },
   "remoteEnv": { "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}/" },
-  "postCreateCommand": "rm -f ~/.docker/config.json; git config --global --add safe.directory /workspaces/electronic-prescription-service-account-resources; make install; direnv allow ."
+  "postCreateCommand": "docker build -f https://raw.githubusercontent.com/NHSDigital/eps-workflow-quality-checks/refs/tags/v4.0.4/dockerfiles/nhsd-git-secrets.dockerfile -t git-secrets .  && rm -f ~/.docker/config.json; git config --global --add safe.directory /workspaces/electronic-prescription-service-account-resources; make install; direnv allow . && poetry run pre-commit install --install-hooks -f"
 }
