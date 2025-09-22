@@ -88,7 +88,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
     const mockLoggerError = jest.spyOn(Logger.prototype, "error")
 
     await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
-    expect(mockLoggerError).toBeCalledTimes(1)
+    expect(mockLoggerError).toHaveBeenCalledTimes(1)
 
     const loggerCallParams = mockLoggerError.mock.calls[0]
     expect(loggerCallParams[0]).toEqual("Error in response to call to proxygen")
@@ -135,7 +135,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
     const mockLoggerError = jest.spyOn(Logger.prototype, "error")
 
     await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
-    expect(mockLoggerError).toBeCalledTimes(1)
+    expect(mockLoggerError).toHaveBeenCalledTimes(1)
 
     const loggerCallParams = mockLoggerError.mock.calls[0]
     expect(loggerCallParams[0]).toEqual("Error in request to call to proxygen")
