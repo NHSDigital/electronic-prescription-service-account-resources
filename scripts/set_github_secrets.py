@@ -1,4 +1,5 @@
 import argparse
+from dataclasses import dataclass, field
 import json
 from typing import TypedDict
 import time
@@ -81,6 +82,13 @@ class RepoConfig(TypedDict):
     set_target_spine_servers: bool
     set_account_resources_environments: bool
     set_target_service_search_servers: bool
+
+
+@dataclass
+class RepoEnvironment():
+    name: str
+    reviewers: list[ReviewerParams] = field(default_factory=list)
+    deployment_branch_policy: EnvironmentDeploymentBranchPolicyParams | None = None
 
 
 def get_named_export(all_exports: list, export_name: str, required: bool) -> str | None:
@@ -221,7 +229,7 @@ def set_all_secrets(github: Github,
                     set_target_spine_servers: bool,
                     set_target_service_search_servers: bool,
                     secrets: Secrets,
-                    ):
+                    echo_repos: bool):
     response = input(f"Setting secrets in repo {repo_name}. Do you want to continue? (y/N): ")
 
     if response.lower() == "y":
@@ -229,10 +237,8 @@ def set_all_secrets(github: Github,
     else:
         print("Returning.")
         return
-    # common secrets
-    set_secret(github=github, repo_name=repo_name, secret_name="REGRESSION_TESTS_PEM",
-               secret_value=secrets["regression_test_pem"],
-               set_dependabot=True)
+
+    # automerge secrets
     set_secret(github=github, repo_name=repo_name, secret_name="AUTOMERGE_PEM",
                secret_value=secrets["automerge_pem"],
                set_dependabot=True)
@@ -244,6 +250,15 @@ def set_all_secrets(github: Github,
     set_secret(github=github, repo_name=repo_name, secret_name="DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE",
                secret_value=secrets["dev_roles"]["release_notes_execute_lambda_role"],
                set_dependabot=False)
+
+    if echo_repos:
+        print(f"All required secrets set for echo repo {repo_name}.")
+        return
+
+    # common secrets
+    set_secret(github=github, repo_name=repo_name, secret_name="REGRESSION_TESTS_PEM",
+               secret_value=secrets["regression_test_pem"],
+               set_dependabot=True)
 
     # proxygen roles
     set_secret(github=github, repo_name=repo_name, secret_name="PROXYGEN_PTL_ROLE",
@@ -340,32 +355,29 @@ def set_all_secrets(github: Github,
                    set_dependabot=False)
 
 
-def setup_account_resources_environments(repo: Repository,
-                                         environment_name: str,
-                                         reviewers: list[ReviewerParams] = [],
-                                         deployment_branch_policy: EnvironmentDeploymentBranchPolicyParams | None = None, # noqa E501
-                                         ):
-    print(f"Creating {environment_name}-ci environment")
-    repo.create_environment(f"{environment_name}-ci",
-                            reviewers=reviewers,
-                            deployment_branch_policy=deployment_branch_policy)
-    time.sleep(1)  # Sleep for 1 second to avoid rate
-    print(f"Creating {environment_name}-account environment")
-    repo.create_environment(f"{environment_name}-account",
-                            reviewers=reviewers,
-                            deployment_branch_policy=deployment_branch_policy)
-    time.sleep(1)  # Sleep for 1 second to avoid rate
-    print(f"Creating {environment_name}-lambda environment")
-    repo.create_environment(f"{environment_name}-lambda",
-                            reviewers=reviewers,
-                            deployment_branch_policy=deployment_branch_policy)
+def setup_account_resources_environments(repo: Repository, environment: RepoEnvironment):
+    print(f"Setting up account-resources environments in repo {repo.name}")
+    for suffix in ["ci", "account", "lambda"]:
+        print(f"Creating {environment.name}-{suffix} environment")
+        repo.create_environment(f"{environment.name}-{suffix}",
+                                reviewers=environment.reviewers,
+                                deployment_branch_policy=environment.deployment_branch_policy)
+        time.sleep(1)  # Sleep for 1 second to avoid rate
+
+
+def setup_repo_environment(repo: Repository, environment: RepoEnvironment):
+    print(f"Creating {environment.name} environment in repo {repo.name}")
+    repo.create_environment(environment.name,
+                            reviewers=environment.reviewers,
+                            deployment_branch_policy=environment.deployment_branch_policy)
     time.sleep(1)  # Sleep for 1 second to avoid rate
 
 
 def setup_environments(github: Github,
                        repo_name: str,
                        set_account_resources_environments: bool,
-                       github_teams: GithubTeams):
+                       github_teams: GithubTeams,
+                       echo_repos: bool):
     response = input(f"Setting environments in repo {repo_name}. Do you want to continue? (y/N): ")
 
     if response.lower() == "y":
@@ -373,94 +385,62 @@ def setup_environments(github: Github,
     else:
         print("Returning.")
         return
+
     repo = github.get_repo(repo_name)
     eps_administrator_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_administrator_team"])
     eps_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_team"])
     deployment_branch_policy = EnvironmentDeploymentBranchPolicyParams(protected_branches=True,
                                                                        custom_branch_policies=False)
+
+    common_environments: list[RepoEnvironment] = [
+        RepoEnvironment("dev"),
+        RepoEnvironment("ref", [eps_administrator_team_reviewer, eps_team_reviewer]),
+        RepoEnvironment("int", [eps_administrator_team_reviewer, eps_team_reviewer], deployment_branch_policy),
+    ]
+
     if set_account_resources_environments:
-        print(f"Setting up account-resources environments in repo {repo_name}")
-        setup_account_resources_environments(repo=repo, environment_name="dev")
-        setup_account_resources_environments(repo=repo,
-                                             environment_name="qa",
-                                             reviewers=[eps_administrator_team_reviewer, eps_team_reviewer],
-                                             deployment_branch_policy=deployment_branch_policy
-                                             )
-        setup_account_resources_environments(repo=repo,
-                                             environment_name="ref",
-                                             reviewers=[eps_administrator_team_reviewer, eps_team_reviewer],
-                                             deployment_branch_policy=deployment_branch_policy
-                                             )
-        setup_account_resources_environments(repo=repo,
-                                             environment_name="int",
-                                             reviewers=[eps_administrator_team_reviewer, eps_team_reviewer],
-                                             deployment_branch_policy=deployment_branch_policy
-                                             )
-        setup_account_resources_environments(repo=repo,
-                                             environment_name="recovery",
-                                             reviewers=[eps_administrator_team_reviewer, eps_team_reviewer]
-                                             )
-        setup_account_resources_environments(repo=repo,
-                                             environment_name="prod",
-                                             reviewers=[eps_administrator_team_reviewer],
-                                             deployment_branch_policy=deployment_branch_policy
-                                             )
+        environments = common_environments + [
+            RepoEnvironment("recovery", [eps_administrator_team_reviewer, eps_team_reviewer]),
+            RepoEnvironment("qa", [eps_administrator_team_reviewer, eps_team_reviewer], deployment_branch_policy),
+            RepoEnvironment("prod", [eps_administrator_team_reviewer], deployment_branch_policy),
+        ]
+        for environment in environments:
+            setup_account_resources_environments(repo=repo, environment=environment)
+        return
+
+    if not echo_repos:
+        environments = common_environments + [
+            RepoEnvironment("dev-pr"),
+            RepoEnvironment("recovery", [eps_administrator_team_reviewer, eps_team_reviewer]),
+            RepoEnvironment("qa", [eps_administrator_team_reviewer, eps_team_reviewer], deployment_branch_policy),
+            RepoEnvironment("prod", [eps_administrator_team_reviewer], deployment_branch_policy),
+        ]
     else:
-        print(f"Creating dev environment in repo {repo_name}")
-        repo.create_environment("dev")
-        time.sleep(1)  # Sleep for 1 second to avoid rate limiting
-        print(f"Creating dev-pr environment in repo {repo_name}")
-        repo.create_environment("dev-pr")
-        time.sleep(1)  # Sleep for 1 second to avoid rate
-
-        print(f"Creating qa environment in repo {repo_name}")
-        repo.create_environment("qa", reviewers=[
-            eps_administrator_team_reviewer,
-            eps_team_reviewer
-        ], deployment_branch_policy=deployment_branch_policy)
-        time.sleep(1)  # Sleep for 1 second to avoid rate
-
-        print(f"Creating ref environment in repo {repo_name}")
-        repo.create_environment("ref", reviewers=[
-            eps_administrator_team_reviewer,
-            eps_team_reviewer
-        ])
-        time.sleep(1)  # Sleep for 1 second to avoid rate
-
-        print(f"Creating int environment in repo {repo_name}")
-        repo.create_environment("int", reviewers=[
-            eps_administrator_team_reviewer,
-            eps_team_reviewer
-        ], deployment_branch_policy=deployment_branch_policy)
-        time.sleep(1)  # Sleep for 1 second to avoid rate
-
-        print(f"Creating recovery environment in repo {repo_name}")
-        repo.create_environment("recovery", reviewers=[
-            eps_administrator_team_reviewer,
-            eps_team_reviewer
-        ])
-        time.sleep(1)  # Sleep for 1 second to avoid rate
-
-        print(f"Creating prod environment in repo {repo_name}")
-        repo.create_environment("prod", reviewers=[
-            eps_administrator_team_reviewer
-        ], deployment_branch_policy=deployment_branch_policy)
-        time.sleep(1)  # Sleep for 1 second to avoid rate
+        environments = common_environments + [
+            RepoEnvironment("veit"),
+            RepoEnvironment("dep", [eps_administrator_team_reviewer, eps_team_reviewer], deployment_branch_policy),
+            RepoEnvironment("live", [eps_administrator_team_reviewer], deployment_branch_policy),
+        ]
+    for environment in environments:
+        setup_repo_environment(repo, environment)
 
 
 def setup_repo(github: Github,
                repo: RepoConfig,
                secrets: Secrets,
-               github_teams: GithubTeams):
+               github_teams: GithubTeams,
+               echo_repos: bool = False):
     set_all_secrets(github=github,
                     repo_name=repo["repo_name"],
                     set_target_spine_servers=repo["set_target_spine_servers"],
                     set_target_service_search_servers=repo["set_target_service_search_servers"],
-                    secrets=secrets)
+                    secrets=secrets,
+                    echo_repos=echo_repos)
     setup_environments(github=github,
                        repo_name=repo["repo_name"],
                        set_account_resources_environments=repo["set_account_resources_environments"],
-                       github_teams=github_teams)
+                       github_teams=github_teams,
+                       echo_repos=echo_repos)
     # TODO - setup other things automatically
     # see https://nhsd-confluence.digital.nhs.uk/spaces/APIMC/pages/693753388/Git+repository+checklist
 
@@ -624,13 +604,36 @@ def main():
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
             "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-workflow-semantic-release",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
         }
     ]
+
+    echo_repos = [
+        {
+            "repo_name": "NHSDigital/eps-storage-terraform",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        }
+    ]
+
     for repo in repos:
         setup_repo(github=github,
                    repo=repo,
                    secrets=secrets,
                    github_teams=github_teams)
+
+    for repo in echo_repos:
+        setup_repo(github=github,
+                   repo=repo,
+                   secrets=secrets,
+                   github_teams=github_teams,
+                   echo_repos=True)
 
 
 if __name__ == "__main__":

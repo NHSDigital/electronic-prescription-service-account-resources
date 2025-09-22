@@ -6,8 +6,9 @@
     "author": "NHS England",
     "license": "MIT",
     "dependencies": {
-        "@aws-lambda-powertools/logger": "^2.25.2",
-        "@aws-sdk/client-lambda": "^3.883.0"
+        "@aws-lambda-powertools/logger": "^2.26.1",
+        "@aws-sdk/client-lambda": "^3.893.0",
+        "uuid": "^13.0.0"
     },
     "scripts": {
         "compile": "tsc",
