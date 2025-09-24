@@ -251,13 +251,22 @@ Resources:
           - ServerSideEncryptionByDefault:
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${ArtifactsBucketKMSKeyAlias}"
               SSEAlgorithm: "aws:kms"
+      LifecycleConfiguration:
+        Rules:
+          - Id: Artifacts-IA-7d-Expire-90d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 7
+            ExpirationInDays: 90
 
   ArtifactsBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref ArtifactsBucket
       PolicyDocument:
@@ -357,7 +366,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref TrustStoreBucket
       PolicyDocument:
@@ -394,7 +403,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
         - S3_BUCKET_LOGGING_ENABLED
         - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
@@ -415,7 +424,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref AuditLoggingBucket
       PolicyDocument:
@@ -492,7 +501,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
         - S3_BUCKET_LOGGING_ENABLED
         - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
@@ -513,7 +522,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref ALBLoggingBucket
       PolicyDocument:
@@ -572,7 +581,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
         - S3_BUCKET_LOGGING_ENABLED
         - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
@@ -594,7 +603,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref AthenaResultsBucket
       PolicyDocument:
@@ -692,7 +701,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref SplunkDeliveryStreamBackupBucket
       PolicyDocument:
@@ -753,24 +762,24 @@ Resources:
   #region ECR Repositories
   FHIRFacadeRepo:
     Type: AWS::ECR::Repository
-    Properties: 
+    Properties:
       RepositoryName: fhir-facade-repo
-      ImageScanningConfiguration: 
-        ScanOnPush: true    
-    
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
   ValidatorRepo:
     Type: AWS::ECR::Repository
-    Properties: 
+    Properties:
       RepositoryName: validator-repo
-      ImageScanningConfiguration: 
+      ImageScanningConfiguration:
         ScanOnPush: true
 
   CDKUtilsBuildRepo:
     Type: AWS::ECR::Repository
-    Properties: 
+    Properties:
       RepositoryName: cdk-utils-build-repo
-      ImageScanningConfiguration: 
-        ScanOnPush: true    
+      ImageScanningConfiguration:
+        ScanOnPush: true
   #endregion
 
   #region Secrets KMS
@@ -926,7 +935,7 @@ Resources:
               - kms:ReEncrypt*
               - kms:Decrypt
             Resource: "*"
-    
+
   SqsKMSKeyKMSKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
@@ -1320,7 +1329,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SplunkHECToken"
-  
+
   SlackWebHookUrl:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1329,7 +1338,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SlackWebhookUrl"
-  
+
   AccessSlackSecretsManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -1374,7 +1383,7 @@ Resources:
               - sqs:GetQueueAttributes
               - sqs:GetQueueUrl
               - tag:GetResources
-            Resource: 
+            Resource:
             - !Sub "arn:aws:cloudwatch:*:${AWS::AccountId}:*"
             - !Sub "arn:aws:cloudfront::${AWS::AccountId}:*"
             - !Sub "arn:aws:dynamodb::${AWS::AccountId}:*"
@@ -1425,7 +1434,7 @@ Resources:
           - Effect: Allow
             Action:
               - kms:Decrypt
-            Resource: 
+            Resource:
               - !Sub arn:aws:kms:eu-west-2:${AWS::AccountId}:key/*
           - Effect: Allow
             Action:
@@ -1433,7 +1442,7 @@ Resources:
               - kms:GenerateDataKey*
               - kms:Encrypt
               - kms:ReEncrypt*
-            Resource: 
+            Resource:
               - !GetAtt AthenaResultsBucketKMSKey.Arn
           - Effect: Allow
             Action:
@@ -1461,7 +1470,7 @@ Resources:
     Properties:
       Description: CVE-2025-22235
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-22235
@@ -1472,7 +1481,7 @@ Resources:
     Properties:
       Description: CVE-2025-21587
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-21587
@@ -1483,7 +1492,7 @@ Resources:
     Properties:
       Description: CVE-2024-55887
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2024-55887
@@ -1494,7 +1503,7 @@ Resources:
     Properties:
       Description: CVE-2024-52007
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2024-52007
@@ -1505,7 +1514,7 @@ Resources:
     Properties:
       Description: CVE-2024-51132
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2024-51132
@@ -1516,7 +1525,7 @@ Resources:
     Properties:
       Description: CVE-2024-45294
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2024-45294
@@ -1527,7 +1536,7 @@ Resources:
     Properties:
       Description: CVE-2023-2976
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2023-2976
@@ -1538,7 +1547,7 @@ Resources:
     Properties:
       Description: CVE-2023-28465
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2023-28465
@@ -1549,7 +1558,7 @@ Resources:
     Properties:
       Description: CVE-2023-24057
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2023-24057
@@ -1560,7 +1569,7 @@ Resources:
     Properties:
       Description: CVE-2022-42889
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2022-42889
@@ -1571,7 +1580,7 @@ Resources:
     Properties:
       Description: CVE-2021-36090
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2021-36090
@@ -1582,7 +1591,7 @@ Resources:
     Properties:
       Description: CVE-2021-35517
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2021-35517
@@ -1593,18 +1602,18 @@ Resources:
     Properties:
       Description: CVE-2021-35516
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2021-35516
-      Name: suppress_CVE-2021-35516 
+      Name: suppress_CVE-2021-35516
 
   SuppressCVE202135515:
     Type: AWS::InspectorV2::Filter
     Properties:
       Description: CVE-2021-35515
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2021-35515
@@ -1615,7 +1624,7 @@ Resources:
     Properties:
       Description: CVE-2025-31650
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-31650
@@ -1626,7 +1635,7 @@ Resources:
     Properties:
       Description: CVE-2025-31651
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-31651
@@ -1637,7 +1646,7 @@ Resources:
     Properties:
       Description: CVE-2025-23166
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-23166
@@ -1648,7 +1657,7 @@ Resources:
     Properties:
       Description: CVE-2025-46701
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-46701
@@ -1659,7 +1668,7 @@ Resources:
     Properties:
       Description: CVE-2025-48988
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-48988
@@ -1670,7 +1679,7 @@ Resources:
     Properties:
       Description: CVE-2025-49125
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-49125
@@ -1681,7 +1690,7 @@ Resources:
     Properties:
       Description: CVE-2025-50059
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-50059
@@ -1692,7 +1701,7 @@ Resources:
     Properties:
       Description: CVE-2025-30749
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-30749
@@ -1703,7 +1712,7 @@ Resources:
     Properties:
       Description: CVE-2025-50106
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-50106
@@ -1715,7 +1724,7 @@ Resources:
     Properties:
       Description: CVE-2025-27210
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-27210
@@ -1726,7 +1735,7 @@ Resources:
     Properties:
       Description: CVE-2025-52520
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-52520
@@ -1737,7 +1746,7 @@ Resources:
     Properties:
       Description: CVE-2025-48989
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-48989
@@ -1748,7 +1757,7 @@ Resources:
     Properties:
       Description: CVE-2025-53506
       FilterAction: SUPPRESS
-      FilterCriteria: 
+      FilterCriteria:
         VulnerabilityId:
           - Comparison: EQUALS
             Value: CVE-2025-53506
@@ -1886,7 +1895,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
 
   FHIRFacadeRepoUri:
-    Description: "The URI of the FHIR Facade ECR repo"    
+    Description: "The URI of the FHIR Facade ECR repo"
     Value: !GetAtt FHIRFacadeRepo.RepositoryUri
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
@@ -1895,10 +1904,10 @@ Outputs:
     Description: "The Arn of the Validator repo"
     Value: !GetAtt ValidatorRepo.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]     
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]
 
   ValidatorRepoUri:
-    Description: "The URI of the Validator ECR repo"    
+    Description: "The URI of the Validator ECR repo"
     Value: !GetAtt ValidatorRepo.RepositoryUri
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
@@ -1907,10 +1916,10 @@ Outputs:
     Description: "The Arn of the Validator repo"
     Value: !GetAtt CDKUtilsBuildRepo.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoArn"]]     
+      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoArn"]]
 
   CDKUtilsBuildRepoUri:
-    Description: "The URI of the Validator ECR repo"    
+    Description: "The URI of the Validator ECR repo"
     Value: !GetAtt CDKUtilsBuildRepo.RepositoryUri
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoUri"]]
@@ -1922,7 +1931,7 @@ Outputs:
     Value: !GetAtt SecretsKMSKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
-  
+
   SecretsKMSKeyAlias:
     Description: SecretsKMSKeyAlias
     Value: !Ref SecretsKMSKeyKMSKeyAlias
@@ -2234,13 +2243,13 @@ Outputs:
     Value: !GetAtt ClinicalTrackerProxygenPublicKey.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPublicKey"]]
-  
+
   SlackWebHookUrl:
     Description: Slack webhook url
     Value: !GetAtt SlackWebHookUrl.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SlackWebHookUrl"]]
-  
+
   AccessSlackSecretsManagedPolicy:
     Description: "Access SNS Secrets Policy ARN"
     Value: !GetAtt AccessSlackSecretsManagedPolicy.PolicyArn
