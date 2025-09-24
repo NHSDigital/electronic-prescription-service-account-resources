@@ -418,6 +418,15 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: "AES256"
+      LifecycleConfiguration:
+        Rules:
+          - Id: Audit-IA-7d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 7
+            # no ExpirationInDays (never delete)
 
   AuditLoggingBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -695,6 +704,15 @@ Resources:
             ServerSideEncryptionByDefault:
               SSEAlgorithm: aws:kms
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${SplunkDeliveryStreamBackupKMSKeyAlias}"
+      LifecycleConfiguration:
+        Rules:
+          - Id: SplunkBackup-IA-7d-Expire-90d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 7
+            ExpirationInDays: 90
 
   SplunkDeliveryStreamBackupBucketPolicy:
     Type: AWS::S3::BucketPolicy
