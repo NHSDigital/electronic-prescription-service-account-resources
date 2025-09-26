@@ -98,7 +98,7 @@ jobs:
           output_format: "env_vars"
         run: |
           PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.TARGET_ENVIRONMENT }} ${{ inputs.STACK_NAME }} )
-          echo "PARAMETERS=${PARAMETERS}" >> "$GITHUB_ENV"
+          echo "${PARAMETERS}" >> "$GITHUB_ENV"
 
       - name: fix cdk.json for deployment
         run: |
@@ -190,7 +190,7 @@ jobs:
           output_format: "env_vars"
         run: |
           PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.TARGET_ENVIRONMENT }} ${{ inputs.STACK_NAME }} )
-          echo "PARAMETERS=${PARAMETERS}" >> "$GITHUB_ENV"
+          echo "${PARAMETERS}" >> "$GITHUB_ENV"
 
       - name: fix cdk.json for deployment
         run: |
