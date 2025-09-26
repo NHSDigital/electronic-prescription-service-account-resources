@@ -55,7 +55,7 @@ jobs:
             Makefile \
             cdk.json \
             scripts \
-            cloudformation
+            environmentSettings
 
       - uses: actions/upload-artifact@v4
         name: upload build artifact

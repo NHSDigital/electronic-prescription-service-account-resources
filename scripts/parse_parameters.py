@@ -25,7 +25,7 @@ def parse_parameters(env, stack, secrets, dynamic_vars, output_format):
         or a number (integer or float) for numerical values.
     """
 
-    with open(f"cloudformation/env/{env}.json") as f:
+    with open(f"environmentSettings/{env}.json") as f:
         d = json.load(f)
 
     output = [] if output_format == "json_file" else ""
