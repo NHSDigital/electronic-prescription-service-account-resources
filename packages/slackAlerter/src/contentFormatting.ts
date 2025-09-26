@@ -3,11 +3,18 @@ import {StateToEmojiMap as StateToEmojiMap, Trigger} from "./types"
 const stateToEmojiMap: StateToEmojiMap = {
   INSUFFICIENT_DATA: ":black_circle:",
   ALARM: ":red_circle:",
-  OK: ":green_circle:"
+  OK: ":green_circle:",
+  WARNING: ":large_orange_circle:"
 }
 
 export const formatHeader = (alarmName: string, state: string): string => {
-  const stateEmoji: string = stateToEmojiMap[state as keyof typeof stateToEmojiMap]
+  let stateEmoji: string = stateToEmojiMap[state as keyof typeof stateToEmojiMap]
+  if (alarmName.startsWith("Warning") && state === "ALARM") {
+    stateEmoji = stateToEmojiMap["WARNING"]
+  }
+  if (stateEmoji === undefined) {
+    stateEmoji = stateToEmojiMap["INSUFFICIENT_DATA"]
+  }
   const formattedHeader = `${stateEmoji} ${alarmName}`
   return formattedHeader
 }
