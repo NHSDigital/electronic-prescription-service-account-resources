@@ -18,9 +18,6 @@ on:
       CDK_APP_NAME:
         required: true
         type: string
-      IS_PULL_REQUEST:
-        type: boolean
-        required: true
       EXECUTE_CHANGE_SET:
         required: true
         type: boolean
@@ -29,14 +26,6 @@ on:
         required: true
       CDK_PULL_IMAGE_ROLE:
         required: true
-      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE:
-        required: false
-      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE:
-        required: false
-      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE:
-        required: false
-      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE:
-        required: false
 
 jobs:
   release_cdk_code:

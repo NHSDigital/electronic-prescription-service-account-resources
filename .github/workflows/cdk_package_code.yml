@@ -2,13 +2,6 @@ name: cdk package code
 
 on:
   workflow_call:
-    inputs:
-      VERSION_NUMBER:
-        required: true
-        type: string
-      COMMIT_ID:
-        required: true
-        type: string
 
 
 jobs:

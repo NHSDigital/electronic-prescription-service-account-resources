@@ -19,6 +19,8 @@ jobs:
   package_code:
     uses: ./.github/workflows/sam_package_code.yml
 
+  package_cdk_code:
+    uses: ./.github/workflows/cdk_package_code.yml
   get_issue_number:
     runs-on: ubuntu-22.04
     outputs:
@@ -73,3 +75,4 @@ jobs:
     secrets:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}

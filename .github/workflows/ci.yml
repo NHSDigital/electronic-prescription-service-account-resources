@@ -116,6 +116,7 @@ jobs:
     secrets:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
 
 
   create_release_notes_post_dev:
@@ -151,6 +152,7 @@ jobs:
     secrets:
       cf_create_changeset_role: ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
 
   deploy_ref_stacks:
     needs: [get_commit_id, package_code, tag_release, deploy_dev_stacks]
@@ -170,3 +172,4 @@ jobs:
     secrets:
       cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.REF_CDK_PULL_IMAGE_ROLE }}
