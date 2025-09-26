@@ -98,7 +98,7 @@ jobs:
 
       - name: fix cdk.json for deployment
         run: |
-          ./.github/scripts/fix_cdk_json.sh
+          ./.github/scripts/fix_cdk_json.sh ".build/${{ inputs.STACK_NAME }}.json"
         env:
           STACK_NAME: "${{ inputs.STACK_NAME }}"
           VERSION_NUMBER: "${{ inputs.VERSION }}"
@@ -114,6 +114,7 @@ jobs:
           -e AWS_REGION="eu-west-2" \
           -e SHOW_DIFF="true" \
           -e DEPLOY_CODE="false" \
+          -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
           -e CDK_APP_PATH="packages/cdk/bin/CptsApiApp.ts" \
           cdk-utils-build-repo:latest
         shell: bash
@@ -129,6 +130,7 @@ jobs:
           -e AWS_REGION="eu-west-2" \
           -e SHOW_DIFF="false" \
           -e DEPLOY_CODE="true" \
+          -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
           -e CDK_APP_PATH="packages/cdk/bin/CptsApiApp.ts" \
           cdk-utils-build-repo:latest
         shell: bash
