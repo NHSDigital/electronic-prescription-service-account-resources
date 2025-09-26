@@ -122,7 +122,7 @@ jobs:
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
 
-  list_cdk_changes:
+  deploy_cdk_changes:
     if: ${{ inputs.deploy_artillery == true }}
     uses: ./.github/workflows/cdk_release_code.yml
     with:
