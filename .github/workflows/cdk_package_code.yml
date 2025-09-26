@@ -53,7 +53,9 @@ jobs:
             package-lock.json \
             tsconfig.defaults.json \
             Makefile \
-            cdk.json
+            cdk.json \
+            scripts \
+            cloudformation
 
       - uses: actions/upload-artifact@v4
         name: upload build artifact

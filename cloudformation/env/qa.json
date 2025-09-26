@@ -50,7 +50,9 @@
         "repo:NHSDigital/eps-vpc-resources:*",
         "repo:NHSDigital/eps-storage-resources:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*"
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/eps-assist-me:*",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*"
       ],
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:*"

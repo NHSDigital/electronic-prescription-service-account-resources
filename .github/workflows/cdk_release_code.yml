@@ -89,6 +89,7 @@ jobs:
       - name: Parse Parameters
         id: parse_parameters
         shell: bash
+        working-directory: ./.build
         env:
           output_format: "env_vars"
         run: |
