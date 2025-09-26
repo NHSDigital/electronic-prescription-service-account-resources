@@ -64,7 +64,8 @@
       "Env": "qa",
       "CommitId": "VAR.commit_id",
       "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name",
-      "ConcurrencyThreshold": 300,
+      "ConcurrencyThreshold": 900,
+      "ConcurrencyWarningThreshold": 200,
       "EnableAlerts": "true",
       "DeployDriftDetection": "VAR.deploy_drift_detection"
     },
