@@ -29,9 +29,11 @@ on:
         required: true
       CDK_PULL_IMAGE_ROLE:
         required: true
+      CLOUD_FORMATION_DIFF_ROLE:
+        required: true
 
 jobs:
-  release_cdk_code:
+  diff_cdk_code:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.TARGET_ENVIRONMENT }}
     name: deploy cdk app ${{ inputs.CDK_APP_NAME }}
@@ -48,13 +50,13 @@ jobs:
           sparse-checkout: |
             .github
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials for pulling cdk deploy image
         id: connect-aws-pull-image
         uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
-          role-session-name: cpt-api-pull-image
+          role-session-name: account-resources-pull-image
 
       - name: build_artifact download
         uses: actions/download-artifact@v5
@@ -80,13 +82,13 @@ jobs:
           docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest"
           docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials for diff
         id: connect-aws-deploy
         uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-2
-          role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
-          role-session-name: cpt-api-deployment
+          role-to-assume: ${{ secrets.CLOUD_FORMATION_DIFF_ROLE }}
+          role-session-name: account-resources-cdk-diff
           output-credentials: true
 
       - name: Parse Parameters
@@ -122,6 +124,82 @@ jobs:
           -e CDK_APP_PATH="packages/cdk/bin/CptsApiApp.ts" \
           cdk-utils-build-repo:latest
         shell: bash
+  release_cdk_code:
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.TARGET_ENVIRONMENT }}
+    name: deploy cdk app ${{ inputs.CDK_APP_NAME }}
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - name: Checkout local github actions
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          fetch-depth: 0
+          sparse-checkout: |
+            .github
+
+      - name: Configure AWS Credentials for pulling cdk deploy image
+        id: connect-aws-pull-image
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
+          role-session-name: account-resources-pull-image
+
+      - name: build_artifact download
+        uses: actions/download-artifact@v5
+        with:
+          name: cdk_build_artifact
+
+      - name: extract build_artifact
+        run: |
+          mkdir -p .build
+          tar -xf artifact.tar -C .build
+
+      - name: Retrieve AWS Account ID
+        id: retrieve-account-id
+        run: echo "ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)" >> "$GITHUB_ENV"
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        run: |
+          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com
+
+      - name: Pull cdk-utils-build from Amazon ECR
+        run: |
+          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest"
+          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
+
+      - name: Configure AWS Credentials for deployment
+        id: connect-aws-deploy
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
+          role-session-name: account-resources-cdk-deploy
+          output-credentials: true
+
+      - name: Parse Parameters
+        id: parse_parameters
+        shell: bash
+        working-directory: ./.build
+        env:
+          output_format: "env_vars"
+        run: |
+          PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.TARGET_ENVIRONMENT }} ${{ inputs.STACK_NAME }} )
+          echo "PARAMETERS=${PARAMETERS}" >> "$GITHUB_ENV"
+
+      - name: fix cdk.json for deployment
+        run: |
+          ./.github/scripts/fix_cdk_json.sh ".build/${{ inputs.STACK_NAME }}.json"
+        env:
+          STACK_NAME: "${{ inputs.STACK_NAME }}"
+          VERSION_NUMBER: "${{ inputs.VERSION }}"
+          COMMIT_ID: "${{ inputs.COMMIT_ID }}"
+          IS_PULL_REQUEST: "${{ inputs.IS_PULL_REQUEST }}"
 
       - name: Deploy code
         if: ${{ inputs.execute_change_set == true }}

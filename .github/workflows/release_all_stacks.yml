@@ -135,6 +135,7 @@ jobs:
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
+      CLOUD_FORMATION_DIFF_ROLE: ${{ secrets.cf_create_changeset_role }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
 
 # ***************************************************

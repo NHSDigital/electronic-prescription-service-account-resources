@@ -15,7 +15,7 @@ const configDetails = JSON.parse(fs.readFileSync(configFileName, "utf-8"))
 const app = new App({context: configDetails})
 
 const accountId = app.node.tryGetContext("accountId")
-const alarmStackName = app.node.tryGetContext("alarmStackName")
+const stackName = app.node.tryGetContext("stackName")
 const version = app.node.tryGetContext("versionNumber")
 const commit = app.node.tryGetContext("commitId")
 const cfnDriftDetectionGroup = app.node.tryGetContext("cfnDriftDetectionGroup")
@@ -24,17 +24,17 @@ Aspects.of(app).add(new AwsSolutionsChecks({verbose: true}))
 
 Tags.of(app).add("version", version)
 Tags.of(app).add("commit", commit)
+Tags.of(app).add("stackName", stackName)
 Tags.of(app).add("cdkApp", "AccountResources")
 Tags.of(app).add("repo", "electronic-prescription-service-account-resources")
 Tags.of(app).add("cfnDriftDetectionGroup", cfnDriftDetectionGroup)
 
-const alarmStack = new AlarmStack(app, "AlarmStack", {
+new AlarmStack(app, "AlarmStack", {
   env: {
     region: "eu-west-2",
     account: accountId
   },
-  stackName: alarmStackName,
+  stackName: stackName,
   version: version,
   commitId: commit
 })
-Tags.of(alarmStack).add("stackName", alarmStackName)
