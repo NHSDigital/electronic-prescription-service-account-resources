@@ -89,10 +89,11 @@ jobs:
       - name: Parse Parameters
         id: parse_parameters
         shell: bash
+        env:
+          output_format: "env_vars"
         run: |
-            PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ inputs.TARGET_ENVIRONMENT }} ${{ inputs.STACK_NAME }})
-            cat "$PARAMETERS_FILE_NAME"
-            echo "PARAMETERS_FILE_NAME=${PARAMETERS_FILE_NAME}" >> "$GITHUB_OUTPUT"
+          PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.TARGET_ENVIRONMENT }} ${{ inputs.STACK_NAME }} )
+          echo "PARAMETERS=${PARAMETERS}" >> "$GITHUB_ENV"
 
       - name: fix cdk.json for deployment
         run: |

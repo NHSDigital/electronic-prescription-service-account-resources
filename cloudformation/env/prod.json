@@ -81,6 +81,10 @@
       "DeployDriftDetection": "VAR.deploy_drift_detection"
     },
     "artillery-resources": {},
-    "secrets": {}
+    "secrets": {},
+    "alarms": {
+      "lambdaConcurrencyThreshold": 1800,
+      "lambdaConcurrencyWarningThreshold": 1100
+    }
   }
 }

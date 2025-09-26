@@ -49,8 +49,10 @@ def parse_parameters(env, stack, secrets, dynamic_vars, output_format):
             value = replace_dynamic_variables(value, parsed_dynamic_vars)
             if output_format == "json_file":
                 output.append({"ParameterKey": parameter_key, "ParameterValue": value})
-            else:
+            elif output_format == "raw":
                 output = f'{output}ParameterKey="{parameter_key}",ParameterValue="{value}" '
+            else:
+                output = f'{output}{parameter_key}="{value}"\n'
         elif isinstance(raw_value, list):
             values = []
             for list_value in raw_value:
@@ -60,14 +62,18 @@ def parse_parameters(env, stack, secrets, dynamic_vars, output_format):
             concatenated_values = ','.join(values)
             if output_format == "json_file":
                 output.append({"ParameterKey": parameter_key, "ParameterValue": concatenated_values})
-            else:
+            elif output_format == "raw":
                 output = f'{output}ParameterKey="{parameter_key}",ParameterValue="{concatenated_values}" '
+            else:
+                output = f'{output}{parameter_key}="{concatenated_values}"\n'
         elif isinstance(raw_value, (int, float)):
             value = str(raw_value)  # Convert the number to string for output consistency
             if output_format == "json_file":
                 output.append({"ParameterKey": parameter_key, "ParameterValue": value})
-            else:
+            elif output_format == "raw":
                 output = f'{output}ParameterKey="{parameter_key}",ParameterValue="{value}" '
+            else:
+                output = f'{output}{parameter_key}="{value}"\n'
         else:
             print(f"invalid value type for {parameter_key}, skipping...")
             continue
@@ -111,7 +117,7 @@ if __name__ == "__main__":
     parameter_secrets = os.environ.get("parameter_secrets", "{}")
     dynamic_vars = os.environ.get("dynamic_vars", "{}")
     output_format = os.environ.get("output_format", "json_file")
-    if output_format not in ["json_file", "raw"]:
+    if output_format not in ["json_file", "raw", "env_vars"]:
         print("invalid return format")
         sys.exit(1)
     print(parse_parameters(env, stack, parameter_secrets, dynamic_vars, output_format))

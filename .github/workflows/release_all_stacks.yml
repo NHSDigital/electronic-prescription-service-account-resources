@@ -123,7 +123,7 @@ jobs:
     if: ${{ inputs.deploy_artillery == true }}
     uses: ./.github/workflows/cdk_release_code.yml
     with:
-      STACK_NAME: alarms${{ inputs.lambda_stack_suffix }}
+      STACK_NAME: alarms
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
