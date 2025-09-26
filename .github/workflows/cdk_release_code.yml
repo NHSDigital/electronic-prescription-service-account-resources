@@ -128,6 +128,7 @@ jobs:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.TARGET_ENVIRONMENT }}
     name: deploy cdk app ${{ inputs.CDK_APP_NAME }}
+    needs: diff_cdk_code
     permissions:
       id-token: write
       contents: write
