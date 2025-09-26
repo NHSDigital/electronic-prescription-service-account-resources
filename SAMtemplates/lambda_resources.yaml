@@ -665,7 +665,7 @@ Resources:
     Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmName: !Sub "${AWS::StackName}-Account_Lambda_Concurrency"
-      AlarmDescription: "Concurrency of all lambdas running in the EPS account has breached 90% threshold. There may be throttling occurring"
+      AlarmDescription: "Concurrency of all lambdas running in the EPS account has breached 90% threshold. There may be throttling occurring soon"
       Namespace: "AWS/Lambda"
       MetricName: "ConcurrentExecutions"
       Statistic: Maximum
@@ -714,6 +714,46 @@ Resources:
       Period: 60 # evaluate per 1-minute period
       EvaluationPeriods: 1
       Threshold: 0 # alarm if >0 throttles
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
+      InsufficientDataActions:
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
+      OKActions:
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
+
+  EPSAccountLambdaErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${AWS::StackName}-Account_Lambda_Errors"
+      AlarmDescription: "Unhandled error during invocation of lambdas has occurred in the EPS account. Please investigate."
+      Namespace: "AWS/Lambda"
+      MetricName: "Errors"
+      Statistic: Sum
+      Period: 60                # evaluate every 1 minute
+      EvaluationPeriods: 1
+      Threshold: 0              # alarm if >0 errors
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
+      InsufficientDataActions:
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
+      OKActions:
+        - !GetAtt SlackAlertsSnsTopic.TopicArn
+
+  EPSAccountStepFunctionErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${AWS::StackName}-Account_StepFunction_Errors"
+      AlarmDescription: "Unhandled error during invocation of step functions has occurred in the EPS account. Please investigate."
+      Namespace: "AWS/States"
+      MetricName: "ExecutionsFailed"
+      Statistic: Sum
+      Period: 60                # check every 1 minute
+      EvaluationPeriods: 1
+      Threshold: 0              # alarm if >0 failures
       ComparisonOperator: GreaterThanThreshold
       TreatMissingData: notBreaching
       AlarmActions:
