@@ -127,7 +127,7 @@ jobs:
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
-      CDK_APP_NAME: alarms
+      CDK_APP_NAME: AlarmsApp
       EXECUTE_CHANGE_SET: ${{ inputs.execute_change_set }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
