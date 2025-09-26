@@ -113,6 +113,7 @@ jobs:
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: true
       deploy_drift_detection: true
+      is_pull_request: false
     secrets:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
@@ -149,6 +150,7 @@ jobs:
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: false
       deploy_drift_detection: true
+      is_pull_request: false
     secrets:
       cf_create_changeset_role: ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
@@ -169,6 +171,7 @@ jobs:
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: true
       deploy_drift_detection: true
+      is_pull_request: false
     secrets:
       cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}

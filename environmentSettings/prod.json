@@ -85,7 +85,8 @@
     "secrets": {},
     "alarms": {
       "lambdaConcurrencyThreshold": 1800,
-      "lambdaConcurrencyWarningThreshold": 1100
+      "lambdaConcurrencyWarningThreshold": 1100,
+      "EnableAlerts": "true"
     }
   }
 }

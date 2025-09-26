@@ -11,12 +11,13 @@ export class AlarmStack extends Stack {
   public constructor(scope: App, id: string, props: AlarmStackProps){
     super(scope, id, props)
 
-    const lambdaConcurrencyThreshold = this.node.tryGetContext("lambdaConcurrencyThreshold")
-    const lambdaConcurrencyWarningThreshold = this.node.tryGetContext("lambdaConcurrencyWarningThreshold")
+    const lambdaConcurrencyThreshold: number = this.node.tryGetContext("lambdaConcurrencyThreshold")
+    const lambdaConcurrencyWarningThreshold: number = this.node.tryGetContext("lambdaConcurrencyWarningThreshold")
+    const enableAlerts: boolean = this.node.tryGetContext("enableAlerts")
 
     new Alarms(this, "Alarms", {
       stackName: props.stackName,
-      enableAlerts: true,
+      enableAlerts: enableAlerts,
       lambdaConcurrencyThreshold: lambdaConcurrencyThreshold,
       lambdaConcurrencyWarningThreshold: lambdaConcurrencyWarningThreshold
     })

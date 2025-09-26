@@ -42,6 +42,9 @@ on:
         deploy_drift_detection:
           required: true
           type: boolean
+        is_pull_request:
+          required: true
+          type: boolean
       secrets:
         cf_create_changeset_role:
           required: false
@@ -129,6 +132,7 @@ jobs:
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AlarmsApp
       EXECUTE_CHANGE_SET: ${{ inputs.execute_change_set }}
+      IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}

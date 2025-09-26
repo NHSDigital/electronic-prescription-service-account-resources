@@ -21,6 +21,9 @@ on:
       EXECUTE_CHANGE_SET:
         required: true
         type: boolean
+      IS_PULL_REQUEST:
+        required: true
+        type: boolean
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
@@ -103,6 +106,7 @@ jobs:
           STACK_NAME: "${{ inputs.STACK_NAME }}"
           VERSION_NUMBER: "${{ inputs.VERSION }}"
           COMMIT_ID: "${{ inputs.COMMIT_ID }}"
+          IS_PULL_REQUEST: "${{ inputs.IS_PULL_REQUEST }}"
 
       - name: Show diff
         run: |

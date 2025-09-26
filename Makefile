@@ -165,8 +165,9 @@ cdk-synth:
 	IS_PULL_REQUEST=false \
 	LAMBDA_CONCURRENCY_THRESHOLD=900 \
 	LAMBDA_CONCURRENCY_WARNING_THRESHOLD=700 \
+	ENABLE_ALERTS=true \
 	ALARM_STACK_NAME=account-resources-alarms \
 		 ./.github/scripts/fix_cdk_json.sh .local_config/stateful_app.config.json
 	CONFIG_FILE_NAME=.local_config/stateful_app.config.json npx cdk synth \
 		--quiet \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/AccountResourcesApp.ts" 
+		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/AlarmsApp.ts" 
