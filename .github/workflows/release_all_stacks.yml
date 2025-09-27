@@ -122,7 +122,7 @@ jobs:
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
 
-  cdk_diff:
+  cdk_diff_monitoring:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       STACK_NAME: monitoring
@@ -137,9 +137,9 @@ jobs:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
 
-  cdk_deploy:
+  cdk_deploy_monitoring:
     uses: ./.github/workflows/cdk_release_code.yml
-    needs: cdk_diff
+    needs: cdk_diff_monitoring
     with:
       STACK_NAME: monitoring
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
