@@ -6,7 +6,7 @@ import {
   ComparisonOperator,
   TreatMissingData
 } from "aws-cdk-lib/aws-cloudwatch"
-import {Topic} from "aws-cdk-lib/aws-sns"
+import {ITopic, Topic} from "aws-cdk-lib/aws-sns"
 
 type AlarmDefinition = {
   name: string
@@ -20,6 +20,7 @@ export interface MetricAlarmsProps {
   readonly enableAlerts: boolean
   readonly namespace: string
   readonly alarmDefinitions: Array<AlarmDefinition>
+  readonly slackAlertTopic: ITopic
 }
 
 export class MetricAlarms extends Construct {
@@ -28,9 +29,6 @@ export class MetricAlarms extends Construct {
   public constructor(scope: Construct, id: string, props: MetricAlarmsProps){
     super(scope, id)
 
-    // Imports
-    const slackAlertTopic = Topic.fromTopicArn(this, "SlackAlertTopic",
-      Fn.importValue("lambda-resources:SlackAlertsSnsTopicArn"))
 
     const metricFunction = (metricName: string) =>
       new Metric({
@@ -52,13 +50,13 @@ export class MetricAlarms extends Construct {
         actionsEnabled: props.enableAlerts
       })
       alarm.addAlarmAction({
-        bind: () => ({alarmActionArn: slackAlertTopic.topicArn})
+        bind: () => ({alarmActionArn: props.slackAlertTopic.topicArn})
       })
       alarm.addOkAction({
-        bind: () => ({alarmActionArn: slackAlertTopic.topicArn})
+        bind: () => ({alarmActionArn: props.slackAlertTopic.topicArn})
       })
       alarm.addInsufficientDataAction({
-        bind: () => ({alarmActionArn: slackAlertTopic.topicArn})
+        bind: () => ({alarmActionArn: props.slackAlertTopic.topicArn})
       })
       this.alarms = {...this.alarms, [a.name]: alarm}
     }

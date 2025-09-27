@@ -1,12 +1,14 @@
 import {Construct} from "constructs"
 import {Alarm} from "aws-cdk-lib/aws-cloudwatch"
 import {MetricAlarms} from "../constructs/MetricAlarms"
+import { ITopic } from "aws-cdk-lib/aws-sns"
 
 export interface AlarmsProps {
   readonly stackName: string
   readonly enableAlerts: boolean
   readonly lambdaConcurrencyThreshold: number
   readonly lambdaConcurrencyWarningThreshold: number
+  readonly slackAlertTopicArn: ITopic
 }
 
 export class Alarms extends Construct {
@@ -47,7 +49,8 @@ export class Alarms extends Construct {
       stackName: props.stackName,
       enableAlerts: props.enableAlerts,
       namespace: "AWS/States",
-      alarmDefinitions: stepFunctionAlarmDefinitions
+      alarmDefinitions: stepFunctionAlarmDefinitions,
+      slackAlertTopic: props.slackAlertTopicArn
     })
 
     const lambdaAlarmDefinitions = [
@@ -81,7 +84,8 @@ export class Alarms extends Construct {
       stackName: props.stackName,
       enableAlerts: props.enableAlerts,
       namespace: "AWS/Lambda",
-      alarmDefinitions: lambdaAlarmDefinitions
+      alarmDefinitions: lambdaAlarmDefinitions,
+      slackAlertTopic: props.slackAlertTopicArn
     })
 
     this.stepFunctionAlarms = [stepFunctionAlarms.alarms]
