@@ -126,11 +126,11 @@ jobs:
     if: ${{ inputs.deploy_artillery == true }}
     uses: ./.github/workflows/cdk_release_code.yml
     with:
-      STACK_NAME: alarms
+      STACK_NAME: monitoring
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
-      CDK_APP_NAME: AlarmsApp
+      CDK_APP_NAME: MonitoringApp
       EXECUTE_CHANGE_SET: ${{ inputs.execute_change_set }}
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
     secrets:

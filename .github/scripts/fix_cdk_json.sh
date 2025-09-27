@@ -38,11 +38,14 @@ fix_list_key() {
 fix_boolean_number_key() {
     KEY_NAME=$1
     KEY_VALUE=$2
+    # remove any surrounding quotes and convert to lowercase
+    KEY_VALUE=$(sed -e 's/^"//' -e 's/"$//' <<<"$KEY_VALUE")
+    KEY_VALUE=${KEY_VALUE,,}
     if [ -z "${KEY_VALUE}" ]; then
         echo "${KEY_NAME} value is unset or set to the empty string"
         exit 1
     fi
-    echo "Setting ${KEY_NAME}"
+    echo "Setting ${KEY_NAME} to ${KEY_VALUE}"
     jq \
         --argjson key_value "${KEY_VALUE}" \
         --arg key_name "${KEY_NAME}" \

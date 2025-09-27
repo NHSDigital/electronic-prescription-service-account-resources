@@ -83,10 +83,10 @@
     },
     "artillery-resources": {},
     "secrets": {},
-    "alarms": {
+    "monitoring": {
       "LAMBDA_CONCURRENCY_THRESHOLD": 1800,
       "LAMBDA_CONCURRENCY_WARNING_THRESHOLD": 1100,
-      "ENABLE_ALERTS": "true"
+      "ENABLE_ALERTS": true
     }
   }
 }

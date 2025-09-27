@@ -121,7 +121,7 @@ jobs:
           -e SHOW_DIFF="true" \
           -e DEPLOY_CODE="false" \
           -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
-          -e CDK_APP_PATH="packages/cdk/bin/AlarmsApp.ts" \
+          -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
           cdk-utils-build-repo:latest
         shell: bash
   release_cdk_code:
@@ -215,7 +215,7 @@ jobs:
           -e SHOW_DIFF="false" \
           -e DEPLOY_CODE="true" \
           -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
-          -e CDK_APP_PATH="packages/cdk/bin/AlarmsApp.ts" \
+          -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
           cdk-utils-build-repo:latest
         shell: bash
 
