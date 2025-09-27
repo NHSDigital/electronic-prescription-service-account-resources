@@ -1598,6 +1598,7 @@ Outputs:
   # Lambda Insights Outputs
   #################################################
   LambdaInsightsLogGroupPolicy:
+  # this is used by eps-storage-terraform so be careful when moving it to cdk
     Description: "Lambda Insights Policy ARN"
     Value: !GetAtt LambdaInsightsLogGroupPolicy.PolicyArn
     Export:

@@ -1455,12 +1455,14 @@ Resources:
 Outputs:
   #region Cloudwatch Outputs
   CloudwatchLogsKmsKeyArn:
+  # this is used by eps-storage-terraform so be careful when moving it to cdk
     Description: "The Arn of the API GW cloudwatch logs KMS Key"
     Value: !GetAtt CloudwatchLogsKmsKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CloudwatchLogsKmsKeyArn"]]
 
   LambdaEncryptCloudwatchKMSPolicy:
+  # this is used by eps-storage-terraform so be careful when moving it to cdk
     Description: "Lambda Encrypt Cloudwatch KMS Policy ARN"
     Value: !GetAtt LambdaEncryptCloudwatchKMSPolicy.PolicyArn
     Export:
