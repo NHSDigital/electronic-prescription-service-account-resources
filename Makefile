@@ -61,7 +61,20 @@ package-code:
 	npm run build
 
 clean:
+	rm -rf cdk.out
+	rm -rf cfn_guard_output
+	rm -rf .local_config
+	rm -rf packages/certificateChecker/coverage
+	rm -rf packages/certificateChecker/lib
 	rm -rf packages/splunkProcessor/lib
+	rm -rf packages/slackAlerter/coverage
+	rm -rf packages/slackAlerter/lib
+	rm -rf packages/proxygen/coverage
+	rm -rf packages/proxygen/lib
+	rm -rf packages/lambdaJanitor/coverage
+	rm -rf packages/lambdaJanitor/lib
+	rm -rf packages/driftDetector/coverage
+	rm -rf packages/driftDetector/lib
 	rm -rf dist
 
 deep-clean: clean
