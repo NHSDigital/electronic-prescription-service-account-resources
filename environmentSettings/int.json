@@ -1,30 +1,31 @@
 {
-  "env": "prod",
+  "env": "int",
   "parameters": {
     "ci-resources": {
       "DeploySubjectClaimFilters": [
-        "repo:NHSDigital/prescriptionsforpatients:environment:prod",
-        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-account",
-        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-ci",
-        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-lambda",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod",
-        "repo:NHSDigital/eps-FHIR-validator-lambda:environment:prod",
-        "repo:NHSDigital/eps-prescription-status-update-api:environment:prod",
-        "repo:NHSDigital/electronic-prescription-service-api:environment:prod",
-        "repo:NHSDigital/eps-prescription-tracker-ui:environment:prod",
-        "repo:NHSDigital/eps-aws-dashboards:environment:prod",
-        "repo:NHSDigital/eps-vpc-resources:environment:prod",
-        "repo:NHSDigital/eps-storage-resources:environment:prod",
-        "repo:NHSDigital/eps-assist-me:environment:prod"
+        "repo:NHSDigital/prescriptionsforpatients:environment:int",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-account",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-ci",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:int-lambda",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:int",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:environment:int",
+        "repo:NHSDigital/eps-prescription-status-update-api:environment:int",
+        "repo:NHSDigital/electronic-prescription-service-api:environment:int",
+        "repo:NHSDigital/eps-dynamodb-poc:environment:int",
+        "repo:NHSDigital/eps-prescription-tracker-ui:environment:int",
+        "repo:NHSDigital/eps-aws-dashboards:environment:int",
+        "repo:NHSDigital/eps-vpc-resources:environment:int",
+        "repo:NHSDigital/eps-storage-resources:environment:int",
+        "repo:NHSDigital/eps-assist-me:environment:int"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
-        "repo:NHSDigital/electronic-prescription-service-release-notes:*",
         "repo:NHSDigital/electronic-prescription-service-account-resources:*",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
         "repo:NHSDigital/eps-FHIR-validator-lambda:*",
         "repo:NHSDigital/eps-prescription-status-update-api:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
+        "repo:NHSDigital/eps-dynamodb-poc:*",
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
         "repo:NHSDigital/eps-aws-dashboards:*",
         "repo:NHSDigital/eps-vpc-resources:*",
@@ -41,18 +42,10 @@
         "NONE"
       ],
       "ProxygenPTLClaimFilters": [
-        "repo:NHSDigital/eps-prescription-status-update-api:*",
-        "repo:NHSDigital/electronic-prescription-service-api:*",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
-        "repo:NHSDigital/eps-load-test:*"
+        "NONE"
       ],
       "ProxygenProdClaimFilters": [
-        "repo:NHSDigital/eps-prescription-status-update-api:environment:int",
-        "repo:NHSDigital/eps-prescription-status-update-api:environment:prod",
-        "repo:NHSDigital/electronic-prescription-service-api:environment:int",
-        "repo:NHSDigital/electronic-prescription-service-api:environment:prod",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:int",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod"
+        "NONE"
       ],
       "CDKPullImageClaimFilters": [
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
@@ -61,10 +54,11 @@
         "repo:NHSDigital/eps-storage-resources:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
-        "repo:NHSDigital/eps-assist-me:*"
+        "repo:NHSDigital/eps-assist-me:*",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*"
       ],
       "CDKPushImageClaimFilters": [
-        "repo:NHSDigital/eps-cdk-utils:environment:prod"
+        "repo:NHSDigital/eps-cdk-utils:environment:int"
       ],
       "EnableDeleteCNAME": "false"
     },
@@ -72,14 +66,20 @@
     "lambda-resources": {
       "SplunkHECEndpoint": "https://firehose.inputs.splunk.aws.digital.nhs.uk/services/collector/event",
       "LogRetentionDays": "30",
-      "Env": "prod",
+      "Env": "int",
       "CommitId": "VAR.commit_id",
       "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name",
-      "ConcurrencyThreshold": 300,
+      "ConcurrencyThreshold": 900,
+      "ConcurrencyWarningThreshold": 200,
       "EnableAlerts": "true",
       "DeployDriftDetection": "VAR.deploy_drift_detection"
     },
     "artillery-resources": {},
-    "secrets": {}
+    "secrets": {},
+    "monitoring": {
+      "LAMBDA_CONCURRENCY_THRESHOLD": 900,
+      "LAMBDA_CONCURRENCY_WARNING_THRESHOLD": 200,
+      "ENABLE_ALERTS": true
+    }
   }
 }

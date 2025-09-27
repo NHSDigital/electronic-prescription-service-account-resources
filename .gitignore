@@ -31,3 +31,5 @@ _site/
 .jekyll-metadata
 vendor
 .secrets
+cdk.out
+.local_config

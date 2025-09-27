@@ -37,6 +37,13 @@ for ruleset in "${rulesets[@]}"
 
     done <   <(find ./SAMtemplates -name '*.y*ml' -print0)
 
+    echo "Checking all templates in cdk.out folder with ruleest $ruleset"
+
+    ~/.guard/bin/cfn-guard validate \
+        --data cdk.out \
+        --rules "/tmp/ruleset/output/$ruleset.guard" \
+        --show-summary fail \
+        > "cfn_guard_output/cdk.out_$ruleset.txt"
 done
 
 rm -rf /tmp/ruleset

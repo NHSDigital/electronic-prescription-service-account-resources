@@ -38,6 +38,7 @@ lint-node:
 	npm run lint --workspace packages/slackAlerter
 	npm run lint --workspace packages/proxygen
 	npm run lint --workspace packages/lambdaJanitor
+	npm run lint --workspace packages/cdk
 
 lint-githubactions:
 	actionlint
@@ -156,3 +157,17 @@ show-eps-route-53-nameservers: guard-env
 
 cfn-guard:
 	./scripts/run_cfn_guard.sh
+
+cdk-synth: 
+	mkdir -p .local_config
+	VERSION_NUMBER=undefined \
+	COMMIT_ID=undefined \
+	IS_PULL_REQUEST=false \
+	LAMBDA_CONCURRENCY_THRESHOLD=900 \
+	LAMBDA_CONCURRENCY_WARNING_THRESHOLD=700 \
+	ENABLE_ALERTS=False \
+	STACK_NAME=account-resources-monitoring \
+		 ./.github/scripts/fix_cdk_json.sh .local_config/monitoring.config.json
+	CONFIG_FILE_NAME=.local_config/monitoring.config.json npx cdk synth \
+		--quiet \
+		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/MonitoringApp.ts" 
