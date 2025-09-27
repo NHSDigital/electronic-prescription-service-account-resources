@@ -8,31 +8,31 @@ import {
 
 describe("formatHeader", () => {
   it("returns an alarm formatted header when called with alarm", () => {
-    const expected = ":red_circle: Test Alarm"
+    const expected = ":red_circle: Test Alarm ALARM"
     const actual = formatHeader("Test Alarm", "ALARM", "ALARM")
     expect(actual).toEqual(expected)
   })
 
   it("returns a warning formatted header when called with a warning alarm", () => {
-    const expected = ":large_orange_circle: Test Alarm"
+    const expected = ":large_orange_circle: Test Alarm WARNING"
     const actual = formatHeader("Test Alarm", "ALARM", "WARNING")
     expect(actual).toEqual(expected)
   })
 
   it("returns a warning formatted header when called with a warning ok", () => {
-    const expected = ":green_circle: Test Alarm"
+    const expected = ":green_circle: Test Alarm OK"
     const actual = formatHeader("Test Alarm", "OK", "WARNING")
     expect(actual).toEqual(expected)
   })
 
   it("returns an OK formatted header when called with a ok alarm", () => {
-    const expected = ":green_circle: Test Alarm"
+    const expected = ":green_circle: Test Alarm OK"
     const actual = formatHeader("Test Alarm", "OK", "ALARM")
     expect(actual).toEqual(expected)
   })
 
   it("returns an insufficient data formatted header when called with insufficient data", () => {
-    const expected = ":black_circle: Test Alarm"
+    const expected = ":black_circle: Test Alarm INSUFFICIENT_DATA"
     const actual = formatHeader("Test Alarm", "INSUFFICIENT_DATA", "ALARM")
     expect(actual).toEqual(expected)
   })

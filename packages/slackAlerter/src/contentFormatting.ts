@@ -9,13 +9,15 @@ const stateToEmojiMap: StateToEmojiMap = {
 
 export const formatHeader = (alarmName: string, state: string, level: string): string => {
   let stateEmoji: string = stateToEmojiMap[state as keyof typeof stateToEmojiMap]
+  let displayLevel = state
   if (level === "WARNING" && state === "ALARM") {
     stateEmoji = stateToEmojiMap["WARNING"]
+    displayLevel = "WARNING"
   }
   if (stateEmoji === undefined) {
     stateEmoji = stateToEmojiMap["INSUFFICIENT_DATA"]
   }
-  const formattedHeader = `${stateEmoji} ${alarmName}`
+  const formattedHeader = `${stateEmoji} ${alarmName} ${displayLevel}`
   return formattedHeader
 }
 

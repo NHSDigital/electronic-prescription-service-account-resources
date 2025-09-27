@@ -67,7 +67,7 @@ const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudW
   // To fully populate the message, alarm names should be in the format "<StackName>_<ResourceName>_<Metric>"
   // e.g. "psu-pr-123_TestLambda_Errors".
   let stack, alarmName
-  let level = "ALARM"
+  let level = cloudWatchMessage.NewStateValue
   if (cloudWatchMessage.AlarmName.includes("_")){
     const parts = cloudWatchMessage.AlarmName.split("_")
     if (parts.length === 3) {
