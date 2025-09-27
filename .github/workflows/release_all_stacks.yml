@@ -139,6 +139,7 @@ jobs:
 
   cdk_deploy:
     uses: ./.github/workflows/cdk_release_code.yml
+    needs: cdk_diff
     with:
       STACK_NAME: monitoring
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
