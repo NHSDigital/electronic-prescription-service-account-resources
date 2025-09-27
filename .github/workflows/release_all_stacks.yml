@@ -139,6 +139,7 @@ jobs:
 
   cdk_deploy_monitoring:
     uses: ./.github/workflows/cdk_release_code.yml
+    if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_monitoring
     with:
       STACK_NAME: monitoring
