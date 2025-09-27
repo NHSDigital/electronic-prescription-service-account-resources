@@ -69,7 +69,7 @@ export class Alarms extends Construct {
         threshold: props.lambdaConcurrencyThreshold
       },
       {
-        name: "Account_WarningLambda_Concurrency",
+        name: "Account_Lambda_Concurrency_WARNING",
         metric: "ConcurrentExecutions",
         // eslint-disable-next-line max-len
         description: "WARNING - concurrency of all lambdas running the EPS account has breached warning threshold. No immediate action is required",

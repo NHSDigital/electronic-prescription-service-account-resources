@@ -67,11 +67,16 @@ const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudW
   // To fully populate the message, alarm names should be in the format "<StackName>_<ResourceName>_<Metric>"
   // e.g. "psu-pr-123_TestLambda_Errors".
   let stack, alarmName
+  let level = "ALARM"
   if (cloudWatchMessage.AlarmName.includes("_")){
     const parts = cloudWatchMessage.AlarmName.split("_")
     if (parts.length === 3) {
       stack = parts[0]
       alarmName = `${parts[1]} ${parts[2]}`
+    } else if (parts.length === 4) {
+      stack = parts[0]
+      alarmName = `${parts[1]} ${parts[2]}`
+      level = parts[3]
     } else {
       stack = "unknown"
       alarmName = cloudWatchMessage.AlarmName
@@ -81,7 +86,7 @@ const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudW
     alarmName = cloudWatchMessage.AlarmName
   }
 
-  const header: string = formatHeader(alarmName, cloudWatchMessage.NewStateValue)
+  const header: string = formatHeader(alarmName, cloudWatchMessage.NewStateValue, level)
   const region: string = cloudWatchMessage.AlarmArn.split(":")[3]
   const trigger: string = formatTrigger(cloudWatchMessage.Trigger)
   const oldState: string = formatState(cloudWatchMessage.OldStateValue)

@@ -7,9 +7,9 @@ const stateToEmojiMap: StateToEmojiMap = {
   WARNING: ":large_orange_circle:"
 }
 
-export const formatHeader = (alarmName: string, state: string): string => {
+export const formatHeader = (alarmName: string, state: string, level: string): string => {
   let stateEmoji: string = stateToEmojiMap[state as keyof typeof stateToEmojiMap]
-  if (alarmName.startsWith("Warning") && state === "ALARM") {
+  if (level === "WARNING" && state === "ALARM") {
     stateEmoji = stateToEmojiMap["WARNING"]
   }
   if (stateEmoji === undefined) {
