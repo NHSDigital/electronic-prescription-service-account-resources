@@ -1,4 +1,4 @@
-import {Fn, Duration} from "aws-cdk-lib"
+import {Duration} from "aws-cdk-lib"
 import {Construct} from "constructs"
 import {
   Alarm,
@@ -6,7 +6,7 @@ import {
   ComparisonOperator,
   TreatMissingData
 } from "aws-cdk-lib/aws-cloudwatch"
-import {ITopic, Topic} from "aws-cdk-lib/aws-sns"
+import {ITopic} from "aws-cdk-lib/aws-sns"
 
 type AlarmDefinition = {
   name: string
@@ -28,7 +28,6 @@ export class MetricAlarms extends Construct {
 
   public constructor(scope: Construct, id: string, props: MetricAlarmsProps){
     super(scope, id)
-
 
     const metricFunction = (metricName: string) =>
       new Metric({

@@ -1,7 +1,7 @@
 import {Construct} from "constructs"
 import {Alarm} from "aws-cdk-lib/aws-cloudwatch"
 import {MetricAlarms} from "../constructs/MetricAlarms"
-import { ITopic } from "aws-cdk-lib/aws-sns"
+import {ITopic} from "aws-cdk-lib/aws-sns"
 
 export interface AlarmsProps {
   readonly stackName: string
