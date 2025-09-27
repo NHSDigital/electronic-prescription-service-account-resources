@@ -139,7 +139,7 @@ jobs:
 
   cdk_deploy_monitoring:
     uses: ./.github/workflows/cdk_release_code.yml
-    if: ${{ inputs.execute_change_set == true }}
+    # if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_monitoring
     with:
       STACK_NAME: monitoring
@@ -147,7 +147,7 @@ jobs:
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: MonitoringApp
-      DEPLOY_CDK_CODE: ${{ inputs.execute_change_set }}
+      DEPLOY_CDK_CODE: true # ${{ inputs.execute_change_set }}
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
     secrets:
