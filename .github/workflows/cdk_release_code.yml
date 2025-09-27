@@ -103,6 +103,7 @@ jobs:
       - name: fix cdk.json for deployment
         run: |
           ./.github/scripts/fix_cdk_json.sh ".build/${{ inputs.STACK_NAME }}.json"
+          cat .build/${{ inputs.STACK_NAME }}.json
         env:
           STACK_NAME: "${{ inputs.STACK_NAME }}"
           VERSION_NUMBER: "${{ inputs.VERSION }}"
@@ -195,6 +196,7 @@ jobs:
       - name: fix cdk.json for deployment
         run: |
           ./.github/scripts/fix_cdk_json.sh ".build/${{ inputs.STACK_NAME }}.json"
+          cat .build/${{ inputs.STACK_NAME }}.json
         env:
           STACK_NAME: "${{ inputs.STACK_NAME }}"
           VERSION_NUMBER: "${{ inputs.VERSION }}"
