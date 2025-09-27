@@ -18,24 +18,26 @@ on:
       CDK_APP_NAME:
         required: true
         type: string
-      EXECUTE_CHANGE_SET:
+      DEPLOY_CDK_CODE:
         required: true
         type: boolean
       IS_PULL_REQUEST:
         required: true
         type: boolean
+      DEPLOYMENT_ENVIRONMENT:
+        required: true
+        type: string
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
       CDK_PULL_IMAGE_ROLE:
         required: true
-      CLOUD_FORMATION_DIFF_ROLE:
-        required: true
 
 jobs:
-  diff_cdk_code:
+  deploy_cdk_code:
     runs-on: ubuntu-22.04
-    name: diff cdk app ${{ inputs.CDK_APP_NAME }}
+    name: "${{ inputs.DEPLOY_CDK_CODE && 'Deploy' || 'Diff' }} cdk app ${{ inputs.CDK_APP_NAME }}"
+    environment: ${{ inputs.DEPLOYMENT_ENVIRONMENT }}
     permissions:
       id-token: write
       contents: write
@@ -81,12 +83,12 @@ jobs:
           docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest"
           docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
 
-      - name: Configure AWS Credentials for diff
+      - name: Configure AWS Credentials for diff or deploy
         id: connect-aws-deploy
         uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-2
-          role-to-assume: ${{ secrets.CLOUD_FORMATION_DIFF_ROLE }}
+          role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
           role-session-name: account-resources-cdk-diff
           output-credentials: true
 
@@ -119,117 +121,8 @@ jobs:
           -e AWS_SESSION_TOKEN=${{ steps.connect-aws-deploy.outputs.aws-session-token }} \
           -e AWS_REGION="eu-west-2" \
           -e SHOW_DIFF="true" \
-          -e DEPLOY_CODE="false" \
+          -e DEPLOY_CODE="${{ inputs.DEPLOY_CDK_CODE }}" \
           -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
           -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
           cdk-utils-build-repo:latest
         shell: bash
-  release_cdk_code:
-    runs-on: ubuntu-22.04
-    environment: ${{ inputs.TARGET_ENVIRONMENT }}
-    name: deploy cdk app ${{ inputs.CDK_APP_NAME }}
-    needs: diff_cdk_code
-    permissions:
-      id-token: write
-      contents: write
-
-    steps:
-      - name: Checkout local github actions
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-          fetch-depth: 0
-          sparse-checkout: |
-            .github
-
-      - name: Configure AWS Credentials for pulling cdk deploy image
-        id: connect-aws-pull-image
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          aws-region: eu-west-2
-          role-to-assume: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
-          role-session-name: account-resources-pull-image
-
-      - name: build_artifact download
-        uses: actions/download-artifact@v5
-        with:
-          name: cdk_build_artifact
-
-      - name: extract build_artifact
-        run: |
-          mkdir -p .build
-          tar -xf artifact.tar -C .build
-
-      - name: Retrieve AWS Account ID
-        id: retrieve-account-id
-        run: echo "ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)" >> "$GITHUB_ENV"
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        run: |
-          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com
-
-      - name: Pull cdk-utils-build from Amazon ECR
-        run: |
-          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest"
-          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
-
-      - name: Configure AWS Credentials for deployment
-        id: connect-aws-deploy
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          aws-region: eu-west-2
-          role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
-          role-session-name: account-resources-cdk-deploy
-          output-credentials: true
-
-      - name: Parse Parameters
-        id: parse_parameters
-        shell: bash
-        working-directory: ./.build
-        env:
-          output_format: "env_vars"
-        run: |
-          PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.TARGET_ENVIRONMENT }} ${{ inputs.STACK_NAME }} )
-          echo "${PARAMETERS}" >> "$GITHUB_ENV"
-
-      - name: fix cdk.json for deployment
-        run: |
-          ./.github/scripts/fix_cdk_json.sh ".build/${{ inputs.STACK_NAME }}.json"
-          cat .build/${{ inputs.STACK_NAME }}.json
-        env:
-          STACK_NAME: "${{ inputs.STACK_NAME }}"
-          VERSION_NUMBER: "${{ inputs.VERSION }}"
-          COMMIT_ID: "${{ inputs.COMMIT_ID }}"
-          IS_PULL_REQUEST: "${{ inputs.IS_PULL_REQUEST }}"
-
-      - name: Deploy code
-        if: ${{ inputs.execute_change_set == true }}
-        run: |
-          docker run \
-          -v "$(pwd)/.build":/home/cdkuser/workspace/ \
-          -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws-deploy.outputs.aws-access-key-id }} \
-          -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws-deploy.outputs.aws-secret-access-key }} \
-          -e AWS_SESSION_TOKEN=${{ steps.connect-aws-deploy.outputs.aws-session-token }} \
-          -e AWS_REGION="eu-west-2" \
-          -e SHOW_DIFF="false" \
-          -e DEPLOY_CODE="true" \
-          -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
-          -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
-          cdk-utils-build-repo:latest
-        shell: bash
-
-      - name: Update release tag in github pages
-        if: ${{ inputs.execute_change_set == true }}
-        run: |
-          cd gh-pages
-          NOW=$(date +'%Y-%m-%dT%H:%M:%S')
-          echo "tag,release_datetime" > _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
-          echo "${{ inputs.version }},${NOW}" >> _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
-          echo "${{ inputs.version }},${NOW}" >> _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_deployments.csv
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
-          git add _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_deployments.csv
-          git commit -m 'update releases for ${{ inputs.TARGET_ENVIRONMENT }} and stack ${{ inputs.STACK_NAME }}'
-          parallel --retries 10 --delay 3 ::: "git pull --rebase && git push"
