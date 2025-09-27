@@ -112,7 +112,7 @@ jobs:
           COMMIT_ID: "${{ inputs.COMMIT_ID }}"
           IS_PULL_REQUEST: "${{ inputs.IS_PULL_REQUEST }}"
 
-      - name: Show diff
+      - name: "Run ${{ inputs.DEPLOY_CDK_CODE && 'deploy' || 'diff' }} for cdk app ${{ inputs.CDK_APP_NAME }}"
         run: |
           docker run \
           -v "$(pwd)/.build":/home/cdkuser/workspace/ \
