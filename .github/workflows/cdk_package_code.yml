@@ -54,6 +54,7 @@ jobs:
             tsconfig.defaults.json \
             Makefile \
             cdk.json \
+            cdk.context.json \
             scripts \
             environmentSettings
 
