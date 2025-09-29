@@ -253,12 +253,12 @@ Resources:
               SSEAlgorithm: "aws:kms"
       LifecycleConfiguration:
         Rules:
-          - Id: Artifacts-IA-7d-Expire-90d
+          - Id: Artifacts-IA-30d-Expire-90d
             Status: Enabled
             Prefix: "" # apply to all objects
             Transitions:
               - StorageClass: STANDARD_IA
-                TransitionInDays: 7
+                TransitionInDays: 30
             ExpirationInDays: 90
 
   ArtifactsBucketPolicy:
@@ -420,12 +420,12 @@ Resources:
               SSEAlgorithm: "AES256"
       LifecycleConfiguration:
         Rules:
-          - Id: Audit-IA-7d
+          - Id: Audit-IA-30d
             Status: Enabled
             Prefix: "" # apply to all objects
             Transitions:
               - StorageClass: STANDARD_IA
-                TransitionInDays: 7
+                TransitionInDays: 30
             # no ExpirationInDays (never delete)
 
   AuditLoggingBucketPolicy:
@@ -525,6 +525,15 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: "AES256"
+      LifecycleConfiguration:
+        Rules:
+          - Id: ALBLogging-IA-30d-Expire-90d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: 90
 
   ALBLoggingBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -606,6 +615,15 @@ Resources:
           - ServerSideEncryptionByDefault:
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${AthenaResultsBucketKMSKeyKMSKeyAlias}"
               SSEAlgorithm: "aws:kms"
+      LifecycleConfiguration:
+        Rules:
+          - Id: AthenaResults-IA-30d-Expire-90d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: 90
 
   AthenaResultsBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -706,12 +724,12 @@ Resources:
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${SplunkDeliveryStreamBackupKMSKeyAlias}"
       LifecycleConfiguration:
         Rules:
-          - Id: SplunkBackup-IA-7d-Expire-90d
+          - Id: SplunkBackup-IA-30d-Expire-90d
             Status: Enabled
             Prefix: "" # apply to all objects
             Transitions:
               - StorageClass: STANDARD_IA
-                TransitionInDays: 7
+                TransitionInDays: 30
             ExpirationInDays: 90
 
   SplunkDeliveryStreamBackupBucketPolicy:
