@@ -14,7 +14,9 @@ jobs:
 
   package_code:
     uses: ./.github/workflows/sam_package_code.yml
-
+  package_cdk_code:
+    uses: ./.github/workflows/cdk_package_code.yml
+ 
   get_commit_id:
     runs-on: ubuntu-22.04
     outputs:
