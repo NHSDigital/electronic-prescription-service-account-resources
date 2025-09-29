@@ -41,7 +41,7 @@ on:
 
 jobs:
   create_change_set:
-    name: Create ${{ inputs.stack_name }} Change Set
+    name: Create ${{ inputs.stack_name }} change Set
     runs-on: ubuntu-22.04
     permissions:
       id-token: write
