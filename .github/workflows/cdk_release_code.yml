@@ -80,8 +80,8 @@ jobs:
 
       - name: Pull cdk-utils-build from Amazon ECR
         run: |
-          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:PR-247"
-          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:PR-247" cdk-utils-build-repo:PR-247
+          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:PR-274-956a7ee"
+          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:PR-274-956a7ee" cdk-utils-build-repo:PR-274
 
       - name: Configure AWS Credentials for diff or deploy
         id: connect-aws-deploy
@@ -124,7 +124,7 @@ jobs:
           -e DEPLOY_CODE="${{ inputs.DEPLOY_CDK_CODE }}" \
           -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
           -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
-          cdk-utils-build-repo:PR-247
+          cdk-utils-build-repo:PR-274
         shell: bash
 
       - name: Update release tag in github pages
