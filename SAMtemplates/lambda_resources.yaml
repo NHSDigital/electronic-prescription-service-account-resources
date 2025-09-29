@@ -1507,6 +1507,7 @@ Outputs:
 
   ##################################################
   # Slack Alerter Outputs
+  # this is used by other stacks so it needs to be migrated to cdk carefully
   ##################################################
   SlackAlertsSnsTopicArn:
     Description: "SlackAlertsSnsTopic ARN"
