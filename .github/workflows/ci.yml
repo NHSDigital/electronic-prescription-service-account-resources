@@ -30,7 +30,7 @@ jobs:
           echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
     
   tag_release:
-    needs: [quality_checks, package_code, get_commit_id]
+    needs: [quality_checks, package_code, get_commit_id, package_cdk_code]
     runs-on: ubuntu-22.04
     outputs:
       version_tag: ${{ steps.output_version_tag.outputs.VERSION_TAG }}
@@ -102,7 +102,7 @@ jobs:
           echo CHANGE_SET_VERSION="$VERSION-$TIMESTAMP" >> "$GITHUB_OUTPUT"
 
   deploy_dev_stacks:
-    needs: [get_commit_id, package_code, tag_release]
+    needs: [get_commit_id, package_code, package_cdk_code, tag_release]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: dev
@@ -139,7 +139,7 @@ jobs:
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
 
   deploy_qa_stacks:
-    needs: [get_commit_id, package_code, tag_release, deploy_dev_stacks]
+    needs: [get_commit_id, package_code, package_cdk_code, tag_release, deploy_dev_stacks]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: qa
@@ -160,7 +160,7 @@ jobs:
       CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
 
   deploy_ref_stacks:
-    needs: [get_commit_id, package_code, tag_release, deploy_dev_stacks]
+    needs: [get_commit_id, package_code, package_cdk_code, tag_release, deploy_dev_stacks]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: ref
