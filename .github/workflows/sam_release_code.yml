@@ -44,6 +44,7 @@ jobs:
   sam_release_code:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.TARGET_ENVIRONMENT }}
+    name: "Release SAM stack ${{ inputs.STACK_NAME }}"
     permissions:
       id-token: write
       contents: write

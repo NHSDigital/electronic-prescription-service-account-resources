@@ -41,7 +41,7 @@ on:
 
 jobs:
   create_change_set:
-    name: Create CF Change Set
+    name: Create ${{ inputs.stack_name }} Change Set
     runs-on: ubuntu-22.04
     permissions:
       id-token: write
@@ -166,7 +166,7 @@ jobs:
         --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}-current-tag
   
   execute_change_set:
-    name: Execute Change Set
+    name: Execute ${{ inputs.stack_name }} change Set
     if: ${{ inputs.execute_change_set == true }}
     needs: create_change_set
     runs-on: ubuntu-22.04
