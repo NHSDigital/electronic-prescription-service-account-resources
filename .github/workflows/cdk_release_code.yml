@@ -124,7 +124,7 @@ jobs:
           -e DEPLOY_CODE="${{ inputs.DEPLOY_CDK_CODE }}" \
           -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
           -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
-          cdk-utils-build-repo:latest
+          cdk-utils-build-repo:PR-247
         shell: bash
 
       - name: Update release tag in github pages
