@@ -128,7 +128,7 @@ jobs:
           -e DEPLOY_CODE="${{ inputs.DEPLOY_CDK_CODE }}" \
           -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}_existing_tag.json" \
           -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
-          cdk-utils-build-repo:latest | tee .build/cdk_deploy_diff_existing_tag.log
+          cdk-utils-build-repo:latest 2>&1 | tee .build/cdk_deploy_diff_existing_tag.log
         shell: bash
 
       - name: fix cdk.json for deployment
@@ -152,7 +152,7 @@ jobs:
           -e DEPLOY_CODE="${{ inputs.DEPLOY_CDK_CODE }}" \
           -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
           -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
-          cdk-utils-build-repo:latest | tee .build/cdk_deploy_diff_new_tag.log
+          cdk-utils-build-repo:latest 2>&1 | tee .build/cdk_deploy_diff_new_tag.log
         shell: bash
 
       - name: Header output
