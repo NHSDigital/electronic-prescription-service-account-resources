@@ -1,7 +1,7 @@
 import {Construct} from "constructs"
 import {Alarm} from "aws-cdk-lib/aws-cloudwatch"
-import {MetricAlarms} from "../constructs/MetricAlarms"
 import {ITopic} from "aws-cdk-lib/aws-sns"
+import {MetricAlarm} from "../constructs/MetricAlarm"
 
 export interface AlarmsProps {
   readonly stackName: string
@@ -45,13 +45,16 @@ export class Alarms extends Construct {
       }
     ]
 
-    const stepFunctionAlarms = new MetricAlarms(this, "StepFunctionAlarms", {
-      stackName: props.stackName,
-      enableAlerts: props.enableAlerts,
-      namespace: "AWS/States",
-      alarmDefinitions: stepFunctionAlarmDefinitions,
-      slackAlertTopic: props.slackAlertTopicArn
-    })
+    for (const a of stepFunctionAlarmDefinitions) {
+      const alarm = new MetricAlarm(this, `${a.name}Alarm`, {
+        stackName: props.stackName,
+        enableAlerts: props.enableAlerts,
+        namespace: "AWS/States",
+        alarmDefinition: a,
+        slackAlertTopic: props.slackAlertTopicArn
+      })
+      this.stepFunctionAlarms = {...this.stepFunctionAlarms, [a.name]: alarm.alarms[a.name]}
+    }
 
     const lambdaAlarmDefinitions = [
       {
@@ -80,15 +83,16 @@ export class Alarms extends Construct {
       }
     ]
 
-    const lambdaAlarms = new MetricAlarms(this, "LambdaAlarms", {
-      stackName: props.stackName,
-      enableAlerts: props.enableAlerts,
-      namespace: "AWS/Lambda",
-      alarmDefinitions: lambdaAlarmDefinitions,
-      slackAlertTopic: props.slackAlertTopicArn
-    })
+    for (const a of lambdaAlarmDefinitions) {
+      const alarm = new MetricAlarm(this, `${a.name}Alarm`, {
+        stackName: props.stackName,
+        enableAlerts: props.enableAlerts,
+        namespace: "AWS/States",
+        alarmDefinition: a,
+        slackAlertTopic: props.slackAlertTopicArn
+      })
+      this.lambdaAlarms = {...this.lambdaAlarms, [a.name]: alarm.alarms[a.name]}
+    }
 
-    this.stepFunctionAlarms = [stepFunctionAlarms.alarms]
-    this.lambdaAlarms = [lambdaAlarms.alarms]
   }
 }
