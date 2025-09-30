@@ -1752,6 +1752,17 @@ Resources:
           - Comparison: EQUALS
             Value: CVE-2025-53506
       Name: suppress_CVE-2025-53506
+
+  SuppressCVE202557319:
+    Type: AWS::InspectorV2::Filter
+    Properties:
+      Description: CVE-2025-57319
+      FilterAction: SUPPRESS
+      FilterCriteria: 
+        VulnerabilityId:
+          - Comparison: EQUALS
+            Value: CVE-2025-57319
+      Name: suppress_CVE-2025-57319
   #endregion
 
 Outputs:
