@@ -104,11 +104,14 @@ jobs:
       - name: fix cdk.json for diff - existing tag
         if: ${{ inputs.DEPLOY_CDK_CODE == false }}
         run: |
+          VERSION_NUMBER=$(aws cloudformation describe-stacks --stack-name  "$STACK_NAME" --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
+          if [ "${VERSION_NUMBER}" == "" ]; then
+            echo "Can not find target tag. Using initial tag in repo"
+            export VERSION_NUMBER="v1.0.4-alpha"
+          fi
           ./.github/scripts/fix_cdk_json.sh ".build/${{ inputs.STACK_NAME }}_existing_tag.json"
-          cat .build/${{ inputs.STACK_NAME }}.json
         env:
           STACK_NAME: "${{ inputs.STACK_NAME }}"
-          VERSION_NUMBER: "${{ inputs.VERSION }}"
           COMMIT_ID: "${{ inputs.COMMIT_ID }}"
           IS_PULL_REQUEST: "${{ inputs.IS_PULL_REQUEST }}"
 
@@ -131,7 +134,6 @@ jobs:
       - name: fix cdk.json for deployment
         run: |
           ./.github/scripts/fix_cdk_json.sh ".build/${{ inputs.STACK_NAME }}.json"
-          cat .build/${{ inputs.STACK_NAME }}.json
         env:
           STACK_NAME: "${{ inputs.STACK_NAME }}"
           VERSION_NUMBER: "${{ inputs.VERSION }}"
