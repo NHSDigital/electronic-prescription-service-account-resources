@@ -109,7 +109,7 @@ jobs:
             echo "Can not find target tag. Using initial tag in repo"
             export VERSION_NUMBER="v1.0.4-alpha"
           fi
-          ./.github/scripts/fix_cdk_json.sh ".build/${{ inputs.STACK_NAME }}_existing_tag.json"
+          VERSION_NUMBER="${VERSION_NUMBER}" ./.github/scripts/fix_cdk_json.sh ".build/${{ inputs.STACK_NAME }}_existing_tag.json"
         env:
           STACK_NAME: "${{ inputs.STACK_NAME }}"
           COMMIT_ID: "${{ inputs.COMMIT_ID }}"
