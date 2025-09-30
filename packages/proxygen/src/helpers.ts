@@ -50,7 +50,7 @@ export function proxygenErrorHandler(error: unknown, logger: Logger) {
       stack: error.stack,
       message: error.message,
       config: {
-        data: error.config?.data,
+        data: (error.config?.data ?? "").toString().slice(0, 255), // limit to first 255 chars as it may be full spec
         headers: error.config?.headers,
         method: error.config?.method,
         url: error.config?.url
