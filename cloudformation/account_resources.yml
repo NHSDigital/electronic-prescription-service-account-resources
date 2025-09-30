@@ -1450,7 +1450,6 @@ Resources:
             Resource: "*"
   #endregion
 
-
 Outputs:
   #region Cloudwatch Outputs
   CloudwatchLogsKmsKeyArn:
