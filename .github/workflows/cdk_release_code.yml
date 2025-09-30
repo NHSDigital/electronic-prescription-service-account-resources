@@ -128,7 +128,7 @@ jobs:
           -e DEPLOY_CODE="${{ inputs.DEPLOY_CDK_CODE }}" \
           -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}_existing_tag.json" \
           -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
-          cdk-utils-build-repo:latest | tee cdk_deploy_diff_existing_tag.log
+          cdk-utils-build-repo:latest | tee .build/cdk_deploy_diff_existing_tag.log
         shell: bash
 
       - name: fix cdk.json for deployment
@@ -152,7 +152,7 @@ jobs:
           -e DEPLOY_CODE="${{ inputs.DEPLOY_CDK_CODE }}" \
           -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
           -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
-          cdk-utils-build-repo:latest | tee cdk_deploy_diff_new_tag.log
+          cdk-utils-build-repo:latest | tee .build/cdk_deploy_diff_new_tag.log
         shell: bash
 
       - name: Header output
@@ -171,8 +171,8 @@ jobs:
           SUMMARY: "[${{ inputs.target_environment }}] CDK Changes for existing tag ${{ inputs.stack_name }}"
           STACK_NAME: ${{ inputs.STACK_NAME }}
           PARAMETERS_FILE: ".build/${{ inputs.STACK_NAME }}_existing_tag.json"
-          DIFF_FILE: .github/scripts/cdk_deploy_diff_existing_tag.log
-        run: ./describe_cdk_changes.sh
+          DIFF_FILE: .build/cdk_deploy_diff_existing_tag.log
+        run: ./.github/scripts/describe_cdk_changes.sh
   
       - name: Describe Full CDK Changes
         if: ${{ inputs.DEPLOY_CDK_CODE == false }}
@@ -181,8 +181,8 @@ jobs:
           SUMMARY: "[${{ inputs.target_environment }}] FULL CDK Changes for ${{ inputs.stack_name }}"
           STACK_NAME: ${{ inputs.STACK_NAME }}
           PARAMETERS_FILE: ".build/${{ inputs.STACK_NAME }}.json"
-          DIFF_FILE: .github/scripts/cdk_deploy_diff_new_tag.log
-        run: ./describe_cdk_changes.sh
+          DIFF_FILE: .build/cdk_deploy_diff_new_tag.log
+        run: ./.github/scripts/describe_cdk_changes.sh
 
       - name: Update release tag in github pages
         if: ${{ inputs.DEPLOY_CDK_CODE == true }}
