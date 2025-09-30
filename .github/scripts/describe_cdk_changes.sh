@@ -11,7 +11,7 @@ set -e
   cat "$PARAMETERS_FILE"
   echo "~~~"
   echo "#### Changes:"
-  echo "~~~ json"
+  echo "~~~ text"
   cat "$DIFF_FILE"
   echo "~~~"
   echo "</details>"

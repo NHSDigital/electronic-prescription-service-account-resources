@@ -171,7 +171,7 @@ jobs:
         env:
           SUMMARY: "[${{ inputs.target_environment }}] CDK Changes for existing tag ${{ inputs.stack_name }}"
           STACK_NAME: ${{ inputs.STACK_NAME }}
-          PARAMETER_FILE: "${{ inputs.STACK_NAME }}_existing_tag.json"
+          PARAMETERS_FILE: "${{ inputs.STACK_NAME }}_existing_tag.json"
           DIFF_FILE: cdk_deploy_diff_existing_tag.log
         run: ./describe_cdk_changes.sh
   
@@ -182,7 +182,7 @@ jobs:
         env:
           SUMMARY: "[${{ inputs.target_environment }}] FULL CDK Changes for ${{ inputs.stack_name }}"
           STACK_NAME: ${{ inputs.STACK_NAME }}
-          PARAMETER_FILE: "${{ inputs.STACK_NAME }}.json"
+          PARAMETERS_FILE: "${{ inputs.STACK_NAME }}.json"
           DIFF_FILE: cdk_deploy_diff_new_tag.log
         run: ./describe_cdk_changes.sh
 
