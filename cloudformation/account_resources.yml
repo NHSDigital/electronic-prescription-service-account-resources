@@ -557,7 +557,7 @@ Resources:
               SSEAlgorithm: "AES256"
       LifecycleConfiguration:
         Rules:
-          - Id: ALBLogging-IA-30d-Expire-90d
+          - Id: ALBLogging-IA-30d-Expire-LogRetention
             Status: Enabled
             Prefix: "" # apply to all objects
             Transitions:
