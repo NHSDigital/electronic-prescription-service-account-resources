@@ -1,5 +1,12 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
+ARG TARGETARCH
+ENV TARGETARCH=${TARGETARCH}
+
+# Add amd64 architecture if on arm64
+RUN if [ "$TARGETARCH" == "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then dpkg --add-architecture amd64; fi
+
+# Install base packages
 RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y dist-upgrade \
@@ -8,20 +15,27 @@ RUN apt-get update \
     zlib1g-dev unixodbc unixodbc-dev libsecret-1-0 libsecret-1-dev libsqlite3-dev \
     jq apt-transport-https ca-certificates gnupg-agent software-properties-common \
     bash-completion python3-pip make libbz2-dev libreadline-dev libsqlite3-dev \
-    wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev liblzma-dev netcat faketime libyaml-dev
+    wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev liblzma-dev netcat-traditional faketime libyaml-dev
 
-# install aws stuff
-RUN wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
+# Download correct AWS CLI for arch
+RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then \
+      wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip"; \
+    else \
+      wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"; \
+    fi && \
     unzip /tmp/awscliv2.zip -d /tmp/aws-cli && \
     /tmp/aws-cli/aws/install && \
-    rm tmp/awscliv2.zip && \
-    rm -rf /tmp/aws-cli
+    rm /tmp/awscliv2.zip && rm -rf /tmp/aws-cli
 
-RUN wget -O /tmp/aws-sam-cli.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip && \
+# Download correct SAM CLI for arch
+RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then \
+      wget -O /tmp/aws-sam-cli.zip "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-arm64.zip"; \
+    else \
+      wget -O /tmp/aws-sam-cli.zip "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip"; \
+    fi && \
     unzip /tmp/aws-sam-cli.zip -d /tmp/aws-sam-cli && \
     /tmp/aws-sam-cli/install && \
-    rm /tmp/aws-sam-cli.zip && \
-    rm -rf /tmp/aws-sam-cli    
+    rm /tmp/aws-sam-cli.zip && rm -rf /tmp/aws-sam-cli
 
 USER vscode
 
