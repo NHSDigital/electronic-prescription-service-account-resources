@@ -187,6 +187,13 @@ jobs:
           DIFF_FILE: .build/cdk_deploy_diff_new_tag.log
         run: ./.github/scripts/describe_cdk_changes.sh
 
+      - name: Checkout gh-pages
+        if: ${{ inputs.DEPLOY_CDK_CODE == true }}
+        uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: gh-pages
+
       - name: Update release tag in github pages
         if: ${{ inputs.DEPLOY_CDK_CODE == true }}
         run: |
