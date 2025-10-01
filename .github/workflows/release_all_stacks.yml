@@ -132,7 +132,6 @@ jobs:
       CDK_APP_NAME: MonitoringApp
       DEPLOY_CDK_CODE: false
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
-      DEPLOYMENT_ENVIRONMENT: dev-account # set to dev as we are just running a diff
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
       CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}

@@ -25,7 +25,7 @@ on:
         required: true
         type: boolean
       DEPLOYMENT_ENVIRONMENT:
-        required: true
+        required: false
         type: string
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
@@ -37,7 +37,7 @@ jobs:
   deploy_cdk_code:
     runs-on: ubuntu-22.04
     name: "${{ inputs.DEPLOY_CDK_CODE && 'Deploy' || 'Diff' }} cdk app ${{ inputs.CDK_APP_NAME }}"
-    environment: ${{ inputs.DEPLOYMENT_ENVIRONMENT }}
+    environment: ${{ fromJSON(inputs.DEPLOYMENT_ENVIRONMENT != '' && format('"{0}"', inputs.DEPLOYMENT_ENVIRONMENT) || 'null') }}
     permissions:
       id-token: write
       contents: write
