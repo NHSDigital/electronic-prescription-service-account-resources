@@ -1,14 +1,16 @@
-name: sam package code
+name: cdk package code
 
 on:
   workflow_call:
 
+
 jobs:
-  sam_package_code:
+  package_cdk_code:
     runs-on: ubuntu-22.04
     permissions:
       id-token: write
       contents: read
+      packages: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -28,35 +30,36 @@ jobs:
             ~/.asdf
           key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
           restore-keys: |
-            ${{ runner.os }}-asdf-
+            ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
 
       - name: Install asdf dependencies in .tool-versions
         uses: asdf-vm/actions/install@1902764435ca0dd2f3388eea723a4f92a4eb8302
         with:
           asdf_branch: v0.14.1
         env:
-          PYTHON_CONFIGURE_OPTS: --enable-shared 
-  
+          PYTHON_CONFIGURE_OPTS: --enable-shared
+
       - name: make install
         run: |
           make install
 
-      - shell: bash
-        name: package code
+      - name: 'Tar files'
         run: |
-          cp .tool-versions ~/
-          rm -rf .aws-sam
-          export PATH=$PATH:$PWD/node_modules/.bin
-          make sam-build
-          cp Makefile .aws-sam/build/
-          cp samconfig_package_and_deploy.toml .aws-sam/build/
-          cp -r scripts .aws-sam/build
-          mkdir -p .aws-sam/build/cloudformation/env
-          cp -r environmentSettings/ .aws-sam/build/
+          tar -rf artifact.tar \
+            .tool-versions \
+            packages \
+            node_modules \
+            package.json \
+            package-lock.json \
+            tsconfig.defaults.json \
+            Makefile \
+            cdk.json \
+            cdk.context.json \
+            scripts \
+            environmentSettings
 
       - uses: actions/upload-artifact@v4
         name: upload build artifact
         with:
-          name: packaged_code
-          path: |
-            .aws-sam/build
+          name: cdk_build_artifact
+          path: artifact.tar

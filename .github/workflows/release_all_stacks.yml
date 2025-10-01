@@ -42,12 +42,17 @@ on:
         deploy_drift_detection:
           required: true
           type: boolean
+        is_pull_request:
+          required: true
+          type: boolean
       secrets:
         cf_create_changeset_role:
           required: false
         cf_deploy_role:
           required: false
-  
+        CDK_PULL_IMAGE_ROLE:
+          required: true
+
 env:
   BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
 
@@ -117,6 +122,37 @@ jobs:
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
 
+  cdk_diff_monitoring:
+    uses: ./.github/workflows/cdk_release_code.yml
+    with:
+      STACK_NAME: monitoring
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      VERSION: ${{ inputs.version }}
+      COMMIT_ID: ${{ inputs.commit_id }}
+      CDK_APP_NAME: MonitoringApp
+      DEPLOY_CDK_CODE: false
+      IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
+      DEPLOYMENT_ENVIRONMENT: dev-account # set to dev as we are just running a diff
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
+
+  cdk_deploy_monitoring:
+    uses: ./.github/workflows/cdk_release_code.yml
+    if: ${{ inputs.execute_change_set == true }}
+    needs: cdk_diff_monitoring
+    with:
+      STACK_NAME: monitoring
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      VERSION: ${{ inputs.version }}
+      COMMIT_ID: ${{ inputs.commit_id }}
+      CDK_APP_NAME: MonitoringApp
+      DEPLOY_CDK_CODE: true
+      IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
+      DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
 # ***************************************************
 # If you add a new stack for release, 
 # then you either need to manually deploy empty stack to int and prod

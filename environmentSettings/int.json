@@ -54,7 +54,8 @@
         "repo:NHSDigital/eps-storage-resources:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
-        "repo:NHSDigital/eps-assist-me:*"
+        "repo:NHSDigital/eps-assist-me:*",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*"
       ],
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:environment:int"
@@ -68,11 +69,14 @@
       "Env": "int",
       "CommitId": "VAR.commit_id",
       "LambdaInsightsLogGroupName": "VAR.lambda_insights_log_group_name",
-      "ConcurrencyThreshold": 300,
-      "EnableAlerts": "true",
       "DeployDriftDetection": "VAR.deploy_drift_detection"
     },
     "artillery-resources": {},
-    "secrets": {}
+    "secrets": {},
+    "monitoring": {
+      "LAMBDA_CONCURRENCY_THRESHOLD": 900,
+      "LAMBDA_CONCURRENCY_WARNING_THRESHOLD": 200,
+      "ENABLE_ALERTS": true
+    }
   }
 }
