@@ -59,7 +59,9 @@
       ],
       "EnableDeleteCNAME": "false"
     },
-    "account-resources": {},
+    "account-resources": {
+      "LogRetentionDays": "30"
+    },
     "lambda-resources": {
       "SplunkHECEndpoint": "https://firehose.inputs.splunk.aws.digital.nhs.uk/services/collector/event",
       "LogRetentionDays": "30",

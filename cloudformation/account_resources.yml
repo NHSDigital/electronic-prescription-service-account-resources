@@ -1,4 +1,35 @@
 AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  LogRetentionDays:
+    Type: Number
+    Description: How long to keep logs for
+    AllowedValues:
+      [
+        1,
+        3,
+        5,
+        7,
+        14,
+        30,
+        60,
+        90,
+        120,
+        150,
+        180,
+        365,
+        400,
+        545,
+        731,
+        1096,
+        1827,
+        2192,
+        2557,
+        2922,
+        3288,
+        3653,
+      ]
+
 Resources:
   #region API Gateway
   ApiGwCloudWatchRole:
@@ -251,13 +282,22 @@ Resources:
           - ServerSideEncryptionByDefault:
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${ArtifactsBucketKMSKeyAlias}"
               SSEAlgorithm: "aws:kms"
+      LifecycleConfiguration:
+        Rules:
+          - Id: Artifacts-IA-30d-Expire-90d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: 90
 
   ArtifactsBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref ArtifactsBucket
       PolicyDocument:
@@ -357,7 +397,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref TrustStoreBucket
       PolicyDocument:
@@ -394,7 +434,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
         - S3_BUCKET_LOGGING_ENABLED
         - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
@@ -409,13 +449,22 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: "AES256"
+      LifecycleConfiguration:
+        Rules:
+          - Id: Audit-IA-30d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            # no ExpirationInDays (never delete)
 
   AuditLoggingBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref AuditLoggingBucket
       PolicyDocument:
@@ -491,7 +540,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
         - S3_BUCKET_LOGGING_ENABLED
         - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
@@ -506,13 +555,22 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: "AES256"
+      LifecycleConfiguration:
+        Rules:
+          - Id: ALBLogging-IA-30d-Expire-LogRetention
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: !Ref LogRetentionDays
 
   ALBLoggingBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref ALBLoggingBucket
       PolicyDocument:
@@ -571,7 +629,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
         - S3_BUCKET_LOGGING_ENABLED
         - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
@@ -587,13 +645,22 @@ Resources:
           - ServerSideEncryptionByDefault:
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${AthenaResultsBucketKMSKeyKMSKeyAlias}"
               SSEAlgorithm: "aws:kms"
+      LifecycleConfiguration:
+        Rules:
+          - Id: AthenaResults-IA-30d-Expire-90d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: 90
 
   AthenaResultsBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref AthenaResultsBucket
       PolicyDocument:
@@ -685,13 +752,22 @@ Resources:
             ServerSideEncryptionByDefault:
               SSEAlgorithm: aws:kms
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${SplunkDeliveryStreamBackupKMSKeyAlias}"
+      LifecycleConfiguration:
+        Rules:
+          - Id: SplunkBackup-IA-30d-Expire-90d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: 90
 
   SplunkDeliveryStreamBackupBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref SplunkDeliveryStreamBackupBucket
       PolicyDocument:
@@ -752,24 +828,24 @@ Resources:
   #region ECR Repositories
   FHIRFacadeRepo:
     Type: AWS::ECR::Repository
-    Properties: 
+    Properties:
       RepositoryName: fhir-facade-repo
-      ImageScanningConfiguration: 
-        ScanOnPush: true    
-    
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
   ValidatorRepo:
     Type: AWS::ECR::Repository
-    Properties: 
+    Properties:
       RepositoryName: validator-repo
-      ImageScanningConfiguration: 
+      ImageScanningConfiguration:
         ScanOnPush: true
 
   CDKUtilsBuildRepo:
     Type: AWS::ECR::Repository
-    Properties: 
+    Properties:
       RepositoryName: cdk-utils-build-repo
-      ImageScanningConfiguration: 
-        ScanOnPush: true    
+      ImageScanningConfiguration:
+        ScanOnPush: true
   #endregion
 
   #region Secrets KMS
@@ -925,7 +1001,7 @@ Resources:
               - kms:ReEncrypt*
               - kms:Decrypt
             Resource: "*"
-    
+
   SqsKMSKeyKMSKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
@@ -1319,7 +1395,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SplunkHECToken"
-  
+
   SlackWebHookUrl:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1328,7 +1404,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SlackWebhookUrl"
-  
+
   AccessSlackSecretsManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -1373,7 +1449,7 @@ Resources:
               - sqs:GetQueueAttributes
               - sqs:GetQueueUrl
               - tag:GetResources
-            Resource: 
+            Resource:
             - !Sub "arn:aws:cloudwatch:*:${AWS::AccountId}:*"
             - !Sub "arn:aws:cloudfront::${AWS::AccountId}:*"
             - !Sub "arn:aws:dynamodb::${AWS::AccountId}:*"
@@ -1424,7 +1500,7 @@ Resources:
           - Effect: Allow
             Action:
               - kms:Decrypt
-            Resource: 
+            Resource:
               - !Sub arn:aws:kms:eu-west-2:${AWS::AccountId}:key/*
           - Effect: Allow
             Action:
@@ -1432,7 +1508,7 @@ Resources:
               - kms:GenerateDataKey*
               - kms:Encrypt
               - kms:ReEncrypt*
-            Resource: 
+            Resource:
               - !GetAtt AthenaResultsBucketKMSKey.Arn
           - Effect: Allow
             Action:
@@ -1583,7 +1659,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
 
   FHIRFacadeRepoUri:
-    Description: "The URI of the FHIR Facade ECR repo"    
+    Description: "The URI of the FHIR Facade ECR repo"
     Value: !GetAtt FHIRFacadeRepo.RepositoryUri
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
@@ -1592,10 +1668,10 @@ Outputs:
     Description: "The Arn of the Validator repo"
     Value: !GetAtt ValidatorRepo.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]     
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]
 
   ValidatorRepoUri:
-    Description: "The URI of the Validator ECR repo"    
+    Description: "The URI of the Validator ECR repo"
     Value: !GetAtt ValidatorRepo.RepositoryUri
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
@@ -1604,10 +1680,10 @@ Outputs:
     Description: "The Arn of the Validator repo"
     Value: !GetAtt CDKUtilsBuildRepo.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoArn"]]     
+      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoArn"]]
 
   CDKUtilsBuildRepoUri:
-    Description: "The URI of the Validator ECR repo"    
+    Description: "The URI of the Validator ECR repo"
     Value: !GetAtt CDKUtilsBuildRepo.RepositoryUri
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoUri"]]
@@ -1619,7 +1695,7 @@ Outputs:
     Value: !GetAtt SecretsKMSKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
-  
+
   SecretsKMSKeyAlias:
     Description: SecretsKMSKeyAlias
     Value: !Ref SecretsKMSKeyKMSKeyAlias
@@ -1931,13 +2007,13 @@ Outputs:
     Value: !GetAtt ClinicalTrackerProxygenPublicKey.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPublicKey"]]
-  
+
   SlackWebHookUrl:
     Description: Slack webhook url
     Value: !GetAtt SlackWebHookUrl.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SlackWebHookUrl"]]
-  
+
   AccessSlackSecretsManagedPolicy:
     Description: "Access SNS Secrets Policy ARN"
     Value: !GetAtt AccessSlackSecretsManagedPolicy.PolicyArn
