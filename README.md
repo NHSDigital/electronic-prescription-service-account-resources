@@ -112,6 +112,7 @@ It creates the following resources
 - ReleaseNotesExecuteLambdaRole - role used by github pipelines to execute the release notes lambda
 - CloudFormationPrepareChangesetRole - role used by github pipelines to prepare a changeset
 - ArtilleryRunnerRole - role used by github pipelines to run artillery
+- ApplicationConfigurationRole - role use by github pipelines to administer application configuration within AWS SSM
 - various managed policies attached to these roles to give minimum permissions needed
 
 # Account Resources
