@@ -578,6 +578,7 @@ Resources:
               - s3:GetBucketWebsite
               - s3:PutBucketOwnershipControls
               - s3:PutLifecycleConfiguration
+              - s3:GetLifecycleConfiguration
               - firehose:CreateDeliveryStream
               - firehose:DescribeDeliveryStream
               - firehose:DeleteDeliveryStream
