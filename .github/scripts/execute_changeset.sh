@@ -15,7 +15,7 @@ if [ -z "${artifact_bucket}" ]; then
 fi
 
 deployment_lock_key="account-resources/${STACK_NAME}/deployment.lock"
-echo "created deployment lock ${deployment_lock_key}" | aws s3 cp - "$artifact_bucket/$deployment_lock_key"
+echo "created deployment lock ${deployment_lock_key}" | aws s3 cp - "s3://$artifact_bucket/$deployment_lock_key"
 
 aws cloudformation execute-change-set \
   --stack-name "$STACK_NAME" \
@@ -37,7 +37,7 @@ do
   fi
 done
 
-aws s3 rm "$artifact_bucket/$deployment_lock_key" || true
+aws s3 rm "s3://$artifact_bucket/$deployment_lock_key" || true
 echo "removed deployment lock ${deployment_lock_key}"
 
 if [ "$STATUS" == "ROLLBACK_IN_PROGRESS " ]; then
