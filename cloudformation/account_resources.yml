@@ -247,7 +247,7 @@ Resources:
       Roles:
         - !ImportValue ci-resources:CloudFormationExecutionRoleName
         - !ImportValue ci-resources:CloudFormationPrepareChangesetRoleName
-        - !ImportValue ci-resources:CloudFormationDeployRole
+        - !ImportValue ci-resources:CloudFormationDeployRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
