@@ -247,6 +247,7 @@ Resources:
       Roles:
         - !ImportValue ci-resources:CloudFormationExecutionRoleName
         - !ImportValue ci-resources:CloudFormationPrepareChangesetRoleName
+        - !ImportValue ci-resources:CloudFormationDeployRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -326,6 +327,14 @@ Resources:
             Resource:
               - !Join ["", [!GetAtt ArtifactsBucket.Arn, "/*"]]
               - !GetAtt ArtifactsBucket.Arn
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !ImportValue ci-resources:CloudFormationDeployRole
+            Action:
+              - s3:DeleteObject*
+            Resource:
+              - !Join ["", [!GetAtt ArtifactsBucket.Arn, "/*/*/*.lock"]]
   #endregion
 
   #region Trust Store Bucket
