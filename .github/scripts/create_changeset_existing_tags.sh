@@ -34,10 +34,11 @@ if [ "${status}" != '"CREATE_COMPLETE"' ] && [ "${status}" != '"UPDATE_ROLLBACK_
 fi
 
 # upload file to s3
-artifact_bucket=$(echo "$CF_LONDON_EXPORTS" | \
+artifact_bucket_arn=$(echo "$CF_LONDON_EXPORTS" | \
     jq \
     --arg EXPORT_NAME "account-resources:ArtifactsBucket" \
     -r '.Exports[] | select(.Name == $EXPORT_NAME) | .Value')
+artifact_bucket=$(echo "$artifact_bucket_arn" | cut -d: -f6 | cut -d/ -f1)
 if [ -z "${artifact_bucket}" ]; then
     echo "could not retrieve artifact_bucket from aws cloudformation list-exports"
     exit 1

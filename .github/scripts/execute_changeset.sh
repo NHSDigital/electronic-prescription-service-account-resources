@@ -4,10 +4,11 @@ AWS_MAX_ATTEMPTS=20
 export AWS_MAX_ATTEMPTS
 
 CF_LONDON_EXPORTS=$(aws cloudformation list-exports --region eu-west-2 --output json)
-artifact_bucket=$(echo "$CF_LONDON_EXPORTS" | \
+artifact_bucket_arn=$(echo "$CF_LONDON_EXPORTS" | \
     jq \
     --arg EXPORT_NAME "account-resources:ArtifactsBucket" \
     -r '.Exports[] | select(.Name == $EXPORT_NAME) | .Value')
+artifact_bucket=$(echo "$artifact_bucket_arn" | cut -d: -f6 | cut -d/ -f1)
 if [ -z "${artifact_bucket}" ]; then
     echo "could not retrieve artifact_bucket from aws cloudformation list-exports"
     exit 1
