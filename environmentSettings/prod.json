@@ -67,6 +67,9 @@
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:environment:prod"
       ],
+      "ApplicationConfigurationClaimFilters": [
+        "repo:NHSDigital/eps-prescription-status-update-api:*"
+      ],
       "EnableDeleteCNAME": "false"
     },
     "account-resources": {
