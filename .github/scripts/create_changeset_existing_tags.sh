@@ -3,16 +3,22 @@ set -e
 
 cd ../..
 
-AWS_MAX_ATTEMPTS=10
+AWS_MAX_ATTEMPTS=20
 export AWS_MAX_ATTEMPTS
 
+CF_LONDON_EXPORTS=$(aws cloudformation list-exports --region eu-west-2 --output json)
+  
 current_deployed_tag=$(aws cloudformation describe-stacks --stack-name  "$STACK_NAME" --query "Stacks[0].Tags[?Key=='version'].Value" --output text)
 if [ "${current_deployed_tag}" == "" ]; then
   echo "Can not find target tag. Using initial tag in repo"
   export current_deployed_tag="v1.0.4-alpha"
 fi
 
-ROLE=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "ci-resources:CloudFormationExecutionRole") | .Value' )
+ROLE=$(echo "$CF_LONDON_EXPORTS" | \
+    jq \
+    --arg EXPORT_NAME "ci-resources:CloudFormationExecutionRole" \
+    -r '.Exports[] | select(.Name == $EXPORT_NAME) | .Value')
+
 if [ -z "${ROLE}" ]; then
     echo "could not retrieve ROLE from aws cloudformation list-exports"
     exit 1
@@ -28,11 +34,15 @@ if [ "${status}" != '"CREATE_COMPLETE"' ] && [ "${status}" != '"UPDATE_ROLLBACK_
 fi
 
 # upload file to s3
-artifact_bucket=$(aws cloudformation list-exports --output json | jq -r '.Exports[] | select(.Name == "account-resources:ArtifactsBucket") | .Value' | grep -o '[^:]*$')
+artifact_bucket=$(echo "$CF_LONDON_EXPORTS" | \
+    jq \
+    --arg EXPORT_NAME "account-resources:ArtifactsBucket" \
+    -r '.Exports[] | select(.Name == $EXPORT_NAME) | .Value')
 if [ -z "${artifact_bucket}" ]; then
     echo "could not retrieve artifact_bucket from aws cloudformation list-exports"
     exit 1
 fi
+
 
 target_location=account-resources/$CHANGE_SET_VERSION/current-tag/$STACK_NAME/template.yml
 target_s3_location=s3://${artifact_bucket}/${target_location}
@@ -52,6 +62,26 @@ cat > tags.json <<EOF
   {"Key": "cfnDriftDetectionGroup", "Value": "${CFN_DRIFT_DETECTION_GROUP}"}
 ]
 EOF
+deployment_lock_key="account-resources/${STACK_NAME}/deployment.lock"
+
+TIMEOUT=300   # 5 minutes (in seconds)
+INTERVAL=10   # check every 10 seconds
+START=$(date +%s)
+
+echo "Checking for existence of $deployment_lock_key ..."
+
+while aws s3 ls "$artifact_bucket/$deployment_lock_key" >/dev/null 2>&1; do
+  NOW=$(date +%s)
+  ELAPSED=$((NOW - START))
+  if [ $ELAPSED -ge $TIMEOUT ]; then
+    echo "Timeout after 5 minutes waiting for lock — exiting."
+    exit 1
+  fi
+  echo "Lock exists, waiting... ($ELAPSED s elapsed)"
+  sleep $INTERVAL
+done
+
+echo "Lock file does not exist - creating changeset"
 
 aws cloudformation create-change-set \
   --stack-name "$STACK_NAME" \
