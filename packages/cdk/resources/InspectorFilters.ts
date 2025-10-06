@@ -1,3 +1,4 @@
+/* eslint-disable  max-len */
 import {Construct} from "constructs"
 import {CfnFilter} from "aws-cdk-lib/aws-inspectorv2"
 
