@@ -74,6 +74,7 @@ export interface StateToEmojiMap {
     INSUFFICIENT_DATA: string
     ALARM: string
     OK: string
+    WARNING: string
 }
 
 export interface CloudWatchAlertContentValues {

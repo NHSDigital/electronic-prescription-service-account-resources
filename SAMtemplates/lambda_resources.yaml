@@ -61,21 +61,10 @@ Parameters:
     Type: String
     Description: The log level to set in the lambda
 
-  ConcurrencyThreshold:
-    Type: Number
-    Description: Threshold for the Lambda concurrency before triggering an alert.
-    Default: 300
-    
-  EnableAlerts:
+  DeployDriftDetection:
     Type: String
-    AllowedValues: [ 'true', 'false' ]
-    Default: 'true'
-    Description: Whether to enable or disable alarms and notifications.
-
-  DeployDriftDetection:  
-    Type: String
-    AllowedValues: [ 'true', 'false' ]
-    Default: 'true'
+    AllowedValues: ["true", "false"]
+    Default: "true"
     Description: Whether to enable or disable drift detection.
 
 Conditions:
@@ -90,7 +79,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - CW_LOGGROUP_RETENTION_PERIOD_CHECK    
+          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
     Properties:
       LogGroupName: !Ref LambdaInsightsLogGroupName
       RetentionInDays: !Ref LogRetentionDays
@@ -200,7 +189,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - CW_LOGGROUP_RETENTION_PERIOD_CHECK    
+          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
     Properties:
       LogGroupName: !Sub "/aws/kinesisfirehose/${AWS::StackName}-SplunkDeliveryStream"
       RetentionInDays: !Ref LogRetentionDays
@@ -253,9 +242,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -328,7 +317,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - CW_LOGGROUP_RETENTION_PERIOD_CHECK    
+          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
     Properties:
       LogGroupName: !Sub "/aws/lambda/${SplunkDeliveryStreamProcessor}"
       RetentionInDays: !Ref LogRetentionDays
@@ -490,9 +479,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -528,7 +517,7 @@ Resources:
         deadLetterTargetArn: !GetAtt SlackAlerterDeadLetterQueue.Arn
         maxReceiveCount: 5
       VisibilityTimeout: 60
-  
+
   SlackAlerterSqsQueuePolicy:
     Type: AWS::SQS::QueuePolicy
     Properties:
@@ -556,7 +545,7 @@ Resources:
       KmsMasterKeyId: !ImportValue account-resources:SqsKMSKey
       MessageRetentionPeriod: 604800 # 1week in secs
       VisibilityTimeout: 60
-  
+
   SlackAlerterDeadLetterQueuePolicy:
     Type: AWS::SQS::QueuePolicy
     Properties:
@@ -599,8 +588,8 @@ Resources:
               - sqs:GetQueueAttributes
               - sqs:GetQueueUrl
               - sqs:ListQueues
-            Resource: !GetAtt  SlackAlerterSqsQueue.Arn
-  
+            Resource: !GetAtt SlackAlerterSqsQueue.Arn
+
   SlackAlerterResources:
     Type: AWS::Serverless::Application
     Properties:
@@ -644,9 +633,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: es2020
@@ -656,26 +645,6 @@ Resources:
         EntryPoints:
           - slackAlerter/src/slackAlerter.ts
 
-  EPSAccountConcurrencyAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties: 
-      AlarmName: !Sub "${AWS::StackName}-Account_Lambda_Concurrency"
-      AlarmDescription: "Monitors the concurrency of all traffic coming through the EPS account, and triggers when concurrency exceeds the threshold."
-      Namespace: "AWS/Lambda"
-      MetricName: "ConcurrentExecutions"
-      Statistic: Maximum
-      Period: 300 # seconds
-      EvaluationPeriods: 1
-      Threshold: !Ref ConcurrencyThreshold
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      TreatMissingData: notBreaching
-      ActionsEnabled: !Ref EnableAlerts
-      AlarmActions:
-        - !GetAtt SlackAlertsSnsTopic.TopicArn
-      InsufficientDataActions:
-        - !GetAtt SlackAlertsSnsTopic.TopicArn
-      OKActions:
-        - !GetAtt SlackAlertsSnsTopic.TopicArn
   #endregion
 
   ##################################################
@@ -704,9 +673,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: es2020
@@ -743,7 +712,7 @@ Resources:
             Action:
               - lambda:ListVersionsByFunction
             Resource: !ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn
-  
+
   FHIRValidatorDeleteVersionPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -753,7 +722,14 @@ Resources:
           - Effect: Allow
             Action:
               - lambda:DeleteFunction
-            Resource: !Join ["", [!ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn, ":*"]]
+            Resource:
+              !Join [
+                "",
+                [
+                  !ImportValue fhir-validator:FHIRValidatorUKCoreLambdaArn,
+                  ":*",
+                ],
+              ]
 
   LambdaJanitorScheduleEventRole:
     Type: AWS::IAM::Role
@@ -856,7 +832,6 @@ Resources:
           - ","
           - - !GetAtt ProxygenManagedPolicy.PolicyArn
 
-
   ProxygenPTLInstancePutFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -872,9 +847,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -917,9 +892,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -962,9 +937,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -1007,9 +982,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -1052,9 +1027,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -1097,9 +1072,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -1142,9 +1117,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -1187,9 +1162,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -1199,7 +1174,6 @@ Resources:
         EntryPoints:
           - proxygen/src/proxygenInstanceDelete.ts
   #endregion
-
 
   ##################################################
   #region drift detector
@@ -1221,9 +1195,9 @@ Resources:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
-        - LAMBDA_DLQ_CHECK
-        - LAMBDA_INSIDE_VPC
-        - LAMBDA_CONCURRENCY_CHECK
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: es2020
@@ -1277,7 +1251,7 @@ Resources:
     Properties:
       Description: IAM role for AWS Config to access CloudFormation drift detection
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -1485,7 +1459,7 @@ Resources:
         detail-type:
           - "Config Rules Compliance Change"
         detail:
-           configRuleARN:
+          configRuleARN:
             - !GetAtt ConfigRuleToDetectCfnDriftPSU.Arn
             - !GetAtt ConfigRuleToDetectCfnDriftCPT.Arn
             - !GetAtt ConfigRuleToDetectCfnDriftCPTUI.Arn
@@ -1507,6 +1481,7 @@ Outputs:
   # Lambda Insights Outputs
   #################################################
   LambdaInsightsLogGroupPolicy:
+  # this is used by eps-storage-terraform so be careful when moving it to cdk
     Description: "Lambda Insights Policy ARN"
     Value: !GetAtt LambdaInsightsLogGroupPolicy.PolicyArn
     Export:
@@ -1532,6 +1507,7 @@ Outputs:
 
   ##################################################
   # Slack Alerter Outputs
+  # this is used by other stacks so it needs to be migrated to cdk carefully
   ##################################################
   SlackAlertsSnsTopicArn:
     Description: "SlackAlertsSnsTopic ARN"

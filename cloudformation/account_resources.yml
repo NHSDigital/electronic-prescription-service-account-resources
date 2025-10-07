@@ -1,4 +1,35 @@
 AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  LogRetentionDays:
+    Type: Number
+    Description: How long to keep logs for
+    AllowedValues:
+      [
+        1,
+        3,
+        5,
+        7,
+        14,
+        30,
+        60,
+        90,
+        120,
+        150,
+        180,
+        365,
+        400,
+        545,
+        731,
+        1096,
+        1827,
+        2192,
+        2557,
+        2922,
+        3288,
+        3653,
+      ]
+
 Resources:
   #region API Gateway
   ApiGwCloudWatchRole:
@@ -216,6 +247,7 @@ Resources:
       Roles:
         - !ImportValue ci-resources:CloudFormationExecutionRoleName
         - !ImportValue ci-resources:CloudFormationPrepareChangesetRoleName
+        - !ImportValue ci-resources:CloudFormationDeployRoleName
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -251,13 +283,22 @@ Resources:
           - ServerSideEncryptionByDefault:
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${ArtifactsBucketKMSKeyAlias}"
               SSEAlgorithm: "aws:kms"
+      LifecycleConfiguration:
+        Rules:
+          - Id: Artifacts-IA-30d-Expire-90d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: 90
 
   ArtifactsBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref ArtifactsBucket
       PolicyDocument:
@@ -286,6 +327,14 @@ Resources:
             Resource:
               - !Join ["", [!GetAtt ArtifactsBucket.Arn, "/*"]]
               - !GetAtt ArtifactsBucket.Arn
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !ImportValue ci-resources:CloudFormationDeployRole
+            Action:
+              - s3:DeleteObject*
+            Resource:
+              - !Join ["", [!GetAtt ArtifactsBucket.Arn, "/*/*/*.lock"]]
   #endregion
 
   #region Trust Store Bucket
@@ -357,7 +406,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref TrustStoreBucket
       PolicyDocument:
@@ -394,7 +443,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
         - S3_BUCKET_LOGGING_ENABLED
         - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
@@ -409,13 +458,22 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: "AES256"
+      LifecycleConfiguration:
+        Rules:
+          - Id: Audit-IA-30d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            # no ExpirationInDays (never delete)
 
   AuditLoggingBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref AuditLoggingBucket
       PolicyDocument:
@@ -472,19 +530,18 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
-          # add this in once cpt-ui gets released to all environments
-          # - Effect: Allow
-          #   Principal:
-          #     Service: logging.s3.amazonaws.com
-          #   Action:
-          #     - s3:PutObject*
-          #   Resource:
-          #     - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/static-content/*"]]
-          #   Condition:
-          #     StringEquals:
-          #       aws:SourceAccount: !Ref "AWS::AccountId"
-          #     ArnLike:
-          #       aws:SourceArn: !ImportValue "cpt-ui-shared-resources:StaticContentBucket:Arn"
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action:
+              - s3:PutObject*
+            Resource:
+              - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/static-content/*"]]
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+              ArnLike:
+                aws:SourceArn: !ImportValue "cpt-ui-stateful-resources:StaticContentBucket:Arn"
   #endregion
 
   ALBLoggingBucket:
@@ -492,7 +549,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
         - S3_BUCKET_LOGGING_ENABLED
         - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
@@ -507,13 +564,22 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: "AES256"
+      LifecycleConfiguration:
+        Rules:
+          - Id: ALBLogging-IA-30d-Expire-LogRetention
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: !Ref LogRetentionDays
 
   ALBLoggingBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref ALBLoggingBucket
       PolicyDocument:
@@ -572,7 +638,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED    
+        - S3_BUCKET_REPLICATION_ENABLED
         - S3_BUCKET_LOGGING_ENABLED
         - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
@@ -588,13 +654,22 @@ Resources:
           - ServerSideEncryptionByDefault:
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${AthenaResultsBucketKMSKeyKMSKeyAlias}"
               SSEAlgorithm: "aws:kms"
+      LifecycleConfiguration:
+        Rules:
+          - Id: AthenaResults-IA-30d-Expire-90d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: 90
 
   AthenaResultsBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref AthenaResultsBucket
       PolicyDocument:
@@ -686,13 +761,22 @@ Resources:
             ServerSideEncryptionByDefault:
               SSEAlgorithm: aws:kms
               KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${SplunkDeliveryStreamBackupKMSKeyAlias}"
+      LifecycleConfiguration:
+        Rules:
+          - Id: SplunkBackup-IA-30d-Expire-90d
+            Status: Enabled
+            Prefix: "" # apply to all objects
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            ExpirationInDays: 90
 
   SplunkDeliveryStreamBackupBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref SplunkDeliveryStreamBackupBucket
       PolicyDocument:
@@ -753,24 +837,24 @@ Resources:
   #region ECR Repositories
   FHIRFacadeRepo:
     Type: AWS::ECR::Repository
-    Properties: 
+    Properties:
       RepositoryName: fhir-facade-repo
-      ImageScanningConfiguration: 
-        ScanOnPush: true    
-    
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
   ValidatorRepo:
     Type: AWS::ECR::Repository
-    Properties: 
+    Properties:
       RepositoryName: validator-repo
-      ImageScanningConfiguration: 
+      ImageScanningConfiguration:
         ScanOnPush: true
 
   CDKUtilsBuildRepo:
     Type: AWS::ECR::Repository
-    Properties: 
+    Properties:
       RepositoryName: cdk-utils-build-repo
-      ImageScanningConfiguration: 
-        ScanOnPush: true    
+      ImageScanningConfiguration:
+        ScanOnPush: true
   #endregion
 
   #region Secrets KMS
@@ -926,7 +1010,7 @@ Resources:
               - kms:ReEncrypt*
               - kms:Decrypt
             Resource: "*"
-    
+
   SqsKMSKeyKMSKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
@@ -1320,7 +1404,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SplunkHECToken"
-  
+
   SlackWebHookUrl:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1329,7 +1413,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SlackWebhookUrl"
-  
+
   AccessSlackSecretsManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -1374,7 +1458,7 @@ Resources:
               - sqs:GetQueueAttributes
               - sqs:GetQueueUrl
               - tag:GetResources
-            Resource: 
+            Resource:
             - !Sub "arn:aws:cloudwatch:*:${AWS::AccountId}:*"
             - !Sub "arn:aws:cloudfront::${AWS::AccountId}:*"
             - !Sub "arn:aws:dynamodb::${AWS::AccountId}:*"
@@ -1425,7 +1509,7 @@ Resources:
           - Effect: Allow
             Action:
               - kms:Decrypt
-            Resource: 
+            Resource:
               - !Sub arn:aws:kms:eu-west-2:${AWS::AccountId}:key/*
           - Effect: Allow
             Action:
@@ -1433,7 +1517,7 @@ Resources:
               - kms:GenerateDataKey*
               - kms:Encrypt
               - kms:ReEncrypt*
-            Resource: 
+            Resource:
               - !GetAtt AthenaResultsBucketKMSKey.Arn
           - Effect: Allow
             Action:
@@ -1451,319 +1535,17 @@ Resources:
             Resource: "*"
   #endregion
 
-  # region inspector filters
-  # these are CVEs that should be ignored when scanning container images uploaded to ECR
-  # we should only add items into here when the vulnerability is not one that affects us,
-  # or there is agreement that we will not fix it and it is not a critical vulnerability for us
-
-  SuppressCVE202522235:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-22235
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-22235
-      Name: suppress_CVE-2025-22235
-
-  SuppressCVE202521587:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-21587
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-21587
-      Name: suppress_CVE-2025-21587
-
-  SuppressCVE202455887:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2024-55887
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2024-55887
-      Name: suppress_CVE-2024-55887
-
-  SuppressCVE202452007:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2024-52007
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2024-52007
-      Name: suppress_CVE-2024-52007
-
-  SuppressCVE202451132:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2024-51132
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2024-51132
-      Name: suppress_CVE-2024-51132
-
-  SuppressCVE202445294:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2024-45294
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2024-45294
-      Name: suppress_CVE-2024-45294
-
-  SuppressCVE20232976:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2023-2976
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2023-2976
-      Name: suppress_CVE-2023-2976
-
-  SuppressCVE202328465:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2023-28465
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2023-28465
-      Name: suppress_CVE-2023-28465
-
-  SuppressCVE202324057:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2023-24057
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2023-24057
-      Name: suppress_CVE-2023-24057
-
-  SuppressCVE202242889:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2022-42889
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2022-42889
-      Name: suppress_CVE-2022-42889
-
-  SuppressCVE202136090:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2021-36090
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2021-36090
-      Name: suppress_CVE-2021-36090
-
-  SuppressCVE202135517:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2021-35517
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2021-35517
-      Name: suppress_CVE-2021-35517
-
-  SuppressCVE202135516:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2021-35516
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2021-35516
-      Name: suppress_CVE-2021-35516 
-
-  SuppressCVE202135515:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2021-35515
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2021-35515
-      Name: suppress_CVE-2021-35515
-
-  SuppressCVE202531650:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-31650
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-31650
-      Name: suppress_CVE-2025-31650
-
-  SuppressCVE202531651:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-31651
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-31651
-      Name: suppress_CVE-2025-31651
-
-  SuppressCVE202523166:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-23166
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-23166
-      Name: suppress_CVE-2025-23166
-
-  SuppressCVE202546701:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-46701
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-46701
-      Name: suppress_CVE-2025-46701
-
-  SuppressCVE202548988:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-48988
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-48988
-      Name: suppress_CVE-2025-48988
-
-  SuppressCVE202549125:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-49125
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-49125
-      Name: suppress_CVE-2025-49125
-
-  SuppressCVE202550059:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-50059
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-50059
-      Name: suppress_CVE-2025-50059
-
-  SuppressCVE202530749:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-30749
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-30749
-      Name: suppress_CVE-2025-30749
-
-  SuppressCVE202550106:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-50106
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-50106
-      Name: suppress_CVE-2025-50106
-
-  # only applies to windows
-  SuppressCVE202527210:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-27210
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-27210
-      Name: suppress_CVE-2025-27210
-
-  SuppressCVE202552520:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-52520
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-52520
-      Name: suppress_CVE-2025-52520
-
-  SuppressCVE202548989:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-48989
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-48989
-      Name: suppress_CVE-2025-48989
-
-  SuppressCVE202553506:
-    Type: AWS::InspectorV2::Filter
-    Properties:
-      Description: CVE-2025-53506
-      FilterAction: SUPPRESS
-      FilterCriteria: 
-        VulnerabilityId:
-          - Comparison: EQUALS
-            Value: CVE-2025-53506
-      Name: suppress_CVE-2025-53506
-  #endregion
-
 Outputs:
   #region Cloudwatch Outputs
   CloudwatchLogsKmsKeyArn:
+  # this is used by eps-storage-terraform so be careful when moving it to cdk
     Description: "The Arn of the API GW cloudwatch logs KMS Key"
     Value: !GetAtt CloudwatchLogsKmsKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CloudwatchLogsKmsKeyArn"]]
 
   LambdaEncryptCloudwatchKMSPolicy:
+  # this is used by eps-storage-terraform so be careful when moving it to cdk
     Description: "Lambda Encrypt Cloudwatch KMS Policy ARN"
     Value: !GetAtt LambdaEncryptCloudwatchKMSPolicy.PolicyArn
     Export:
@@ -1886,7 +1668,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
 
   FHIRFacadeRepoUri:
-    Description: "The URI of the FHIR Facade ECR repo"    
+    Description: "The URI of the FHIR Facade ECR repo"
     Value: !GetAtt FHIRFacadeRepo.RepositoryUri
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
@@ -1895,10 +1677,10 @@ Outputs:
     Description: "The Arn of the Validator repo"
     Value: !GetAtt ValidatorRepo.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]     
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]
 
   ValidatorRepoUri:
-    Description: "The URI of the Validator ECR repo"    
+    Description: "The URI of the Validator ECR repo"
     Value: !GetAtt ValidatorRepo.RepositoryUri
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
@@ -1907,10 +1689,10 @@ Outputs:
     Description: "The Arn of the Validator repo"
     Value: !GetAtt CDKUtilsBuildRepo.Arn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoArn"]]     
+      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoArn"]]
 
   CDKUtilsBuildRepoUri:
-    Description: "The URI of the Validator ECR repo"    
+    Description: "The URI of the Validator ECR repo"
     Value: !GetAtt CDKUtilsBuildRepo.RepositoryUri
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoUri"]]
@@ -1922,7 +1704,7 @@ Outputs:
     Value: !GetAtt SecretsKMSKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
-  
+
   SecretsKMSKeyAlias:
     Description: SecretsKMSKeyAlias
     Value: !Ref SecretsKMSKeyKMSKeyAlias
@@ -2234,13 +2016,13 @@ Outputs:
     Value: !GetAtt ClinicalTrackerProxygenPublicKey.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPublicKey"]]
-  
+
   SlackWebHookUrl:
     Description: Slack webhook url
     Value: !GetAtt SlackWebHookUrl.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SlackWebHookUrl"]]
-  
+
   AccessSlackSecretsManagedPolicy:
     Description: "Access SNS Secrets Policy ARN"
     Value: !GetAtt AccessSlackSecretsManagedPolicy.PolicyArn

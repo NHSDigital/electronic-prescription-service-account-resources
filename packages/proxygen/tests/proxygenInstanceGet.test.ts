@@ -93,7 +93,7 @@ describe("Unit test for proxygenInstanceGet", function () {
         status: 500,
         message: "Request failed with status code 500",
         config: {
-          data: undefined,
+          data: "",
           headers: expect.objectContaining({
             Accept: "application/json, text/plain, */*",
             "Content-Type": "application/json",
@@ -139,7 +139,7 @@ describe("Unit test for proxygenInstanceGet", function () {
       axiosError: expect.objectContaining({
         message: "Something awful happened",
         config: {
-          data: undefined,
+          data: "",
           headers: expect.objectContaining({
             Accept: "application/json, text/plain, */*",
             "Content-Type": "application/json",

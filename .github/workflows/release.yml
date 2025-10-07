@@ -8,13 +8,16 @@ env:
 
 jobs:
   quality_checks:
-    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@v4.1.1
+    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@v4.1.3
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   package_code:
     uses: ./.github/workflows/sam_package_code.yml
 
+  package_cdk_code:
+    uses: ./.github/workflows/cdk_package_code.yml
+ 
   get_commit_id:
     runs-on: ubuntu-22.04
     outputs:
@@ -26,7 +29,7 @@ jobs:
           echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
     
   tag_release:
-    needs: [quality_checks, package_code, get_commit_id]
+    needs: [quality_checks, package_code, package_cdk_code, get_commit_id]
     runs-on: ubuntu-22.04
     outputs:
       version_tag: ${{ steps.output_version_tag.outputs.VERSION_TAG }}
@@ -117,7 +120,7 @@ jobs:
           echo CHANGE_SET_VERSION="$VERSION-$TIMESTAMP" >> "$GITHUB_OUTPUT"
 
   deploy_dev_stacks:
-    needs: [get_commit_id, package_code, tag_release]
+    needs: [get_commit_id, package_code, package_cdk_code, tag_release]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: dev
@@ -131,9 +134,11 @@ jobs:
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: true
       deploy_drift_detection: true
+      is_pull_request: false
     secrets:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
 
 
   create_release_notes_post_dev:
@@ -152,7 +157,7 @@ jobs:
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
 
   deploy_ref_stacks:
-    needs: [get_commit_id, package_code, tag_release, deploy_dev_stacks]
+    needs: [get_commit_id, package_code, package_cdk_code, tag_release, deploy_dev_stacks]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: ref
@@ -166,12 +171,14 @@ jobs:
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: true
       deploy_drift_detection: true
+      is_pull_request: false
     secrets:
       cf_create_changeset_role: ${{ secrets.REF_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.REF_CDK_PULL_IMAGE_ROLE }}
 
   deploy_qa_stacks:
-    needs: [get_commit_id, package_code, tag_release, deploy_dev_stacks]
+    needs: [get_commit_id, package_code, package_cdk_code, tag_release, deploy_dev_stacks]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: qa
@@ -185,10 +192,11 @@ jobs:
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: false
       deploy_drift_detection: true
+      is_pull_request: false
     secrets:
       cf_create_changeset_role: ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
-      
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
   create_release_notes_pre_int:
     needs: [tag_release, deploy_qa_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
@@ -206,7 +214,7 @@ jobs:
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
 
   deploy_int_stacks:
-    needs: [get_commit_id, package_code, tag_release, create_release_notes_pre_int]
+    needs: [get_commit_id, package_code, package_cdk_code, tag_release, create_release_notes_pre_int]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: int
@@ -220,10 +228,12 @@ jobs:
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: false
       deploy_drift_detection: true
+      is_pull_request: false
     secrets:
       cf_create_changeset_role: ${{ secrets.INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
-      
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.INT_CDK_PULL_IMAGE_ROLE }}
+  
   create_release_notes_post_int:
     needs: [tag_release, deploy_int_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
@@ -240,7 +250,7 @@ jobs:
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
 
   deploy_prod_stacks:
-    needs: [get_commit_id, package_code, tag_release, deploy_int_stacks]
+    needs: [get_commit_id, package_code, package_cdk_code, tag_release, deploy_int_stacks]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: prod
@@ -254,10 +264,12 @@ jobs:
       lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: false
       deploy_drift_detection: true
+      is_pull_request: false
     secrets:
       cf_create_changeset_role: ${{ secrets.PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
-
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.PROD_CDK_PULL_IMAGE_ROLE }}
+  
   create_release_notes_post_prod:
     needs: [tag_release, deploy_prod_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml

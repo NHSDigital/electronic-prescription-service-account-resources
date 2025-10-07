@@ -68,7 +68,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY    
+        - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref ArtifactsBucket
       PolicyDocument:
@@ -481,7 +481,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SplunkHECToken"
-  
+
   SlackWebHookUrl:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -490,7 +490,7 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-SlackWebhookUrl"
-  
+
   AccessSlackSecretsManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -516,7 +516,7 @@ Resources:
           - Effect: Allow
             Action:
               - kms:Decrypt
-            Resource: 
+            Resource:
               - !Sub arn:aws:kms:eu-west-2:${AWS::AccountId}:key/*
   #endregion
 
@@ -536,7 +536,7 @@ Outputs:
     Value: !GetAtt SecretsKMSKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
-  
+
   SecretsKMSKeyAlias:
     Description: SecretsKMSKeyAlias
     Value: !Ref SecretsKMSKeyKMSKeyAlias
