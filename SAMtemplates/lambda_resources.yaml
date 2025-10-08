@@ -590,6 +590,18 @@ Resources:
               - sqs:ListQueues
             Resource: !GetAtt SlackAlerterSqsQueue.Arn
 
+  ReadSuppressionSSMParameterPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - ssm:GetParameter
+            Resource:
+              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/monitoring-alertSuppressions
+  
   SlackAlerterResources:
     Type: AWS::Serverless::Application
     Properties:
@@ -607,6 +619,7 @@ Resources:
           - - !ImportValue account-resources:SqsDecryptSecretsKMSPolicy
             - !ImportValue account-resources:AccessSlackSecretsManagedPolicy
             - !GetAtt ReadSlackAlerterSqsQueuePolicy.PolicyArn
+            - !GetAtt ReadSuppressionSSMParameterPolicy.PolicyArn
 
   SlackAlerter:
     Type: AWS::Serverless::Function

@@ -56,14 +56,32 @@ const processRecord = async (record: SQSRecord): Promise<void> => {
   }
 
   logger.info("Generating slack message content for alert...")
-  const slackMessageContent = generateSlackMessageContent(cloudWatchAlarm)
-
-  logger.info("Posting slack message...")
-  await postSlackMessage(slackMessageContent)
-  logger.info("Message successfully posted.")
+  const {slackMessageContent, alarmName, stack} = generateSlackMessageContent(cloudWatchAlarm)
+  const secrets = await getSecrets(["monitoring-alertSuppressions"], "parameterStore")
+  const parameter = secrets["monitoring-alertSuppressions"]
+  if (!parameter) {
+    throw new Error("Parameter 'monitoring-alertSuppressions' is undefined or not found.")
+  }
+  const suppressions = JSON.parse(parameter) as Array<{alarmName: string, stack: string}>
+  // const suppressions = [
+  //   {alarmName: "TestLambda Errors", stack: "psu-pr-123"},
+  //   {alarmName: "TestLambda Throttles", stack: "psu-pr-123"}
+  // ]
+  const isSuppressed = suppressions.some(
+    (s) => s.alarmName === alarmName && s.stack === stack
+  )
+  if (isSuppressed) {
+    logger.info("Alert is suppressed, not posting to slack.", {alarmName: alarmName, stack: stack})
+    return
+  } else {
+    logger.info("Posting slack message...")
+    await postSlackMessage(slackMessageContent)
+    logger.info("Message successfully posted.")
+  }
 }
 
-const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudWatchAlertMessageContent => {
+const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm):
+  {slackMessageContent: CloudWatchAlertMessageContent, alarmName: string, stack: string} => {
   // To fully populate the message, alarm names should be in the format "<StackName>_<ResourceName>_<Metric>"
   // e.g. "psu-pr-123_TestLambda_Errors".
   let stack, alarmName
@@ -109,7 +127,7 @@ const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudW
 
   logger.info("Populating content for CloudWatch Alert message...")
   const slackMessageContent: CloudWatchAlertMessageContent = populateCloudWatchAlertMessageContent(contentValues)
-  return slackMessageContent
+  return {slackMessageContent, alarmName, stack}
 }
 
 const postSlackMessage = async (slackMessageContent: CloudWatchAlertMessageContent): Promise<void> => {

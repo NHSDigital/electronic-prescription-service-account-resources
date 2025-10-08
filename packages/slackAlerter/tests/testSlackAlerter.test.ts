@@ -52,6 +52,12 @@ describe("Slack Alerter", () => {
     it(description, async() => {
       fetchMock
         .once(JSON.stringify({
+          Name: "monitoring-alert-alertSuppressions",
+          Parameter: {
+            Value: "[]"
+          }
+        }))
+        .once(JSON.stringify({
           Name: "account-resources-SlackWebhookUrl",
           SecretString: "www.slack.com/webhook"
         }))
@@ -92,17 +98,29 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=${alarmName}`
           method: "POST"
         }
       ]
-      expect(fetchMock.mock.calls[1]).toEqual(expectedRequest)
+      expect(fetchMock.mock.calls[2]).toEqual(expectedRequest)
     })
   })
 
   it("posts multiple message to slack when called with a valid SQS event containing multiple records", async () => {
     fetchMock
       .once(JSON.stringify({
+        Name: "monitoring-alert-alertSuppressions",
+        Parameter: {
+          Value: "[]"
+        }
+      }))
+      .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
         SecretString: "www.slack.com/webhook"
       }))
       .once(JSON.stringify({ok: true}))
+      .once(JSON.stringify({
+        Name: "monitoring-alert-alertSuppressions",
+        Parameter: {
+          Value: "[]"
+        }
+      }))
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
         SecretString: "www.slack.com/webhook"
@@ -177,13 +195,19 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
       }
     ]
 
-    expect(fetchMock.mock.calls.length).toEqual(4)
-    expect(fetchMock.mock.calls[1]).toEqual(expectedRequest1)
-    expect(fetchMock.mock.calls[3]).toEqual(expectedRequest2)
+    expect(fetchMock.mock.calls.length).toEqual(6)
+    expect(fetchMock.mock.calls[2]).toEqual(expectedRequest1)
+    expect(fetchMock.mock.calls[5]).toEqual(expectedRequest2)
   })
 
   it("gets secrets when posting a message to slack", async () => {
     fetchMock
+      .once(JSON.stringify({
+        Name: "monitoring-alert-alertSuppressions",
+        Parameter: {
+          Value: "[]"
+        }
+      }))
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
         SecretString: "www.slack.com/webhook"
@@ -209,11 +233,17 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
         method: "GET"
       }
     ]
-    expect(fetchMock.mock.calls[0]).toEqual(expectedRequest)
+    expect(fetchMock.mock.calls[1]).toEqual(expectedRequest)
   })
 
   it("returns no failures when when called with a valid SQS event", async () => {
     fetchMock
+      .once(JSON.stringify({
+        Name: "monitoring-alert-alertSuppressions",
+        Parameter: {
+          Value: "[]"
+        }
+      }))
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
         SecretString: "www.slack.com/webhook"
@@ -239,6 +269,12 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
   // Errors processing SNS Message
   it("Returns batchItemFailures when SNS message contains invalid json", async () => {
     fetchMock
+      .once(JSON.stringify({
+        Name: "monitoring-alert-alertSuppressions",
+        Parameter: {
+          Value: "[]"
+        }
+      }))
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
         SecretString: "www.slack.com/webhook"
@@ -271,10 +307,22 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
     async () => {
       fetchMock
         .once(JSON.stringify({
+          Name: "monitoring-alert-alertSuppressions",
+          Parameter: {
+            Value: "[]"
+          }
+        }))
+        .once(JSON.stringify({
           Name: "account-resources-SlackWebhookUrl",
           SecretString: "www.slack.com/webhook"
         }))
         .once(JSON.stringify({ok: true}))
+        .once(JSON.stringify({
+          Name: "monitoring-alert-alertSuppressions",
+          Parameter: {
+            Value: "[]"
+          }
+        }))
         .once(JSON.stringify({
           Name: "account-resources-SlackWebhookUrl",
           SecretString: "www.slack.com/webhook"
@@ -312,6 +360,12 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
   it("Returns batchItemFailures when an error occurs posting to slack", async () => {
     fetchMock
       .once(JSON.stringify({
+        Name: "monitoring-alert-alertSuppressions",
+        Parameter: {
+          Value: "[]"
+        }
+      }))
+      .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
         SecretString: "www.slack.com/webhook"
       }))
@@ -338,6 +392,12 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
 
   it("Returns batchItemFailures when an error response is received from slack", async () => {
     fetchMock
+      .once(JSON.stringify({
+        Name: "monitoring-alert-alertSuppressions",
+        Parameter: {
+          Value: "[]"
+        }
+      }))
       .once(JSON.stringify({
         Name: "account-resources-SlackWebhookUrl",
         SecretString: "www.slack.com/webhook"

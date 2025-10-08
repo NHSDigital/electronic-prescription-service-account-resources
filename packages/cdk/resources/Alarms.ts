@@ -2,6 +2,7 @@ import {Construct} from "constructs"
 import {Alarm} from "aws-cdk-lib/aws-cloudwatch"
 import {ITopic} from "aws-cdk-lib/aws-sns"
 import {MetricAlarm} from "../constructs/MetricAlarm"
+import { StringParameter } from "aws-cdk-lib/aws-ssm"
 
 export interface AlarmsProps {
   readonly stackName: string
@@ -94,5 +95,9 @@ export class Alarms extends Construct {
       this.lambdaAlarms = {...this.lambdaAlarms, [a.name]: alarm.alarms[a.name]}
     }
 
+    new StringParameter(this, "alertSuppressions", {
+      parameterName: "monitoring-alertSuppressions",
+      stringValue: JSON.stringify([])
+    })
   }
 }
