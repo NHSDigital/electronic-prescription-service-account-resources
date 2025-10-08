@@ -7,6 +7,10 @@ import {
 import {Alarms} from "../resources/Alarms"
 import {InspectorFilters} from "../resources/InspectorFilters"
 import {Topic} from "aws-cdk-lib/aws-sns"
+import {Functions} from "../resources/Functions"
+import {nagSuppressions} from "../nagSuppressions"
+import {Rule, Schedule} from "aws-cdk-lib/aws-events"
+import {LambdaFunction} from "aws-cdk-lib/aws-events-targets"
 
 export interface MonitoringStackProps extends StackProps {
   readonly stackName: string
@@ -36,5 +40,27 @@ export class MonitoringStack extends Stack {
     })
 
     new InspectorFilters(this, "InspectorFilters")
+
+    const functions = new Functions(this, "Functions", {
+      stackName: props.stackName,
+      version: props.version,
+      commitId: props.commitId,
+      logRetentionInDays: 30,
+      logLevel: "DEBUG"
+    })
+
+    // Create an EventBridge rule to trigger every Monday at 09:00 UTC
+    new Rule(this, "WeeklyScheduleRule", {
+      schedule: Schedule.cron({
+        minute: "0",
+        hour: "9",
+        weekDay: "MON",
+        month: "*",
+        year: "*"
+      }),
+      targets: [new LambdaFunction(functions.functions.reportAlertSuppressionsLambda.function)]
+    })
+
+    nagSuppressions(this)
   }
 }
