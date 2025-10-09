@@ -73,7 +73,6 @@ const processRecord = async (record: SQSRecord): Promise<void> => {
   )
   if (isSuppressed) {
     logger.info("Alert is suppressed, not posting to slack.", {alarmName: alarmName, stack: stack})
-    return
   } else {
     logger.info("Posting slack message...")
     await postSlackMessage(slackMessageContent, logger)
