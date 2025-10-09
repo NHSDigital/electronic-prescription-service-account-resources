@@ -423,3 +423,150 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
     expect(actual).toEqual(expectedResponse)
   })
 })
+
+it("suppresses single alert correctly", async () => {
+  fetchMock
+    .once(JSON.stringify({
+      Name: "monitoring-alert-alertSuppressions",
+      Parameter: {
+        Value: "[{\"alarmName\":\"TestLambda Errors\",\"stack\":\"psu\",\"jiraReference\":\"JIRA-123\"}]"
+      }
+    }))
+
+  const mockSQSEvent = generateMockAlarmEvent([
+    {
+      name: "psu_TestLambda_Errors",
+      description: "Count of TestLambda errors",
+      id: "record1"
+    }
+  ]) as SQSEvent
+  const context = {} as Context
+  const callback = jest.fn()
+
+  await handler(mockSQSEvent, context, callback)
+
+  expect(fetchMock.mock.calls.length).toEqual(1)
+})
+
+it("suppresses multiple alerts correctly", async () => {
+  fetchMock
+    .once(JSON.stringify({
+      Name: "monitoring-alert-alertSuppressions",
+      Parameter: {
+        Value: "[{\"alarmName\":\"TestLambda Errors\",\"stack\":\"psu\",\"jiraReference\":\"JIRA-123\"}]"
+      }
+    }))
+    .once(JSON.stringify({
+      Name: "monitoring-alert-alertSuppressions",
+      Parameter: {
+        Value: "[{\"alarmName\":\"TestLambda Errors\",\"stack\":\"psu\",\"jiraReference\":\"JIRA-123\"}]"
+      }
+    }))
+    .once(JSON.stringify({
+      Name: "account-resources-SlackWebhookUrl",
+      SecretString: "www.slack.com/webhook"
+    }))
+    .once(JSON.stringify({ok: true}))
+
+  const mockSQSEvent = generateMockAlarmEvent([
+    {
+      name: "psu_TestLambda_Errors",
+      description: "Count of TestLambda errors",
+      id: "record1"
+    },
+    {
+      name: "psu_TestLambda2_Errors",
+      description: "Count of TestLambda2 errors",
+      id: "record2"
+    }
+  ]) as SQSEvent
+  const context = {} as Context
+  const callback = jest.fn()
+
+  await handler(mockSQSEvent, context, callback)
+
+  const expectedRequest = [
+    "www.slack.com/webhook",
+    {
+      body: JSON.stringify(populateCloudWatchAlertMessageContent({
+        header: ":red_circle: TestLambda2 Errors ALARM",
+        timestamp: "2024-07-09T12:01:37.700+0000",
+        stack: "psu",
+        environment: "dev",
+        region: "eu-west-2",
+        description: "Count of TestLambda2 errors",
+        reason: `Threshold Crossed: 1 out of the last 1 datapoints [2.0 (09/07/24 11:51:00)] was greater than the \
+threshold (1.0) (minimum 1 datapoint for OK -> ALARM transition).`,
+        trigger: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 5 minutes.",
+        oldState: ":black_circle: INSUFFICIENT_DATA",
+        newState: ":red_circle: ALARM",
+        moreInfoUrl: `https://console.aws.amazon.com/cloudwatch/home?\
+region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
+      }
+      )),
+      headers: {
+        "Content-Type": "application/json"
+      },
+      method: "POST"
+    }
+  ]
+
+  expect(fetchMock.mock.calls.length).toEqual(4)
+  expect(fetchMock.mock.calls[3]).toEqual(expectedRequest)
+})
+
+it("does not suppresses when param is not json", async () => {
+  fetchMock
+    .once(JSON.stringify({
+      Name: "monitoring-alert-alertSuppressions",
+      Parameter: {
+        Value: "this is not json"
+      }
+    }))
+    .once(JSON.stringify({
+      Name: "account-resources-SlackWebhookUrl",
+      SecretString: "www.slack.com/webhook"
+    }))
+    .once(JSON.stringify({ok: true}))
+
+  const mockSQSEvent = generateMockAlarmEvent([
+    {
+      name: "psu_TestLambda_Errors",
+      description: "Count of TestLambda errors",
+      id: "record1"
+    }
+  ]) as SQSEvent
+  const context = {} as Context
+  const callback = jest.fn()
+
+  await handler(mockSQSEvent, context, callback)
+
+  const expectedRequest = [
+    "www.slack.com/webhook",
+    {
+      body: JSON.stringify(populateCloudWatchAlertMessageContent({
+        header: ":red_circle: TestLambda Errors ALARM",
+        timestamp: "2024-07-09T12:01:37.700+0000",
+        stack: "psu",
+        environment: "dev",
+        region: "eu-west-2",
+        description: "Count of TestLambda errors",
+        reason: `Threshold Crossed: 1 out of the last 1 datapoints [2.0 (09/07/24 11:51:00)] was greater than the \
+threshold (1.0) (minimum 1 datapoint for OK -> ALARM transition).`,
+        trigger: "SUM Errors GreaterThanThreshold 1 for 1 period(s) of 5 minutes.",
+        oldState: ":black_circle: INSUFFICIENT_DATA",
+        newState: ":red_circle: ALARM",
+        moreInfoUrl: `https://console.aws.amazon.com/cloudwatch/home?\
+region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda_Errors`
+      }
+      )),
+      headers: {
+        "Content-Type": "application/json"
+      },
+      method: "POST"
+    }
+  ]
+
+  expect(fetchMock.mock.calls.length).toEqual(3)
+  expect(fetchMock.mock.calls[2]).toEqual(expectedRequest)
+})

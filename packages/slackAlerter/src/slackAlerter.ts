@@ -58,16 +58,16 @@ const processRecord = async (record: SQSRecord): Promise<void> => {
 
   logger.info("Generating slack message content for alert...")
   const {slackMessageContent, alarmName, stack} = generateSlackMessageContent(cloudWatchAlarm)
-  const secrets = await getSecrets(["monitoring-alertSuppressions"], "parameterStore")
-  const parameter = secrets["monitoring-alertSuppressions"]
-  if (!parameter) {
-    throw new Error("Parameter 'monitoring-alertSuppressions' is undefined or not found.")
+  let suppressions: Array<{alarmName: string, stack: string, jiraReference: string}> = []
+  try {
+    const secrets = await getSecrets(["monitoring-alertSuppressions"], "parameterStore")
+    const parameter = secrets["monitoring-alertSuppressions"]
+    if (parameter) {
+      suppressions = JSON.parse(parameter) as Array<{alarmName: string, stack: string, jiraReference: string}>
+    }
+  } catch (error) {
+    logger.info("Error retrieving or parsing suppressions, proceeding to post Slack message.", {error})
   }
-  const suppressions = JSON.parse(parameter) as Array<{alarmName: string, stack: string}>
-  // const suppressions = [
-  //   {alarmName: "TestLambda Errors", stack: "psu-pr-123"},
-  //   {alarmName: "TestLambda Throttles", stack: "psu-pr-123"}
-  // ]
   const isSuppressed = suppressions.some(
     (s) => s.alarmName === alarmName && s.stack === stack
   )
