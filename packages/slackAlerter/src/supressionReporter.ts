@@ -7,7 +7,7 @@ import {postSlackMessage} from "./helpers"
 
 const logger = new Logger({serviceName: "supressionReporter"})
 
-const lambdaHandler = async () => {
+export const lambdaHandler = async () => {
   try {
     const secrets = await getSecrets(["monitoring-alertSuppressions"], "parameterStore")
     const parameter = secrets["monitoring-alertSuppressions"]
