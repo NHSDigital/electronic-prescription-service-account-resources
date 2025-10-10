@@ -147,7 +147,8 @@ export class LambdaFunction extends Construct {
       },
       logGroup,
       layers:[
-        insightsLambdaLayer
+        insightsLambdaLayer,
+        ...props.layers ?? []
       ]
     })
 
