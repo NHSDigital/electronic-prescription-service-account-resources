@@ -23,7 +23,7 @@ export const lambdaHandler = async () => {
       logger.info(`Found ${suppressions.length} alert suppression(s):`, {suppressions})
       const suppressionsList = suppressions.map(s => `- Alarm Name: ${s.alarmName}, Stack: ${s.stack}`).join("\n")
       const message = `Please confirm the current alert suppressions are still valid:\n${suppressionsList}`
-      await postSlackMessage(message, logger)
+      await postSlackMessage({"text": message}, logger)
     }
   } catch (error) {
     logger.error("Lambda execution failed:", {error})

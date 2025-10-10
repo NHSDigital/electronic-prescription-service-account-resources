@@ -3,7 +3,7 @@ import {getSecrets} from "./secrets"
 import {CloudWatchAlertMessageContent} from "./types"
 
 const postSlackMessage = async (
-  slackMessageContent: CloudWatchAlertMessageContent | string, logger: Logger): Promise<void> => {
+  slackMessageContent: CloudWatchAlertMessageContent | object, logger: Logger): Promise<void> => {
   // eslint-disable-next-line no-undef
   const options: RequestInit = {
     method: "POST",
