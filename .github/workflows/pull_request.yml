@@ -70,9 +70,11 @@ jobs:
       artifact_bucket_prefix: PR-${{needs.get_issue_number.outputs.issue_number}}
       version_number: PR-${{ needs.get_issue_number.outputs.issue_number }}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
-      lambda_insights_log_group_name: /aws/lambda-insights/pr-${{ needs.get_issue_number.outputs.issue_number }}
+      # lambda_insights_log_group_name: /aws/lambda-insights/pr-${{ needs.get_issue_number.outputs.issue_number }}
+      lambda_insights_log_group_name: /aws/lambda-insights
       deploy_artillery: true
-      deploy_drift_detection: false
+      deploy_drift_detection: true
+      # deploy_drift_detection: false
       is_pull_request: true
       check_for_lock_file: false
     secrets:
