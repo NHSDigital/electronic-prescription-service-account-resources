@@ -14,6 +14,7 @@ export const lambdaHandler = async () => {
     if (!parameter) {
       throw new Error("Parameter 'monitoring-alertSuppressions' is undefined or not found.")
     }
+    logger.debug("Fetched alert suppressions parameter.", {parameter})
     const suppressions = JSON.parse(parameter) as Array<{alarmName: string, stack: string}>
 
     if (suppressions.length === 0) {
