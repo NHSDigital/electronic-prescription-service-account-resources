@@ -11,6 +11,7 @@ import {Key} from "aws-cdk-lib/aws-kms"
 import {
   Architecture,
   CfnFunction,
+  ILayerVersion,
   LayerVersion,
   Runtime
 } from "aws-cdk-lib/aws-lambda"
@@ -30,6 +31,7 @@ export interface LambdaFunctionProps {
   readonly logLevel: string,
   readonly version: string
   readonly commitId: string
+  readonly layers?: Array<ILayerVersion>
 }
 
 const insightsLayerArn = "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:60"
