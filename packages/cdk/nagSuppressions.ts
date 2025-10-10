@@ -6,7 +6,8 @@ export const nagSuppressions = (stack: Stack) => {
   safeAddNagSuppressionGroup(
     stack,
     [
-      "/MonitoringStack/Functions/ReportAlertSuppressionsLambda/LambdaPutLogsManagedPolicy/Resource"
+      "/MonitoringStack/Functions/ReportAlertSuppressionsLambda/LambdaPutLogsManagedPolicy/Resource",
+      "/MonitoringStack/Functions/ReadAlertSuppressionsPolicy/Resource"
     ],
     [
       {
