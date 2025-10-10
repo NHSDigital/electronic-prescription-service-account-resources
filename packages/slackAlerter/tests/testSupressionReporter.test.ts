@@ -12,7 +12,7 @@ jest.unstable_mockModule("../src/helpers", () => ({
   postSlackMessage: mockedPostSlackMessage
 }))
 
-const lambdaHandlerModule = await import("../src/supressionReporter")
+const lambdaHandlerModule = await import("../src/suppressionReporter")
 const {lambdaHandler} = lambdaHandlerModule
 
 const loggerErrorSpy = jest.spyOn(Logger.prototype, "error")

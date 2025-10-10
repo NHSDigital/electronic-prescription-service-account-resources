@@ -26,9 +26,9 @@ export class Functions extends Construct {
     // Resources
     const reportAlertSuppressionsLambda = new LambdaFunction(this, "ReportAlertSuppressionsLambda", {
       stackName: props.stackName,
-      functionName: `${props.stackName}-slackAlerter`,
+      functionName: `${props.stackName}-suppression-reporter`,
       packageBasePath: "packages/slackAlerter",
-      entryPoint: "src/slackAlerter.ts",
+      entryPoint: "src/suppressionReporter.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
       additionalPolicies: [],
       logRetentionInDays: props.logRetentionInDays,
