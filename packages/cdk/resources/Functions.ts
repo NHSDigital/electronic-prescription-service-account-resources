@@ -1,6 +1,8 @@
 import {Construct} from "constructs"
 import {LambdaFunction} from "../constructs/LambdaFunction"
-import { LayerVersion } from "aws-cdk-lib/aws-lambda"
+import {LayerVersion} from "aws-cdk-lib/aws-lambda"
+import {IStringParameter} from "aws-cdk-lib/aws-ssm"
+import { ManagedPolicy, PolicyStatement } from "aws-cdk-lib/aws-iam"
 
 export interface FunctionsProps {
   readonly stackName: string
@@ -8,6 +10,7 @@ export interface FunctionsProps {
   readonly commitId: string
   readonly logRetentionInDays: number
   readonly logLevel: string
+  readonly alertSuppressionsParameter: IStringParameter
 }
 
 export class Functions extends Construct {
@@ -23,6 +26,22 @@ export class Functions extends Construct {
       this, "LayerFromArn", parameterAndSecretsLayerArn)
 
     // Resources
+
+
+    const readAlertSuppressionsPolicy = new ManagedPolicy(this, "ReadAlertSuppressionsPolicy", {
+      description: `read ${props.alertSuppressionsParameter.parameterName} SSM parameter`,
+      statements: [
+        new PolicyStatement({
+          actions: [
+            "ssm:GetParameter",
+            "ssm:GetParameters",
+            "ssm:GetParametersByPath"
+          ],
+          resources: [
+            props.alertSuppressionsParameter.parameterArn
+          ]
+        })]
+    })
     const reportAlertSuppressionsLambda = new LambdaFunction(this, "ReportAlertSuppressionsLambda", {
       stackName: props.stackName,
       functionName: `${props.stackName}-suppression-reporter`,
@@ -31,7 +50,7 @@ export class Functions extends Construct {
       environmentVariables: {
         PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: "2773"
       },
-      additionalPolicies: [],
+      additionalPolicies: [readAlertSuppressionsPolicy],
       logRetentionInDays: props.logRetentionInDays,
       logLevel: props.logLevel,
       version: props.version,

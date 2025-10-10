@@ -13,6 +13,7 @@ export interface AlarmsProps {
 }
 
 export class Alarms extends Construct {
+  parameters: {[key: string]: StringParameter}
   stepFunctionAlarms: Array<{[key: string]: Alarm}>
   lambdaAlarms: Array<{[key: string]: Alarm}>
 
@@ -95,9 +96,10 @@ export class Alarms extends Construct {
       this.lambdaAlarms = {...this.lambdaAlarms, [a.name]: alarm.alarms[a.name]}
     }
 
-    new StringParameter(this, "alertSuppressions", {
+    const alertSuppressions = new StringParameter(this, "alertSuppressions", {
       parameterName: "monitoring-alertSuppressions",
       stringValue: JSON.stringify([])
     })
+    this.parameters = {alertSuppressions: alertSuppressions}
   }
 }

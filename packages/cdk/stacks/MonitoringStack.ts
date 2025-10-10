@@ -31,7 +31,7 @@ export class MonitoringStack extends Stack {
     const slackAlertTopic = Topic.fromTopicArn(this, "SlackAlertTopic",
       Fn.importValue("lambda-resources:SlackAlertsSnsTopicArn"))
 
-    new Alarms(this, "Alarms", {
+    const alarms = new Alarms(this, "Alarms", {
       stackName: props.stackName,
       enableAlerts: enableAlerts,
       lambdaConcurrencyThreshold: lambdaConcurrencyThreshold,
@@ -46,7 +46,8 @@ export class MonitoringStack extends Stack {
       version: props.version,
       commitId: props.commitId,
       logRetentionInDays: 30,
-      logLevel: "DEBUG"
+      logLevel: "DEBUG",
+      alertSuppressionsParameter: alarms.parameters.alertSuppressions
     })
 
     // Create an EventBridge rule to trigger every Monday at 09:00 UTC
