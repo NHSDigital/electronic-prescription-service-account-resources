@@ -3,12 +3,12 @@ import {getSecrets} from "./secrets"
 import {CloudWatchAlertMessageContent} from "./types"
 
 const postSlackMessage = async (
-  slackMessageContent: CloudWatchAlertMessageContent | object, logger: Logger): Promise<void> => {
+  slackMessageContent: CloudWatchAlertMessageContent | string, logger: Logger): Promise<void> => {
   // eslint-disable-next-line no-undef
   const options: RequestInit = {
     method: "POST",
     body: typeof slackMessageContent === "string"
-      ? slackMessageContent
+      ? JSON.stringify({"text": slackMessageContent})
       : JSON.stringify(slackMessageContent),
     headers: {
       "Content-Type": "application/json"
