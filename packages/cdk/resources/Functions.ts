@@ -3,6 +3,7 @@ import {LambdaFunction} from "../constructs/LambdaFunction"
 import {LayerVersion} from "aws-cdk-lib/aws-lambda"
 import {IStringParameter} from "aws-cdk-lib/aws-ssm"
 import { ManagedPolicy, PolicyStatement } from "aws-cdk-lib/aws-iam"
+import { Stack } from "aws-cdk-lib"
 
 export interface FunctionsProps {
   readonly stackName: string
@@ -27,7 +28,6 @@ export class Functions extends Construct {
 
     // Resources
 
-
     const readAlertSuppressionsPolicy = new ManagedPolicy(this, "ReadAlertSuppressionsPolicy", {
       description: `read ${props.alertSuppressionsParameter.parameterName} SSM parameter`,
       statements: [
@@ -40,7 +40,17 @@ export class Functions extends Construct {
           resources: [
             props.alertSuppressionsParameter.parameterArn
           ]
-        })]
+        }),
+        new PolicyStatement({
+          actions: [
+            "secretsmanager:GetSecretValue"
+          ],
+          resources: [
+            // eslint-disable-next-line max-len
+            `arn:aws:secretsmanager:${Stack.of(this).region}:${Stack.of(this).account}:secret:account-resources-SlackWebhookUrl*`
+          ]
+        })
+      ]
     })
     const reportAlertSuppressionsLambda = new LambdaFunction(this, "ReportAlertSuppressionsLambda", {
       stackName: props.stackName,
