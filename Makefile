@@ -184,3 +184,9 @@ cdk-synth:
 	CONFIG_FILE_NAME=.local_config/monitoring.config.json npx cdk synth \
 		--quiet \
 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/MonitoringApp.ts" 
+
+clear-dev-deployment-lock:
+	aws s3 rm s3://ci-resources-artifactsbucket-8tfokumg8i3z/account-resources/ci-resources/deployment.lock
+	aws s3 rm s3://ci-resources-artifactsbucket-8tfokumg8i3z/account-resources/account-resources/deployment.lock
+	aws s3 rm s3://ci-resources-artifactsbucket-8tfokumg8i3z/account-resources/secrets/deployment.lock
+	aws s3 rm s3://ci-resources-artifactsbucket-8tfokumg8i3z/account-resources/artillery/deployment.lock

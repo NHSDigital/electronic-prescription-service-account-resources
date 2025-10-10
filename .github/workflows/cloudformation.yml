@@ -31,6 +31,10 @@ on:
         required: false
         type: string
         default: "{}"
+      check_for_lock_file:
+        required: false
+        type: boolean
+        default: false
     secrets:
       cf_deploy_role:
         required: false
@@ -120,6 +124,7 @@ jobs:
       working-directory: .github/scripts
       env:
         PARAMETERS: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
+        CHECK_FOR_LOCK_FILE: ${{ inputs.check_for_lock_file }}
       run: ./create_changeset_new_tags.sh
 
     - name: Create Change Set with existing tags
@@ -127,6 +132,7 @@ jobs:
       working-directory: .github/scripts
       env:
         PARAMETERS: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
+        CHECK_FOR_LOCK_FILE: ${{ inputs.check_for_lock_file }}
       run: ./create_changeset_existing_tags.sh
 
     - name: Header output
