@@ -17,22 +17,20 @@ export class Functions extends Construct {
 
     // Imports
 
-    const lambdaDefaultEnvironmentVariables: {[key: string]: string} = {
-      NODE_OPTIONS: "--enable-source-maps",
-      VERSION_NUMBER: props.version,
-      COMMIT_ID: props.commitId
-    }
-
     // Resources
     const reportAlertSuppressionsLambda = new LambdaFunction(this, "ReportAlertSuppressionsLambda", {
       stackName: props.stackName,
       functionName: `${props.stackName}-suppression-reporter`,
       packageBasePath: "packages/slackAlerter",
       entryPoint: "src/suppressionReporter.ts",
-      environmentVariables: {...lambdaDefaultEnvironmentVariables},
+      environmentVariables: {
+        PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: "2773"
+      },
       additionalPolicies: [],
       logRetentionInDays: props.logRetentionInDays,
-      logLevel: props.logLevel
+      logLevel: props.logLevel,
+      version: props.version,
+      commitId: props.commitId
     })
 
     this.functions = {

@@ -27,7 +27,9 @@ export interface LambdaFunctionProps {
   readonly environmentVariables: {[key: string]: string}
   readonly additionalPolicies?: Array<IManagedPolicy>
   readonly logRetentionInDays: number
-  readonly logLevel: string
+  readonly logLevel: string,
+  readonly version: string
+  readonly commitId: string
 }
 
 const insightsLayerArn = "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:60"
@@ -137,7 +139,9 @@ export class LambdaFunction extends Construct {
       environment: {
         ...props.environmentVariables,
         LOG_LEVEL: props.logLevel,
-        NODE_OPTIONS: "--enable-source-maps"
+        NODE_OPTIONS: "--enable-source-maps",
+        VERSION_NUMBER: props.version,
+        COMMIT_ID: props.commitId
       },
       logGroup,
       layers:[
