@@ -65,7 +65,8 @@ jobs:
       version: pr-${{github.event.number}}
       change_set_version: pr-${{github.event.number}}
       execute_change_set: true
-      lambda_stack_suffix: -pr-${{needs.get_issue_number.outputs.issue_number}}
+      lambda_stack_suffix: ""
+      # lambda_stack_suffix: -pr-${{needs.get_issue_number.outputs.issue_number}}
       artifact_bucket_prefix: PR-${{needs.get_issue_number.outputs.issue_number}}
       version_number: PR-${{ needs.get_issue_number.outputs.issue_number }}
       commit_id: ${{ needs.get_commit_id.outputs.commit_id }}
@@ -73,6 +74,7 @@ jobs:
       deploy_artillery: true
       deploy_drift_detection: false
       is_pull_request: true
+      check_for_lock_file: false
     secrets:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
