@@ -27,6 +27,15 @@ if [[ "$STACK_NAME" =~ -pr-[0-9]+$ ]]; then
 fi
 
 cd ../..
+
+stack_status=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query "Stacks[0].StackStatus" --output text 2>/dev/null || echo "NOT_FOUND")
+if [ "$stack_status" == "ROLLBACK_COMPLETE" ]; then
+    echo "Stack $STACK_NAME is in ROLLBACK_COMPLETE status. Deleting stack..."
+    aws cloudformation delete-stack --stack-name "$STACK_NAME"
+    echo "Waiting for stack $STACK_NAME to be deleted..."
+    aws cloudformation wait stack-delete-complete --stack-name "$STACK_NAME"
+fi
+
 sam deploy \
     --template-file "$TEMPLATE_FILE" \
     --stack-name "$STACK_NAME" \
