@@ -240,7 +240,7 @@ Resources:
               - cloudfront-keyvaluestore:UpdateKeys
               - cloudfront:CreateInvalidation
             Resource: "*"
-  
+
   ##################################################
   # Cloudformation Execution Role
   ##################################################
@@ -282,7 +282,7 @@ Resources:
           - Effect: Allow
             Action:
               - sts:AssumeRole
-            Resource: 
+            Resource:
               - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1
               - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-2
               - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1
@@ -490,7 +490,7 @@ Resources:
               - aoss:GetSecurityPolicy
               - aoss:UpdateSecurityPolicy
               - aoss:CreateAccessPolicy
-              - aoss:DeleteAccessPolicy 
+              - aoss:DeleteAccessPolicy
               - aoss:GetAccessPolicy
               - aoss:UpdateAccessPolicy
               - aoss:CreateCollection
@@ -512,7 +512,7 @@ Resources:
               - bedrock:UpdateGuardrail
               - bedrock:GetGuardrail
               - bedrock:DeleteGuardrail
-              - bedrock:AssociateAgentKnowledgeBase 
+              - bedrock:AssociateAgentKnowledgeBase
               - bedrock:CreateKnowledgeBase
               - bedrock:DeleteKnowledgeBase
               - bedrock:DeleteKnowledgeBaseDocuments
@@ -522,7 +522,7 @@ Resources:
               - bedrock:GetKnowledgeBaseDocuments
               - bedrock:IngestKnowledgeBaseDocuments
               - bedrock:ListAgentKnowledgeBases
-              - bedrock:ListKnowledgeBaseDocuments 
+              - bedrock:ListKnowledgeBaseDocuments
               - bedrock:ListKnowledgeBases
               - bedrock:UpdateAgentKnowledgeBase
               - bedrock:UpdateKnowledgeBase
@@ -577,6 +577,8 @@ Resources:
               - s3:GetBucketVersioning
               - s3:GetBucketWebsite
               - s3:PutBucketOwnershipControls
+              - s3:PutLifecycleConfiguration
+              - s3:GetLifecycleConfiguration
               - firehose:CreateDeliveryStream
               - firehose:DescribeDeliveryStream
               - firehose:DeleteDeliveryStream
@@ -609,8 +611,8 @@ Resources:
               - secretsmanager:Untag*
               - secretsmanager:GetSecretValue
               - secretsmanager:GetRandomPassword
-              - secretsmanager:PutResourcePolicy 
-              - secretsmanager:GetResourcePolicy 
+              - secretsmanager:PutResourcePolicy
+              - secretsmanager:GetResourcePolicy
               - scheduler:GetSchedule
               - scheduler:CreateSchedule
               - scheduler:DeleteSchedule
@@ -812,7 +814,7 @@ Resources:
               - wafv2:ListLoggingConfigurations
               - wafv2:PutLoggingConfiguration
               - cloudfront:AllowVendedLogDeliveryForResource
-            Resource: 
+            Resource:
               - "*"
               - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*BucketNotificationsHandler*
 
@@ -1178,7 +1180,34 @@ Resources:
               - cloudformation:GetTemplateSummary
               - cloudformation:ListStacks
               - cloudformation:DeleteChangeSet
+              - cloudformation:GetTemplate
             Resource: "*"
+          # this is needed for cdk diff to work
+          - Effect: Allow
+            Action:
+              - ssm:GetParameter
+              - ec2:Describe*
+            Resource: "*"
+
+  # this is needed for cdk diff to work
+  # LookupRole is used to perform context lookups
+  # file-publishing-role is used to upload assets to S3 and ECR
+  CreateCloudFormationStackChangeSetAssumeLookupRole:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: CloudFormationPrepareChangesetRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource:
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-west-2
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-2
 
   ##################################################
   # Release Notes Role

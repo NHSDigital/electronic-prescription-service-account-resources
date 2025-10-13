@@ -19,7 +19,7 @@ describe("Slack Alerter", () => {
       description: "posts a correctly formatted message to slack when called with a valid SQS event",
       alarmName: "psu_TestLambda_Errors",
       expected: {
-        header: ":red_circle: TestLambda Errors",
+        header: ":red_circle: TestLambda Errors ALARM",
         stack: "psu"
       }
     },
@@ -27,7 +27,7 @@ describe("Slack Alerter", () => {
       description: "posts a correctly formatted message to slack when called with a non standard alarm name",
       alarmName: "TestLambda",
       expected: {
-        header: ":red_circle: TestLambda",
+        header: ":red_circle: TestLambda ALARM",
         stack: "unknown"
       }
     },
@@ -35,8 +35,16 @@ describe("Slack Alerter", () => {
       description: "posts a correctly formatted message to slack when called with a non standard alarm name",
       alarmName: "TestLambda_Errors",
       expected: {
-        header: ":red_circle: TestLambda_Errors",
+        header: ":red_circle: TestLambda_Errors ALARM",
         stack: "unknown"
+      }
+    },
+    {
+      description: "posts a correctly formatted message to slack when called with a warning alert name",
+      alarmName: "psu_TestLambda_TestWarning_WARNING",
+      expected: {
+        header: ":large_orange_circle: TestLambda TestWarning WARNING",
+        stack: "psu"
       }
     }
   ]
@@ -122,7 +130,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=${alarmName}`
       "www.slack.com/webhook",
       {
         body: JSON.stringify(populateCloudWatchAlertMessageContent({
-          header: ":red_circle: TestLambda Errors",
+          header: ":red_circle: TestLambda Errors ALARM",
           timestamp: "2024-07-09T12:01:37.700+0000",
           stack: "psu",
           environment: "dev",
@@ -147,7 +155,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda_Errors`
       "www.slack.com/webhook",
       {
         body: JSON.stringify(populateCloudWatchAlertMessageContent({
-          header: ":red_circle: TestLambda2 Errors",
+          header: ":red_circle: TestLambda2 Errors ALARM",
           timestamp: "2024-07-09T12:01:37.700+0000",
           stack: "psu",
           environment: "dev",

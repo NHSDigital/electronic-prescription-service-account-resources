@@ -83,7 +83,7 @@ describe("Unit test for proxygenInstanceGet", function () {
     process.env.ALLOWED_ENVIRONMENTS = "dev"
     const mockLoggerError = jest.spyOn(Logger.prototype, "error")
     await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
-    expect(mockLoggerError).toBeCalledTimes(1)
+    expect(mockLoggerError).toHaveBeenCalledTimes(1)
 
     const loggerCallParams = mockLoggerError.mock.calls[0]
     expect(loggerCallParams[0]).toEqual("Error in response to call to proxygen")
@@ -93,7 +93,7 @@ describe("Unit test for proxygenInstanceGet", function () {
         status: 500,
         message: "Request failed with status code 500",
         config: {
-          data: undefined,
+          data: "",
           headers: expect.objectContaining({
             Accept: "application/json, text/plain, */*",
             "Content-Type": "application/json",
@@ -131,7 +131,7 @@ describe("Unit test for proxygenInstanceGet", function () {
     process.env.ALLOWED_ENVIRONMENTS = "dev"
     const mockLoggerError = jest.spyOn(Logger.prototype, "error")
     await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
-    expect(mockLoggerError).toBeCalledTimes(1)
+    expect(mockLoggerError).toHaveBeenCalledTimes(1)
 
     const loggerCallParams = mockLoggerError.mock.calls[0]
     expect(loggerCallParams[0]).toEqual("Error in request to call to proxygen")
@@ -139,7 +139,7 @@ describe("Unit test for proxygenInstanceGet", function () {
       axiosError: expect.objectContaining({
         message: "Something awful happened",
         config: {
-          data: undefined,
+          data: "",
           headers: expect.objectContaining({
             Accept: "application/json, text/plain, */*",
             "Content-Type": "application/json",
