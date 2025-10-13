@@ -68,7 +68,7 @@ const processRecord = async (record: SQSRecord): Promise<void> => {
   } catch (error) {
     logger.info("Error retrieving or parsing suppressions, proceeding to post Slack message.", {error})
   }
-  logger.debug("Current suppressions:", {suppressions: suppressions, alarmName: alarmName, stack: stack})
+  logger.info("Current suppressions:", {suppressions: suppressions, alarmName: alarmName, stack: stack})
   const isSuppressed = suppressions.some(
     (s) => s.alarmName === alarmName && s.stack === stack
   )
