@@ -15,6 +15,7 @@ import {
 import {populateCloudWatchAlertMessageContent} from "./slackMessageTemplates"
 import {getSecrets} from "./secrets"
 import {CloudWatchAlarm, CloudWatchAlertContentValues, CloudWatchAlertMessageContent} from "./types"
+import {postSlackMessage} from "./helpers"
 
 const ENV: string = process.env.ENV || "not-set"
 
@@ -56,14 +57,32 @@ const processRecord = async (record: SQSRecord): Promise<void> => {
   }
 
   logger.info("Generating slack message content for alert...")
-  const slackMessageContent = generateSlackMessageContent(cloudWatchAlarm)
-
-  logger.info("Posting slack message...")
-  await postSlackMessage(slackMessageContent)
-  logger.info("Message successfully posted.")
+  const {slackMessageContent, alarmName, stack} = generateSlackMessageContent(cloudWatchAlarm)
+  let suppressions: Array<{alarmName: string, stack: string, jiraReference: string}> = []
+  try {
+    const secrets = await getSecrets(["monitoring-alertSuppressions"], "parameterStore")
+    const parameter = secrets["monitoring-alertSuppressions"]
+    if (parameter) {
+      suppressions = JSON.parse(parameter) as Array<{alarmName: string, stack: string, "jiraReference": string}>
+    }
+  } catch (error) {
+    logger.info("Error retrieving or parsing suppressions, proceeding to post Slack message.", {error})
+  }
+  logger.info("Current suppressions:", {suppressions: suppressions, alarmName: alarmName, stack: stack})
+  const isSuppressed = suppressions.some(
+    (s) => s.alarmName === alarmName && s.stack === stack
+  )
+  if (isSuppressed) {
+    logger.info("Alert is suppressed, not posting to slack.", {alarmName: alarmName, stack: stack})
+  } else {
+    logger.info("Posting slack message...")
+    await postSlackMessage(slackMessageContent, logger)
+    logger.info("Message successfully posted.")
+  }
 }
 
-const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudWatchAlertMessageContent => {
+const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm):
+  {slackMessageContent: CloudWatchAlertMessageContent, alarmName: string, stack: string} => {
   // To fully populate the message, alarm names should be in the format "<StackName>_<ResourceName>_<Metric>"
   // e.g. "psu-pr-123_TestLambda_Errors".
   let stack, alarmName
@@ -109,35 +128,5 @@ const generateSlackMessageContent = (cloudWatchMessage: CloudWatchAlarm): CloudW
 
   logger.info("Populating content for CloudWatch Alert message...")
   const slackMessageContent: CloudWatchAlertMessageContent = populateCloudWatchAlertMessageContent(contentValues)
-  return slackMessageContent
-}
-
-const postSlackMessage = async (slackMessageContent: CloudWatchAlertMessageContent): Promise<void> => {
-  // eslint-disable-next-line no-undef
-  const options: RequestInit = {
-    method: "POST",
-    body: JSON.stringify(slackMessageContent),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  }
-
-  logger.info("Getting slack web hook url...")
-  // Gets the appropriate webhook to post into the prod or non-prod alert channels in slack.
-  // Whilst signed into the NHSE slack you can find the values under the "Incoming Webhooks"
-  // section of the eps-alerts app configuration.
-  const secrets = await getSecrets(["account-resources-SlackWebhookUrl"], "secretsManager")
-  const url = secrets["account-resources-SlackWebhookUrl"]
-
-  logger.info("Sending request to slack webhook url...")
-  try {
-    const response: Response = await fetch(url, options)
-    if (!response.ok) {
-      logger.error("Error response received from slack", {statusCode: response.status, res: response.body})
-      throw new Error("Error response received from slack")
-    }
-  } catch (err) {
-    logger.error("Failed to post message to slack", {error: err})
-    throw err
-  }
+  return {slackMessageContent, alarmName, stack}
 }

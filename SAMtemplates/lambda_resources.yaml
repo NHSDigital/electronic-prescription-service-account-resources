@@ -10,11 +10,13 @@ Globals:
     MemorySize: 256
     Architectures:
       - x86_64
-    Runtime: nodejs20.x
+    Runtime: nodejs22.x
     Environment:
       Variables:
         NODE_OPTIONS: "--enable-source-maps"
         ENV: !Ref Env
+    Layers:
+      - !Sub arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:60
 
 Parameters:
   SplunkHECEndpoint:
@@ -590,6 +592,18 @@ Resources:
               - sqs:ListQueues
             Resource: !GetAtt SlackAlerterSqsQueue.Arn
 
+  ReadSuppressionSSMParameterPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - ssm:GetParameter
+            Resource:
+              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/monitoring-alertSuppressions
+  
   SlackAlerterResources:
     Type: AWS::Serverless::Application
     Properties:
@@ -607,6 +621,7 @@ Resources:
           - - !ImportValue account-resources:SqsDecryptSecretsKMSPolicy
             - !ImportValue account-resources:AccessSlackSecretsManagedPolicy
             - !GetAtt ReadSlackAlerterSqsQueuePolicy.PolicyArn
+            - !GetAtt ReadSuppressionSSMParameterPolicy.PolicyArn
 
   SlackAlerter:
     Type: AWS::Serverless::Function
@@ -619,7 +634,7 @@ Resources:
         Variables:
           PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: 2773
       Layers:
-        - arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11
+        - arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:20
       Events:
         SQSEvent:
           Type: SQS
