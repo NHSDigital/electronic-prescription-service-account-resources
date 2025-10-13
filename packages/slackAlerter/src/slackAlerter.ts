@@ -63,11 +63,12 @@ const processRecord = async (record: SQSRecord): Promise<void> => {
     const secrets = await getSecrets(["monitoring-alertSuppressions"], "parameterStore")
     const parameter = secrets["monitoring-alertSuppressions"]
     if (parameter) {
-      suppressions = JSON.parse(parameter) as Array<{alarmName: string, stack: string, jiraReference: string}>
+      suppressions = JSON.parse(parameter) as Array<{alarmName: string, stack: string, "jiraReference": string}>
     }
   } catch (error) {
     logger.info("Error retrieving or parsing suppressions, proceeding to post Slack message.", {error})
   }
+  logger.debug("Current suppressions:", {suppressions: suppressions, alarmName: alarmName, stack: stack})
   const isSuppressed = suppressions.some(
     (s) => s.alarmName === alarmName && s.stack === stack
   )
