@@ -57,6 +57,9 @@
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:*"
       ],
+      "AssistMeRegressionTestClaimFilters": [
+        "repo:https://github.com/NHSDigital/electronic-prescription-service-api-regression-tests:*"
+      ],
       "EnableDeleteCNAME": "false"
     },
     "account-resources": {
