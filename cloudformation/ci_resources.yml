@@ -1719,7 +1719,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "AssistMeRegressionTestRole"]]
 
   AssistMeRegressionTestRoleName:
-    Description: Name of the IAM Role(CloudFormationDeployRole)
+    Description: Name of the IAM Role(AssistMeRegressionTestRole)
     Value: !Ref AssistMeRegressionTestRole
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AssistMeRegressionTestRoleName"]]
