@@ -73,6 +73,9 @@
       "ProxygenProdClaimFilters": [
         "NONE"
       ],
+      "AssistMeRegressionTestClaimFilters": [
+        "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
+      ],
       "EnableDeleteCNAME": "true"
     },
     "account-resources": {
