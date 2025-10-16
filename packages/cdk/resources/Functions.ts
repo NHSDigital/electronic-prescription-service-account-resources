@@ -1,9 +1,10 @@
 import {Construct} from "constructs"
-import {LambdaFunction} from "../constructs/LambdaFunction"
 import {LayerVersion} from "aws-cdk-lib/aws-lambda"
 import {IStringParameter} from "aws-cdk-lib/aws-ssm"
-import { ManagedPolicy, PolicyStatement } from "aws-cdk-lib/aws-iam"
-import { Stack } from "aws-cdk-lib"
+import {ManagedPolicy, PolicyStatement} from "aws-cdk-lib/aws-iam"
+import {Stack} from "aws-cdk-lib"
+import {TypescriptLambdaFunction} from "@NHSDigital/eps-cdk-constructs"
+import {resolve} from "path"
 
 export interface FunctionsProps {
   readonly stackName: string
@@ -15,7 +16,7 @@ export interface FunctionsProps {
 }
 
 export class Functions extends Construct {
-  functions: {[key: string]: LambdaFunction}
+  functions: {[key: string]: TypescriptLambdaFunction}
 
   public constructor(scope: Construct, id: string, props: FunctionsProps){
     super(scope, id)
@@ -52,8 +53,7 @@ export class Functions extends Construct {
         })
       ]
     })
-    const reportAlertSuppressionsLambda = new LambdaFunction(this, "ReportAlertSuppressionsLambda", {
-      stackName: props.stackName,
+    const reportAlertSuppressionsLambda = new TypescriptLambdaFunction(this, "ReportAlertSuppressionsLambda", {
       functionName: `${props.stackName}-suppression-reporter`,
       packageBasePath: "packages/slackAlerter",
       entryPoint: "src/suppressionReporter.ts",
@@ -67,7 +67,8 @@ export class Functions extends Construct {
       commitId: props.commitId,
       layers: [
         parameterAndSecretsLayer
-      ]
+      ],
+      projectBaseDir: resolve(__dirname, "../../..")
     })
 
     this.functions = {
