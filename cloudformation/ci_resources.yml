@@ -1500,7 +1500,7 @@ Resources:
             Resource: !Sub "arn:aws:inspector2:${AWS::Region}:${AWS::AccountId}:*"
 
   ##################################################
-  # CDK Util roles
+  # EPS Assist Me Regression Test Role
   ##################################################
   AssistMeRegressionTestRole:
     Type: AWS::IAM::Role
@@ -1710,7 +1710,7 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "AllowCloudFormationSecretsAccessManagedPolicy"]]
 
   ##################################################
-  # Cloudformation Deployment Role Outputs
+  # EPS Assist Me Regression Test Role Outputs
   ##################################################
   AssistMeRegressionTestRole:
     Description: ARN of the IAM Role(AssistMeRegressionTestRole)
