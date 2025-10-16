@@ -68,7 +68,7 @@
         "repo:NHSDigital/eps-cdk-utils:environment:prod"
       ],
       "AssistMeRegressionTestClaimFilters": [
-        "repo:https://github.com/NHSDigital/electronic-prescription-service-api-regression-tests:*"
+        "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
       ],
       "EnableDeleteCNAME": "false"
     },
