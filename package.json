@@ -41,7 +41,7 @@
     "@aws-lambda-powertools/logger": "^2.27.0",
     "archiver": "^7.0.1",
     "conventional-changelog-eslint": "^6.0.0",
-    "esbuild": "^0.25.10",
+    "esbuild": "^0.25.11",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
