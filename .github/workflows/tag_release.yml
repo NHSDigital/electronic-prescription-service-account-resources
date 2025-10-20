@@ -64,9 +64,11 @@ jobs:
         run: |
           # Determine semantic-release command based on branch
           if [ "${{ env.BRANCH_NAME }}" = "main" ]; then
+            echo "on main branch"
             SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run"
           else
             # For non-main branches, override the branches configuration
+            echo "overriding branches for semantic-release to ${{ env.BRANCH_NAME }}"
             SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run --branches ${{ env.BRANCH_NAME }} --no-ci"
           fi
           
