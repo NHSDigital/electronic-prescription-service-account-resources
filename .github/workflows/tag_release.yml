@@ -70,20 +70,26 @@ jobs:
       - name: Set VERSION_TAG based on dry_run flag
         id: output_version_tag
         run: |
-          # Determine semantic-release command based on branch
-          if [ "${{ inputs.branch_name }}" = "main" ]; then
-            echo "on main branch"
-            SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run"
-          else
-            # For non-main branches, override the branches configuration
-            echo "overriding branches for semantic-release to ${{ inputs.branch_name }}"
-            SEMANTIC_RELEASE_CMD="GITHUB_REF=refs/heads/main GITHUB_EVENT_NAME=push npx semantic-release --dry-run --branches ${{ inputs.branch_name }} --branch main"
-          fi
-          echo "SEMANTIC_RELEASE_CMD=$SEMANTIC_RELEASE_CMD"
           if [ "${{ inputs.dry_run }}" = "true" ]; then
+            # Determine semantic-release command based on branch
+            if [ "${{ inputs.branch_name }}" = "main" ]; then
+              echo "on main branch"
+              npx semantic-release --dry-run > semantic-release-output.log
+            else
+              # For non-main branches, override the branches configuration
+              echo "overriding branches for semantic-release to ${{ inputs.branch_name }}"
+
+              # we need to set GITHUB_REF and GITHUB_EVENT_NAME for semantic-release to work correctly
+              # but need to ensure that actionlint does not complain about unused variables
+
+              # shellcheck disable=SC2034
+              GITHUB_REF=refs/heads/main 
+              # shellcheck disable=SC2034
+              GITHUB_EVENT_NAME=push 
+              npx semantic-release --dry-run --branches ${{ inputs.branch_name }} --branch main > semantic-release-output.log
+            fi
             # Dry run mode: use short git SHA and get next version for summary
             VERSION_TAG=$(git rev-parse --short HEAD)
-            $SEMANTIC_RELEASE_CMD > semantic-release-output.log
             NEXT_VERSION=$(grep -i 'The next release version is' semantic-release-output.log | sed -E 's/.* ([[:digit:].]+)$/\1/')
             if [ -z "${NEXT_VERSION}" ]
             then
