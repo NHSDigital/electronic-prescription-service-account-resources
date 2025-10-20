@@ -34,6 +34,7 @@ jobs:
     uses: ./.github/workflows/tag_release.yml
     with:
       dry_run: true
+      branch_name: ${{ github.event.ref.BRANCH_NAME }}
     secrets: inherit
 
   deploy_dev_stacks:

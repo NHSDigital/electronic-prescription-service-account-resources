@@ -7,6 +7,10 @@ on:
         description: 'Whether to run in dry-run mode (true) or create actual tags (false)'
         required: true
         type: boolean
+      branch_name:
+        description: 'The branch name to base the release on'
+        required: true
+        type: string
     outputs:
       version_tag:
         description: 'The version tag that was created or would be created'
@@ -65,8 +69,8 @@ jobs:
             SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run"
           else
             # For non-main branches, override the branches configuration
-            echo "overriding branches for semantic-release to ${{ env.BRANCH_NAME }}"
-            SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run --branches ${{ env.BRANCH_NAME }} --no-ci"
+            echo "overriding branches for semantic-release to ${{ inputs.branch_name }}"
+            SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run --branches ${{ inputs.branch_name }} --no-ci"
           fi
           
           if [ "${{ inputs.dry_run }}" = "true" ]; then
