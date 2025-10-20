@@ -77,7 +77,7 @@ jobs:
           else
             # For non-main branches, override the branches configuration
             echo "overriding branches for semantic-release to ${{ inputs.branch_name }}"
-            SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run --branches ${{ inputs.branch_name }}"
+            SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run --branches ${{ inputs.branch_name }} --no-ci"
           fi
           
           if [ "${{ inputs.dry_run }}" = "true" ]; then
