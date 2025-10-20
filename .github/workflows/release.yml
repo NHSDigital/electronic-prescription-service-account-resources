@@ -27,13 +27,28 @@ jobs:
         id: commit_id
         run: |
           echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+  
+  get_asdf_version:
+    runs-on: ubuntu-22.04
+    outputs:
+      asdf_version: ${{ steps.asdf-version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Get asdf version
+        id: asdf-version
+        run: echo "version=$(awk '!/^#/ && NF {print $1; exit}' .tool-versions.asdf)" >> "$GITHUB_OUTPUT"
 
   tag_release:
-    needs: [quality_checks, package_code, package_cdk_code, get_commit_id]
-    uses: ./.github/workflows/tag_release.yml
+    needs: [quality_checks, package_code, package_cdk_code, get_commit_id, get_asdf_version]
+    uses: NHSDigital/eps-workflow-semantic-release/.github/workflows/tag-release.yml@add_dry_run_flag
     with:
       dry_run: false
-      branch_name: ${{ github.event.ref.BRANCH_NAME }}
+      asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
+      branch_name: main
+      publish_package: false
+      tag_format: "v${version}"
     secrets: inherit
 
   deploy_dev_stacks:
