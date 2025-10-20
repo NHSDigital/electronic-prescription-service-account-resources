@@ -29,7 +29,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: ${{ inputs.branch_name }}
           fetch-depth: 0
 
       - name: Get asdf version
