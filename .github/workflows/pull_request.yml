@@ -21,6 +21,7 @@ jobs:
 
   package_cdk_code:
     uses: ./.github/workflows/cdk_package_code.yml
+
   get_issue_number:
     runs-on: ubuntu-22.04
     outputs:
@@ -48,7 +49,6 @@ jobs:
           result-encoding: string
 
   tag_release:
-    needs: [quality_checks, package_code, get_commit_id, package_cdk_code]
     uses: ./.github/workflows/tag_release.yml
     with:
       dry_run: true
