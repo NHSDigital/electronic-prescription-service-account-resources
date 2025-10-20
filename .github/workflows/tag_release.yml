@@ -14,9 +14,6 @@ on:
       change_set_version:
         description: 'The change set version for deployments'
         value: ${{ jobs.tag_release.outputs.change_set_version }}
-    secrets:
-      GITHUB_TOKEN:
-        required: false
 
 env:
   BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
