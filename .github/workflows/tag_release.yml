@@ -77,9 +77,9 @@ jobs:
           else
             # For non-main branches, override the branches configuration
             echo "overriding branches for semantic-release to ${{ inputs.branch_name }}"
-            SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run --branches ${{ inputs.branch_name }} --branch main"
+            SEMANTIC_RELEASE_CMD="GITHUB_REF=refs/heads/main GITHUB_EVENT_NAME=push npx semantic-release --dry-run --branches ${{ inputs.branch_name }} --branch main"
           fi
-          
+          echo "SEMANTIC_RELEASE_CMD=$SEMANTIC_RELEASE_CMD"
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             # Dry run mode: use short git SHA and get next version for summary
             VERSION_TAG=$(git rev-parse --short HEAD)
