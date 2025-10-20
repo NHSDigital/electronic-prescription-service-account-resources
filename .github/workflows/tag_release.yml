@@ -15,9 +15,6 @@ on:
         description: 'The change set version for deployments'
         value: ${{ jobs.tag_release.outputs.change_set_version }}
 
-env:
-  BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-
 jobs:
   tag_release:
     runs-on: ubuntu-22.04
@@ -28,7 +25,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
       - name: Get asdf version
@@ -63,13 +60,13 @@ jobs:
         id: output_version_tag
         run: |
           # Determine semantic-release command based on branch
-          if [ "${{ env.BRANCH_NAME }}" = "main" ]; then
+          if [ "${{ github.ref_name }}" = "main" ]; then
             echo "on main branch"
             SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run"
           else
             # For non-main branches, override the branches configuration
-            echo "overriding branches for semantic-release to ${{ env.BRANCH_NAME }}"
-            SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run --branches ${{ env.BRANCH_NAME }} --no-ci"
+            echo "overriding branches for semantic-release to ${{ github.ref_name }}"
+            SEMANTIC_RELEASE_CMD="npx semantic-release --dry-run --branches ${{ github.ref_name }} --no-ci"
           fi
           
           if [ "${{ inputs.dry_run }}" = "true" ]; then
@@ -116,13 +113,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Determine semantic-release command based on branch
-          if [ "${{ env.BRANCH_NAME }}" = "main" ]; then
-            npx semantic-release
-          else
-            # For non-main branches, override the branches configuration
-            npx semantic-release --branches ${{ env.BRANCH_NAME }} --no-ci
-          fi
+          npx semantic-release
 
       - name: Get release for editing
         if: ${{ !inputs.dry_run }}
