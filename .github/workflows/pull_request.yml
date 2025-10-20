@@ -14,7 +14,7 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   pr_title_format_check:
-    uses: ./.github/workflows/pr_title_check.yml
+    uses: NHSDigital/eps-workflow-semantic-release/.github/workflows/pr_title_check.yml@7abf2a3233d1b08d6566570dbde34b85daa47859
     
   package_code:
     uses: ./.github/workflows/sam_package_code.yml
@@ -47,6 +47,12 @@ jobs:
             }
           result-encoding: string
 
+  tag_release:
+    needs: [quality_checks, package_code, get_commit_id, package_cdk_code]
+    uses: ./.github/workflows/tag_release.yml
+    with:
+      dry_run: true
+    secrets: inherit
   get_commit_id:
     runs-on: ubuntu-22.04
     outputs:
@@ -58,7 +64,7 @@ jobs:
           echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
 
   deploy_stacks:
-    needs: [quality_checks, package_code, package_cdk_code, get_issue_number, get_commit_id]
+    needs: [quality_checks, package_code, package_cdk_code, get_issue_number, tag_release, get_commit_id]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: dev
