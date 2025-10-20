@@ -47,12 +47,27 @@ jobs:
               ).data[0].number;
             }
           result-encoding: string
+  get_asdf_version:
+    runs-on: ubuntu-22.04
+    outputs:
+      asdf_version: ${{ steps.asdf-version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Get asdf version
+        id: asdf-version
+        run: echo "version=$(awk '!/^#/ && NF {print $1; exit}' .tool-versions.asdf)" >> "$GITHUB_OUTPUT"
 
   tag_release:
-    uses: ./.github/workflows/tag_release.yml
+    needs: [get_asdf_version]
+    uses: NHSDigital/eps-workflow-semantic-release/.github/workflows/tag-release.yml@add_dry_run_flag
     with:
       dry_run: true
+      asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
       branch_name: ${{ github.event.pull_request.head.ref }}
+      publish_package: false
+      tag_format: "v${version}"
     secrets: inherit
   get_commit_id:
     runs-on: ubuntu-22.04
