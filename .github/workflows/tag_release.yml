@@ -76,6 +76,8 @@ jobs:
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             # Dry run mode: use short git SHA and get next version for summary
             VERSION_TAG=$(git rev-parse --short HEAD)
+            # Set the branch explicitly before running semantic-release
+            export GIT_BRANCH="${{ inputs.branch_name }}"
             $SEMANTIC_RELEASE_CMD > semantic-release-output.log
             NEXT_VERSION=$(grep -i 'The next release version is' semantic-release-output.log | sed -E 's/.* ([[:digit:].]+)$/\1/')
             if [ -z "${NEXT_VERSION}" ]
