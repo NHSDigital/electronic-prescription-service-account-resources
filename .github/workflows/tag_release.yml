@@ -83,10 +83,10 @@ jobs:
               # but need to ensure that actionlint does not complain about unused variables
 
               # shellcheck disable=SC2034
-              GITHUB_REF=refs/heads/main 
+              GITHUB_REF=refs/heads/${{ inputs.branch_name }}
               # shellcheck disable=SC2034
               GITHUB_EVENT_NAME=push 
-              npx semantic-release --dry-run --branches ${{ inputs.branch_name }} --branch main > semantic-release-output.log
+              npx semantic-release --dry-run --branches ${{ inputs.branch_name }} > semantic-release-output.log
             fi
             # Dry run mode: use short git SHA and get next version for summary
             VERSION_TAG=$(git rev-parse --short HEAD)
