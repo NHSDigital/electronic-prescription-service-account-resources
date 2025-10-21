@@ -315,7 +315,6 @@ Workflows are in the `.github/workflows` folder
 - `delete_old_cloudformation_stacks.yml`: Workflow for deleting old cloud formation stacks. Runs daily.
 - `dependabot_auto_approve_and_merge.yml`: Workflow to auto merge dependabot updates.
 - `pr-link.yaml`: This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
-- `pr_title_check.yml`: Checks title of pull request is valid.
 - `pull_request.yml`: Called when pull request is opened or updated. Creates change sets for stacks against dev. The changesets are named `<stack_name>-pr-<PR_NO>`.
 - `release_all_stacks.yml`: deploys all stacks to an environment. Called from other workflows.
 - `release.yml`: Runs on demand to create a release and deploy to all environments. Creates versioned changesets that are executed after being reviewed.

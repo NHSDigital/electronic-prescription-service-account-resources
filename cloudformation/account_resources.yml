@@ -265,8 +265,8 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED
-        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+          - S3_BUCKET_REPLICATION_ENABLED
+          - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
       LoggingConfiguration:
         DestinationBucketName: !Ref AuditLoggingBucket
@@ -298,7 +298,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY
+          - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref ArtifactsBucket
       PolicyDocument:
@@ -382,8 +382,8 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED
-        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+          - S3_BUCKET_REPLICATION_ENABLED
+          - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
       LoggingConfiguration:
         DestinationBucketName: !Ref AuditLoggingBucket
@@ -406,7 +406,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY
+          - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref TrustStoreBucket
       PolicyDocument:
@@ -443,9 +443,9 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED
-        - S3_BUCKET_LOGGING_ENABLED
-        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+          - S3_BUCKET_REPLICATION_ENABLED
+          - S3_BUCKET_LOGGING_ENABLED
+          - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
       VersioningConfiguration:
         Status: Enabled
@@ -473,7 +473,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY
+          - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref AuditLoggingBucket
       PolicyDocument:
@@ -536,7 +536,10 @@ Resources:
             Action:
               - s3:PutObject*
             Resource:
-              - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/static-content/*"]]
+              - !Join [
+                  "",
+                  [!GetAtt AuditLoggingBucket.Arn, "/static-content/*"],
+                ]
             Condition:
               StringEquals:
                 aws:SourceAccount: !Ref "AWS::AccountId"
@@ -549,9 +552,9 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED
-        - S3_BUCKET_LOGGING_ENABLED
-        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+          - S3_BUCKET_REPLICATION_ENABLED
+          - S3_BUCKET_LOGGING_ENABLED
+          - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
       VersioningConfiguration:
         Status: Enabled
@@ -579,7 +582,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY
+          - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref ALBLoggingBucket
       PolicyDocument:
@@ -600,13 +603,7 @@ Resources:
             Action:
               - s3:PutObject
             Resource:
-              - !Join [
-                  "",
-                  [
-                    !GetAtt ALBLoggingBucket.Arn,
-                    "/*",
-                  ],
-                ]
+              - !Join ["", [!GetAtt ALBLoggingBucket.Arn, "/*"]]
 
   #end region
 
@@ -638,9 +635,9 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED
-        - S3_BUCKET_LOGGING_ENABLED
-        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+          - S3_BUCKET_REPLICATION_ENABLED
+          - S3_BUCKET_LOGGING_ENABLED
+          - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
       VersioningConfiguration:
         Status: Enabled
@@ -669,7 +666,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY
+          - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref AthenaResultsBucket
       PolicyDocument:
@@ -742,8 +739,8 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_REPLICATION_ENABLED
-        - S3_BUCKET_DEFAULT_LOCK_ENABLED
+          - S3_BUCKET_REPLICATION_ENABLED
+          - S3_BUCKET_DEFAULT_LOCK_ENABLED
     Properties:
       VersioningConfiguration:
         Status: Enabled
@@ -776,7 +773,7 @@ Resources:
     Metadata:
       guard:
         SuppressedRules:
-        - S3_BUCKET_SSL_REQUESTS_ONLY
+          - S3_BUCKET_SSL_REQUESTS_ONLY
     Properties:
       Bucket: !Ref SplunkDeliveryStreamBackupBucket
       PolicyDocument:
@@ -841,6 +838,66 @@ Resources:
       RepositoryName: fhir-facade-repo
       ImageScanningConfiguration:
         ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
 
   ValidatorRepo:
     Type: AWS::ECR::Repository
@@ -848,6 +905,66 @@ Resources:
       RepositoryName: validator-repo
       ImageScanningConfiguration:
         ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
 
   CDKUtilsBuildRepo:
     Type: AWS::ECR::Repository
@@ -855,8 +972,1676 @@ Resources:
       RepositoryName: cdk-utils-build-repo
       ImageScanningConfiguration:
         ScanOnPush: true
-  #endregion
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
 
+  DevContainerAccountResourcesRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-account-resources
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerFhirFacadeRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-fhir-facade
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerPfpRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-pfp
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerPsuRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-psu
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerPrescriptionTrackerApiRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-prescription-tracker-api
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerPrescriptionTrackerUIRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-prescription-tracker-ui
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerFhirValidatorLambdaRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-fhir-validator-lambda
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerFhirValidatorDockerRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-fhir-validator-docker
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerReleaseNotesRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-release-notes
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerGetSecretsRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-get-secrets
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerFhirMiddyErrorHandlerRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-fhir-middy-error-handler
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerSpineClientRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-spine-client
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerLoadTestRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-load-test
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerRegressionTestsRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-regression-tests
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerActionSbomRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-action-sbom
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerActionCfnLintRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-action-cfn-lint
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerAwsDashboardsRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-aws-dashboards
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerStorageTerraformRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-storage-terraform
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerSemanticReleaseRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-semantic-release
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerDependabotRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-dependabot
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerCDKUtilsRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-cdk-utils
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerAssistMeRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-assist-me
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerVPCResourcesRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-vpc-resources
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  DevContainerQualityChecksRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-quality-checks
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 4,
+                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+  #endregion
   #region Secrets KMS
   SecretsKMSKey:
     Type: AWS::KMS::Key
@@ -1459,24 +3244,24 @@ Resources:
               - sqs:GetQueueUrl
               - tag:GetResources
             Resource:
-            - !Sub "arn:aws:cloudwatch:*:${AWS::AccountId}:*"
-            - !Sub "arn:aws:cloudfront::${AWS::AccountId}:*"
-            - !Sub "arn:aws:dynamodb::${AWS::AccountId}:*"
-            - !Sub "arn:aws:ecs:eu-west-2:${AWS::AccountId}:*"
-            - !Sub "arn:aws:elasticloadbalancing:eu-west-2:${AWS::AccountId}:*"
-            - !Sub "arn:aws:kinesis:eu-west-2:${AWS::AccountId}:*"
-            - !Sub "arn:aws:lambda:eu-west-2:${AWS::AccountId}:*"
-            - !Sub "arn:aws:resource-groups:eu-west-2:${AWS::AccountId}:*"
-            - "arn:aws:route53:::*"
-            - "arn:aws:s3:::*"
-            - !Sub "arn:aws:sns:eu-west-2:${AWS::AccountId}:*"
-            - !Sub "arn:aws:sqs:eu-west-2:${AWS::AccountId}:*"
-            - !Sub "arn:aws:tag::${AWS::AccountId}:*"
+              - !Sub "arn:aws:cloudwatch:*:${AWS::AccountId}:*"
+              - !Sub "arn:aws:cloudfront::${AWS::AccountId}:*"
+              - !Sub "arn:aws:dynamodb::${AWS::AccountId}:*"
+              - !Sub "arn:aws:ecs:eu-west-2:${AWS::AccountId}:*"
+              - !Sub "arn:aws:elasticloadbalancing:eu-west-2:${AWS::AccountId}:*"
+              - !Sub "arn:aws:kinesis:eu-west-2:${AWS::AccountId}:*"
+              - !Sub "arn:aws:lambda:eu-west-2:${AWS::AccountId}:*"
+              - !Sub "arn:aws:resource-groups:eu-west-2:${AWS::AccountId}:*"
+              - "arn:aws:route53:::*"
+              - "arn:aws:s3:::*"
+              - !Sub "arn:aws:sns:eu-west-2:${AWS::AccountId}:*"
+              - !Sub "arn:aws:sqs:eu-west-2:${AWS::AccountId}:*"
+              - !Sub "arn:aws:tag::${AWS::AccountId}:*"
           - Effect: Allow
             Resource:
-            - arn:aws:apigateway:eu-west-2::/restapis*
+              - arn:aws:apigateway:eu-west-2::/restapis*
             Action:
-            - apigateway:GET
+              - apigateway:GET
           - Effect: Allow
             Action:
               - cloudfront:ListDistributions
@@ -1538,14 +3323,14 @@ Resources:
 Outputs:
   #region Cloudwatch Outputs
   CloudwatchLogsKmsKeyArn:
-  # this is used by eps-storage-terraform so be careful when moving it to cdk
+    # this is used by eps-storage-terraform so be careful when moving it to cdk
     Description: "The Arn of the API GW cloudwatch logs KMS Key"
     Value: !GetAtt CloudwatchLogsKmsKey.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CloudwatchLogsKmsKeyArn"]]
 
   LambdaEncryptCloudwatchKMSPolicy:
-  # this is used by eps-storage-terraform so be careful when moving it to cdk
+    # this is used by eps-storage-terraform so be careful when moving it to cdk
     Description: "Lambda Encrypt Cloudwatch KMS Policy ARN"
     Value: !GetAtt LambdaEncryptCloudwatchKMSPolicy.PolicyArn
     Export:
@@ -1607,7 +3392,6 @@ Outputs:
 
   #endregion
 
-
   #region athena results Bucket Outputs
   AthenaResultsBucketArn:
     Description: ARN of the Athena results bucket
@@ -1622,7 +3406,6 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "AthenaResultsBucketName"]]
 
   #endregion
-
 
   #region Splunk Delivery Stream Backup Bucket Outputs
   SplunkDeliveryStreamBackupKMSKey:
@@ -1730,8 +3513,7 @@ Outputs:
     Description: "SNS Decrypt Secrets KMS Policy ARN"
     Value: !GetAtt SnsDecryptSecretsKMSPolicy.PolicyArn
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "SnsDecryptSecretsKMSPolicy"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "SnsDecryptSecretsKMSPolicy"]]
   #endregion
 
   #region SQS KMS Outputs
@@ -1745,8 +3527,7 @@ Outputs:
     Description: "SQS Decrypt Secrets KMS Policy ARN"
     Value: !GetAtt SqsDecryptSecretsKMSPolicy.PolicyArn
     Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "SqsDecryptSecretsKMSPolicy"]]
+      Name: !Join [":", [!Ref "AWS::StackName", "SqsDecryptSecretsKMSPolicy"]]
   #endregion
 
   #region PfP CA Secrets Outputs
@@ -1909,13 +3690,18 @@ Outputs:
     Description: ARN of the EPS FHIR facade client key secret for sandbox
     Value: !GetAtt FhirFacadeClientSandboxKeySecret.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientSandboxKeySecret"]]
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientSandboxKeySecret"]]
 
   FhirFacadeClientSandboxCertSecret:
     Description: ARN of the EPS FHIR facade client cert secret for sandbox
     Value: !GetAtt FhirFacadeClientSandboxCertSecret.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "FhirFacadeClientSandboxCertSecret"]]
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "FhirFacadeClientSandboxCertSecret"],
+        ]
   #endregion
 
   #region Spine Secrets Outputs
@@ -2009,13 +3795,18 @@ Outputs:
     Description: ClinicalTrackerProxygenPrivateKey
     Value: !GetAtt ClinicalTrackerProxygenPrivateKey.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPrivateKey"]]
+      Name:
+        !Join [
+          ":",
+          [!Ref "AWS::StackName", "ClinicalTrackerProxygenPrivateKey"],
+        ]
 
   ClinicalTrackerProxygenPublicKey:
     Description: ClinicalTrackerProxygenPublicKey
     Value: !GetAtt ClinicalTrackerProxygenPublicKey.Id
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPublicKey"]]
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPublicKey"]]
 
   SlackWebHookUrl:
     Description: Slack webhook url
@@ -2027,5 +3818,6 @@ Outputs:
     Description: "Access SNS Secrets Policy ARN"
     Value: !GetAtt AccessSlackSecretsManagedPolicy.PolicyArn
     Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "AccessSlackSecretsManagedPolicy"]]
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "AccessSlackSecretsManagedPolicy"]]
   #endregion

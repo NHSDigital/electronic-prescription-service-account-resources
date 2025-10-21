@@ -28,78 +28,35 @@ jobs:
         id: commit_id
         run: |
           echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
-    
-  tag_release:
-    needs: [quality_checks, package_code, get_commit_id, package_cdk_code]
+  
+  get_asdf_version:
     runs-on: ubuntu-22.04
     outputs:
-      version_tag: ${{ steps.output_version_tag.outputs.VERSION_TAG }}
-      change_set_version: ${{ steps.output_change_set_version.outputs.CHANGE_SET_VERSION }}
+      asdf_version: ${{ steps.asdf-version.outputs.version }}
+      tag_format: ${{ steps.load-config.outputs.TAG_FORMAT }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-          fetch-depth: 0
-      
-      - name: Install asdf
-        uses: asdf-vm/actions/setup@1902764435ca0dd2f3388eea723a4f92a4eb8302
-        with:
-          asdf_branch: v0.11.3
-        
-      - name: Cache asdf
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.asdf
-          key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
-          restore-keys: |
-            ${{ runner.os }}-asdf-
-      
-      - name: Install asdf dependencies in .tool-versions
-        uses: asdf-vm/actions/install@1902764435ca0dd2f3388eea723a4f92a4eb8302
-        with:
-          asdf_branch: v0.11.3
-        env:
-            PYTHON_CONFIGURE_OPTS: --enable-shared
-      
-      - name: Install Dependencies
-        run: make install
-      
-      - name: Set VERSION_TAG env var to be short git SHA and get next tag varsion
-        id: output_version_tag
+
+      - name: Get asdf version
+        id: asdf-version
+        run: echo "version=$(awk '!/^#/ && NF {print $1; exit}' .tool-versions.asdf)" >> "$GITHUB_OUTPUT"
+      - name: Load config value
+        id: load-config
         run: |
-          VERSION_TAG=$(git rev-parse --short HEAD)
-          npx semantic-release --dry-run > semantic-release-output.log
-          NEXT_VERSION=$(grep -i 'The next release version is' semantic-release-output.log | sed -E 's/.* ([[:digit:].]+)$/\1/')
-          if [ -z "${NEXT_VERSION}" ]
-          then
-            echo "Could not get next tag. Here is the log from semantic-release"
-            cat semantic-release-output.log
-            exit 1
-          fi
-          tagFormat=$(node -e "const config=require('./release.config.js'); console.log(config.tagFormat)")
-          if [ "${tagFormat}" = "null" ]
-          then
-            tagFormat="v\${version}"
-          fi
-          # disabling shellcheck as replace does not work
-          # shellcheck disable=SC2001
-          NEW_VERSION_TAG=$(echo "$tagFormat" | sed "s/\${version}/$NEXT_VERSION/")
-          echo "## VERSION TAG : ${VERSION_TAG}" >> "$GITHUB_STEP_SUMMARY"
-          echo "## NEXT TAG WILL BE : ${NEW_VERSION_TAG}" >> "$GITHUB_STEP_SUMMARY"
-          echo "VERSION_TAG=${VERSION_TAG}" >> "$GITHUB_OUTPUT"
-          echo "VERSION_TAG=${VERSION_TAG}" >> "$GITHUB_ENV"
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      
-      - name: Output Change Set Version
-        id: output_change_set_version
-        shell: bash
-        run: |
-          TIMESTAMP=$(date +%s)
-          VERSION=$(echo ${{ env.VERSION_TAG }} | tr . -)
-          echo CHANGE_SET_VERSION="$VERSION-$TIMESTAMP" >> "$GITHUB_OUTPUT"
+          TAG_FORMAT=$(yq '.TAG_FORMAT' .github/config/settings.yml)
+          echo "TAG_FORMAT=$TAG_FORMAT" >> "$GITHUB_OUTPUT"
+
+  tag_release:
+    needs: [quality_checks, package_code, get_commit_id, package_cdk_code, get_asdf_version]
+    uses: NHSDigital/eps-workflow-semantic-release/.github/workflows/tag-release.yml@2a3f4ab96e04b7547c4ee5b786745b98809c89be
+    with:
+      dry_run: true
+      asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
+      branch_name: main
+      publish_package: false
+      tag_format: ${{ needs.get_asdf_version.outputs.tag_format }}
+    secrets: inherit
 
   deploy_dev_stacks:
     needs: [get_commit_id, package_code, package_cdk_code, tag_release]
@@ -122,7 +79,6 @@ jobs:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
 
-
   create_release_notes_post_dev:
     needs: [tag_release, deploy_dev_stacks]
     uses: ./.github/workflows/create_confluence_release_notes.yml
@@ -133,13 +89,20 @@ jobs:
       CREATE_PROD_RELEASE_NOTES: true
       MARK_JIRA_RELEASED: false
     secrets:
-      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}      
-      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
-      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
-      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
+      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
+      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
+      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
+      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
 
   deploy_qa_stacks:
-    needs: [get_commit_id, package_code, package_cdk_code, tag_release, deploy_dev_stacks]
+    needs:
+      [
+        get_commit_id,
+        package_code,
+        package_cdk_code,
+        tag_release,
+        deploy_dev_stacks,
+      ]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: qa
@@ -160,7 +123,14 @@ jobs:
       CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
 
   deploy_ref_stacks:
-    needs: [get_commit_id, package_code, package_cdk_code, tag_release, deploy_dev_stacks]
+    needs:
+      [
+        get_commit_id,
+        package_code,
+        package_cdk_code,
+        tag_release,
+        deploy_dev_stacks,
+      ]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: ref
