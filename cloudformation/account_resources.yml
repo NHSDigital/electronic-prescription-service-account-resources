@@ -871,21 +871,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -938,21 +924,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1005,21 +977,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1072,21 +1030,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1139,21 +1083,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1206,21 +1136,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1273,21 +1189,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1340,21 +1242,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1407,21 +1295,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1474,21 +1348,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1541,21 +1401,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1608,21 +1454,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1675,21 +1507,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1742,21 +1560,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1809,21 +1613,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1876,21 +1666,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -1943,21 +1719,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -2010,21 +1772,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -2077,21 +1825,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -2144,21 +1878,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -2211,21 +1931,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -2278,21 +1984,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -2345,21 +2037,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -2412,21 +2090,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -2479,21 +2143,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -2546,21 +2196,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
@@ -2613,21 +2249,7 @@ Resources:
               },
               {
                 "rulePriority": 3,
-                "description": "Delete v tagged images older than 60 days. The rule below will always keep at least 5 most recent v tagged images",
-                "selection": {
-                  "tagStatus": "tagged",
-                  "tagPrefixList": ["v"],
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 60
-                },
-                "action": {
-                  "type": "expire"
-                }
-              },
-              {
-                "rulePriority": 4,
-                "description": "Always keep at least 5 most recent v tagged images regardless of age",
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
                 "selection": {
                   "tagStatus": "tagged",
                   "tagPrefixList": ["v"],
