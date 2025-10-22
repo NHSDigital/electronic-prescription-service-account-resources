@@ -45,6 +45,11 @@ Parameters:
     Description: >
       Subject claim filter for valid tokens for the CDKPushImageRole
     Default: ""
+  DevContainerPushImageClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the DevContainerPushImageRole
+    Default: ""
   AssistMeRegressionTestClaimFilters:
     Type: CommaDelimitedList
     Description: >
@@ -1489,6 +1494,57 @@ Resources:
               - ecr:BatchCheckLayerAvailability
               - ecr:DescribeImageScanFindings
             Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-utils-build-repo"
+          - Effect: Allow
+            Action:
+              - ecr:GetAuthorizationToken
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - inspector2:ListCoverage
+              - inspector2:ListFindings
+            Resource: !Sub "arn:aws:inspector2:${AWS::Region}:${AWS::AccountId}:*"
+
+  DevContainerPushImageRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref DevContainerPushImageClaimFilters
+
+  DevContainerPushImageRolePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: DevContainerPushImageRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - ecr:DescribeImages
+              - ecr:DescribeRepositories
+              - ecr:ListImages
+              - ecr:ListTagsForResource
+              - ecr:PutImage
+              - ecr:InitiateLayerUpload
+              - ecr:TagResource
+              - ecr:UntagResource
+              - ecr:UploadLayerPart
+              - ecr:CompleteLayerUpload
+              - ecr:BatchCheckLayerAvailability
+              - ecr:DescribeImageScanFindings
+              - ecr:BatchGetImage
+              - ecr:GetDownloadUrlForLayer
+            Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/dev-container-*"
           - Effect: Allow
             Action:
               - ecr:GetAuthorizationToken
