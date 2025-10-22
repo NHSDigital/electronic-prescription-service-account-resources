@@ -79,7 +79,7 @@ jobs:
     needs: [get_asdf_version, get_issue_number_and_commit_id]
     uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@dev_container_build
     with:
-      asdf_version: ${{ needs.get_asdf_version.outputs.asdf_version }}
+      asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
       dev_container_ecr: dev-container-account-resources
       dev_container_image_tag: PR-${{ needs.get_issue_number_and_commit_id.outputs.issue_number }}-${{ needs.get_issue_number_and_commit_id.outputs.sha_short }}
       tag_latest: false
