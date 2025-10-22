@@ -80,7 +80,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
 
   it("throws error if proxygen responds with error", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .put("/apis/testApi/environments/dev/secrets/mtls/testSecretName")
       .reply(500, {foo_error: "bar_error"})
 
@@ -104,7 +104,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
             "Accept-Encoding": "gzip, compress, deflate, br"
           }),
           method: "put",
-          url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/secrets/mtls/testSecretName"
+          url: "https://proxygen.ptl.api.platform.nhs.uk/apis/testApi/environments/dev/secrets/mtls/testSecretName"
         }),
         request: {
           headers: undefined,
@@ -127,7 +127,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
 
   it("throws error if proxygen request fails", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .put("/apis/testApi/environments/dev/secrets/mtls/testSecretName")
       .replyWithError("Something awful happened")
 
@@ -149,7 +149,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
             "Accept-Encoding": "gzip, compress, deflate, br"
           }),
           method: "put",
-          url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/secrets/mtls/testSecretName"
+          url: "https://proxygen.ptl.api.platform.nhs.uk/apis/testApi/environments/dev/secrets/mtls/testSecretName"
         })
       })
     })
@@ -157,7 +157,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
 
   it("should work if everything is OK", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .put("/apis/testApi/environments/dev/secrets/mtls/testSecretName")
       .reply(200, {foo: "bar"})
 
