@@ -77,7 +77,7 @@ jobs:
 
   quality_checks:
     needs: [get_asdf_version, get_issue_number_and_commit_id]
-    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@vdev_container_build
+    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@dev_container_build
     with:
       asdf_version: ${{ needs.get_asdf_version.outputs.asdf_version }}
       dev_container_ecr: dev-container-account-resources
