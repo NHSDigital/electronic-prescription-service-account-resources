@@ -1727,6 +1727,19 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CDKPushImageRoleName"]]
   ##################################################
+  # Dev container push image Role Outputs
+  ##################################################
+  DevContainerPushImageRole:
+    Description: ARN of the IAM Role(DevContainerPushImageRole)
+    Value: !GetAtt DevContainerPushImageRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "DevContainerPushImageRole"]]
+  DevContainerPushImageRoleName:
+    Description: Name of the IAM Role(DevContainerPushImageRole)
+    Value: !Ref DevContainerPushImageRole
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "DevContainerPushImageRoleName"]]
+  ##################################################
   # Managed policy Outputs
   ##################################################
   GrantCloudFormationExecutionAccessIAMPolicy:
