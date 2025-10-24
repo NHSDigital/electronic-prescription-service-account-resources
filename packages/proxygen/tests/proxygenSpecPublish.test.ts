@@ -84,7 +84,7 @@ describe("Unit test for proxygenSpecPublish", function () {
 
   it("throws error if proxygen responds with error", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .put("/apis/testApi/spec/uat")
       .reply(500, {foo_error: "bar_error"})
 
@@ -111,7 +111,7 @@ describe("Unit test for proxygenSpecPublish", function () {
             "Accept-Encoding": "gzip, compress, deflate, br"
           }),
           method: "put",
-          url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/spec/uat"
+          url: "https://proxygen.ptl.api.platform.nhs.uk/apis/testApi/spec/uat"
         },
         request: {
           headers: undefined,
@@ -134,7 +134,7 @@ describe("Unit test for proxygenSpecPublish", function () {
 
   it("throws error if proxygen request fails", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .put("/apis/testApi/spec/uat")
       .replyWithError("Something awful happened")
 
@@ -159,7 +159,7 @@ describe("Unit test for proxygenSpecPublish", function () {
             "Accept-Encoding": "gzip, compress, deflate, br"
           }),
           method: "put",
-          url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/spec/uat"
+          url: "https://proxygen.ptl.api.platform.nhs.uk/apis/testApi/spec/uat"
         }
       })
     })
@@ -167,7 +167,7 @@ describe("Unit test for proxygenSpecPublish", function () {
 
   it("should work if everything is OK for uat", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk").put("/apis/testApi/spec/uat").reply(200, {foo: "bar"})
+    nock("https://proxygen.ptl.api.platform.nhs.uk").put("/apis/testApi/spec/uat").reply(200, {foo: "bar"})
 
     process.env.ALLOWED_ENVIRONMENTS = "uat"
     validProxygen.environment = "uat"
@@ -178,7 +178,7 @@ describe("Unit test for proxygenSpecPublish", function () {
 
   it("should work if everything is OK for prod", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk").put("/apis/testApi/spec").reply(200, {foo: "bar"})
+    nock("https://proxygen.ptl.api.platform.nhs.uk").put("/apis/testApi/spec").reply(200, {foo: "bar"})
 
     process.env.ALLOWED_ENVIRONMENTS = "prod"
     validProxygen.environment = "prod"

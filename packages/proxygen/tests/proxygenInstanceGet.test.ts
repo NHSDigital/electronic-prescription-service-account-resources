@@ -76,7 +76,7 @@ describe("Unit test for proxygenInstanceGet", function () {
 
   it("throws error if proxygen responds with error", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .get("/apis/testApi/environments/dev/instances")
       .reply(500, {foo_error: "bar_error"})
 
@@ -101,7 +101,7 @@ describe("Unit test for proxygenInstanceGet", function () {
             "Accept-Encoding": "gzip, compress, deflate, br"
           }),
           method: "get",
-          url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/instances"
+          url: "https://proxygen.ptl.api.platform.nhs.uk/apis/testApi/environments/dev/instances"
         },
         request: {
           headers: undefined,
@@ -124,7 +124,7 @@ describe("Unit test for proxygenInstanceGet", function () {
 
   it("throws error if proxygen request fails", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .get("/apis/testApi/environments/dev/instances")
       .replyWithError("Something awful happened")
 
@@ -147,7 +147,7 @@ describe("Unit test for proxygenInstanceGet", function () {
             "Accept-Encoding": "gzip, compress, deflate, br"
           }),
           method: "get",
-          url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/instances"
+          url: "https://proxygen.ptl.api.platform.nhs.uk/apis/testApi/environments/dev/instances"
         }
       })
     })
@@ -155,7 +155,7 @@ describe("Unit test for proxygenInstanceGet", function () {
 
   it("should work if everything is OK", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .get("/apis/testApi/environments/dev/instances")
       .reply(200, {foo: "bar"})
 

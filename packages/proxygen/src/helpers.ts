@@ -3,7 +3,7 @@ import {createSignedJWT, getSecret} from "./signingHelpers"
 import {Logger} from "@aws-lambda-powertools/logger"
 
 export function getRealmURL() {
-  return "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
+  return "https://identity.ptlrestored.api.platform.nhs.uk/realms/api-producers"
 }
 
 export async function getAccessToken(event: Proxygen, realm_url: string) {
