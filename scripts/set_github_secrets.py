@@ -76,6 +76,7 @@ class GithubTeams(TypedDict):
     eps_administrator_team: str
     eps_testers_team: str
     eps_team: str
+    eps_deployments_team: str
 
 
 class RepoConfig(TypedDict):
@@ -185,11 +186,13 @@ def get_github_teams(github: Github) -> GithubTeams:
     org = github.get_organization("NHSDigital")
     eps_administrator_team = org.get_team_by_slug("eps-administrators")
     eps_testers_team = org.get_team_by_slug("eps-testers")
-    eps_team = org.get_team_by_slug("EPS")
+    eps_team = org.get_team_by_slug("eps")
+    eps_deployments_team = org.get_team_by_slug("eps-deployments")
     github_teams: GithubTeams = {
         "eps_administrator_team": eps_administrator_team.id,
         "eps_testers_team": eps_testers_team.id,
-        "eps_team": eps_team.id
+        "eps_team": eps_team.id,
+        "eps_deployments_team": eps_deployments_team.id
     }
     return github_teams
 
@@ -259,8 +262,7 @@ def set_all_secrets(github: Github,
 
     set_secret(github=github, repo_name=repo_name, secret_name="DEV_CONTAINER_PUSH_IMAGE_ROLE",
                secret_value=secrets["dev_roles"]["dev_container_push_image_role"],
-               set_dependabot=False)
-
+               set_dependabot=True)
     if echo_repos:
         print(f"All required secrets set for echo repo {repo_name}.")
         return
@@ -398,6 +400,7 @@ def setup_environments(github: Github,
 
     repo = github.get_repo(repo_name)
     eps_administrator_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_administrator_team"])
+    eps_deployments_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_deployments_team"])
     eps_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_team"])
     deployment_branch_policy = EnvironmentDeploymentBranchPolicyParams(protected_branches=True,
                                                                        custom_branch_policies=False)
@@ -412,7 +415,9 @@ def setup_environments(github: Github,
         environments = common_environments + [
             RepoEnvironment("recovery", [eps_administrator_team_reviewer, eps_team_reviewer]),
             RepoEnvironment("qa", [eps_administrator_team_reviewer, eps_team_reviewer], deployment_branch_policy),
-            RepoEnvironment("prod", [eps_administrator_team_reviewer], deployment_branch_policy),
+            RepoEnvironment("prod",
+                            [eps_administrator_team_reviewer, eps_deployments_team_reviewer],
+                            deployment_branch_policy),
         ]
         for environment in environments:
             setup_account_resources_environments(repo=repo, environment=environment)
@@ -423,7 +428,9 @@ def setup_environments(github: Github,
             RepoEnvironment("dev-pr"),
             RepoEnvironment("recovery", [eps_administrator_team_reviewer, eps_team_reviewer]),
             RepoEnvironment("qa", [eps_administrator_team_reviewer, eps_team_reviewer], deployment_branch_policy),
-            RepoEnvironment("prod", [eps_administrator_team_reviewer], deployment_branch_policy),
+            RepoEnvironment("prod",
+                            [eps_administrator_team_reviewer, eps_deployments_team_reviewer],
+                            deployment_branch_policy),
         ]
     else:
         environments = common_environments + [
@@ -623,6 +630,54 @@ def main():
         },
         {
             "repo_name": "NHSDigital/eps-workflow-dependabot",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/validation-service-fhir-r4",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/electronic-prescription-service-get-secrets",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/nhs-fhir-middy-error-handler",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/nhs-eps-spine-client",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/electronic-prescription-service-api-regression-tests",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-action-sbom",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-action-cfn-lint",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-workflow-quality-checks",
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
             "set_target_service_search_servers": False
