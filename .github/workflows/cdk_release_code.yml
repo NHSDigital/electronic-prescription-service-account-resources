@@ -80,8 +80,8 @@ jobs:
 
       - name: Pull cdk-utils-build from Amazon ECR
         run: |
-          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:PR-303-5393342"
-          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:PR-303-5393342" cdk-utils-build-repo:latest
+          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:PR-303-6ef89ba"
+          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:PR-303-6ef89ba" cdk-utils-build-repo:latest
       - name: Configure AWS Credentials for diff or deploy
         id: connect-aws-deploy
         uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
