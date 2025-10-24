@@ -626,6 +626,54 @@ def main():
             "set_target_spine_servers": False,
             "set_account_resources_environments": False,
             "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/validation-service-fhir-r4",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/electronic-prescription-service-get-secrets",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/nhs-fhir-middy-error-handler",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/nhs-eps-spine-client",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/electronic-prescription-service-api-regression-tests",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-action-sbom",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-action-cfn-lint",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-workflow-quality-checks",
+            "set_target_spine_servers": False,
+            "set_account_resources_environments": False,
+            "set_target_service_search_servers": False
         }
     ]
 
