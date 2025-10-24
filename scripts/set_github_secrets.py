@@ -228,9 +228,6 @@ def set_role_secrets(github: Github, repo_name: str, roles: Roles, env_name: str
     set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CDK_PUSH_IMAGE_ROLE",
                secret_value=roles["CDK_push_image_role"],
                set_dependabot=set_dependabot)
-    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_DEV_CONTAINER_PUSH_IMAGE_ROLE",
-               secret_value=roles["DevContainerPushImageRole"],
-               set_dependabot=set_dependabot)
 
 
 def set_all_secrets(github: Github,
@@ -258,6 +255,10 @@ def set_all_secrets(github: Github,
     # dev secrets
     set_secret(github=github, repo_name=repo_name, secret_name="DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE",
                secret_value=secrets["dev_roles"]["release_notes_execute_lambda_role"],
+               set_dependabot=False)
+
+    set_secret(github=github, repo_name=repo_name, secret_name="DEV_CONTAINER_PUSH_IMAGE_ROLE",
+               secret_value=secrets["dev_roles"]["dev_container_push_image_role"],
                set_dependabot=False)
 
     if echo_repos:
