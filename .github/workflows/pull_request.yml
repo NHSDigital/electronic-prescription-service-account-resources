@@ -117,3 +117,13 @@ jobs:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
+
+  tag_latest_dev_container:
+    needs: [get_asdf_version, get_issue_number_and_commit_id, deploy_stacks]
+    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/tag_latest_dev_container.yml@dev_container_build
+    with:
+      dev_container_ecr: dev-container-account-resources
+      dev_container_image_tag: PR-${{ needs.get_issue_number_and_commit_id.outputs.issue_number }}-${{ needs.get_issue_number_and_commit_id.outputs.sha_short }}
+      version_tag_to_apply: FooBar
+    secrets:
+      PUSH_IMAGE_ROLE: ${{ secrets.DEV_CONTAINER_PUSH_IMAGE_ROLE }}
