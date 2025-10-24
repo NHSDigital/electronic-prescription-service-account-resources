@@ -44,6 +44,7 @@ class Roles(TypedDict):
     CDK_push_image_role: str
     release_notes_execute_lambda_role: str
     artillery_runner_role: str
+    dev_container_push_image_role: str
 
 
 class Secrets(TypedDict):
@@ -165,6 +166,11 @@ def get_role_exports(all_exports: list) -> Roles:
             "export_name": "ci-resources:ArtilleryRunnerRole",
             "required": False
         },
+        {
+            "variable_name": "dev_container_push_image_role",
+            "export_name": "ci-resources:DevContainerPushImageRole",
+            "required": False
+        },
     ]
     all_roles = {}
     for role_export in role_exports:
@@ -249,6 +255,10 @@ def set_all_secrets(github: Github,
     # dev secrets
     set_secret(github=github, repo_name=repo_name, secret_name="DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE",
                secret_value=secrets["dev_roles"]["release_notes_execute_lambda_role"],
+               set_dependabot=False)
+
+    set_secret(github=github, repo_name=repo_name, secret_name="DEV_CONTAINER_PUSH_IMAGE_ROLE",
+               secret_value=secrets["dev_roles"]["dev_container_push_image_role"],
                set_dependabot=False)
 
     if echo_repos:

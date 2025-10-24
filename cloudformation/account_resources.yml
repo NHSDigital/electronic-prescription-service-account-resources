@@ -2263,6 +2263,59 @@ Resources:
             ]
           }
 
+  DevContainerGitSecretsRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: dev-container-git-secrets
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Delete PR- images older than 60 days",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["PR-"],
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 60
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Delete untagged images older than 7 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 7
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Keep at least 5 most recent v tagged images, delete older images beyond that",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
   #endregion
   #region Secrets KMS
   SecretsKMSKey:
