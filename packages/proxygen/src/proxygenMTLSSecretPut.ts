@@ -26,7 +26,7 @@ const lambdaHandler = async (event: Proxygen) => {
   formData.append("key", new Blob([event.secretKey as string]))
 
   //eslint-disable-next-line max-len
-  const path = `https://proxygen.ptl.api.platform.nhs.uk/apis/${event.apiName}/environments/${event.environment}/secrets/mtls/${event.secretName}`
+  const path = `https://proxygen.ptlrestored.api.platform.nhs.uk/apis/${event.apiName}/environments/${event.environment}/secrets/mtls/${event.secretName}`
   try {
     const response = await axios.putForm(path, formData, {
       headers: {Authorization: `Bearer ${accessToken}`}

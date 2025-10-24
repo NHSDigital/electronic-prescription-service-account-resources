@@ -22,7 +22,7 @@ const lambdaHandler = async (event: Proxygen) => {
   const accessToken = await getAccessToken(event, getRealmURL())
 
   //eslint-disable-next-line max-len
-  const path = `https://proxygen.ptl.api.platform.nhs.uk/apis/${event.apiName}/environments/${event.environment}/instances/${event.instance}`
+  const path = `https://proxygen.ptlrestored.api.platform.nhs.uk/apis/${event.apiName}/environments/${event.environment}/instances/${event.instance}`
   try {
     const response = await axios.put(path, event.specDefinition, {
       headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}

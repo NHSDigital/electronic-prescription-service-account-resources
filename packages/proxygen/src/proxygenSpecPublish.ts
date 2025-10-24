@@ -23,9 +23,9 @@ const lambdaHandler = async (event: Proxygen) => {
 
   let path
   if (event.environment === "uat") {
-    path = `https://proxygen.ptl.api.platform.nhs.uk/apis/${event.apiName}/spec/uat`
+    path = `https://proxygen.ptlrestored.api.platform.nhs.uk/apis/${event.apiName}/spec/uat`
   } else if (event.environment === "prod") {
-    path = `https://proxygen.ptl.api.platform.nhs.uk/apis/${event.apiName}/spec`
+    path = `https://proxygen.ptlrestored.api.platform.nhs.uk/apis/${event.apiName}/spec`
   } else {
     throw new Error("Environment is not uat or prod")
   }
