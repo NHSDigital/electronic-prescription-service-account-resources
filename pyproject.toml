@@ -38,6 +38,6 @@ pygithub = "^2.8.1"
 [tool.poetry.dev-dependencies]
 flake8 = "^7.3.0"
 black = "^25.9"
-pip-licenses = "^5.0.0"
+pip-licenses = "^5.5.0"
 
 [tool.poetry.scripts]
