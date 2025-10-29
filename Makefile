@@ -190,3 +190,8 @@ clear-dev-deployment-lock:
 	aws s3 rm s3://ci-resources-artifactsbucket-8tfokumg8i3z/account-resources/account-resources/deployment.lock
 	aws s3 rm s3://ci-resources-artifactsbucket-8tfokumg8i3z/account-resources/secrets/deployment.lock
 	aws s3 rm s3://ci-resources-artifactsbucket-8tfokumg8i3z/account-resources/artillery-resources/deployment.lock
+
+create-npmrc:
+	gh auth login --scopes "read:packages"; \
+	echo "//npm.pkg.github.com/:_authToken=$$(gh auth token)" > .npmrc
+	echo "registry=https://npm.pkg.github.com/" >> .npmrc
