@@ -67,7 +67,9 @@
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:environment:prod"
       ],
-      "DevContainerPushImageClaimFilters": [],
+      "DevContainerPushImageClaimFilters": [
+        "NONE"
+      ],
       "AssistMeRegressionTestClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
       ],
