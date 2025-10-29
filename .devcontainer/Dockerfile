@@ -3,6 +3,9 @@ FROM mcr.microsoft.com/devcontainers/base:ubuntu
 ARG TARGETARCH
 ENV TARGETARCH=${TARGETARCH}
 
+ARG ASDF_VERSION
+COPY .tool-versions.asdf /tmp/.tool-versions.asdf
+
 # Add amd64 architecture if on arm64
 RUN if [ "$TARGETARCH" == "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then dpkg --add-architecture amd64; fi
 
@@ -37,12 +40,19 @@ RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then \
     /tmp/aws-sam-cli/install && \
     rm /tmp/aws-sam-cli.zip && rm -rf /tmp/aws-sam-cli
 
-USER vscode
 
 # Install ASDF
-RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1; \
-    echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc; \
-    echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc; \
+RUN ASDF_VERSION=$(awk '!/^#/ && NF {print $1; exit}' /tmp/.tool-versions.asdf) && \
+    wget -O /tmp/asdf.tar.gz https://github.com/asdf-vm/asdf/releases/download/v${ASDF_VERSION}/asdf-v${ASDF_VERSION}-linux-amd64.tar.gz; \
+    tar -xvzf /tmp/asdf.tar.gz; \
+    mv asdf /usr/bin
+
+USER vscode
+
+ENV PATH="/home/vscode/.asdf/shims/:$PATH"
+RUN \
+    echo 'PATH="/home/vscode/.asdf/shims/:$PATH"' >> ~/.bashrc; \
+    echo '. <(asdf completion bash)' >> ~/.bashrc; \
     echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc; \
     echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc; \
     echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc;
@@ -62,8 +72,4 @@ WORKDIR /workspaces/electronic-prescription-service-account-resources
 ADD .tool-versions /workspaces/electronic-prescription-service-account-resources/.tool-versions
 ADD .tool-versions /home/vscode/.tool-versions
 
-RUN asdf install; \
-    asdf reshim python; \
-    asdf reshim poetry; \
-    asdf reshim nodejs; \
-    asdf direnv setup --shell bash --version 2.32.2;
+RUN asdf install

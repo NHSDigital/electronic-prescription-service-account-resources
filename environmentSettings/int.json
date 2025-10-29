@@ -60,6 +60,12 @@
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:environment:int"
       ],
+      "DevContainerPushImageClaimFilters": [
+        "NONE"
+      ],
+      "AssistMeRegressionTestClaimFilters": [
+        "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
+      ],
       "EnableDeleteCNAME": "false"
     },
     "account-resources": {
