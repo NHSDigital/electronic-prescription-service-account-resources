@@ -3,7 +3,7 @@ import {LayerVersion} from "aws-cdk-lib/aws-lambda"
 import {IStringParameter} from "aws-cdk-lib/aws-ssm"
 import {ManagedPolicy, PolicyStatement} from "aws-cdk-lib/aws-iam"
 import {Stack} from "aws-cdk-lib"
-import {TypescriptLambdaFunction} from "@NHSDigital/eps-cdk-constructs"
+import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
 import {resolve} from "path"
 
 export interface FunctionsProps {
