@@ -34,3 +34,4 @@ vendor
 cdk.out
 .local_config
 .npmrc
+.devcontainer/docker-gid
