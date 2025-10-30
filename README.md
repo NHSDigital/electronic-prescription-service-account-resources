@@ -59,6 +59,13 @@ This will ensure that your VSCode bash terminal prompts you for your GPG key pas
 
 You can cache the gpg key passphrase by following instructions at https://superuser.com/questions/624343/keep-gnupg-credentials-cached-for-entire-user-session
 
+### .envrc file creation
+Run the following command to set up a local .npmrc file to allow you to download cdk construct library from github packages
+```
+make create-npmrc
+```
+This authenticates to github using github cli tools and puts the token in local .npmrc file
+
 ### Setup
 
 Ensure you have the following lines in the file .envrc
@@ -278,6 +285,7 @@ There are `make` commands that are run as part of the CI pipeline and help alias
 - `install-python` installs python dependencies
 - `install-hooks` installs git pre commit hooks
 - `install` runs all install targets
+- `create-npmrc` creates a local npmrc file to allow you to install eps-cdkConstructs package from github
 
 #### Clean and deep-clean targets
 
