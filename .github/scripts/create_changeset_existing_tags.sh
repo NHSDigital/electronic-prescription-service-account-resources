@@ -69,24 +69,20 @@ TIMEOUT=300   # 5 minutes (in seconds)
 INTERVAL=10   # check every 10 seconds
 START=$(date +%s)
 
-if [ "$CHECK_FOR_LOCK_FILE" == "true" ]; then
-  echo "Checking for existence of $deployment_lock_key ..."
+echo "Checking for existence of $deployment_lock_key ..."
 
-  while aws s3 ls "$artifact_bucket/$deployment_lock_key" >/dev/null 2>&1; do
-    NOW=$(date +%s)
-    ELAPSED=$((NOW - START))
-    if [ $ELAPSED -ge $TIMEOUT ]; then
-      echo "Timeout after 5 minutes waiting for lock — exiting."
-      exit 1
-    fi
-    echo "Lock exists, waiting... ($ELAPSED s elapsed)"
-    sleep $INTERVAL
-  done
-  echo "Lock file does not exist - creating changeset"
-else
-  echo "Skipping check for lock file"
-fi
+while aws s3 ls "$artifact_bucket/$deployment_lock_key" >/dev/null 2>&1; do
+  NOW=$(date +%s)
+  ELAPSED=$((NOW - START))
+  if [ $ELAPSED -ge $TIMEOUT ]; then
+    echo "Timeout after 5 minutes waiting for lock — exiting."
+    exit 1
+  fi
+  echo "Lock exists, waiting... ($ELAPSED s elapsed)"
+  sleep $INTERVAL
+done
 
+echo "Lock file does not exist - creating changeset"
 
 aws cloudformation create-change-set \
   --stack-name "$STACK_NAME" \

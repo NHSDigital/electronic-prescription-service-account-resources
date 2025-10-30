@@ -105,7 +105,6 @@ jobs:
       deploy_artillery: true
       deploy_drift_detection: false
       is_pull_request: true
-      check_for_lock_file: true
     secrets:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
