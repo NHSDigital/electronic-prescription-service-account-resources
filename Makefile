@@ -194,4 +194,4 @@ clear-dev-deployment-lock:
 create-npmrc:
 	gh auth login --scopes "read:packages"; \
 	echo "//npm.pkg.github.com/:_authToken=$$(gh auth token)" > .npmrc
-	echo "registry=https://npm.pkg.github.com/" >> .npmrc
+	echo "@nhsdigital:registry=https://npm.pkg.github.com" >> .npmrc
