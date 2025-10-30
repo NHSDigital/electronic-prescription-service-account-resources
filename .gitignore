@@ -33,3 +33,4 @@ vendor
 .secrets
 cdk.out
 .local_config
+.npmrc

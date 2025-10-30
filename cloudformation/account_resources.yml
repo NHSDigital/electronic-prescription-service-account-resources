@@ -2993,6 +2993,12 @@ Resources:
               - athena:StartQueryExecution
               - athena:StopQueryExecution
             Resource: "*"
+          - Effect: Allow
+            Action:
+              - ssm:GetParameter
+              - ssm:PutParameter
+            Resource:
+              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/monitoring-alertSuppressions
   #endregion
 
 Outputs:
