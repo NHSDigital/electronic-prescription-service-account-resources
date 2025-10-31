@@ -7,7 +7,10 @@ ARG ASDF_VERSION
 COPY .tool-versions.asdf /tmp/.tool-versions.asdf
 
 # Add amd64 architecture if on arm64
-RUN if [ "$TARGETARCH" == "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then dpkg --add-architecture amd64; fi
+RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then dpkg --add-architecture amd64; fi
+
+# Anticipate and resolve potential permission issues with apt
+RUN mkdir -p /tmp && chmod 1777 /tmp
 
 # Install base packages
 RUN apt-get update \
@@ -21,7 +24,7 @@ RUN apt-get update \
     wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev liblzma-dev netcat-traditional faketime libyaml-dev
 
 # Download correct AWS CLI for arch
-RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then \
+RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
       wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip"; \
     else \
       wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"; \
@@ -31,7 +34,7 @@ RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then \
     rm /tmp/awscliv2.zip && rm -rf /tmp/aws-cli
 
 # Download correct SAM CLI for arch
-RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then \
+RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
       wget -O /tmp/aws-sam-cli.zip "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-arm64.zip"; \
     else \
       wget -O /tmp/aws-sam-cli.zip "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip"; \
@@ -40,32 +43,32 @@ RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then \
     /tmp/aws-sam-cli/install && \
     rm /tmp/aws-sam-cli.zip && rm -rf /tmp/aws-sam-cli
 
-
 # Install ASDF
 RUN ASDF_VERSION=$(awk '!/^#/ && NF {print $1; exit}' /tmp/.tool-versions.asdf) && \
-    wget -O /tmp/asdf.tar.gz https://github.com/asdf-vm/asdf/releases/download/v${ASDF_VERSION}/asdf-v${ASDF_VERSION}-linux-amd64.tar.gz; \
-    tar -xvzf /tmp/asdf.tar.gz; \
-    mv asdf /usr/bin
+    wget -O /tmp/asdf.tar.gz https://github.com/asdf-vm/asdf/releases/download/v${ASDF_VERSION}/asdf-v${ASDF_VERSION}-linux-amd64.tar.gz && \
+    tar -xvzf /tmp/asdf.tar.gz && \
+    mv asdf /usr/bin && \
+    rm /tmp/asdf.tar.gz
 
 USER vscode
 
 ENV PATH="/home/vscode/.asdf/shims/:$PATH"
 RUN \
-    echo 'PATH="/home/vscode/.asdf/shims/:$PATH"' >> ~/.bashrc; \
-    echo '. <(asdf completion bash)' >> ~/.bashrc; \
-    echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc; \
-    echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc; \
-    echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc;
+    echo 'PATH="/home/vscode/.asdf/shims/:$PATH"' >> ~/.bashrc && \
+    echo '. <(asdf completion bash)' >> ~/.bashrc && \
+    echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc && \
+    echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc && \
+    echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc
 
 ENV PATH="$PATH:/home/vscode/.asdf/bin/:/workspaces/electronic-prescription-service-account-resources/node_modules/.bin"
 
 # Install ASDF plugins
-RUN asdf plugin add python; \
-    asdf plugin add poetry https://github.com/asdf-community/asdf-poetry.git; \
-    asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git; \
-    asdf plugin add shellcheck https://github.com/luizm/asdf-shellcheck.git; \
-    asdf plugin add direnv; \
-    asdf plugin add actionlint; \
+RUN asdf plugin add python && \
+    asdf plugin add poetry https://github.com/asdf-community/asdf-poetry.git && \
+    asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git && \
+    asdf plugin add shellcheck https://github.com/luizm/asdf-shellcheck.git && \
+    asdf plugin add direnv && \
+    asdf plugin add actionlint && \
     asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
 
 WORKDIR /workspaces/electronic-prescription-service-account-resources
