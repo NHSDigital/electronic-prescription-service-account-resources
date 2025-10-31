@@ -42,7 +42,10 @@ export class InspectorFilters extends Construct {
       "CVE-2025-52520", // https://nvd.nist.gov/vuln/detail/cve-2025-52520
       "CVE-2025-48989", // https://nvd.nist.gov/vuln/detail/cve-2025-48989
       "CVE-2025-53506", // https://nvd.nist.gov/vuln/detail/cve-2025-53506
-      "CVE-2025-57319" // https://nvd.nist.gov/vuln/detail/cve-2025-57319 - this is a false positive and is not an issue
+      "CVE-2025-57319", // https://nvd.nist.gov/vuln/detail/cve-2025-57319
+      // this is a false positive and is not an issue
+      "CVE-2025-9230" // https://nvd.nist.gov/vuln/detail/CVE-2025-9230
+      // not applicable, we do not use password-based encryption in CMS messages
     ]
 
     for (const cve of cvesToSuppress){

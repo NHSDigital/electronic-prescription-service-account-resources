@@ -57,10 +57,16 @@
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:*"
       ],
+      "DevContainerPushImageClaimFilters": [
+        "NONE"
+      ],
+      "AssistMeRegressionTestClaimFilters": [
+        "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
+      ],
       "EnableDeleteCNAME": "false"
     },
     "account-resources": {
-      "LogRetentionDays": "30"
+      "LogRetentionDays": "90"
     },
     "lambda-resources": {
       "SplunkHECEndpoint": "https://firehose.inputs.splunk.aws.digital.nhs.uk/services/collector/event",

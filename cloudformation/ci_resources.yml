@@ -45,6 +45,16 @@ Parameters:
     Description: >
       Subject claim filter for valid tokens for the CDKPushImageRole
     Default: ""
+  DevContainerPushImageClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the DevContainerPushImageRole
+    Default: ""
+  AssistMeRegressionTestClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the AssistMeRegressionTest role
+    Default: ""
   EnableDeleteCNAME:
     Type: String
     Description: Whether to allow delete CNAME permissions
@@ -240,7 +250,7 @@ Resources:
               - cloudfront-keyvaluestore:UpdateKeys
               - cloudfront:CreateInvalidation
             Resource: "*"
-  
+
   ##################################################
   # Cloudformation Execution Role
   ##################################################
@@ -282,7 +292,7 @@ Resources:
           - Effect: Allow
             Action:
               - sts:AssumeRole
-            Resource: 
+            Resource:
               - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1
               - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-2
               - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1
@@ -490,7 +500,7 @@ Resources:
               - aoss:GetSecurityPolicy
               - aoss:UpdateSecurityPolicy
               - aoss:CreateAccessPolicy
-              - aoss:DeleteAccessPolicy 
+              - aoss:DeleteAccessPolicy
               - aoss:GetAccessPolicy
               - aoss:UpdateAccessPolicy
               - aoss:CreateCollection
@@ -512,7 +522,7 @@ Resources:
               - bedrock:UpdateGuardrail
               - bedrock:GetGuardrail
               - bedrock:DeleteGuardrail
-              - bedrock:AssociateAgentKnowledgeBase 
+              - bedrock:AssociateAgentKnowledgeBase
               - bedrock:CreateKnowledgeBase
               - bedrock:DeleteKnowledgeBase
               - bedrock:DeleteKnowledgeBaseDocuments
@@ -522,7 +532,7 @@ Resources:
               - bedrock:GetKnowledgeBaseDocuments
               - bedrock:IngestKnowledgeBaseDocuments
               - bedrock:ListAgentKnowledgeBases
-              - bedrock:ListKnowledgeBaseDocuments 
+              - bedrock:ListKnowledgeBaseDocuments
               - bedrock:ListKnowledgeBases
               - bedrock:UpdateAgentKnowledgeBase
               - bedrock:UpdateKnowledgeBase
@@ -577,6 +587,8 @@ Resources:
               - s3:GetBucketVersioning
               - s3:GetBucketWebsite
               - s3:PutBucketOwnershipControls
+              - s3:PutLifecycleConfiguration
+              - s3:GetLifecycleConfiguration
               - firehose:CreateDeliveryStream
               - firehose:DescribeDeliveryStream
               - firehose:DeleteDeliveryStream
@@ -609,8 +621,8 @@ Resources:
               - secretsmanager:Untag*
               - secretsmanager:GetSecretValue
               - secretsmanager:GetRandomPassword
-              - secretsmanager:PutResourcePolicy 
-              - secretsmanager:GetResourcePolicy 
+              - secretsmanager:PutResourcePolicy
+              - secretsmanager:GetResourcePolicy
               - scheduler:GetSchedule
               - scheduler:CreateSchedule
               - scheduler:DeleteSchedule
@@ -812,7 +824,7 @@ Resources:
               - wafv2:ListLoggingConfigurations
               - wafv2:PutLoggingConfiguration
               - cloudfront:AllowVendedLogDeliveryForResource
-            Resource: 
+            Resource:
               - "*"
               - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*BucketNotificationsHandler*
 
@@ -1201,7 +1213,7 @@ Resources:
           - Effect: Allow
             Action:
               - sts:AssumeRole
-            Resource: 
+            Resource:
               - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1
               - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-west-2
               - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1
@@ -1492,6 +1504,77 @@ Resources:
               - inspector2:ListFindings
             Resource: !Sub "arn:aws:inspector2:${AWS::Region}:${AWS::AccountId}:*"
 
+  DevContainerPushImageRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref DevContainerPushImageClaimFilters
+
+  DevContainerPushImageRolePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: DevContainerPushImageRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - ecr:DescribeImages
+              - ecr:DescribeRepositories
+              - ecr:ListImages
+              - ecr:ListTagsForResource
+              - ecr:PutImage
+              - ecr:InitiateLayerUpload
+              - ecr:TagResource
+              - ecr:UntagResource
+              - ecr:UploadLayerPart
+              - ecr:CompleteLayerUpload
+              - ecr:BatchCheckLayerAvailability
+              - ecr:DescribeImageScanFindings
+              - ecr:BatchGetImage
+              - ecr:GetDownloadUrlForLayer
+            Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/dev-container-*"
+          - Effect: Allow
+            Action:
+              - ecr:GetAuthorizationToken
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - inspector2:ListCoverage
+              - inspector2:ListFindings
+            Resource: !Sub "arn:aws:inspector2:${AWS::Region}:${AWS::AccountId}:*"
+
+  ##################################################
+  # EPS Assist Me Regression Test Role
+  ##################################################
+  AssistMeRegressionTestRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref AssistMeRegressionTestClaimFilters
+
+
 Outputs:
   ##################################################
   # Cloudformation Deployment Role Outputs
@@ -1644,6 +1727,19 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CDKPushImageRoleName"]]
   ##################################################
+  # Dev container push image Role Outputs
+  ##################################################
+  DevContainerPushImageRole:
+    Description: ARN of the IAM Role(DevContainerPushImageRole)
+    Value: !GetAtt DevContainerPushImageRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "DevContainerPushImageRole"]]
+  DevContainerPushImageRoleName:
+    Description: Name of the IAM Role(DevContainerPushImageRole)
+    Value: !Ref DevContainerPushImageRole
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "DevContainerPushImageRoleName"]]
+  ##################################################
   # Managed policy Outputs
   ##################################################
   GrantCloudFormationExecutionAccessIAMPolicy:
@@ -1681,3 +1777,18 @@ Outputs:
     Value: !Ref AllowCloudFormationSecretsAccessManagedPolicy
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AllowCloudFormationSecretsAccessManagedPolicy"]]
+
+  ##################################################
+  # EPS Assist Me Regression Test Role Outputs
+  ##################################################
+  AssistMeRegressionTestRole:
+    Description: ARN of the IAM Role(AssistMeRegressionTestRole)
+    Value: !GetAtt AssistMeRegressionTestRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AssistMeRegressionTestRole"]]
+
+  AssistMeRegressionTestRoleName:
+    Description: Name of the IAM Role(AssistMeRegressionTestRole)
+    Value: !Ref AssistMeRegressionTestRole
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AssistMeRegressionTestRoleName"]]

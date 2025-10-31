@@ -70,13 +70,42 @@
       "CDKPushImageClaimFilters": [
         "repo:NHSDigital/eps-cdk-utils:*"
       ],
+      "DevContainerPushImageClaimFilters": [
+        "repo:NHSDigital/electronic-prescription-service-account-resources:*",
+        "repo:NHSDigital/electronic-prescription-service-api:*",
+        "repo:NHSDigital/prescriptionsforpatients:*",
+        "repo:NHSDigital/eps-prescription-status-update-api:*",
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
+        "repo:NHSDigital/eps-prescription-tracker-ui:*",
+        "repo:NHSDigital/eps-FHIR-validator-lambda:*",
+        "repo:NHSDigital/validation-service-fhir-r4:*",
+        "repo:NHSDigital/electronic-prescription-service-release-notes:*",
+        "repo:NHSDigital/electronic-prescription-service-get-secrets:*",
+        "repo:NHSDigital/nhs-fhir-middy-error-handler:*",
+        "repo:NHSDigital/nhs-eps-spine-client:*",
+        "repo:NHSDigital/eps-load-test:*",
+        "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*",
+        "repo:NHSDigital/eps-action-sbom:*",
+        "repo:NHSDigital/eps-action-cfn-lint:*",
+        "repo:NHSDigital/eps-aws-dashboards:*",
+        "repo:NHSDigital/eps-storage-terraform:*",
+        "repo:NHSDigital/eps-workflow-semantic-release:*",
+        "repo:NHSDigital/eps-workflow-dependabot:*",
+        "repo:NHSDigital/eps-cdk-utils:*",
+        "repo:NHSDigital/eps-assist-me:*",
+        "repo:NHSDigital/eps-vpc-resources:*",
+        "repo:NHSDigital/eps-workflow-quality-checks:*"
+      ],
       "ProxygenProdClaimFilters": [
         "NONE"
+      ],
+      "AssistMeRegressionTestClaimFilters": [
+        "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
       ],
       "EnableDeleteCNAME": "true"
     },
     "account-resources": {
-      "LogRetentionDays": "30"
+      "LogRetentionDays": "90"
     },
     "lambda-resources": {
       "SplunkHECEndpoint": "https://firehose.inputs.splunk.aws.digital.nhs.uk/services/collector/event",
