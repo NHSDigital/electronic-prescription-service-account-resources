@@ -173,4 +173,7 @@ jobs:
       dynamic_vars: '{"CommitId": "${{ inputs.commit_id }}", "VersionNumber": "${{ inputs.version_number }}", "lambda_insights_log_group_name": "${{ inputs.lambda_insights_log_group_name }}", "deploy_drift_detection": "${{ inputs.deploy_drift_detection }}"}'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
-      parameter_secrets: "{}"
+      parameter_secrets: |
+        {
+            "PSUNotifyAppKID": "${{ secrets[format('{0}_PSU_NOTIFY_APP_KID', inputs.target_environment)] }}"
+        }
