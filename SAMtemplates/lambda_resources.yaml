@@ -813,6 +813,8 @@ Resources:
               - !ImportValue secrets:DispensingProxygenPrivateKey
               - !ImportValue secrets:FhirPrescribingProxygenPrivateKey
               - !ImportValue secrets:FhirDispensingProxygenPrivateKey
+              - !ImportValue secrets:PrescriptionsForPatientsProxygenPrivateKey
+              - !ImportValue secrets:PrescriptionsForPatientsProxygenPublicKey
 
   ProxygenPTLInstancePutFunctionResources:
     Type: AWS::Serverless::Application

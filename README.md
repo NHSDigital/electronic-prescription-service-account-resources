@@ -148,7 +148,10 @@ It creates the following resources
     - CPSUProxygenPrivateKey - used to store the private key for deploying the CPSU proxy via proxygen
     - CPSUProxygenPublicKey - used to store the public key for deploying the CPSU proxy via proxygen
     - SlackWebHookUrl - used to store the slack webhook url needed for the Slack Alerter lambda to post to eps alert slack channels
+    - PrescriptionsForPatientsProxygenPrivateKey - used to store private key for deploying the prescriptions for patients via proxygen
+    - PrescriptionsForPatientsProxygenPublicKey - used to store public key for deploying the prescriptions for patients via proxygen
 
+NOTE: Add new secrets to secrets.yaml - The account_resources.yaml stack is too large.
 
 # Route 53 resources - environment accounts
 
