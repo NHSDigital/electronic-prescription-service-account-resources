@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
+# provide DOCKER_GID via build args if you need to force group id to match host
+ARG DOCKER_GID
 ARG TARGETARCH
 ENV TARGETARCH=${TARGETARCH}
 
@@ -49,6 +51,16 @@ RUN ASDF_VERSION=$(awk '!/^#/ && NF {print $1; exit}' /tmp/.tool-versions.asdf) 
     tar -xvzf /tmp/asdf.tar.gz && \
     mv asdf /usr/bin && \
     rm /tmp/asdf.tar.gz
+
+# specify DOCKER_GID to force container docker group id to match host
+RUN if [ -n "${DOCKER_GID}" ]; then \
+      if ! getent group docker; then \
+        groupadd -g ${DOCKER_GID} docker; \
+      else \
+        groupmod -g ${DOCKER_GID} docker; \
+      fi && \
+      usermod -aG docker vscode; \
+    fi
 
 USER vscode
 
