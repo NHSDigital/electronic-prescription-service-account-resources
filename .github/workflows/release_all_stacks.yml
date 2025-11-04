@@ -159,7 +159,7 @@ jobs:
 # ***************************************************
 
   release_lambda_resources:
-    needs: [list_ci_resources_cf_changes, list_account_resources_cf_changes, list_secrets_resources_cf_changes, list_artillery_resources_cf_changes, cdk_deploy_monitoring]
+    needs: [list_ci_resources_cf_changes, list_account_resources_cf_changes, list_secrets_resources_cf_changes, list_artillery_resources_cf_changes]
     uses: ./.github/workflows/sam_release_code.yml
     with:
       env: ${{ inputs.target_environment }}
