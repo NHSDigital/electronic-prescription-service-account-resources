@@ -339,3 +339,9 @@ Workflows are in the `.github/workflows` folder
 - `parse_parameters.py` - used in github pipelines to parse cloudformation/env files to set parameters in format that can be passed to cloudformation command
 - `set_github_secrets.py` - script which can be manually run to set secrets in all EPS repositories
 - `run_cfn_guard.sh` - script which runs cfn guard against cloudformation and processed SAM templates
+
+> [!CAUTION]
+> Due to the nature of account-resources stacks being account configuration, they are only deployed upon merge to main.
+> The Lambda Resources stack will deploy out on PR changes as there can be multiple stacks of this.
+> Therefore, therein lies a race condition if the Lambda resources requires a new dependency in the former stacks.
+> To get around this, raise a second PR for the lambda resource requirements AFTER your configuration is rolled out.
