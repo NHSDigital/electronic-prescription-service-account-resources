@@ -175,5 +175,5 @@ jobs:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
       parameter_secrets: |
         {
-            "PSUNotifyAppKID": "${{ secrets[format('{0}_PSU_NOTIFY_APP_KID', inputs.target_environment)] }}"
+            "PSUNotifyAppKIDValue": "${{ secrets[format('{0}_PSU_NOTIFY_APP_KID', inputs.target_environment)] }}"
         }
