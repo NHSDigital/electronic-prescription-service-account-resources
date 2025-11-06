@@ -155,7 +155,10 @@ It creates the following resources
     - CPSUProxygenPrivateKey - used to store the private key for deploying the CPSU proxy via proxygen
     - CPSUProxygenPublicKey - used to store the public key for deploying the CPSU proxy via proxygen
     - SlackWebHookUrl - used to store the slack webhook url needed for the Slack Alerter lambda to post to eps alert slack channels
+    - PrescriptionsForPatientsProxygenPrivateKey - used to store private key for deploying the prescriptions for patients via proxygen
+    - PrescriptionsForPatientsProxygenPublicKey - used to store public key for deploying the prescriptions for patients via proxygen
 
+NOTE: Add new secrets to secrets.yaml - The account_resources.yaml stack is too large.
 
 # Route 53 resources - environment accounts
 
@@ -336,3 +339,9 @@ Workflows are in the `.github/workflows` folder
 - `parse_parameters.py` - used in github pipelines to parse cloudformation/env files to set parameters in format that can be passed to cloudformation command
 - `set_github_secrets.py` - script which can be manually run to set secrets in all EPS repositories
 - `run_cfn_guard.sh` - script which runs cfn guard against cloudformation and processed SAM templates
+
+> [!CAUTION]
+> Due to the nature of account-resources stacks being account configuration, they are only deployed upon merge to main.
+> The Lambda Resources stack will deploy out on PR changes as there can be multiple stacks of this.
+> Therefore, therein lies a race condition if the Lambda resources requires a new dependency in the former stacks.
+> To get around this, raise a second PR for the lambda resource requirements AFTER your configuration is rolled out.

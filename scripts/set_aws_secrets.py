@@ -165,6 +165,18 @@ def get_secret_arns_and_local_values(all_exports: list, environment: str) -> lis
             "local_value": read_local_secret(f"{environment}/FhirDispensing_proxygen_public_key")
         },
         {
+            "variable_name": "PrescriptionsForPatients_proxygen_private_key",
+            "export_name": "secrets:PrescriptionsForPatientsProxygenPrivateKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/PrescriptionsForPatients_proxygen_private_key")
+        },
+        {
+            "variable_name": "PrescriptionsForPatients_proxygen_public_key",
+            "export_name": "secrets:PrescriptionsForPatientsProxygenPublicKey",
+            "required": True,
+            "local_value": read_local_secret(f"{environment}/PrescriptionsForPatients_proxygen_public_key")
+        },
+        {
             "variable_name": "ptl_prescription_signing_public_key",
             "export_name": "secrets:ptlPrescriptionSigningPublicKey",
             "required": True,
