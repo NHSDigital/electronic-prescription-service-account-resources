@@ -30,6 +30,8 @@ on:
         required: true
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE:
         required: true
+      PSU_NOTIFY_APP_KID:
+        required: false
       
 
 jobs:
