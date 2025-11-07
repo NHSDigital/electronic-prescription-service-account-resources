@@ -101,7 +101,7 @@ jobs:
       capabilities: CAPABILITY_NAMED_IAM
       execute_change_set: ${{ inputs.execute_change_set }}
     secrets:
-      parameter_secrets: "{\"PSUNotifyAppKIDValue\": \"foo\"}"
+      parameter_secrets: "{\"PSUNotifyAppKIDValue\": \"${{ secrets[format('{0}_PSU_NOTIFY_APP_KID', inputs.target_environment)] }}\"}"
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
 
