@@ -112,7 +112,8 @@ jobs:
       shell: bash
       run: |
         env
-        PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }})
+        python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }}
+        PARAMETERS_FILE_NAME=$(ls ./*-${{ inputs.stack_name }}-params.json)
         cat "$PARAMETERS_FILE_NAME"
         echo "PARAMETERS_FILE_NAME=${PARAMETERS_FILE_NAME}" >> "$GITHUB_OUTPUT"
 
