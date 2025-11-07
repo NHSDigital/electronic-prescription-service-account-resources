@@ -168,7 +168,7 @@ jobs:
           echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
 
   deploy_stacks:
-    needs: [quality_checks, package_code, package_cdk_code, get_issue_number, tag_release, get_commit_id]
+    needs: [quality_gate, package_code, package_cdk_code, get_issue_number, tag_release, get_commit_id]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
       target_environment: dev

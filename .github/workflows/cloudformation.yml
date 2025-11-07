@@ -111,7 +111,6 @@ jobs:
       id: parse_parameters
       shell: bash
       run: |
-        env
         python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }}
         PARAMETERS_FILE_NAME=$(ls ./*-${{ inputs.stack_name }}-params.json)
         cat "$PARAMETERS_FILE_NAME"
