@@ -106,11 +106,12 @@ jobs:
         
     - name: Parse Parameters
       env:
-        parameter_secrets: ${{ secrets.parameter_secrets }}
         dynamic_vars: ${{ inputs.dynamic_vars }}
       id: parse_parameters
       shell: bash
       run: |
+        export parameter_secrets="${{ secrets.parameter_secrets }}"
+        env
         PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }})
         cat "$PARAMETERS_FILE_NAME"
         echo "PARAMETERS_FILE_NAME=${PARAMETERS_FILE_NAME}" >> "$GITHUB_OUTPUT"
