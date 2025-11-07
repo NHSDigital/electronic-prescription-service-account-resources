@@ -82,7 +82,9 @@
       "DeployDriftDetection": "VAR.deploy_drift_detection"
     },
     "artillery-resources": {},
-    "secrets": {},
+    "secrets": {
+      "PSUNotifyAppKIDValue": "SECRET.PSUNotifyAppKIDValue"
+    },
     "monitoring": {
       "LAMBDA_CONCURRENCY_THRESHOLD": 900,
       "LAMBDA_CONCURRENCY_WARNING_THRESHOLD": 200,

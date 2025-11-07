@@ -101,7 +101,10 @@ jobs:
       capabilities: CAPABILITY_NAMED_IAM
       execute_change_set: ${{ inputs.execute_change_set }}
     secrets:
-      parameter_secrets: "{}"
+      parameter_secrets: |
+        {
+            "PSUNotifyAppKIDValue": "${{ secrets[format('{0}_PSU_NOTIFY_APP_KID', inputs.target_environment)] }}"
+        }
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
 
@@ -173,7 +176,3 @@ jobs:
       dynamic_vars: '{"CommitId": "${{ inputs.commit_id }}", "VersionNumber": "${{ inputs.version_number }}", "lambda_insights_log_group_name": "${{ inputs.lambda_insights_log_group_name }}", "deploy_drift_detection": "${{ inputs.deploy_drift_detection }}"}'
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
-      parameter_secrets: |
-        {
-            "PSUNotifyAppKIDValue": "${{ secrets[format('{0}_PSU_NOTIFY_APP_KID', inputs.target_environment)] }}"
-        }
