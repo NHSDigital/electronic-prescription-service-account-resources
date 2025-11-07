@@ -52,6 +52,9 @@ on:
           required: false
         CDK_PULL_IMAGE_ROLE:
           required: true
+        DEV_PSU_NOTIFY_APP_KID:
+          required: false
+          description: "PSU Notify App KID secret for DEV environment"
 
 env:
   BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
@@ -101,7 +104,7 @@ jobs:
       capabilities: CAPABILITY_NAMED_IAM
       execute_change_set: ${{ inputs.execute_change_set }}
     secrets:
-      parameter_secrets: "{\"PSUNotifyAppKIDValue\": \"${{ secrets.CDK_PULL_IMAGE_ROLE }}\"}"
+      parameter_secrets: "{\"PSUNotifyAppKIDValue\": \"${{ secrets.DEV_PSU_NOTIFY_APP_KID }}\"}"
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
 
