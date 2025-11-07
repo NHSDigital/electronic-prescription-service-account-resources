@@ -30,7 +30,6 @@ def parse_parameters(env, stack, secrets, dynamic_vars, output_format):
 
     output = [] if output_format == "json_file" else ""
 
-    print(f"*** {secrets} ***")
     parsed_secrets = json.loads(secrets)
     parsed_dynamic_vars = json.loads(dynamic_vars)
 
