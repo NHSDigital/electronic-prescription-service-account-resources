@@ -30,20 +30,7 @@ def parse_parameters(env, stack, secrets, dynamic_vars, output_format):
 
     output = [] if output_format == "json_file" else ""
 
-    # Debug logging for secrets parameter
-    print(f"DEBUG: secrets type: {type(secrets)}", file=sys.stderr)
-    print(f"DEBUG: secrets length: {len(secrets)}", file=sys.stderr)
-    print(f"DEBUG: secrets is empty: {secrets == ''}", file=sys.stderr)
-    print(f"DEBUG: secrets repr (first 50 chars): {repr(secrets[:50])}", file=sys.stderr)
-
-    try:
-        parsed_secrets = json.loads(secrets)
-        print(f"DEBUG: Successfully parsed secrets JSON, keys: {list(parsed_secrets.keys())}", file=sys.stderr)
-    except json.JSONDecodeError as e:
-        print(f"ERROR: Failed to parse secrets as JSON: {e}", file=sys.stderr)
-        print(f"ERROR: JSON error at position {e.pos}", file=sys.stderr)
-        raise
-
+    parsed_secrets = json.loads(secrets)
     parsed_dynamic_vars = json.loads(dynamic_vars)
 
     parameters = d.get("parameters")
@@ -127,19 +114,10 @@ if __name__ == "__main__":
     regex = re.compile(r"-pr-[\d]+", re.IGNORECASE)
     stack = regex.sub("", args.stack)
 
-    # Debug: Check environment variables before reading
-    print("DEBUG: Environment variable 'parameter_secrets' exists:", "parameter_secrets" in os.environ, file=sys.stderr)
-    print("DEBUG: Environment variable 'dynamic_vars' exists:", "dynamic_vars" in os.environ, file=sys.stderr)
-
-    parameter_secrets = os.environ.get("parameter_secrets", "{}") or "{}"
-    dynamic_vars = os.environ.get("dynamic_vars", "{}") or "{}"
+    parameter_secrets = os.environ.get("parameter_secrets", "{}")
+    dynamic_vars = os.environ.get("dynamic_vars", "{}")
     output_format = os.environ.get("output_format", "json_file")
-
-    print(f"DEBUG: After reading env - parameter_secrets length: {len(parameter_secrets)}", file=sys.stderr)
-    print(f"DEBUG: After reading env - dynamic_vars length: {len(dynamic_vars)}", file=sys.stderr)
-
     if output_format not in ["json_file", "raw", "env_vars"]:
         print("invalid return format")
         sys.exit(1)
-
-    result = parse_parameters(env, stack, parameter_secrets, dynamic_vars, output_format)
+    print(parse_parameters(env, stack, parameter_secrets, dynamic_vars, output_format))

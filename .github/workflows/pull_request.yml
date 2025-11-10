@@ -25,7 +25,8 @@ jobs:
         run: |
           TAG_FORMAT=$(yq '.TAG_FORMAT' .github/config/settings.yml)
           echo "TAG_FORMAT=$TAG_FORMAT" >> "$GITHUB_OUTPUT"
-      # always run, but only block in the non-skip case
+
+  # always run, but only block in the non-skip case
   get_commit_message:
     runs-on: ubuntu-22.04
     outputs:
@@ -187,4 +188,3 @@ jobs:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
-      PSU_NOTIFY_APP_KID: ${{ secrets.DEV_PSU_NOTIFY_APP_KID }}
