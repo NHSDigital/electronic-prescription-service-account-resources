@@ -188,37 +188,6 @@ def get_secret_arns_and_local_values(all_exports: list, environment: str) -> lis
             "required": True,
             "local_value": read_local_secret(f"{environment}/ptl_prescription_signing_private_key")
         },
-        {
-            "variable_name": "PSUNotify_callback_api_key",
-            "export_name": "secrets:PSUNotifyCallbackApiKey",
-            "required": True,
-            "local_value": os.environ.get(f"{environment}_PSUNotify_callback_api_key")
-        },
-        {
-            "variable_name": "PSUNotify_callback_app_name",
-            "export_name": "secrets:PSUNotifyCallbackAppName",
-            "required": True,
-            "local_value": os.environ.get(f"{environment}_PSUNotify_callback_app_name")
-        },
-        {
-            "variable_name": "PSUNotify_app_kid",
-            "export_name": "secrets:PSUNotifyAppKID",
-            "required": True,
-            "local_value": os.environ.get(f"{environment}_PSUNotify_app_kid")
-        },
-        {
-            "variable_name": "PSUNotify_kid_secret",
-            "export_name": "secrets:PSUNotifyAppIdSecret",
-            "required": True,
-            "local_value": os.environ.get(f"{environment}_PSUNotify_kid_secret")
-        },
-        {
-            "variable_name": "PSUNotify_private_key_secret",
-            "export_name": "secrets:PSUNotifyPrivateKeySecret",
-            "required": True,
-            "local_value": read_local_secret(f"{environment}/PSUNotify_private_key_secret")
-
-        },
     ]
 
     secret_arns = []
