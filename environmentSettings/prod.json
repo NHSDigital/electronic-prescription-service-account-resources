@@ -54,8 +54,8 @@
         "repo:NHSDigital/electronic-prescription-service-api:environment:prod",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:int",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod",
-        "repo:NHSDigital/prescriptionsforpatients:int",
-        "repo:NHSDigital/prescriptionsforpatients:prod"
+        "repo:NHSDigital/prescriptionsforpatients:environment:int",
+        "repo:NHSDigital/prescriptionsforpatients:environment:prod"
       ],
       "CDKPullImageClaimFilters": [
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
