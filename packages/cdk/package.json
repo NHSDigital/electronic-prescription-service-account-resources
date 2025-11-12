@@ -11,11 +11,11 @@
   },
   "dependencies": {
     "@nhsdigital/eps-cdk-constructs": "^1.0.173",
-    "aws-cdk-lib": "^2.221.0",
+    "aws-cdk-lib": "^2.223.0",
     "cdk-nag": "^2.37.55",
-    "constructs": "^10.4.2"
+    "constructs": "^10.4.3"
   },
   "devDependencies": {
-    "aws-cdk": "^2.1031.0"
+    "aws-cdk": "^2.1031.2"
   }
 }
