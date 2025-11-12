@@ -50,6 +50,7 @@ class Roles(TypedDict):
 class Secrets(TypedDict):
     regression_test_pem: str
     automerge_pem: str
+    eps_multi_repo_deployment_pem: str
     dev_roles: Roles
     int_roles: Roles
     prod_roles: Roles
@@ -237,6 +238,7 @@ def set_all_secrets(github: Github,
                     repo_name: str,
                     set_target_spine_servers: bool,
                     set_target_service_search_servers: bool,
+                    set_account_resources_secrets: bool,
                     secrets: Secrets,
                     echo_repos: bool):
     response = input(f"Setting secrets in repo {repo_name}. Do you want to continue? (y/N): ")
@@ -365,6 +367,14 @@ def set_all_secrets(github: Github,
                    secret_name="RECOVERY_TARGET_SERVICE_SEARCH_SERVER",
                    secret_value=secrets["recovery_target_service_search_server"],
                    set_dependabot=False)
+    if set_account_resources_secrets:
+        # eps multi repo deployment pem
+        set_secret(github=github, repo_name=repo_name, secret_name="EPS_MULTI_REPO_DEPLOYMENT_PEM",
+                   secret_value=secrets["eps_multi_repo_deployment_pem"],
+                   set_dependabot=False)
+        set_secret(github=github, repo_name=repo_name, secret_name="EPS_MULTI_REPO_DEPLOYMENT_APP_ID",
+                   secret_value="2278388",
+                   set_dependabot=False)
 
 
 def setup_account_resources_environments(repo: Repository, environment: RepoEnvironment):
@@ -451,11 +461,12 @@ def setup_repo(github: Github,
                     repo_name=repo["repo_name"],
                     set_target_spine_servers=repo["set_target_spine_servers"],
                     set_target_service_search_servers=repo["set_target_service_search_servers"],
+                    set_account_resources_secrets=repo["is_account_resources"],
                     secrets=secrets,
                     echo_repos=echo_repos)
     setup_environments(github=github,
                        repo_name=repo["repo_name"],
-                       set_account_resources_environments=repo["set_account_resources_environments"],
+                       set_account_resources_environments=repo["is_account_resources"],
                        github_teams=github_teams,
                        echo_repos=echo_repos)
     # TODO - setup other things automatically
@@ -502,10 +513,13 @@ def main():
         regression_test_pem = f.read()
     with open(".secrets/automerge.pem") as f:
         automerge_pem = f.read()
+    with open(".secrets/eps_multi_repo_deployment.pem") as f:
+        eps_multi_repo_deployment_pem = f.read()
 
     # set up a variable with all the roles and secrets for all environments
     secrets: Secrets = {
         "regression_test_pem": regression_test_pem,
+        "eps_multi_repo_deployment_pem": eps_multi_repo_deployment_pem,
         "automerge_pem": automerge_pem,
         "dev_roles": dev_roles,
         "int_roles": int_roles,
@@ -541,145 +555,145 @@ def main():
         {
             "repo_name": "NHSDigital/electronic-prescription-service-clinical-prescription-tracker",
             "set_target_spine_servers": True,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/prescriptionsforpatients",
             "set_target_spine_servers": True,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": True
         },
         {
             "repo_name": "NHSDigital/prescriptions-for-patients",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/electronic-prescription-service-api",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/electronic-prescription-service-release-notes",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/electronic-prescription-service-account-resources",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": True,
+            "is_account_resources": True,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-prescription-status-update-api",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-FHIR-validator-lambda",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-load-test",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-prescription-tracker-ui",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-aws-dashboards",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-cdk-utils",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-vpc-resources",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-assist-me",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-workflow-semantic-release",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-workflow-dependabot",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/validation-service-fhir-r4",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/electronic-prescription-service-get-secrets",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/nhs-fhir-middy-error-handler",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/nhs-eps-spine-client",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/electronic-prescription-service-api-regression-tests",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-action-sbom",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-action-cfn-lint",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         },
         {
             "repo_name": "NHSDigital/eps-workflow-quality-checks",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         }
     ]
@@ -688,7 +702,7 @@ def main():
         {
             "repo_name": "NHSDigital/eps-storage-terraform",
             "set_target_spine_servers": False,
-            "set_account_resources_environments": False,
+            "is_account_resources": False,
             "set_target_service_search_servers": False
         }
     ]
