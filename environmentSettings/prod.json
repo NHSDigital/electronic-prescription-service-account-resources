@@ -44,7 +44,8 @@
         "repo:NHSDigital/eps-prescription-status-update-api:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
-        "repo:NHSDigital/eps-load-test:*"
+        "repo:NHSDigital/eps-load-test:*",
+        "repo:NHSDigital/prescriptionsforpatients:*"
       ],
       "ProxygenProdClaimFilters": [
         "repo:NHSDigital/eps-prescription-status-update-api:environment:int",
@@ -52,7 +53,9 @@
         "repo:NHSDigital/electronic-prescription-service-api:environment:int",
         "repo:NHSDigital/electronic-prescription-service-api:environment:prod",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:int",
-        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod"
+        "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod",
+        "repo:NHSDigital/prescriptionsforpatients:int",
+        "repo:NHSDigital/prescriptionsforpatients:prod"
       ],
       "CDKPullImageClaimFilters": [
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
