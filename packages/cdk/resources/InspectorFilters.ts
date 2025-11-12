@@ -44,8 +44,21 @@ export class InspectorFilters extends Construct {
       "CVE-2025-53506", // https://nvd.nist.gov/vuln/detail/cve-2025-53506
       "CVE-2025-57319", // https://nvd.nist.gov/vuln/detail/cve-2025-57319
       // this is a false positive and is not an issue
-      "CVE-2025-9230" // https://nvd.nist.gov/vuln/detail/CVE-2025-9230
+      "CVE-2025-9230", // https://nvd.nist.gov/vuln/detail/CVE-2025-9230
       // not applicable, we do not use password-based encryption in CMS messages
+
+      "CVE-2025-22871", // https://nvd.nist.gov/vuln/detail/CVE-2025-22871
+      // from go stdlib used in asdf, not applicable
+      "CVE-2025-61725", // https://nvd.nist.gov/vuln/detail/CVE-2025-61725
+      // from go stdlib used in sam cli, not applicable
+      "CVE-2025-61723", // https://nvd.nist.gov/vuln/detail/CVE-2025-61723
+      // from go stdlib used in sam cli, not applicable
+      "CVE-2025-58188", // https://nvd.nist.gov/vuln/detail/CVE-2025-58188
+      // from go stdlib used in sam cli, not applicable
+      "CVE-2025-47907", // https://nvd.nist.gov/vuln/detail/CVE-2025-47907
+      // from go stdlib used in asdf, not applicable
+      "CVE-2025-58187" // https://nvd.nist.gov/vuln/detail/CVE-2025-58187
+      // from go stdlib used in sam cli, not applicable
     ]
 
     for (const cve of cvesToSuppress){
