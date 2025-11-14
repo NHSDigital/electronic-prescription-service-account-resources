@@ -27,7 +27,7 @@ jobs:
           echo "TAG_FORMAT=$TAG_FORMAT" >> "$GITHUB_OUTPUT"
   
   quality_checks:
-    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@ebefef9c585d07f40b04225bf1dfb95bccb98512
+    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@acb242bb2ae8fb729968bbb64586acced90d420c
     # uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@v5.1.4
     needs: [get_asdf_version]
     with:
