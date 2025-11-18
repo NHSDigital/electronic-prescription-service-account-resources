@@ -495,6 +495,12 @@ Resources:
               - ecs:ListTasks
               - ecs:ListServices
               - ecs:DescribeTaskDefinition
+              - aoss:ListAccessPolicies
+              - aoss:ListSecurityPolicies
+              - aoss:DescribeIndex
+              - aoss:GetAccountSettings
+              - aoss:UpdateAccountSettings
+              - aoss:GetPoliciesStats
               - aoss:CreateSecurityPolicy
               - aoss:DeleteSecurityPolicy
               - aoss:GetSecurityPolicy
@@ -515,7 +521,6 @@ Resources:
               - aoss:DeleteIndex
               - aoss:UpdateIndex
               - aoss:GetIndex
-              - aoss:APIAccessAll
               - bedrock:ApplyGuardrail
               - bedrock:CreateGuardrail
               - bedrock:ListGuardrails
