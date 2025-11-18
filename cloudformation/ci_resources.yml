@@ -545,6 +545,13 @@ Resources:
               - bedrock:TagResource
               - bedrock:UntagResource
               - bedrock:CreateGuardrailVersion
+              - bedrock:CreatePrompt
+              - bedrock:UpdatePrompt
+              - bedrock:GetPrompt
+              - bedrock:ListPrompts
+              - bedrock:DeletePrompt
+              - bedrock:CreatePromptVersion
+              - bedrock:OptimizePrompt
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyB:
