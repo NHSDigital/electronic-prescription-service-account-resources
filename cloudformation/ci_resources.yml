@@ -495,6 +495,13 @@ Resources:
               - ecs:ListTasks
               - ecs:ListServices
               - ecs:DescribeTaskDefinition
+              - aoss:BatchGetEffectiveLifecyclePolicy
+              - aoss:CreateLifecyclePolicy
+              - aoss:CreateSecurityConfig
+              - aoss:GetSecurityConfig
+              - aoss:UpdateSecurityConfig
+              - aoss:DeleteSecurityConfig
+              - aoss:ListSecurityConfigs
               - aoss:ListAccessPolicies
               - aoss:ListSecurityPolicies
               - aoss:DescribeIndex
