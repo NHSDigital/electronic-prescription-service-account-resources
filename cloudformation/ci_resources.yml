@@ -528,6 +528,7 @@ Resources:
               - aoss:DeleteIndex
               - aoss:UpdateIndex
               - aoss:GetIndex
+              - aoss:APIAccessAll
               - bedrock:ApplyGuardrail
               - bedrock:CreateGuardrail
               - bedrock:ListGuardrails
