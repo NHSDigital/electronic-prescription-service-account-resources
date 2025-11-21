@@ -2263,10 +2263,10 @@ Resources:
             ]
           }
 
-  DevContainerGitSecretsRepo:
+  GitSecretsRepo:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName: dev-container-git-secrets
+      RepositoryName: git-secrets
       ImageScanningConfiguration:
         ScanOnPush: true
       LifecyclePolicy:
