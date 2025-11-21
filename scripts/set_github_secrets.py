@@ -637,18 +637,6 @@ def main():
             "set_target_service_search_servers": False
         },
         {
-            "repo_name": "NHSDigital/eps-workflow-semantic-release",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-workflow-dependabot",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
             "repo_name": "NHSDigital/validation-service-fhir-r4",
             "set_target_spine_servers": False,
             "is_account_resources": False,
@@ -691,7 +679,7 @@ def main():
             "set_target_service_search_servers": False
         },
         {
-            "repo_name": "NHSDigital/eps-workflow-quality-checks",
+            "repo_name": "NHSDigital/eps-common-workflows",
             "set_target_spine_servers": False,
             "is_account_resources": False,
             "set_target_service_search_servers": False
