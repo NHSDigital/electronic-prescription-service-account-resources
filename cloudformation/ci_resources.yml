@@ -1551,7 +1551,9 @@ Resources:
               - ecr:DescribeImageScanFindings
               - ecr:BatchGetImage
               - ecr:GetDownloadUrlForLayer
-            Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/dev-container-*"
+            Resource: 
+              - !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/dev-container-*"
+              - !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/git-secrets"
           - Effect: Allow
             Action:
               - ecr:GetAuthorizationToken
