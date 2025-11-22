@@ -189,3 +189,6 @@ create-npmrc:
 	gh auth login --scopes "read:packages"; \
 	echo "//npm.pkg.github.com/:_authToken=$$(gh auth token)" > .npmrc
 	echo "@nhsdigital:registry=https://npm.pkg.github.com" >> .npmrc
+
+compile:
+	echo "Does nothing yet"
