@@ -16,7 +16,7 @@
         "uuid": "^13.0.0"
     },
     "devDependencies": {
-        "@types/aws-lambda": "^8.10.158",
+        "@types/aws-lambda": "^8.10.159",
         "jest-fetch-mock": "^3.0.3"
     }
 }
