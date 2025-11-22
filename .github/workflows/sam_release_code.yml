@@ -51,7 +51,7 @@ jobs:
       parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
     steps:
       - name: Checkout scripts
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
         with:
           ref: ${{ env.BRANCH_NAME }}
           sparse-checkout: |
@@ -95,7 +95,7 @@ jobs:
 
       - name: Checkout gh-pages
         if: ${{ !startsWith(inputs.STACK_NAME, 'lambda-resources-pr-') }}
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
         with:
           ref: gh-pages
           path: gh-pages
