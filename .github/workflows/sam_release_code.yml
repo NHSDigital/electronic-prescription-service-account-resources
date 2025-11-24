@@ -91,7 +91,9 @@ jobs:
           STACK_NAME: ${{ inputs.STACK_NAME }}
           TEMPLATE_FILE: template.yaml
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
-        run: ./release_code.sh
+        run: |
+          export PATH=$PWD/../../.venv/bin:$PATH
+          ./release_code.sh
 
       - name: Checkout gh-pages
         if: ${{ !startsWith(inputs.STACK_NAME, 'lambda-resources-pr-') }}
