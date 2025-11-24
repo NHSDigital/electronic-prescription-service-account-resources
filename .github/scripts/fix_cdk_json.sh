@@ -73,6 +73,9 @@ fix_string_key commitId "${COMMIT_ID}"
 fix_string_key cfnDriftDetectionGroup "${CFN_DRIFT_DETECTION_GROUP}"
 fix_string_key stackName "${STACK_NAME}"
 fix_boolean_number_key isPullRequest "${IS_PULL_REQUEST}"
-fix_boolean_number_key lambdaConcurrencyThreshold "${LAMBDA_CONCURRENCY_THRESHOLD}"
-fix_boolean_number_key lambdaConcurrencyWarningThreshold "${LAMBDA_CONCURRENCY_WARNING_THRESHOLD}"
-fix_boolean_number_key enableAlerts "${ENABLE_ALERTS}"
+
+if [ "$CDK_APP_NAME" == "MonitoringApp" ]; then
+    fix_boolean_number_key lambdaConcurrencyThreshold "${LAMBDA_CONCURRENCY_THRESHOLD}"
+    fix_boolean_number_key lambdaConcurrencyWarningThreshold "${LAMBDA_CONCURRENCY_WARNING_THRESHOLD}"
+    fix_boolean_number_key enableAlerts "${ENABLE_ALERTS}"
+fi
