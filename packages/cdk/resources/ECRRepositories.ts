@@ -6,6 +6,11 @@ export class ECRRepositories extends Construct {
   public constructor(scope: Construct, id: string){
     super(scope, id)
     const repositoryNames = [
+      // these are commented out until they are removed from account-resources cloudformation stack
+      // and then imported into this stack
+      // "fhir-facade-repo",
+      // "validator-repo",
+      // "cdk-utils-build-repo",
       "dev-container-account-resources",
       "dev-container-fhir-facade",
       "dev-container-pfp",
