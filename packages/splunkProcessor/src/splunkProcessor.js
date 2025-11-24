@@ -271,123 +271,122 @@ function batchRecordsToReingest(records, event, result, isSas, inputDataByRecId)
   return [putRecordBatches, totalRecordsToBeReingested]
 }
 
-function reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, callback, result) {
+async function reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, result) {
   const streamARN = isSas ? event.sourceKinesisStreamArn : event.deliveryStreamArn
   const region = streamARN.split(":")[3]
   const streamName = streamARN.split("/")[1]
 
-  new Promise((resolve, reject) => {
-    let recordsReingestedSoFar = 0
-    for (const recordBatch of putRecordBatches) {
-      if (isSas) {
-        const client = new Kinesis({region: region})
-        helpers.putRecordsToKinesisStream(streamName, recordBatch, client, resolve, reject, 0, 20, logger)
-      } else {
-        const client = new Firehose({region: region})
-        helpers.putRecordsToFirehoseStream(streamName, recordBatch, client, resolve, reject, 0, 20, logger)
+  try {
+    await new Promise((resolve, reject) => {
+      let recordsReingestedSoFar = 0
+      for (const recordBatch of putRecordBatches) {
+        if (isSas) {
+          const client = new Kinesis({region: region})
+          helpers.putRecordsToKinesisStream(streamName, recordBatch, client, resolve, reject, 0, 20, logger)
+        } else {
+          const client = new Firehose({region: region})
+          helpers.putRecordsToFirehoseStream(streamName, recordBatch, client, resolve, reject, 0, 20, logger)
+        }
+        recordsReingestedSoFar += recordBatch.length
+        logger.info("Reingesting records...", {
+          totalRecordsReingested: recordsReingestedSoFar,
+          totalRecordsToBeReingested: totalRecordsToBeReingested,
+          totalRecords: event.records.length,
+          stream: streamName
+        })
       }
-      recordsReingestedSoFar += recordBatch.length
-      logger.info("Reingesting records...", {
-        totalRecordsReingested: recordsReingestedSoFar,
-        totalRecordsToBeReingested: totalRecordsToBeReingested,
-        totalRecords: event.records.length,
-        stream: streamName
-      })
-    }
-  }).then(
-    () => {
-      logger.info("Reingesting records complete.", {
-        totalRecordsToBeReingested: totalRecordsToBeReingested,
-        totalRecords: event.records.length,
-        stream: streamName
-      })
-      callback(null, result)
-    },
-    (failed) => {
-      logger.info("Failed to reingest records", {failed})
-      callback(failed, null)
-    }
-  )
+    })
+    
+    logger.info("Reingesting records complete.", {
+      totalRecordsToBeReingested: totalRecordsToBeReingested,
+      totalRecords: event.records.length,
+      stream: streamName
+    })
+    return {statusCode: 200, body: result}
+  } catch (failed) {
+    logger.info("Failed to reingest records", {failed})
+    throw failed
+  }
 }
 
-exports.handler = (event, context, callback) => {
+exports.handler = async (event, context) => {
   logger.addContext(context)
   logger.info("Processor received event")
-  Promise.all(
-    event.records.map((r) => {
-      const buffer = Buffer.from(r.data, "base64")
+  try {
+    const records = await Promise.all(
+      event.records.map((r) => {
+        const buffer = Buffer.from(r.data, "base64")
 
-      let decompressed
-      try {
-        decompressed = zlib.gunzipSync(buffer)
-      } catch (e) {
-        logger.warn("Failed to decompress record", {record: {r}, error: e})
+        let decompressed
+        try {
+          decompressed = zlib.gunzipSync(buffer)
+        } catch (e) {
+          logger.warn("Failed to decompress record", {record: {r}, error: e})
+          return Promise.resolve({
+            recordId: r.recordId,
+            result: "ProcessingFailed"
+          })
+        }
+
+        const data = JSON.parse(decompressed)
+
+        // CONTROL_MESSAGE are sent by CWL to check if the subscription is reachable.
+        // They do not contain actual data.
+        if (data.messageType === "CONTROL_MESSAGE") {
+          return Promise.resolve({
+            recordId: r.recordId,
+            result: "Dropped"
+          })
+        }
+        if (data.messageType === "DATA_MESSAGE") {
+          const logGroup = data.logGroup
+          const logStream = data.logStream
+          const accountNumber = data.owner
+          if (logGroup && accountNumber) {
+            const promises = data.logEvents.map((logEvent) => transformLogEvent(logEvent, logGroup, logStream, accountNumber))
+            return Promise.all(promises).then((transformed) => {
+              const payload = transformed.reduce((a, v) => a + v, "")
+              const encoded = Buffer.from(payload).toString("base64")
+              return {
+                recordId: r.recordId,
+                result: "Ok",
+                data: encoded
+              }
+            })
+          }
+          logger.info("Data lacking logGroup or owner", {data})
+        }
         return Promise.resolve({
           recordId: r.recordId,
           result: "ProcessingFailed"
         })
-      }
-
-      const data = JSON.parse(decompressed)
-
-      // CONTROL_MESSAGE are sent by CWL to check if the subscription is reachable.
-      // They do not contain actual data.
-      if (data.messageType === "CONTROL_MESSAGE") {
-        return Promise.resolve({
-          recordId: r.recordId,
-          result: "Dropped"
-        })
-      }
-      if (data.messageType === "DATA_MESSAGE") {
-        const logGroup = data.logGroup
-        const logStream = data.logStream
-        const accountNumber = data.owner
-        if (logGroup && accountNumber) {
-          const promises = data.logEvents.map((logEvent) => transformLogEvent(logEvent, logGroup, logStream, accountNumber))
-          return Promise.all(promises).then((transformed) => {
-            const payload = transformed.reduce((a, v) => a + v, "")
-            const encoded = Buffer.from(payload).toString("base64")
-            return {
-              recordId: r.recordId,
-              result: "Ok",
-              data: encoded
-            }
-          })
-        }
-        logger.info("Data lacking logGroup or owner", {data})
-      }
-      return Promise.resolve({
-        recordId: r.recordId,
-        result: "ProcessingFailed"
       })
-    })
-  )
-    .then((records) => {
-      const isSas = Object.hasOwn(event, "sourceKinesisStreamArn")
-      const result = {records: records}
+    )
 
-      const inputDataByRecId = {}
-      event.records.forEach((r) => (inputDataByRecId[r.recordId] = createReingestionRecord(isSas, r)))
+    const isSas = Object.hasOwn(event, "sourceKinesisStreamArn")
+    const result = {records: records}
 
-      const [putRecordBatches, totalRecordsToBeReingested] = batchRecordsToReingest(
-        records,
-        event,
-        result,
-        isSas,
-        inputDataByRecId
-      )
+    const inputDataByRecId = {}
+    event.records.forEach((r) => (inputDataByRecId[r.recordId] = createReingestionRecord(isSas, r)))
 
-      if (putRecordBatches.length > 0) {
-        reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, callback, result)
-      } else {
-        logger.info("No records need to be reingested.")
-        callback(null, result)
-      }
-    })
-    .catch((ex) => {
-      logger.error("Error", {ex})
-      callback(ex, null)
-    })
+    const [putRecordBatches, totalRecordsToBeReingested] = batchRecordsToReingest(
+      records,
+      event,
+      result,
+      isSas,
+      inputDataByRecId
+    )
+
+    if (putRecordBatches.length > 0) {
+      return await reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, result)
+    } else {
+      logger.info("No records need to be reingested.")
+      return {statusCode: 200, body: result}
+    }
+  } catch (ex) {
+    logger.error("Error", {ex})
+    throw ex
+  }
 }
 
 exports.transformLogEvent = transformLogEvent
