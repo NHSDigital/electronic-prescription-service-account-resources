@@ -16,3 +16,4 @@ console\.log\(`access token : \${access_token}`\)
 .*\.venv.*
 .*node_modules.*
 CidrIp: 0.0.0.0\/0
+poetry.lock

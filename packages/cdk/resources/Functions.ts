@@ -1,5 +1,5 @@
 import {Construct} from "constructs"
-import {LayerVersion} from "aws-cdk-lib/aws-lambda"
+import {LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda"
 import {IStringParameter} from "aws-cdk-lib/aws-ssm"
 import {ManagedPolicy, PolicyStatement} from "aws-cdk-lib/aws-iam"
 import {Stack} from "aws-cdk-lib"
@@ -68,7 +68,8 @@ export class Functions extends Construct {
       layers: [
         parameterAndSecretsLayer
       ],
-      projectBaseDir: resolve(__dirname, "../../..")
+      projectBaseDir: resolve(__dirname, "../../.."),
+      runtime: Runtime.NODEJS_24_X
     })
 
     this.functions = {
