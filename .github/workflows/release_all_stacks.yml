@@ -181,6 +181,7 @@ jobs:
       DEPLOY_CDK_CODE: true
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
+      AWS_REGION: us-east-1
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
