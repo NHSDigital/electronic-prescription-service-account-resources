@@ -16,6 +16,18 @@ export const nagSuppressions = (stack: Stack) => {
       }
     ]
   )
+  safeAddNagSuppressionGroup(
+    stack,
+    [
+      "/MonitoringStack/ReportAlertSuppressionsScheduleRole/DefaultPolicy/Resource"
+    ],
+    [
+      {
+        id: "AwsSolutions-IAM5",
+        reason: "Suppress error for not having wildcards in permissions. This is a fine as it just has a wildcard at the end"
+      }
+    ]
+  )
 
 }
 
