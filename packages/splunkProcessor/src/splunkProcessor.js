@@ -305,7 +305,7 @@ async function reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeRe
     return {statusCode: 200, body: result}
   } catch (failed) {
     logger.info("Failed to reingest records", {failed})
-    throw failed
+    return {statusCode: 500, body: failed}
   }
 }
 

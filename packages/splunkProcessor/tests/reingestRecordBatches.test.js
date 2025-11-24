@@ -30,7 +30,7 @@ describe("reingestRecordBatches", () => {
     jest.clearAllMocks()
   })
 
-  it("should reingest records to Kinesis when isSas is true", (done) => {
+  it("should reingest records to Kinesis when isSas is true", async () => {
     const putRecordBatches = [{records: ["record1", "record2"]}]
     const isSas = true
     const totalRecordsToBeReingested = 2
@@ -39,14 +39,12 @@ describe("reingestRecordBatches", () => {
       records: putRecordBatches
     }
 
-    const callback = (error, result) => {
-      expect(error).toBe(null)
-      expect(result).toBe("Success")
-      done()
-    }
     const result = "Success"
 
-    splunkProcessor.reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, callback, result)
+    const response = await splunkProcessor.reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, result)
+    
+    expect(response.statusCode).toBe(200)
+    expect(response.body).toBe(result)
     expect(Kinesis).toHaveBeenCalledWith({region: "us-east-1"})
     expect(helpers.putRecordsToKinesisStream).toHaveBeenCalledWith(
       "my-kinesis-stream",
@@ -60,7 +58,7 @@ describe("reingestRecordBatches", () => {
     )
   })
 
-  it("should reingest records to Firehose when isSas is false", (done) => {
+  it("should reingest records to Firehose when isSas is false", async () => {
     const putRecordBatches = [{records: ["record1", "record2"]}]
     const isSas = false
     const totalRecordsToBeReingested = 2
@@ -68,15 +66,12 @@ describe("reingestRecordBatches", () => {
       deliveryStreamArn: "arn:aws:firehose:us-east-1:123456789012:deliverystream/my-firehose-stream",
       records: putRecordBatches
     }
-    const callback = (error, result) => {
-      expect(error).toBe(null)
-      expect(result).toBe("Success")
-      done()
-    }
     const result = "Success"
 
-    splunkProcessor.reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, callback, result)
+    const response = await splunkProcessor.reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, result)
 
+    expect(response.statusCode).toBe(200)
+    expect(response.body).toBe(result)
     expect(Firehose).toHaveBeenCalledWith({region: "us-east-1"})
     expect(helpers.putRecordsToFirehoseStream).toHaveBeenCalledWith(
       "my-firehose-stream",
@@ -90,7 +85,7 @@ describe("reingestRecordBatches", () => {
     )
   })
 
-  it("should handle failure", (done) => {
+  it("should handle failure", async () => {
     const putRecordBatches = [{records: ["record1", "record2"]}]
     const isSas = true
     const totalRecordsToBeReingested = 2
@@ -98,11 +93,7 @@ describe("reingestRecordBatches", () => {
       sourceKinesisStreamArn: "arn:aws:kinesis:us-east-1:123456789012:stream/my-kinesis-stream",
       records: putRecordBatches
     }
-    const callback = (error, result) => {
-      expect(error).toBe("Some error")
-      expect(result).toBe(null)
-      done()
-    }
+    const result = "Success"
 
     // Mock a rejected promise for putRecordsToKinesisStream
     jest
@@ -112,6 +103,9 @@ describe("reingestRecordBatches", () => {
         reject("Some error")
       })
 
-    splunkProcessor.reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, callback)
+    const response = await splunkProcessor.reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, result)
+    
+    expect(response.statusCode).toBe(500)
+    expect(response.body).toBe("Some error")
   })
 })
