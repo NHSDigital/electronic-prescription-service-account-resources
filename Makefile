@@ -171,7 +171,7 @@ show-eps-route-53-nameservers: guard-env
 cfn-guard:
 	./scripts/run_cfn_guard.sh
 
-cdk-synth: cdk-synth-monitoring
+cdk-synth: cdk-synth-monitoring cdk-synth-account-resources-US
 
 cdk-synth-monitoring: 
 	mkdir -p .local_config

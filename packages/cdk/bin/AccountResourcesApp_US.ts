@@ -1,6 +1,6 @@
 import {App, Aspects, Tags} from "aws-cdk-lib"
 import {AwsSolutionsChecks} from "cdk-nag"
-import {AccountResourcesStack} from "../stacks/AccountResourcesStack_US"
+import {AccountResourcesStack_US} from "../stacks/AccountResourcesStack_US"
 import fs from "fs"
 
 // read the config in
@@ -29,7 +29,7 @@ Tags.of(app).add("cdkApp", "AccountResources")
 Tags.of(app).add("repo", "electronic-prescription-service-account-resources")
 Tags.of(app).add("cfnDriftDetectionGroup", cfnDriftDetectionGroup)
 
-new AccountResourcesStack(app, "AccountResources", {
+new AccountResourcesStack_US(app, "AccountResources_US", {
   env: {
     region: "us-east-1",
     account: accountId
