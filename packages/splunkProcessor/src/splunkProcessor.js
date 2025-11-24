@@ -381,7 +381,7 @@ exports.handler = async (event, context) => {
       return await reingestRecordBatches(putRecordBatches, isSas, totalRecordsToBeReingested, event, result)
     } else {
       logger.info("No records need to be reingested.")
-      return {statusCode: 200, body: result}
+      return result
     }
   } catch (ex) {
     logger.error("Error", {ex})
