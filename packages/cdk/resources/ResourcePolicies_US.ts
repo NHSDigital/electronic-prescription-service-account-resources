@@ -13,6 +13,8 @@ export class ResourcePolicies_US extends Construct {
       principals: [new ServicePrincipal("delivery.logs.amazonaws.com")]
     })
 
+    // this policy allows AWS services to deliver logs to CloudWatch Logs on your behalf
+    // the name is set by AWS and must match exactly
     new ResourcePolicy(this, "AWSLogDeliveryWrite20150319", {
       policyStatements: [policyStatement],
       resourcePolicyName: "AWSLogDeliveryWrite20150319"
