@@ -27,6 +27,10 @@ on:
       DEPLOYMENT_ENVIRONMENT:
         required: false
         type: string
+      AWS_REGION:
+        required: false
+        type: string
+        default: eu-west-2
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
@@ -76,17 +80,21 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         run: |
-          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com
-
+          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.eu-west-2.amazonaws.com"
+        env:
+          ACCOUNT_ID: ${{ env.ACCOUNT_ID }}
       - name: Pull cdk-utils-build from Amazon ECR
         run: |
-          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest"
-          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
+          docker pull "${ACCOUNT_ID}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest"
+          docker tag "${ACCOUNT_ID}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
+        env:
+          ACCOUNT_ID: ${{ env.ACCOUNT_ID }}
+  
       - name: Configure AWS Credentials for diff or deploy
         id: connect-aws-deploy
         uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
         with:
-          aws-region: eu-west-2
+          aws-region: ${{ inputs.AWS_REGION }}
           role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
           role-session-name: account-resources-cdk-diff
           output-credentials: true
@@ -97,8 +105,10 @@ jobs:
         working-directory: ./.build
         env:
           output_format: "env_vars"
+          TARGET_ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
+          STACK_NAME: ${{ inputs.STACK_NAME }}
         run: |
-          PARAMETERS=$(python scripts/parse_parameters.py ${{ inputs.TARGET_ENVIRONMENT }} ${{ inputs.STACK_NAME }} )
+          PARAMETERS=$(python scripts/parse_parameters.py "${TARGET_ENVIRONMENT}" "${STACK_NAME}" )
           echo "${PARAMETERS}" >> "$GITHUB_ENV"
 
       - name: fix cdk.json for diff - existing tag
@@ -120,7 +130,7 @@ jobs:
           fi
           VERSION_NUMBER="${VERSION_NUMBER}" \
             COMMIT_ID="${COMMIT_ID}" \
-            ./.github/scripts/fix_cdk_json.sh ".build/${{ inputs.STACK_NAME }}_existing_tag.json"
+            ./.github/scripts/fix_cdk_json.sh ".build/${STACK_NAME}_existing_tag.json"
         env:
           STACK_NAME: "${{ inputs.STACK_NAME }}"
           COMMIT_ID: "${{ inputs.COMMIT_ID }}"
@@ -131,16 +141,24 @@ jobs:
         run: |
           docker run \
           -v "$(pwd)/.build":/home/cdkuser/workspace/ \
-          -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws-deploy.outputs.aws-access-key-id }} \
-          -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws-deploy.outputs.aws-secret-access-key }} \
-          -e AWS_SESSION_TOKEN=${{ steps.connect-aws-deploy.outputs.aws-session-token }} \
-          -e AWS_REGION="eu-west-2" \
+          -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+          -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+          -e AWS_SESSION_TOKEN="${AWS_SESSION_TOKEN}" \
+          -e AWS_REGION="${AWS_REGION}" \
           -e SHOW_DIFF="true" \
-          -e DEPLOY_CODE="${{ inputs.DEPLOY_CDK_CODE }}" \
-          -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}_existing_tag.json" \
-          -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
+          -e DEPLOY_CODE="${DEPLOY_CDK_CODE}" \
+          -e CONFIG_FILE_NAME="${STACK_NAME}_existing_tag.json" \
+          -e CDK_APP_PATH="packages/cdk/bin/${CDK_APP_NAME}.ts" \
           cdk-utils-build-repo:latest 2>&1 | tee .build/cdk_deploy_diff_existing_tag.log
         shell: bash
+        env:
+          STACK_NAME: "${{ inputs.STACK_NAME }}"
+          AWS_REGION: "${{ inputs.AWS_REGION }}"
+          DEPLOY_CDK_CODE: "${{ inputs.DEPLOY_CDK_CODE }}"
+          CDK_APP_NAME: "${{ inputs.CDK_APP_NAME }}"
+          AWS_ACCESS_KEY_ID: "${{ steps.connect-aws-deploy.outputs.aws-access-key-id }}"
+          AWS_SECRET_ACCESS_KEY: "${{ steps.connect-aws-deploy.outputs.aws-secret-access-key }}"
+          AWS_SESSION_TOKEN: "${{ steps.connect-aws-deploy.outputs.aws-session-token }}"
 
       - name: fix cdk.json for deployment
         run: |
@@ -155,16 +173,24 @@ jobs:
         run: |
           docker run \
           -v "$(pwd)/.build":/home/cdkuser/workspace/ \
-          -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws-deploy.outputs.aws-access-key-id }} \
-          -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws-deploy.outputs.aws-secret-access-key }} \
-          -e AWS_SESSION_TOKEN=${{ steps.connect-aws-deploy.outputs.aws-session-token }} \
-          -e AWS_REGION="eu-west-2" \
+          -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+          -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+          -e AWS_SESSION_TOKEN="${AWS_SESSION_TOKEN}" \
+          -e AWS_REGION="${AWS_REGION}" \
           -e SHOW_DIFF="true" \
-          -e DEPLOY_CODE="${{ inputs.DEPLOY_CDK_CODE }}" \
-          -e CONFIG_FILE_NAME="${{ inputs.STACK_NAME }}.json" \
-          -e CDK_APP_PATH="packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
+          -e DEPLOY_CODE="${DEPLOY_CDK_CODE}" \
+          -e CONFIG_FILE_NAME="${STACK_NAME}.json" \
+          -e CDK_APP_PATH="packages/cdk/bin/${CDK_APP_NAME}.ts" \
           cdk-utils-build-repo:latest 2>&1 | tee .build/cdk_deploy_diff_new_tag.log
         shell: bash
+        env:
+          STACK_NAME: "${{ inputs.STACK_NAME }}"
+          AWS_REGION: "${{ inputs.AWS_REGION }}"
+          DEPLOY_CDK_CODE: "${{ inputs.DEPLOY_CDK_CODE }}"
+          CDK_APP_NAME: "${{ inputs.CDK_APP_NAME }}"
+          AWS_ACCESS_KEY_ID: "${{ steps.connect-aws-deploy.outputs.aws-access-key-id }}"
+          AWS_SECRET_ACCESS_KEY: "${{ steps.connect-aws-deploy.outputs.aws-secret-access-key }}"
+          AWS_SESSION_TOKEN: "${{ steps.connect-aws-deploy.outputs.aws-session-token }}"
 
       - name: Header output
         if: ${{ inputs.DEPLOY_CDK_CODE == false }}
@@ -207,12 +233,17 @@ jobs:
         run: |
           cd gh-pages
           NOW=$(date +'%Y-%m-%dT%H:%M:%S')
-          echo "tag,release_datetime" > _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
-          echo "${{ inputs.VERSION }},${NOW}" >> _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
-          echo "${{ inputs.VERSION }},${NOW}" >> _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_deployments.csv
+          echo "tag,release_datetime" > "_data/${TARGET_ENVIRONMENT}_${STACK_NAME}_${AWS_REGION}_latest.csv"
+          echo "${VERSION},${NOW}" >> "_data/${TARGET_ENVIRONMENT}_${STACK_NAME}_${AWS_REGION}_latest.csv"
+          echo "${VERSION},${NOW}" >> "_data/${TARGET_ENVIRONMENT}_${STACK_NAME}_${AWS_REGION}_deployments.csv"
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
-          git add _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_deployments.csv
-          git commit -m 'update releases for ${{ inputs.TARGET_ENVIRONMENT }} and stack ${{ inputs.STACK_NAME }}'
+          git add "_data/${TARGET_ENVIRONMENT}_${STACK_NAME}_${AWS_REGION}_latest.csv"
+          git add "_data/${TARGET_ENVIRONMENT}_${STACK_NAME}_${AWS_REGION}_deployments.csv"
+          git commit -m "update releases for ${TARGET_ENVIRONMENT} and stack ${STACK_NAME}"
           parallel --retries 10 --delay 3 ::: "git pull --rebase && git push"
+        env:
+          STACK_NAME: ${{ inputs.STACK_NAME }}
+          TARGET_ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
+          VERSION: ${{ inputs.VERSION }}
+          AWS_REGION: ${{ inputs.AWS_REGION }}
