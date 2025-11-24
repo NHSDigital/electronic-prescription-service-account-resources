@@ -116,10 +116,12 @@ jobs:
         run: |
           if aws cloudformation describe-stacks --stack-name "$STACK_NAME" >/dev/null 2>&1; then
             VERSION_NUMBER=$(aws cloudformation describe-stacks \
+              --region "${AWS_REGION}" \
               --stack-name "$STACK_NAME" \
               --query "Stacks[0].Tags[?Key=='version'].Value" \
               --output text)
             COMMIT_ID=$(aws cloudformation describe-stacks \
+              --region "${AWS_REGION}" \
               --stack-name "$STACK_NAME" \
               --query "Stacks[0].Tags[?Key=='commit'].Value" \
               --output text)
@@ -135,6 +137,7 @@ jobs:
           STACK_NAME: "${{ inputs.STACK_NAME }}"
           COMMIT_ID: "${{ inputs.COMMIT_ID }}"
           IS_PULL_REQUEST: "${{ inputs.IS_PULL_REQUEST }}"
+          AWS_REGION: "${{ inputs.AWS_REGION }}"
 
       - name: "Run ${{ inputs.DEPLOY_CDK_CODE && 'deploy' || 'diff' }} for cdk app ${{ inputs.CDK_APP_NAME }} existing tag"
         if: ${{ inputs.DEPLOY_CDK_CODE == false }}
