@@ -7,6 +7,7 @@ export interface ECRRepositoryProps {
 }
 
 export class ECRRepository extends Construct {
+  repository: Repository
   public constructor(scope: Construct, id: string, props: ECRRepositoryProps){
     super(scope, id)
 
@@ -41,5 +42,7 @@ export class ECRRepository extends Construct {
       imageScanOnPush: true,
       lifecycleRules: lifecycleRules
     })
+
+    this.repository = repository
   }
 }
