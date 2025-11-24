@@ -834,6 +834,8 @@ Resources:
   #region ECR Repositories
   FHIRFacadeRepo:
     Type: AWS::ECR::Repository
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       RepositoryName: fhir-facade-repo
       ImageScanningConfiguration:
@@ -887,6 +889,8 @@ Resources:
 
   ValidatorRepo:
     Type: AWS::ECR::Repository
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       RepositoryName: validator-repo
       ImageScanningConfiguration:
@@ -940,6 +944,8 @@ Resources:
 
   CDKUtilsBuildRepo:
     Type: AWS::ECR::Repository
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       RepositoryName: cdk-utils-build-repo
       ImageScanningConfiguration:

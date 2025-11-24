@@ -1,5 +1,5 @@
 import {Duration} from "aws-cdk-lib"
-import {LifecycleRule, Repository} from "aws-cdk-lib/aws-ecr"
+import {LifecycleRule, Repository, TagStatus} from "aws-cdk-lib/aws-ecr"
 import {Construct} from "constructs"
 
 export interface ECRRepositoryProps {
@@ -21,7 +21,7 @@ export class ECRRepository extends Construct {
       rulePriority: 2,
       description: "Delete untagged images older than 7 days",
       maxImageAge: Duration.days(7),
-      tagPrefixList: [""]
+      tagStatus: TagStatus.UNTAGGED
     }
 
     const keep5RecentReleaseImagesLifecycleRule: LifecycleRule = {
