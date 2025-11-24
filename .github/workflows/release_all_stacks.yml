@@ -136,6 +136,20 @@ jobs:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
       CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
 
+  cdk_diff_account_resources_US:
+    uses: ./.github/workflows/cdk_release_code.yml
+    with:
+      STACK_NAME: account-resources
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      VERSION: ${{ inputs.version }}
+      COMMIT_ID: ${{ inputs.commit_id }}
+      CDK_APP_NAME: AccountResourcesApp_US
+      DEPLOY_CDK_CODE: false
+      IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
+
   cdk_deploy_monitoring:
     uses: ./.github/workflows/cdk_release_code.yml
     if: ${{ inputs.execute_change_set == true }}
@@ -152,6 +166,24 @@ jobs:
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
+
+  cdk_deploy_account_resources_US:
+    uses: ./.github/workflows/cdk_release_code.yml
+    if: ${{ inputs.execute_change_set == true }}
+    needs: cdk_diff_account_resources_US
+    with:
+      STACK_NAME: account-resources
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      VERSION: ${{ inputs.version }}
+      COMMIT_ID: ${{ inputs.commit_id }}
+      CDK_APP_NAME: AccountResourcesApp_US
+      DEPLOY_CDK_CODE: true
+      IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
+      DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
+
 # ***************************************************
 # If you add a new stack for release, 
 # then you either need to manually deploy empty stack to int and prod
