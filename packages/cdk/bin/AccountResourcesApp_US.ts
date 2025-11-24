@@ -25,7 +25,7 @@ Aspects.of(app).add(new AwsSolutionsChecks({verbose: true}))
 Tags.of(app).add("version", version)
 Tags.of(app).add("commit", commit)
 Tags.of(app).add("stackName", stackName)
-Tags.of(app).add("cdkApp", "AccountResources")
+Tags.of(app).add("cdkApp", "AccountResources-cdk-US")
 Tags.of(app).add("repo", "electronic-prescription-service-account-resources")
 Tags.of(app).add("cfnDriftDetectionGroup", cfnDriftDetectionGroup)
 
