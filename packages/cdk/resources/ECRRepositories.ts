@@ -35,7 +35,8 @@ export class ECRRepositories extends Construct {
       "dev-container-assist-me",
       "dev-container-vpc-resources",
       "dev-container-common-workflows",
-      "git-secrets"
+      "git-secrets",
+      "deployment-utils"
     ]
     for (const repositoryName of repositoryNames){
       new ECRRepository(this, repositoryName, {

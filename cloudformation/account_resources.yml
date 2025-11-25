@@ -944,8 +944,9 @@ Resources:
 
   CDKUtilsBuildRepo:
     Type: AWS::ECR::Repository
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
+    # not going to bother with retention policies for this as we are going to delete it eventually
+    # DeletionPolicy: Retain
+    # UpdateReplacePolicy: Retain
     Properties:
       RepositoryName: cdk-utils-build-repo
       ImageScanningConfiguration:
