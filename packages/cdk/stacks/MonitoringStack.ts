@@ -11,6 +11,7 @@ import {Functions} from "../resources/Functions"
 import {nagSuppressions} from "../nagSuppressions"
 import {Rule, Schedule} from "aws-cdk-lib/aws-events"
 import {LambdaFunction} from "aws-cdk-lib/aws-events-targets"
+import {Role, ServicePrincipal} from "aws-cdk-lib/aws-iam"
 
 export interface MonitoringStackProps extends StackProps {
   readonly stackName: string
@@ -51,6 +52,10 @@ export class MonitoringStack extends Stack {
     })
 
     // Create an EventBridge rule to trigger every Monday at 09:00 UTC
+    const reportAlertSuppressionsScheduleRole = new Role(this, "ReportAlertSuppressionsScheduleRole", {
+      assumedBy: new ServicePrincipal("events.amazonaws.com")
+    })
+    functions.functions.reportAlertSuppressionsLambda.function.grantInvoke(reportAlertSuppressionsScheduleRole)
     new Rule(this, "WeeklyScheduleRule", {
       schedule: Schedule.cron({
         minute: "0",
@@ -59,7 +64,8 @@ export class MonitoringStack extends Stack {
         month: "*",
         year: "*"
       }),
-      targets: [new LambdaFunction(functions.functions.reportAlertSuppressionsLambda.function)]
+      targets: [new LambdaFunction(functions.functions.reportAlertSuppressionsLambda.function)],
+      role: reportAlertSuppressionsScheduleRole
     })
 
     nagSuppressions(this)
