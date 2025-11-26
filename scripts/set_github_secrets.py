@@ -692,6 +692,12 @@ def main():
             "set_target_spine_servers": False,
             "is_account_resources": False,
             "set_target_service_search_servers": False
+        },
+        {
+            "repo_name": "NHSDigital/eps-spine-shared",
+            "set_target_spine_servers": False,
+            "is_account_resources": False,
+            "set_target_service_search_servers": False
         }
     ]
 
