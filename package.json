@@ -35,7 +35,7 @@
     "license-checker": "^25.0.1"
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^2.28.1",
+    "@aws-lambda-powertools/logger": "^2.29.0",
     "@nhsdigital/eps-cdk-constructs": "^1.0.176",
     "archiver": "^7.0.1",
     "esbuild": "^0.27.0",
