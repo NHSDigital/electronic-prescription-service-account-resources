@@ -47,7 +47,8 @@
         "repo:NHSDigital/eps-vpc-resources:*",
         "repo:NHSDigital/eps-storage-resources:*",
         "repo:NHSDigital/eps-assist-me:*",
-        "repo:NHSDigital/eps-storage-terraform:*"
+        "repo:NHSDigital/eps-storage-terraform:*",
+        "repo:NHSDigital/eps-spine-shared:*"
       ],
       "PrepareChangesetClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-account-resources:*"
@@ -91,6 +92,7 @@
         "repo:NHSDigital/eps-action-cfn-lint:*",
         "repo:NHSDigital/eps-aws-dashboards:*",
         "repo:NHSDigital/eps-storage-terraform:*",
+        "repo:NHSDigital/eps-spine-shared:*",
         "repo:NHSDigital/eps-workflow-semantic-release:*",
         "repo:NHSDigital/eps-workflow-dependabot:*",
         "repo:NHSDigital/eps-cdk-utils:*",
