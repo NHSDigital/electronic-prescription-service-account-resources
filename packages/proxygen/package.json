@@ -27,7 +27,7 @@
         "aws-sdk-client-mock-jest": "^4.1.0",
         "jest-mock": "^30.0.5",
         "nock": "^14.0.10",
-        "ts-jest": "^29.4.5",
+        "ts-jest": "^29.4.6",
         "ts-jest-mock": "^1.4.2"
     }
 }
