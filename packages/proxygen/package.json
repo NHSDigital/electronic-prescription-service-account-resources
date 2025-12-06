@@ -11,7 +11,7 @@
         "@middy/core": "^6.4.5",
         "@middy/input-output-logger": "^6.4.5",
         "axios": "^1.13.2",
-        "jsonwebtoken": "^9.0.2",
+        "jsonwebtoken": "^9.0.3",
         "uuid": "^13.0.0"
     },
     "scripts": {
