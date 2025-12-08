@@ -1,6 +1,7 @@
 import {StackProps, Stack, App} from "aws-cdk-lib"
 import {nagSuppressions} from "../nagSuppressions"
 import {ECRRepositories} from "../resources/ECRRepositories"
+import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
 
 export interface AccountResourcesStackProps_UK extends StackProps {
   readonly stackName: string
@@ -13,6 +14,7 @@ export class AccountResourcesStack_UK extends Stack {
     super(scope, id, props)
 
     new ECRRepositories(this, "ECRRepositories")
+    new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
 
     nagSuppressions(this)
   }
