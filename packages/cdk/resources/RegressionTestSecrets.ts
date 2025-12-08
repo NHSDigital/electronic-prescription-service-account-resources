@@ -1,4 +1,4 @@
-import {Duration, RemovalPolicy, SecretValue} from "aws-cdk-lib"
+import {Duration, RemovalPolicy} from "aws-cdk-lib"
 import {
   AccountRootPrincipal,
   Effect,
@@ -6,9 +6,8 @@ import {
   PolicyStatement
 } from "aws-cdk-lib/aws-iam"
 import {Key} from "aws-cdk-lib/aws-kms"
-import {Secret} from "aws-cdk-lib/aws-secretsmanager"
-import {NagSuppressions} from "cdk-nag"
 import {Construct} from "constructs"
+import {StaticSecret} from "../constructs/StaticSecret"
 
 export interface RegressionTestSecretsProps {
   readonly stackName: string
@@ -17,6 +16,8 @@ export class RegressionTestSecrets extends Construct {
 
   public constructor(scope: Construct, id: string, props: RegressionTestSecretsProps){
     super(scope, id)
+
+    // list of all the secrets used by regression tests
     const regressionTestSecrets = [
       "CPT_FHIR_CLIENT_ID",
       "CPT_FHIR_CLIENT_SECRET",
@@ -38,6 +39,8 @@ export class RegressionTestSecrets extends Construct {
       "JWT_KID",
       "JWT_PRIVATE_KEY"
     ]
+
+    // list of all environments where regression test secrets are needed for
     const environments = [
       "REF",
       "INTERNAL_DEV_SANDBOX",
@@ -46,6 +49,8 @@ export class RegressionTestSecrets extends Construct {
       "INTERNAL_QA"
     ]
 
+    // create all secrets for all environments
+    // note - value is ChangeMe and is set outside deployment
     const regressionTestSecretsKmsKey = new Key(this, "RegressionTestSecretsKMSKey", {
       removalPolicy: RemovalPolicy.DESTROY,
       pendingWindow: Duration.days(7),
@@ -70,19 +75,25 @@ export class RegressionTestSecrets extends Construct {
     })
     for (const environment of environments){
       for (const regressionTestSecret of regressionTestSecrets){
-        const secret = new Secret(this, `${environment}-${regressionTestSecret}`, {
+        new StaticSecret(this, `${environment}-${regressionTestSecret}-StaticSecret`, {
           secretName: `/regression-tests/${environment}/${regressionTestSecret}`,
           description: `Regression test secret for ${regressionTestSecret} in ${environment} environment`,
-          secretStringValue: SecretValue.unsafePlainText("ChangeMe"),
           encryptionKey: regressionTestSecretsKmsKey
         })
-        NagSuppressions.addResourceSuppressions(secret, [
-          {
-            id: "AwsSolutions-SMG4",
-            reason: "Static secret - does not need rotation"
-          }
-        ])
       }
     }
+
+    // secrets for PTL prescription signing keys
+    new StaticSecret(this, `ptl-Prescription-SigningPublicKey-StaticSecret`, {
+      secretName: `/regression-tests/ptl-Prescription-SigningPublicKey`,
+      description: `Regression test secret for SigningPublicKey`,
+      encryptionKey: regressionTestSecretsKmsKey
+    })
+    new StaticSecret(this, `ptl-Prescription-SigningPrivateKey-StaticSecret`, {
+      secretName: `/regression-tests/ptl-Prescription-SigningPrivateKey`,
+      description: `Regression test secret for SigningPrivateKey`,
+      encryptionKey: regressionTestSecretsKmsKey
+    })
+
   }
 }
