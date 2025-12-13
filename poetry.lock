@@ -257,19 +257,19 @@ files = [
 
 [[package]]
 name = "boto3"
-version = "1.42.4"
+version = "1.42.8"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "boto3-1.42.4-py3-none-any.whl", hash = "sha256:0f4089e230d55f981d67376e48cefd41c3d58c7f694480f13288e6ff7b1fefbc"},
-    {file = "boto3-1.42.4.tar.gz", hash = "sha256:65f0d98a3786ec729ba9b5f70448895b2d1d1f27949aa7af5cb4f39da341bbc4"},
+    {file = "boto3-1.42.8-py3-none-any.whl", hash = "sha256:747acc83488fc80b0e7d1c4ff0c533039ff3ede21bdbd4e89544e25b010b070c"},
+    {file = "boto3-1.42.8.tar.gz", hash = "sha256:e967706af5887339407481562c389c612d5eae641eb854ddd59026d049df740e"},
 ]
 
 [package.dependencies]
 botocore = [
-    {version = ">=1.42.4,<1.43.0"},
+    {version = ">=1.42.8,<1.43.0"},
     {version = ">=1.21.0,<2.0a0", extras = ["crt"], optional = true, markers = "extra == \"crt\""},
 ]
 jmespath = ">=0.7.1,<2.0.0"
@@ -725,14 +725,14 @@ xray = ["mypy-boto3-xray (>=1.41.0,<1.42.0)"]
 
 [[package]]
 name = "botocore"
-version = "1.42.4"
+version = "1.42.8"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "botocore-1.42.4-py3-none-any.whl", hash = "sha256:c3b091fd33809f187824b6434e518b889514ded5164cb379358367c18e8b0d7d"},
-    {file = "botocore-1.42.4.tar.gz", hash = "sha256:d4816023492b987a804f693c2d76fb751fdc8755d49933106d69e2489c4c0f98"},
+    {file = "botocore-1.42.8-py3-none-any.whl", hash = "sha256:4cb89c74dd9083d16e45868749b999265a91309b2499907c84adeffa0a8df89b"},
+    {file = "botocore-1.42.8.tar.gz", hash = "sha256:4921aa454f82fed0880214eab21126c98a35fe31ede952693356f9c85ce3574b"},
 ]
 
 [package.dependencies]
@@ -3228,4 +3228,4 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "a2e4460d98c5f901657fba6242191bbedb03b943672a2251d61842f3ec4cad28"
+content-hash = "7340b9485351ea4b1db8c9002e15135984b88c98d17e52d661b15879f1ad313f"
