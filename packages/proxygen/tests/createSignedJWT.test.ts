@@ -76,4 +76,31 @@ describe("createSignedJWT", () => {
     })
     expect(result).toBe("mockSignedJWT")
   })
+
+  it("should use apiClient-client in sub and iss when apiClient is provided", () => {
+    jest.spyOn(jwt, "sign").mockImplementation(jest.fn(() => "mockSignedJWT"))
+    const mockApiClient = "custom-api-client"
+    const result = helpers.createSignedJWT(mockPrivateKey, mockKid, mockApiName, mockRealmUrl, mockApiClient)
+    const currentTimestamp = Math.floor(Date.now() / 1000)
+
+    const expectedPayload = {
+      sub: `${mockApiClient}-client`,
+      iss: `${mockApiClient}-client`,
+      jti: mockUuid,
+      aud: mockRealmUrl,
+      exp: currentTimestamp + 180
+    }
+
+    const expectedHeader = {
+      typ: "JWT",
+      alg: "RS512",
+      kid: mockKid
+    }
+
+    expect(result).toBe("mockSignedJWT")
+    expect(jwt.sign).toHaveBeenCalledWith(JSON.stringify(expectedPayload), mockPrivateKey, {
+      algorithm: "RS512",
+      header: expectedHeader
+    })
+  })
 })
