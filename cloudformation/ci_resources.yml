@@ -154,6 +154,10 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
+              - !ImportValue account-resources:PfpClientKeySecret
+              - !ImportValue account-resources:PfpClientCertSecret
+              - !ImportValue account-resources:PfpClientSandboxKeySecret
+              - !ImportValue account-resources:PfpClientSandboxCertSecret
               - !ImportValue account-resources:PsuClientKeySecret
               - !ImportValue account-resources:PsuClientSandboxKeySecret
               - !ImportValue account-resources:PsuCACertSecret
