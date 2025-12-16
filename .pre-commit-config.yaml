@@ -49,6 +49,50 @@ repos:
         types_or: [sh, shell]
         pass_filenames: false
 
+      - id: lint-certificate-checker
+        name: Lint certificate-checker
+        entry: npm
+        args: ["run", "--prefix=packages/certificateChecker", "lint"]
+        language: system
+        files: ^packages\/certificateChecker
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-slackAlerter
+        name: Lint slackAlerter
+        entry: npm
+        args: ["run", "--prefix=packages/slackAlerter", "lint"]
+        language: system
+        files: ^packages\/slackAlerter
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-proxygen
+        name: Lint proxygen
+        entry: npm
+        args: ["run", "--prefix=packages/proxygen", "lint"]
+        language: system
+        files: ^packages\/proxygen
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-lambdaJanitor
+        name: Lint lambdaJanitor
+        entry: npm
+        args: ["run", "--prefix=packages/lambdaJanitor", "lint"]
+        language: system
+        files: ^packages\/lambdaJanitor
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-cdk
+        name: Lint cdk
+        entry: npm
+        args: ["run", "--prefix=packages/cdk", "lint"]
+        language: system
+        files: ^packages\/cdk
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
   - repo: local
     hooks:
       - id: git-secrets

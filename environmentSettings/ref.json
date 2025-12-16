@@ -87,6 +87,8 @@
       "LAMBDA_CONCURRENCY_THRESHOLD": 900,
       "LAMBDA_CONCURRENCY_WARNING_THRESHOLD": 200,
       "ENABLE_ALERTS": true
-    }
+    },
+    "account-resources-cdk-us": {},
+    "account-resources-cdk-uk": {}
   }
 }

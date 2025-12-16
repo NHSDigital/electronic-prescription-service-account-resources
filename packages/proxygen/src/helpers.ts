@@ -8,7 +8,7 @@ export function getRealmURL() {
 
 export async function getAccessToken(event: Proxygen, realm_url: string) {
   const privateKey = await getSecret(event.proxygenSecretName)
-  const signedJWT = createSignedJWT(privateKey, event.kid, event.apiName, realm_url)
+  const signedJWT = createSignedJWT(privateKey, event.kid, event.apiName, realm_url, event.apiClient)
   const payload = {
     grant_type: "client_credentials",
     client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
@@ -97,6 +97,7 @@ export function proxygenErrorHandler(error: unknown, logger: Logger) {
 
 export interface Proxygen {
   apiName: string
+  apiClient?: string
   proxygenSecretName: string
   environment?: string
   specDefinition?: object

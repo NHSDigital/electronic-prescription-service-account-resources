@@ -75,6 +75,7 @@
         "repo:NHSDigital/electronic-prescription-service-account-resources:*",
         "repo:NHSDigital/electronic-prescription-service-api:*",
         "repo:NHSDigital/prescriptionsforpatients:*",
+        "repo:NHSDigital/prescriptions-for-patients:*",
         "repo:NHSDigital/eps-prescription-status-update-api:*",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:*",
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
@@ -95,7 +96,8 @@
         "repo:NHSDigital/eps-cdk-utils:*",
         "repo:NHSDigital/eps-assist-me:*",
         "repo:NHSDigital/eps-vpc-resources:*",
-        "repo:NHSDigital/eps-workflow-quality-checks:*"
+        "repo:NHSDigital/eps-workflow-quality-checks:*",
+        "repo:NHSDigital/eps-common-workflows:*"
       ],
       "ProxygenProdClaimFilters": [
         "NONE"
@@ -123,6 +125,8 @@
       "LAMBDA_CONCURRENCY_THRESHOLD": 900,
       "LAMBDA_CONCURRENCY_WARNING_THRESHOLD": 200,
       "ENABLE_ALERTS": false
-    }
+    },
+    "account-resources-cdk-us": {},
+    "account-resources-cdk-uk": {}
   }
 }

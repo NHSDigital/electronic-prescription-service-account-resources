@@ -154,6 +154,10 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
+              - !ImportValue account-resources:PfpClientKeySecret
+              - !ImportValue account-resources:PfpClientCertSecret
+              - !ImportValue account-resources:PfpClientSandboxKeySecret
+              - !ImportValue account-resources:PfpClientSandboxCertSecret
               - !ImportValue account-resources:PsuClientKeySecret
               - !ImportValue account-resources:PsuClientSandboxKeySecret
               - !ImportValue account-resources:PsuCACertSecret
@@ -545,6 +549,13 @@ Resources:
               - bedrock:TagResource
               - bedrock:UntagResource
               - bedrock:CreateGuardrailVersion
+              - bedrock:CreatePrompt
+              - bedrock:UpdatePrompt
+              - bedrock:GetPrompt
+              - bedrock:ListPrompts
+              - bedrock:DeletePrompt
+              - bedrock:CreatePromptVersion
+              - bedrock:OptimizePrompt
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyB:
@@ -1544,7 +1555,9 @@ Resources:
               - ecr:DescribeImageScanFindings
               - ecr:BatchGetImage
               - ecr:GetDownloadUrlForLayer
-            Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/dev-container-*"
+            Resource: 
+              - !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/dev-container-*"
+              - !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/git-secrets"
           - Effect: Allow
             Action:
               - ecr:GetAuthorizationToken

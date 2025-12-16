@@ -171,7 +171,9 @@ show-eps-route-53-nameservers: guard-env
 cfn-guard:
 	./scripts/run_cfn_guard.sh
 
-cdk-synth: 
+cdk-synth: cdk-synth-monitoring cdk-synth-account-resources-US cdk-synth-account-resources-UK
+
+cdk-synth-monitoring: 
 	mkdir -p .local_config
 	VERSION_NUMBER=undefined \
 	COMMIT_ID=undefined \
@@ -185,7 +187,37 @@ cdk-synth:
 		--quiet \
 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/MonitoringApp.ts" 
 
+cdk-synth-account-resources-US: 
+	mkdir -p .local_config
+	VERSION_NUMBER=undefined \
+	COMMIT_ID=undefined \
+	IS_PULL_REQUEST=false \
+	LAMBDA_CONCURRENCY_THRESHOLD=900 \
+	LAMBDA_CONCURRENCY_WARNING_THRESHOLD=700 \
+	ENABLE_ALERTS=False \
+	STACK_NAME=account-resources-cdk-us \
+		 ./.github/scripts/fix_cdk_json.sh .local_config/account-resources-us.config.json
+	CONFIG_FILE_NAME=.local_config/account-resources-us.config.json npx cdk synth \
+		--quiet \
+		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/AccountResourcesApp_US.ts" 
+
+cdk-synth-account-resources-UK: 
+	mkdir -p .local_config
+	VERSION_NUMBER=undefined \
+	COMMIT_ID=undefined \
+	IS_PULL_REQUEST=false \
+	LAMBDA_CONCURRENCY_THRESHOLD=900 \
+	LAMBDA_CONCURRENCY_WARNING_THRESHOLD=700 \
+	ENABLE_ALERTS=False \
+	STACK_NAME=account-resources-cdk-uk \
+		 ./.github/scripts/fix_cdk_json.sh .local_config/account-resources-uk.config.json
+	CONFIG_FILE_NAME=.local_config/account-resources-uk.config.json npx cdk synth \
+		--quiet \
+		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/AccountResourcesApp_UK.ts" 
 create-npmrc:
 	gh auth login --scopes "read:packages"; \
 	echo "//npm.pkg.github.com/:_authToken=$$(gh auth token)" > .npmrc
 	echo "@nhsdigital:registry=https://npm.pkg.github.com" >> .npmrc
+
+compile:
+	echo "Does nothing yet"

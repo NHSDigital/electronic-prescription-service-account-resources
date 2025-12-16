@@ -13,7 +13,8 @@
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
         "repo:NHSDigital/eps-aws-dashboards:*",
         "repo:NHSDigital/eps-vpc-resources:*",
-        "repo:NHSDigital/eps-storage-resources:*"
+        "repo:NHSDigital/eps-storage-resources:*",
+        "repo:NHSDigital/eps-assist-me:*"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -27,7 +28,8 @@
         "repo:NHSDigital/eps-prescription-tracker-ui:*",
         "repo:NHSDigital/eps-aws-dashboards:*",
         "repo:NHSDigital/eps-vpc-resources:*",
-        "repo:NHSDigital/eps-storage-resources:*"
+        "repo:NHSDigital/eps-storage-resources:*",
+        "repo:NHSDigital/eps-assist-me:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "NONE"
@@ -82,6 +84,8 @@
       "LAMBDA_CONCURRENCY_THRESHOLD": 900,
       "LAMBDA_CONCURRENCY_WARNING_THRESHOLD": 200,
       "ENABLE_ALERTS": true
-    }
+    },
+    "account-resources-cdk-us": {},
+    "account-resources-cdk-uk": {}
   }
 }

@@ -10,7 +10,7 @@ Globals:
     MemorySize: 256
     Architectures:
       - x86_64
-    Runtime: nodejs22.x
+    Runtime: nodejs24.x
     Environment:
       Variables:
         NODE_OPTIONS: "--enable-source-maps"
@@ -1486,6 +1486,7 @@ Resources:
             - !GetAtt ConfigRuleToDetectCfnDriftPFP.Arn
             - !GetAtt ConfigRuleToDetectCfnDriftFhirValidator.Arn
             - !GetAtt ConfigRuleToDetectCfnDriftRoute53.Arn
+            - !GetAtt ConfigRuleToDetectCfnDriftEpsam.Arn
       Targets:
         - Arn: !GetAtt DriftDetector.Arn
           Id: "DriftDetectorFunction"

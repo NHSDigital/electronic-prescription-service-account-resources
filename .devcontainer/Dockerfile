@@ -9,7 +9,7 @@ ARG ASDF_VERSION
 COPY .tool-versions.asdf /tmp/.tool-versions.asdf
 
 # Add amd64 architecture if on arm64
-RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then dpkg --add-architecture amd64; fi
+RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then dpkg --add-architecture arm64; fi
 
 # Anticipate and resolve potential permission issues with apt
 RUN mkdir -p /tmp && chmod 1777 /tmp
@@ -35,15 +35,6 @@ RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
     /tmp/aws-cli/aws/install && \
     rm /tmp/awscliv2.zip && rm -rf /tmp/aws-cli
 
-# Download correct SAM CLI for arch
-RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
-      wget -O /tmp/aws-sam-cli.zip "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-arm64.zip"; \
-    else \
-      wget -O /tmp/aws-sam-cli.zip "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip"; \
-    fi && \
-    unzip /tmp/aws-sam-cli.zip -d /tmp/aws-sam-cli && \
-    /tmp/aws-sam-cli/install && \
-    rm /tmp/aws-sam-cli.zip && rm -rf /tmp/aws-sam-cli
 
 # Install ASDF
 RUN ASDF_VERSION=$(awk '!/^#/ && NF {print $1; exit}' /tmp/.tool-versions.asdf) && \
