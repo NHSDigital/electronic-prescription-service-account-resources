@@ -59,8 +59,10 @@ export class InspectorFilters extends Construct {
       // from go stdlib used in asdf, not applicable
       "CVE-2025-58187", // https://nvd.nist.gov/vuln/detail/CVE-2025-58187
       // from go stdlib used in sam cli, not applicable
-      "CVE-2025-64756" // https://nvd.nist.gov/vuln/detail/CVE-2025-64756
+      "CVE-2025-64756", // https://nvd.nist.gov/vuln/detail/CVE-2025-64756
       // suppression of vulnerability in glob shell - we dont use this so fine to suppress
+      "CVE-2025-61729" // https://nvd.nist.gov/vuln/detail/CVE-2025-61729
+      // suppression of vulnerability in golang stdlib - imported from asdf. Fine to suppress
     ]
 
     for (const cve of cvesToSuppress){
