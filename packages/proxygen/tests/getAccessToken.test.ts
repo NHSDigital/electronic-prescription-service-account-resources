@@ -49,7 +49,7 @@ describe("getAccessToken", () => {
     nock.cleanAll()
   })
 
-  it("should get the access token successfully", async () => {
+  it("should get the access token successfully when apiClient is not provided", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
 
     const result = await helpers.getAccessToken(mockEvent, realm_url)
@@ -59,10 +59,32 @@ describe("getAccessToken", () => {
       mockPrivateKey,
       mockEvent.kid,
       mockEvent.apiName,
-      realm_url
+      realm_url,
+      undefined
     )
     expect(result).toBe(mockAccessToken)
   })
+
+  it("should get the access token successfully when apiClient is provided", async () => {
+    const mockEventWithApiClient: Proxygen = {
+      ...mockEvent,
+      apiClient: "custom-api-client"
+    }
+    nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
+
+    const result = await helpers.getAccessToken(mockEventWithApiClient, realm_url)
+
+    expect(signingHelpers.getSecret).toHaveBeenCalledWith(mockEventWithApiClient.proxygenSecretName)
+    expect(signingHelpers.createSignedJWT).toHaveBeenCalledWith(
+      mockPrivateKey,
+      mockEventWithApiClient.kid,
+      mockEventWithApiClient.apiName,
+      realm_url,
+      mockEventWithApiClient.apiClient
+    )
+    expect(result).toBe(mockAccessToken)
+  })
+
   it("should throw an error if the API call fails", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(500, {error: "Internal Server Error"})
 
@@ -73,7 +95,8 @@ describe("getAccessToken", () => {
       mockPrivateKey,
       mockEvent.kid,
       mockEvent.apiName,
-      realm_url
+      realm_url,
+      undefined
     )
   })
 })

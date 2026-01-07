@@ -3,7 +3,8 @@ import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secre
 import {returnUuid} from "./uuidHelper"
 const secretsClient = new SecretsManagerClient({})
 
-export function createSignedJWT(privateKey: Secret, kid: string, apiName: string, realm_url: string) {
+export function createSignedJWT(privateKey: Secret,
+  kid: string, apiName: string, realm_url: string, apiClient?: string | undefined) {
   const header = {
     typ: "JWT",
     alg: "RS512",
@@ -18,6 +19,12 @@ export function createSignedJWT(privateKey: Secret, kid: string, apiName: string
     jti: jti_value,
     aud: realm_url,
     exp: currentTimestamp + 180 // expiry time is 180 seconds from time of creation
+  }
+  // Switch out sub and ISS if API client is provided
+  // Allows for specified usage of a named client rather than utilising api name
+  if (apiClient !== undefined) {
+    data.sub = `${apiClient}-client`
+    data.iss = `${apiClient}-client`
   }
 
   const signedJWT = jwt.sign(JSON.stringify(data), privateKey, {algorithm: "RS512", header: header})

@@ -51,7 +51,7 @@ jobs:
       parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
     steps:
       - name: Checkout scripts
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           ref: ${{ env.BRANCH_NAME }}
           sparse-checkout: |
@@ -65,7 +65,7 @@ jobs:
           role-session-name: account-resources-deploy-sam-stack
 
       - name: download build artifact
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: ${{ inputs.BUILD_ARTIFACT }}
           path: .
@@ -97,7 +97,7 @@ jobs:
 
       - name: Checkout gh-pages
         if: ${{ !startsWith(inputs.STACK_NAME, 'lambda-resources-pr-') }}
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           ref: gh-pages
           path: gh-pages

@@ -1498,6 +1498,7 @@ Resources:
             - !GetAtt ConfigRuleToDetectCfnDriftPFP.Arn
             - !GetAtt ConfigRuleToDetectCfnDriftFhirValidator.Arn
             - !GetAtt ConfigRuleToDetectCfnDriftRoute53.Arn
+            - !GetAtt ConfigRuleToDetectCfnDriftEpsam.Arn
       Targets:
         - Arn: !GetAtt DriftDetector.Arn
           Id: "DriftDetectorFunction"
