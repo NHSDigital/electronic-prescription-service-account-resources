@@ -24,13 +24,12 @@ export function createSignedJWT(privateKey: Secret, kid: string, apiName: string
   return signedJWT
 }
 
-export async function getSecret(proxygenSecretName: string): Promise<jwt.Secret> {
+export async function getSecret(proxygenSecretName: string): Promise<string> {
   const input = {
     SecretId: proxygenSecretName
   }
   const getSecretCommand = new GetSecretValueCommand(input)
 
   const secretResponse = await secretsClient.send(getSecretCommand)
-  const privateKey = secretResponse.SecretString
-  return privateKey as Secret
+  return secretResponse.SecretString!
 }

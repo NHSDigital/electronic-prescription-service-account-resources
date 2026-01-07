@@ -105,4 +105,6 @@ export interface Proxygen {
   secretName?: string
   secretKey?: string
   secretCert?: string
+  secretKeyName?: string
+  secretCertName?: string
 }

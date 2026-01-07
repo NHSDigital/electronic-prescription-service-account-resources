@@ -11,19 +11,29 @@ import {
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import axios from "axios"
+import {getSecret} from "./signingHelpers"
 
 const logger = new Logger({serviceName: "proxygenMTLSSecretPut"})
 
 const lambdaHandler = async (event: Proxygen) => {
-  checkRequiredKeys(event, ["environment", "secretName", "secretKey", "secretCert"])
+  checkRequiredKeys(event, ["environment", "secretName"])
 
   checkAllowedEnvironment(event.environment)
 
-  const accessToken = await getAccessToken(event, getRealmURL())
-
   const formData = new FormData()
-  formData.append("cert", new Blob([event.secretCert as string]))
-  formData.append("key", new Blob([event.secretKey as string]))
+  if (event.secretCert && event.secretKey) {
+    formData.append("cert", new Blob([event.secretCert as string]))
+    formData.append("key", new Blob([event.secretKey as string]))
+  } else if (event.secretCertName && event.secretKeyName) {
+    const cert = await getSecret(event.secretCertName)
+    const key = await getSecret(event.secretKeyName)
+    formData.append("cert", new Blob([cert]))
+    formData.append("key", new Blob([key]))
+  } else {
+    throw new Error("Either secretCert and secretKey or secretCertName and secretKeyName must be provided")
+  }
+
+  const accessToken = await getAccessToken(event, getRealmURL())
 
   //eslint-disable-next-line max-len
   const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/environments/${event.environment}/secrets/mtls/${event.secretName}`

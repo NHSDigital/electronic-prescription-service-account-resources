@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
-/* eslint-disable  max-len */
+
 import nock from "nock"
 
 import {
@@ -16,8 +16,18 @@ import {mockClient} from "aws-sdk-client-mock"
 import {Context} from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
 
+let getSecretMock = jest.fn(async (secretName: string) => {
+  if (secretName === "testSecretKeyName") {
+    return "mockSecretKey"
+  } else if (secretName === "testSecretCertName") {
+    return "mockSecretCert"
+  } else if (secretName === "testProxygenSecret") {
+    return "mockProxygenSecret"
+  }
+  throw new Error("Unexpected secret name: " + secretName)
+})
 jest.unstable_mockModule("../src/signingHelpers", () => ({
-  getSecret: jest.fn().mockReturnValue("mockPrivateKey"),
+  getSecret: getSecretMock,
   createSignedJWT: jest.fn().mockReturnValue("signedJWT")
 }))
 
@@ -28,7 +38,7 @@ const handler = await import("../src/proxygenMTLSSecretPut")
 
 const validProxygen: Proxygen = {
   apiName: "testApi",
-  proxygenSecretName: "testSecret",
+  proxygenSecretName: "testProxygenSecret",
   kid: "testKid",
   environment: "dev",
   secretName: "testSecretName",
@@ -66,7 +76,20 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
 
   it("throws error if missing required property on input", async () => {
     await expect(handler.handler({} as Proxygen, {} as Context)).rejects.toThrow(
-      "Input is one of missing required keys: apiName,proxygenSecretName,kid,environment,secretName,secretKey,secretCert. Input keys: "
+      "Input is one of missing required keys: apiName,proxygenSecretName,kid,environment,secretName. Input keys: "
+    )
+  })
+
+  it("throws error if neither secret option is provided", async () => {
+    process.env.ALLOWED_ENVIRONMENTS = "dev"
+    await expect(handler.handler({
+      apiName: "testApi",
+      proxygenSecretName: "testProxygenSecret",
+      kid: "testKid",
+      environment: "dev",
+      secretName: "testSecretName"
+    } as Proxygen, {} as Context)).rejects.toThrow(
+      "Either secretCert and secretKey or secretCertName and secretKeyName must be provided"
     )
   })
 
@@ -155,7 +178,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
     })
   })
 
-  it("should work if everything is OK", async () => {
+  it("should work with secretCert and secretKey", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
     nock("https://proxygen.prod.api.platform.nhs.uk")
       .put("/apis/testApi/environments/dev/secrets/mtls/testSecretName")
@@ -164,6 +187,28 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
     process.env.ALLOWED_ENVIRONMENTS = "dev"
 
     const res = await handler.handler(validProxygen, {} as Context)
+    expect(res).toMatchObject({foo: "bar"})
+  })
+
+  it("should work with secretCertName and secretKeyName", async () => {
+    nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
+    nock("https://proxygen.prod.api.platform.nhs.uk")
+      .put("/apis/testApi/environments/dev/secrets/mtls/testSecretName")
+      .reply(200, {foo: "bar"})
+
+    process.env.ALLOWED_ENVIRONMENTS = "dev"
+
+    const proxygenWithSecretNames: Proxygen = {
+      apiName: "testApi",
+      proxygenSecretName: "testProxygenSecret",
+      kid: "testKid",
+      environment: "dev",
+      secretName: "testSecretName",
+      secretKeyName: "testSecretKeyName",
+      secretCertName: "testSecretCertName"
+    }
+
+    const res = await handler.handler(proxygenWithSecretNames, {} as Context)
     expect(res).toMatchObject({foo: "bar"})
   })
 })

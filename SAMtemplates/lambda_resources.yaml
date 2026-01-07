@@ -821,9 +821,21 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
+              - !ImportValue account-resources:PsuClientKeySecret
+              - !ImportValue account-resources:PsuClientSandboxKeySecret
+              - !ImportValue account-resources:PsuClientCertSecret
+              - !ImportValue account-resources:PsuClientSandboxCertSecret
               - !ImportValue account-resources:PSUProxygenPrivateKey
               - !ImportValue account-resources:CPSUProxygenPrivateKey
+              - !ImportValue account-resources:ClinicalTrackerClientKeySecret
+              - !ImportValue account-resources:ClinicalTrackerClientSandboxKeySecret
+              - !ImportValue account-resources:ClinicalTrackerClientCertSecret
+              - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
               - !ImportValue account-resources:ClinicalTrackerProxygenPrivateKey
+              - !ImportValue account-resources:FhirFacadeClientKeySecret
+              - !ImportValue account-resources:FhirFacadeClientSandboxKeySecret
+              - !ImportValue account-resources:FhirFacadeClientCertSecret
+              - !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
               - !ImportValue secrets:PrescribingProxygenPrivateKey
               - !ImportValue secrets:DispensingProxygenPrivateKey
               - !ImportValue secrets:FhirPrescribingProxygenPrivateKey
