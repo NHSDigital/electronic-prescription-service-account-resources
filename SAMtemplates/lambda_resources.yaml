@@ -841,6 +841,10 @@ Resources:
               - !ImportValue secrets:FhirPrescribingProxygenPrivateKey
               - !ImportValue secrets:FhirDispensingProxygenPrivateKey
               - !ImportValue secrets:PrescriptionsForPatientsProxygenPrivateKey
+              - !ImportValue account-resources:PfpClientKeySecret
+              - !ImportValue account-resources:PfpClientCertSecret
+              - !ImportValue account-resources:PfpClientSandboxKeySecret
+              - !ImportValue account-resources:PfpClientSandboxCertSecret
 
   ProxygenPTLInstancePutFunctionResources:
     Type: AWS::Serverless::Application
