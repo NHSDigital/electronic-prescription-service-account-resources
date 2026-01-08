@@ -556,6 +556,7 @@ Resources:
               - bedrock:DeletePrompt
               - bedrock:CreatePromptVersion
               - bedrock:OptimizePrompt
+              - bedrock:AllowVendedLogDeliveryForResource
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyB:
