@@ -2321,6 +2321,7 @@ files = [
 
 [package.dependencies]
 cryptography = ">=45.0.7,<47"
+typing-extensions = {version = ">=4.9", markers = "python_version < \"3.13\" and python_version >= \"3.8\""}
 
 [package.extras]
 docs = ["sphinx (!=5.2.0,!=5.2.0.post0,!=7.2.5)", "sphinx_rtd_theme"]
@@ -2515,6 +2516,7 @@ files = [
 [package.dependencies]
 attrs = ">=22.2.0"
 rpds-py = ">=0.7.0"
+typing-extensions = {version = ">=4.4.0", markers = "python_version < \"3.13\""}
 
 [[package]]
 name = "regex"
@@ -2833,7 +2835,7 @@ description = "C version of reader, parser and emitter for ruamel.yaml derived f
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "platform_python_implementation == \"CPython\" and python_version == \"3.14\""
+markers = "platform_python_implementation == \"CPython\" and python_version < \"3.15\""
 files = [
     {file = "ruamel_yaml_clib-0.2.15-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:88eea8baf72f0ccf232c22124d122a7f26e8a24110a0273d9bcddcb0f7e1fa03"},
     {file = "ruamel_yaml_clib-0.2.15-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:9b6f7d74d094d1f3a4e157278da97752f16ee230080ae331fcc219056ca54f77"},
@@ -3230,5 +3232,5 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 
 [metadata]
 lock-version = "2.1"
-python-versions = "^3.14"
-content-hash = "216ce77b8f7bbfb200608cedd7272baddf6097390f1854dc6ed9ef81f7dad131"
+python-versions = "^3.12"
+content-hash = "7a03f94ee2341ccbc4613df7adf1eff734b9bf9fa2239936ba775e90f09d7267"
