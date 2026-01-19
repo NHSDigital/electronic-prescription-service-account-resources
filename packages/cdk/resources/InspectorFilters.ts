@@ -88,7 +88,7 @@ export class InspectorFilters extends Construct {
       // suppression of vulnerability in golang stdlib - imported from asdf. Fine to suppress
       {id: "CVE-2026-23745", expiry: new Date("2026-06-01")} // https://nvd.nist.gov/vuln/detail/CVE-2025-61729
       // cdk-utils and fhir facade repo
-      // suppression of vulnerability in tar. Waiting for npm to release fix
+      // suppression of vulnerability in tar. Waiting for npm to release fix https://github.com/npm/cli/issues/8917
     ]
 
     const today = new Date()
