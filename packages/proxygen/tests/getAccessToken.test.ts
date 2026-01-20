@@ -1,19 +1,25 @@
 // getAccessToken.test.ts
 
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest"
 import nock from "nock"
-import {jest} from "@jest/globals"
-import {mockClient} from "aws-sdk-client-mock"
-import "aws-sdk-client-mock-jest"
+import {mockClient} from "aws-sdk-vitest-mock"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 import jwt from "jsonwebtoken"
 import {Proxygen} from "../src/helpers"
 
-jest.unstable_mockModule("../src/uuidHelper", () => ({
-  returnUuid: jest.fn().mockReturnValue("mockUuid")
+vi.mock("../src/uuidHelper", () => ({
+  returnUuid: vi.fn().mockReturnValue("mockUuid")
 }))
-jest.unstable_mockModule("../src/signingHelpers", () => ({
-  getSecret: jest.fn().mockReturnValue("mockPrivateKey"),
-  createSignedJWT: jest.fn().mockReturnValue("signedJWT")
+vi.mock("../src/signingHelpers", () => ({
+  getSecret: vi.fn().mockReturnValue("mockPrivateKey"),
+  createSignedJWT: vi.fn().mockReturnValue("signedJWT")
 }))
 
 // import using await to ensure uuidHelper and signingHelpers are mocked properly
@@ -41,11 +47,11 @@ describe("getAccessToken", () => {
       VersionId: "valid-version-id",
       VersionStages: ["valid-stage"]
     })
-    jest.spyOn(jwt, "sign").mockImplementation(jest.fn(() => "mockSignedJWT"))
+    vi.spyOn(jwt, "sign").mockImplementation(() => "mockSignedJWT")
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     nock.cleanAll()
   })
 

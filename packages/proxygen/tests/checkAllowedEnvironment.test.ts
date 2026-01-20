@@ -1,13 +1,20 @@
 // checkAllowedEnvironment.test.ts
 
-import {checkAllowedEnvironment} from "../src/helpers"
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest"
 
-import {jest} from "@jest/globals"
+import {checkAllowedEnvironment} from "../src/helpers"
 
 describe("checkAllowedEnvironment", () => {
   let _SAVED_ALLOWED_ENVIRONMENTS: string | undefined
   beforeEach(() => {
-    jest.resetModules()
+    vi.resetModules()
     _SAVED_ALLOWED_ENVIRONMENTS = process.env.ALLOWED_ENVIRONMENTS
   })
 

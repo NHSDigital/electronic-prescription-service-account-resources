@@ -1,23 +1,24 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
-import nock from "nock"
-
 import {
-  jest,
-  expect,
+  afterEach,
+  beforeEach,
   describe,
-  it
-} from "@jest/globals"
+  expect,
+  it,
+  vi
+} from "vitest"
+import nock from "nock"
 import jwt from "jsonwebtoken"
 
 import {Proxygen} from "../src/helpers"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
-import {mockClient} from "aws-sdk-client-mock"
+import {mockClient} from "aws-sdk-vitest-mock"
 import {Context} from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
 
-jest.unstable_mockModule("../src/signingHelpers", () => ({
-  getSecret: jest.fn().mockReturnValue("mockPrivateKey"),
-  createSignedJWT: jest.fn().mockReturnValue("signedJWT")
+vi.mock("../src/signingHelpers", () => ({
+  getSecret: vi.fn().mockReturnValue("mockPrivateKey"),
+  createSignedJWT: vi.fn().mockReturnValue("signedJWT")
 }))
 
 // import using await to ensure uuidHelper and signingHelpers are mocked properly
@@ -39,7 +40,7 @@ describe("Unit test for proxygenInstanceGet", function () {
   const mockAccessToken = "mockAccessToken"
 
   beforeEach(() => {
-    jest.resetModules()
+    vi.resetModules()
     _SAVED_ALLOWED_ENVIRONMENTS = process.env.ALLOWED_ENVIRONMENTS
 
     const smMock = mockClient(SecretsManagerClient)
@@ -51,12 +52,12 @@ describe("Unit test for proxygenInstanceGet", function () {
       VersionId: "valid-version-id",
       VersionStages: ["valid-stage"]
     })
-    jest.spyOn(jwt, "sign").mockImplementation(jest.fn(() => "mockSignedJWT"))
+    vi.spyOn(jwt, "sign").mockImplementation(() => "mockSignedJWT")
   })
 
   afterEach(() => {
     process.env.ALLOWED_ENVIRONMENTS = _SAVED_ALLOWED_ENVIRONMENTS
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     nock.cleanAll()
   })
 
@@ -81,7 +82,7 @@ describe("Unit test for proxygenInstanceGet", function () {
       .reply(500, {foo_error: "bar_error"})
 
     process.env.ALLOWED_ENVIRONMENTS = "dev"
-    const mockLoggerError = jest.spyOn(Logger.prototype, "error")
+    const mockLoggerError = vi.spyOn(Logger.prototype, "error")
     await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
     expect(mockLoggerError).toHaveBeenCalledTimes(1)
 
@@ -129,7 +130,7 @@ describe("Unit test for proxygenInstanceGet", function () {
       .replyWithError("Something awful happened")
 
     process.env.ALLOWED_ENVIRONMENTS = "dev"
-    const mockLoggerError = jest.spyOn(Logger.prototype, "error")
+    const mockLoggerError = vi.spyOn(Logger.prototype, "error")
     await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
     expect(mockLoggerError).toHaveBeenCalledTimes(1)
 
