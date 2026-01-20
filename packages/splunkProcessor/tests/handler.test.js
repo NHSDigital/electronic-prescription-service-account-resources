@@ -1,8 +1,11 @@
 const splunkProcessor = require("../src/splunkProcessor.js")
-const {expect, describe, it, beforeEach, afterEach} = require("@jest/globals")
+const {describe, it, expect, beforeEach, afterEach, vi} = globalThis
 const zlib = require("node:zlib")
 
-jest.mock("../src/helpers.js")
+vi.mock("../src/helpers.js", () => ({
+  putRecordsToKinesisStream: vi.fn(),
+  putRecordsToFirehoseStream: vi.fn()
+}))
 const helpers = require("../src/helpers.js")
 
 describe("handler", () => {
@@ -17,21 +20,21 @@ describe("handler", () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env.ENV = "test"
     process.env.LOG_LEVEL = "INFO"
 
     // Mock helper functions
-    helpers.putRecordsToKinesisStream = jest.fn((streamName, records, client, resolve, reject) => {
+    helpers.putRecordsToKinesisStream = vi.fn((streamName, records, client, resolve, reject) => {
       resolve()
     })
-    helpers.putRecordsToFirehoseStream = jest.fn((streamName, records, client, resolve, reject) => {
+    helpers.putRecordsToFirehoseStream = vi.fn((streamName, records, client, resolve, reject) => {
       resolve()
     })
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it("should process DATA_MESSAGE records successfully", async () => {

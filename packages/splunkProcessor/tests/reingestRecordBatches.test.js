@@ -1,24 +1,18 @@
+const {describe, it, expect, vi, beforeEach, afterEach} = globalThis
+const {Logger} = require("@aws-lambda-powertools/logger")
 const splunkProcessor = require("../src/splunkProcessor.js")
 const helpers = require("../src/helpers.js")
-
-const {expect, describe, it} = require("@jest/globals")
-const {Firehose} = require("@aws-sdk/client-firehose")
-const {Kinesis} = require("@aws-sdk/client-kinesis")
-const {Logger} = require("@aws-lambda-powertools/logger")
-
-jest.mock("@aws-sdk/client-kinesis")
-jest.mock("@aws-sdk/client-firehose")
 
 describe("reingestRecordBatches", () => {
   beforeEach(() => {
     // Mock the putRecordsToKinesisStream and putRecordsToFirehoseStream functions
-    jest
+    vi
       .spyOn(helpers, "putRecordsToKinesisStream")
       // eslint-disable-next-line no-unused-vars
       .mockImplementation((streamName, records, client, resolve, reject, attemptsMade, maxAttempts, logger) => {
         resolve("")
       })
-    jest
+    vi
       .spyOn(helpers, "putRecordsToFirehoseStream")
       // eslint-disable-next-line no-unused-vars
       .mockImplementation((streamName, records, client, resolve, reject, attemptsMade, maxAttempts, logger) => {
@@ -27,7 +21,7 @@ describe("reingestRecordBatches", () => {
     process.env.ENV = "test"
   })
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it("should reingest records to Kinesis when isSas is true", async () => {
@@ -45,17 +39,22 @@ describe("reingestRecordBatches", () => {
     
     expect(response.statusCode).toBe(200)
     expect(response.body).toBe(result)
-    expect(Kinesis).toHaveBeenCalledWith({region: "us-east-1"})
     expect(helpers.putRecordsToKinesisStream).toHaveBeenCalledWith(
       "my-kinesis-stream",
       putRecordBatches[0],
-      expect.any(Kinesis),
+      expect.any(Object),
       expect.any(Function),
       expect.any(Function),
       0,
       20,
       expect.any(Logger)
     )
+    const kinesisClient = helpers.putRecordsToKinesisStream.mock.calls[0][2]
+    const kinesisRegion =
+      typeof kinesisClient.config.region === "function"
+        ? await kinesisClient.config.region()
+        : kinesisClient.config.region
+    expect(kinesisRegion).toBe("us-east-1")
   })
 
   it("should reingest records to Firehose when isSas is false", async () => {
@@ -72,17 +71,22 @@ describe("reingestRecordBatches", () => {
 
     expect(response.statusCode).toBe(200)
     expect(response.body).toBe(result)
-    expect(Firehose).toHaveBeenCalledWith({region: "us-east-1"})
     expect(helpers.putRecordsToFirehoseStream).toHaveBeenCalledWith(
       "my-firehose-stream",
       putRecordBatches[0],
-      expect.any(Firehose),
+      expect.any(Object),
       expect.any(Function),
       expect.any(Function),
       0,
       20,
       expect.any(Logger)
     )
+    const firehoseClient = helpers.putRecordsToFirehoseStream.mock.calls[0][2]
+    const firehoseRegion =
+      typeof firehoseClient.config.region === "function"
+        ? await firehoseClient.config.region()
+        : firehoseClient.config.region
+    expect(firehoseRegion).toBe("us-east-1")
   })
 
   it("should handle failure", async () => {
@@ -96,7 +100,7 @@ describe("reingestRecordBatches", () => {
     const result = "Success"
 
     // Mock a rejected promise for putRecordsToKinesisStream
-    jest
+    vi
       .spyOn(helpers, "putRecordsToKinesisStream")
       // eslint-disable-next-line no-unused-vars
       .mockImplementation((streamName, records, client, resolve, reject, attemptsMade, maxAttempts) => {

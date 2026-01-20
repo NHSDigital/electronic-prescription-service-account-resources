@@ -1,5 +1,5 @@
 const {transformLogEvent} = require("../src/splunkProcessor.js")
-const {expect, describe, it} = require("@jest/globals")
+const {describe, it, expect} = globalThis
 
 /* eslint-disable  max-len */
 
