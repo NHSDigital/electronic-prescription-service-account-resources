@@ -15,11 +15,11 @@
     "scripts": {
         "compile": "tsc",
         "test": "npm run compile && npm run unit",
-        "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
+        "unit": "POWERTOOLS_DEV=true vitest run --config ./vitest.config.ts --coverage",
         "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
     },
     "devDependencies": {
-        "aws-sdk-client-mock": "^4.1.0",
-        "aws-sdk-vitest-mock": "^1.0.6"
+        "aws-sdk-vitest-mock": "^1.0.6",
+        "vitest": "^4.0.17"
     }
 }
