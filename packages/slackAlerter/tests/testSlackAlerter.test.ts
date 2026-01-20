@@ -1,18 +1,24 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
-import {jest} from "@jest/globals"
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest"
 import {generateMockAlarmEvent} from "./utils/testUtils"
 import {populateCloudWatchAlertMessageContent} from "../src/slackMessageTemplates"
 import {Context, SQSEvent, SQSBatchResponse} from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
 
-const mockedGetSecrets = jest.fn()
-const mockedPostSlackMessage = jest.fn()
+const mockedGetSecrets = vi.fn()
+const mockedPostSlackMessage = vi.fn()
 
-jest.unstable_mockModule("../src/secrets", () => ({
+vi.mock("../src/secrets", () => ({
   getSecrets: mockedGetSecrets
 }))
 
-jest.unstable_mockModule("../src/helpers", () => ({
+vi.mock("../src/helpers", () => ({
   postSlackMessage: mockedPostSlackMessage
 }))
 
@@ -21,7 +27,7 @@ const {handler} = slackAlerterModule
 
 describe("Slack Alerter", () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   // Happy Path
@@ -76,7 +82,7 @@ describe("Slack Alerter", () => {
         id: "record1"
       }]) as SQSEvent
       const context = {} as Context
-      const callback = jest.fn()
+      const callback = vi.fn()
 
       await handler(mockSQSEvent, context, callback)
       const expectedCall = populateCloudWatchAlertMessageContent({
@@ -121,7 +127,7 @@ describe("Slack Alerter", () => {
       }
     ]) as SQSEvent
     const context = {} as Context
-    const callback = jest.fn()
+    const callback = vi.fn()
 
     await handler(mockSQSEvent, context, callback)
 
@@ -177,7 +183,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
       id: "record1"
     }]) as SQSEvent
     const context = {} as Context
-    const callback = jest.fn()
+    const callback = vi.fn()
 
     const actual = await handler(mockSQSEvent, context, callback)
 
@@ -207,7 +213,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
       ]
     } as SQSEvent
     const context = {} as Context
-    const callback = jest.fn()
+    const callback = vi.fn()
 
     const expectedResponse: SQSBatchResponse = {
       batchItemFailures: [
@@ -228,9 +234,9 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
           ])
         }
       })
-      mockedPostSlackMessage.mockImplementationOnce(() => {
-        return Promise.resolve()
-      }).mockRejectedValueOnce(new Error("Slack error") as never)
+      mockedPostSlackMessage
+        .mockResolvedValueOnce(undefined)
+        .mockRejectedValueOnce(new Error("Slack error"))
 
       const mockSQSEvent = generateMockAlarmEvent([
         {
@@ -246,7 +252,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
       ]) as SQSEvent
 
       const context = {} as Context
-      const callback = jest.fn()
+      const callback = vi.fn()
 
       const expectedResponse: SQSBatchResponse = {
         batchItemFailures: [
@@ -269,17 +275,15 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
         ])
       }
     })
-    mockedPostSlackMessage.mockImplementation(() => {
-      return Promise.reject(new Error("Slack error"))
-    }
-    )
+    mockedPostSlackMessage.mockRejectedValue(new Error("Slack error"))
+
     const mockSQSEvent = generateMockAlarmEvent([{
       name: "psu_TestLambda_Errors",
       description: "Count of TestLambda errors",
       id: "record1"
     }]) as SQSEvent
     const context = {} as Context
-    const callback = jest.fn()
+    const callback = vi.fn()
 
     const expectedResponse: SQSBatchResponse = {
       batchItemFailures: [
@@ -309,7 +313,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
       }
     ]) as SQSEvent
     const context = {} as Context
-    const callback = jest.fn()
+    const callback = vi.fn()
 
     await handler(mockSQSEvent, context, callback)
     expect(mockedPostSlackMessage).not.toHaveBeenCalled()
@@ -337,7 +341,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
       }
     ]) as SQSEvent
     const context = {} as Context
-    const callback = jest.fn()
+    const callback = vi.fn()
 
     await handler(mockSQSEvent, context, callback)
 
@@ -377,7 +381,7 @@ region=eu-west-2#alarm:alarmFilter=ANY;name=psu_TestLambda2_Errors`
       }
     ]) as SQSEvent
     const context = {} as Context
-    const callback = jest.fn()
+    const callback = vi.fn()
 
     await handler(mockSQSEvent, context, callback)
 
