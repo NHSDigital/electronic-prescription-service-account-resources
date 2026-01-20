@@ -39,7 +39,8 @@
         "timonwong.shellcheck",
         "mkhl.direnv",
         "github.vscode-github-actions",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "vitest.explorer"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/workspaces/electronic-prescription-service-account-resources/.venv/bin/python",
