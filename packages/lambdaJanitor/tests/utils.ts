@@ -1,19 +1,19 @@
+import {vi} from "vitest"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {eventHandler, HandlerParams} from "../src/janitor"
 import {Lambda} from "@aws-sdk/client-lambda"
-import {jest} from "@jest/globals"
 
 export const mockHandler = (function_arn: string, versions_to_keep: number | undefined) => {
   const logger= {
-    info: jest.fn(),
-    error: jest.fn()
+    info: vi.fn(),
+    error: vi.fn()
   }
   const lambda_sdk = {
-    listVersionsByFunction: jest.fn().mockReturnValue({
-      promise: jest.fn()
+    listVersionsByFunction: vi.fn().mockReturnValue({
+      promise: vi.fn()
     }),
-    deleteFunction: jest.fn().mockReturnValue({
-      promise: jest.fn()
+    deleteFunction: vi.fn().mockReturnValue({
+      promise: vi.fn()
     })
   }
 
