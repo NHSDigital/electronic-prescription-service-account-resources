@@ -7,9 +7,12 @@ import {
   vi
 } from "vitest"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {lambdaHandler} from "../src/suppressionReporter"
 
-const mockedGetSecrets = vi.fn()
-const mockedPostSlackMessage = vi.fn()
+const {mockedGetSecrets, mockedPostSlackMessage} = vi.hoisted(() => ({
+  mockedGetSecrets: vi.fn(),
+  mockedPostSlackMessage: vi.fn()
+}))
 
 vi.mock("../src/secrets", () => ({
   getSecrets: mockedGetSecrets
@@ -18,9 +21,6 @@ vi.mock("../src/secrets", () => ({
 vi.mock("../src/helpers", () => ({
   postSlackMessage: mockedPostSlackMessage
 }))
-
-const lambdaHandlerModule = await import("../src/suppressionReporter")
-const {lambdaHandler} = lambdaHandlerModule
 
 let loggerErrorSpy: ReturnType<typeof vi.spyOn>
 let loggerInfoSpy: ReturnType<typeof vi.spyOn>

@@ -8,11 +8,14 @@ import {
 } from "vitest"
 import {generateMockAlarmEvent} from "./utils/testUtils"
 import {populateCloudWatchAlertMessageContent} from "../src/slackMessageTemplates"
+import {handler} from "../src/slackAlerter"
 import {Context, SQSEvent, SQSBatchResponse} from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
 
-const mockedGetSecrets = vi.fn()
-const mockedPostSlackMessage = vi.fn()
+const {mockedGetSecrets, mockedPostSlackMessage} = vi.hoisted(() => ({
+  mockedGetSecrets: vi.fn(),
+  mockedPostSlackMessage: vi.fn()
+}))
 
 vi.mock("../src/secrets", () => ({
   getSecrets: mockedGetSecrets
@@ -21,9 +24,6 @@ vi.mock("../src/secrets", () => ({
 vi.mock("../src/helpers", () => ({
   postSlackMessage: mockedPostSlackMessage
 }))
-
-const slackAlerterModule = await import("../src/slackAlerter")
-const {handler} = slackAlerterModule
 
 describe("Slack Alerter", () => {
   beforeEach(() => {
