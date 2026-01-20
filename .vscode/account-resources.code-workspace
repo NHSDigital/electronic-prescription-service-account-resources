@@ -35,7 +35,15 @@
   ],
   "settings": {
     "jest.disabledWorkspaceFolders": [
-      "account-resources"
+
+      "account-resources",
+      "packages/cdk",
+      "packages/certificateChecker",
+      "packages/splunkProcessor",
+      "packages/slackAlerter",
+      "packages/proxygen",
+      "packages/lambdaJanitor",
+      "packages/driftDetector"
     ],
     "files.exclude": {
       "packages/": true,
