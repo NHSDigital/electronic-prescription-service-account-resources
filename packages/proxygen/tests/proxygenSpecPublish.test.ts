@@ -10,21 +10,19 @@ import {
 import nock from "nock"
 import jwt from "jsonwebtoken"
 
-import {Proxygen} from "../src/helpers"
+import type {Proxygen} from "../src/helpers"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 import {mockClient} from "aws-sdk-vitest-mock"
 import {Context} from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {handler as proxygenSpecPublishHandler} from "../src/proxygenSpecPublish"
 
-vi.mock("../src/signingHelpers", () => ({
+const mockedSigningHelpers = vi.hoisted(() => ({
   getSecret: vi.fn().mockReturnValue("mockPrivateKey"),
   createSignedJWT: vi.fn().mockReturnValue("signedJWT")
 }))
 
-// import using await to ensure uuidHelper and signingHelpers are mocked properly
-await import("../src/helpers")
-await import("../src/signingHelpers")
-const handler = await import("../src/proxygenSpecPublish")
+vi.mock("../src/signingHelpers", () => mockedSigningHelpers)
 
 const validProxygen: Proxygen = {
   apiName: "testApi",
@@ -63,7 +61,7 @@ describe("Unit test for proxygenSpecPublish", function () {
   })
 
   it("throws error if missing required property on input", async () => {
-    await expect(handler.handler({} as Proxygen, {} as Context)).rejects.toThrow(
+    await expect(proxygenSpecPublishHandler({} as Proxygen, {} as Context)).rejects.toThrow(
       "Input is one of missing required keys: apiName,proxygenSecretName,kid,environment,specDefinition. Input keys: "
     )
   })
@@ -71,7 +69,7 @@ describe("Unit test for proxygenSpecPublish", function () {
   it("throws error if environment is not allowed", async () => {
     process.env.ALLOWED_ENVIRONMENTS = "int,sandbox,prod"
 
-    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow(
+    await expect(proxygenSpecPublishHandler(validProxygen, {} as Context)).rejects.toThrow(
       "environment dev is invalid. Allowed environments: int,sandbox,prod"
     )
   })
@@ -80,7 +78,8 @@ describe("Unit test for proxygenSpecPublish", function () {
     process.env.ALLOWED_ENVIRONMENTS = "dev,uat"
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
 
-    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Environment is not uat or prod")
+    // eslint-disable-next-line max-len
+    await expect(proxygenSpecPublishHandler(validProxygen, {} as Context)).rejects.toThrow("Environment is not uat or prod")
   })
 
   it("throws error if proxygen responds with error", async () => {
@@ -93,7 +92,8 @@ describe("Unit test for proxygenSpecPublish", function () {
     validProxygen.environment = "uat"
     const mockLoggerError = vi.spyOn(Logger.prototype, "error")
 
-    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error. Status code: 500")
+    // eslint-disable-next-line max-len
+    await expect(proxygenSpecPublishHandler(validProxygen, {} as Context)).rejects.toThrow("Axios error. Status code: 500")
     expect(mockLoggerError).toHaveBeenCalledTimes(1)
 
     const loggerCallParams = mockLoggerError.mock.calls[0]
@@ -143,7 +143,7 @@ describe("Unit test for proxygenSpecPublish", function () {
     validProxygen.environment = "uat"
     const mockLoggerError = vi.spyOn(Logger.prototype, "error")
 
-    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
+    await expect(proxygenSpecPublishHandler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
     expect(mockLoggerError).toHaveBeenCalledTimes(1)
 
     const loggerCallParams = mockLoggerError.mock.calls[0]
@@ -173,7 +173,7 @@ describe("Unit test for proxygenSpecPublish", function () {
     process.env.ALLOWED_ENVIRONMENTS = "uat"
     validProxygen.environment = "uat"
 
-    const res = await handler.handler(validProxygen, {} as Context)
+    const res = await proxygenSpecPublishHandler(validProxygen, {} as Context)
     expect(res).toMatchObject({foo: "bar"})
   })
 
@@ -184,7 +184,7 @@ describe("Unit test for proxygenSpecPublish", function () {
     process.env.ALLOWED_ENVIRONMENTS = "prod"
     validProxygen.environment = "prod"
 
-    const res = await handler.handler(validProxygen, {} as Context)
+    const res = await proxygenSpecPublishHandler(validProxygen, {} as Context)
     expect(res).toMatchObject({foo: "bar"})
   })
 })

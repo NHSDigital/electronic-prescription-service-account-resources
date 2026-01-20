@@ -11,21 +11,19 @@ import {
 import nock from "nock"
 import jwt from "jsonwebtoken"
 
-import {Proxygen} from "../src/helpers"
+import type {Proxygen} from "../src/helpers"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 import {mockClient} from "aws-sdk-vitest-mock"
 import {Context} from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {handler as proxygenInstancePutHandler} from "../src/proxygenInstancePut"
 
-vi.mock("../src/signingHelpers", () => ({
+const mockedSigningHelpers = vi.hoisted(() => ({
   getSecret: vi.fn().mockReturnValue("mockPrivateKey"),
   createSignedJWT: vi.fn().mockReturnValue("signedJWT")
 }))
 
-// import using await to ensure uuidHelper and signingHelpers are mocked properly
-await import("../src/helpers")
-await import("../src/signingHelpers")
-const handler = await import("../src/proxygenInstancePut")
+vi.mock("../src/signingHelpers", () => mockedSigningHelpers)
 
 const validProxygen: Proxygen = {
   apiName: "testApi",
@@ -65,7 +63,7 @@ describe("Unit test for proxygenInstancePut", function () {
   })
 
   it("throws error if missing required property on input", async () => {
-    await expect(handler.handler({} as Proxygen, {} as Context)).rejects.toThrow(
+    await expect(proxygenInstancePutHandler({} as Proxygen, {} as Context)).rejects.toThrow(
       "Input is one of missing required keys: apiName,proxygenSecretName,kid,environment,instance,specDefinition. Input keys: "
     )
   })
@@ -73,7 +71,7 @@ describe("Unit test for proxygenInstancePut", function () {
   it("throws error if environment is not allowed", async () => {
     process.env.ALLOWED_ENVIRONMENTS = "int,sandbox,prod"
 
-    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow(
+    await expect(proxygenInstancePutHandler(validProxygen, {} as Context)).rejects.toThrow(
       "environment dev is invalid. Allowed environments: int,sandbox,prod"
     )
   })
@@ -88,7 +86,7 @@ describe("Unit test for proxygenInstancePut", function () {
     process.env.ALLOWED_ENVIRONMENTS = "dev"
     const mockLoggerError = vi.spyOn(Logger.prototype, "error")
 
-    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
+    await expect(proxygenInstancePutHandler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
     expect(mockLoggerError).toHaveBeenCalledTimes(1)
 
     const loggerCallParams = mockLoggerError.mock.calls[0]
@@ -138,7 +136,7 @@ describe("Unit test for proxygenInstancePut", function () {
     process.env.ALLOWED_ENVIRONMENTS = "dev"
     const mockLoggerError = vi.spyOn(Logger.prototype, "error")
 
-    await expect(handler.handler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
+    await expect(proxygenInstancePutHandler(validProxygen, {} as Context)).rejects.toThrow("Axios error")
     expect(mockLoggerError).toHaveBeenCalledTimes(1)
 
     const loggerCallParams = mockLoggerError.mock.calls[0]
@@ -173,7 +171,7 @@ describe("Unit test for proxygenInstancePut", function () {
 
     process.env.ALLOWED_ENVIRONMENTS = "dev"
 
-    const res = await handler.handler(validProxygen, {} as Context)
+    const res = await proxygenInstancePutHandler(validProxygen, {} as Context)
     expect(res).toMatchObject({foo: "bar"})
     expect(actualBody).toMatchObject({foo: "bar"})
   })

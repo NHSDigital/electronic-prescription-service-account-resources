@@ -8,13 +8,13 @@ import {
   vi
 } from "vitest"
 import jwt from "jsonwebtoken"
+import * as helpers from "../src/signingHelpers"
 
-vi.mock("../src/uuidHelper", () => ({
+const mockedUuidHelper = vi.hoisted(() => ({
   returnUuid: vi.fn().mockReturnValue("mockUuid")
 }))
 
-// import using await to ensure uuidHelper is mocked properly
-const helpers = await import("../src/signingHelpers")
+vi.mock("../src/uuidHelper", () => mockedUuidHelper)
 
 describe("createSignedJWT", () => {
   const mockPrivateKey = "mockPrivateKey"

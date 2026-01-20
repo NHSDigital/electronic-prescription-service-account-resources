@@ -13,6 +13,8 @@ import {mockClient} from "aws-sdk-vitest-mock"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 import jwt from "jsonwebtoken"
 import {Proxygen} from "../src/helpers"
+import * as helpers from "../src/helpers"
+import * as signingHelpers from "../src/signingHelpers"
 
 vi.mock("../src/uuidHelper", () => ({
   returnUuid: vi.fn().mockReturnValue("mockUuid")
@@ -21,10 +23,6 @@ vi.mock("../src/signingHelpers", () => ({
   getSecret: vi.fn().mockReturnValue("mockPrivateKey"),
   createSignedJWT: vi.fn().mockReturnValue("signedJWT")
 }))
-
-// import using await to ensure uuidHelper and signingHelpers are mocked properly
-const helpers = await import("../src/helpers")
-const signingHelpers = await import("../src/signingHelpers")
 
 const realm_url = "https://mock-realm-url"
 
