@@ -132,6 +132,7 @@ Resources:
               - cloudformation:UpdateStack
               - cloudformation:DeleteStack
               - cloudformation:DescribeStacks
+              - cloudformation:DescribeEvents
               - cloudformation:ListExports
               - cloudformation:CreateChangeSet
               - cloudformation:DescribeChangeSet
