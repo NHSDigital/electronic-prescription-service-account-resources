@@ -1,9 +1,6 @@
 const {putRecordsToFirehoseStream} = require("../src/helpers.js")
-const {expect, describe, it} = require("@jest/globals")
-const {Firehose} = require("@aws-sdk/client-firehose")
+const {describe, it, expect, vi} = globalThis
 const {Logger} = require("@aws-lambda-powertools/logger")
-
-jest.mock("@aws-sdk/client-firehose")
 
 const logger = new Logger({serviceName: "splunkProcessor", logLevel: "INFO"})
 
@@ -11,9 +8,9 @@ describe("putRecordsToFirehoseStream", () => {
   it("should resolve when all records are successfully sent", async () => {
     const streamName = "test-stream"
     const records = [{Data: "Record1"}, {Data: "Record2"}]
-    const client = new Firehose()
-    const resolve = jest.fn()
-    const reject = jest.fn()
+    const client = {putRecordBatch: vi.fn()}
+    const resolve = vi.fn()
+    const reject = vi.fn()
 
     // Mock the successful response from AWS Firehose
     client.putRecordBatch.mockImplementationOnce((params, callback) => {
@@ -36,9 +33,9 @@ describe("putRecordsToFirehoseStream", () => {
   it("should reject after reaching max attempts if some records fail", async () => {
     const streamName = "test-stream"
     const records = [{Data: "Record1"}, {Data: "Record2"}]
-    const client = new Firehose()
-    const resolve = jest.fn()
-    const reject = jest.fn()
+    const client = {putRecordBatch: vi.fn()}
+    const resolve = vi.fn()
+    const reject = vi.fn()
 
     // Mock the response with an error from AWS Firehose
     client.putRecordBatch.mockImplementation((params, callback) => {

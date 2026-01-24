@@ -6,14 +6,18 @@
   "author": "NHS Digital",
   "license": "MIT",
   "scripts": {
-    "test": "POWERTOOLS_DEV=true jest --coverage",
+    "test": "npm run unit",
+    "unit": "POWERTOOLS_DEV=true vitest run --config ./vitest.config.ts --coverage",
     "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs .",
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.30.2",
     "@aws-sdk/client-firehose": "^3.971.0",
-    "@aws-sdk/client-kinesis": "^3.971.0",
-    "aws-sdk": "^2.1693.0"
+    "@aws-sdk/client-kinesis": "^3.971.0"
+  },
+  "devDependencies": {
+    "aws-sdk-vitest-mock": "^1.0.6",
+    "vitest": "^4.0.17"
   }
 }

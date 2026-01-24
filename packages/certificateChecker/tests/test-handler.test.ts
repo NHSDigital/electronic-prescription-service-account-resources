@@ -1,6 +1,14 @@
 import * as fs from "fs"
 import * as path from "path"
-import {mockClient} from "aws-sdk-client-mock"
+import {
+  afterEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest"
+import {X509Certificate} from "crypto"
+import {mockClient} from "aws-sdk-vitest-mock"
 import {BatchGetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
 import {fileURLToPath} from "url"
 import {dirname} from "path"
@@ -8,7 +16,6 @@ import {handler} from "../src/certificateChecker"
 
 import {helloworldContext} from "./helloWorldContext"
 import {Logger} from "@aws-lambda-powertools/logger"
-import {jest} from "@jest/globals"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -18,6 +25,10 @@ const mockEvent = {
 }
 
 describe("Unit test for app handler", function () {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it("Runs successfully with a valid certificate", async () => {
     const smMock = mockClient(SecretsManagerClient)
     const validCertificateContents = fs.readFileSync(path.resolve(__dirname, "./mock-certs/valid-cert.pem"), "utf-8")
@@ -34,8 +45,8 @@ describe("Unit test for app handler", function () {
         }
       ]
     })
-    const mockLoggerInfo = jest.spyOn(Logger.prototype, "info")
-    const mockLoggerError = jest.spyOn(Logger.prototype, "error")
+    const mockLoggerInfo = vi.spyOn(Logger.prototype, "info")
+    const mockLoggerError = vi.spyOn(Logger.prototype, "error")
     await handler(mockEvent, dummyContext)
 
     expect(mockLoggerInfo).toHaveBeenCalled()
@@ -43,18 +54,8 @@ describe("Unit test for app handler", function () {
     expect(mockLoggerInfo).toHaveBeenCalledWith("Lambda execution started.")
     expect(mockLoggerInfo).toHaveBeenCalledWith("Lambda execution completed.")
 
-    const today = new Date()
-
-    const futureDate = new Date(today)
-    futureDate.setDate(today.getDate() + 60)
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: "short",
-      month: "short",
-      day: "2-digit",
-      year: "numeric"
-    }
-    const formattedDate = futureDate.toLocaleDateString("en-US", options)
-    const formattedDateWithoutComma = formattedDate.replace(/,/g, "")
+    const certificate = new X509Certificate(validCertificateContents)
+    const formattedDateWithoutComma = new Date(certificate.validTo).toDateString()
 
     const testString = `Certificate valid-certificate is valid. Expiry date: ${formattedDateWithoutComma}`
     const contextInfo = {
@@ -83,8 +84,8 @@ describe("Unit test for app handler", function () {
         }
       ]
     })
-    const mockLoggerInfo = jest.spyOn(Logger.prototype, "info")
-    const mockLoggerError = jest.spyOn(Logger.prototype, "error")
+    const mockLoggerInfo = vi.spyOn(Logger.prototype, "info")
+    const mockLoggerError = vi.spyOn(Logger.prototype, "error")
     await handler(mockEvent, dummyContext)
 
     expect(mockLoggerInfo).toHaveBeenCalled()
