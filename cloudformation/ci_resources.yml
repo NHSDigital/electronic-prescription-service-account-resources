@@ -766,10 +766,10 @@ Resources:
               - ssm:ListTagsForResource
               - ssm:RemoveTagsFromResource
               - cloudformation:CreateStack
-              - cloudformation:DescribeStacks
               - cloudformation:CreateChangeSet
               - cloudformation:UpdateStack
               - cloudformation:DeleteStack
+              - cloudformation:Describe*
               - cloudwatch:DescribeAlarms
               - cloudwatch:DescribeAlarmsForMetric
               - cloudwatch:EnableAlarmActions
