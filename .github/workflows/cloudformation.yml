@@ -57,7 +57,7 @@ jobs:
       parameters_file_name: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
     steps:
     - name: checkout code
-      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
@@ -179,7 +179,7 @@ jobs:
       STACK_NAME: ${{ inputs.stack_name }}
     steps:
       - name: Checkout scripts
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.BRANCH_NAME }}
           sparse-checkout: |
@@ -198,7 +198,7 @@ jobs:
         run: ./execute_changeset.sh
 
       - name: Checkout gh-pages
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: gh-pages
           path: gh-pages
