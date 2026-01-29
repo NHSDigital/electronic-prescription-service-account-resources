@@ -92,9 +92,15 @@ export class InspectorFilters extends Construct {
       {id: "CVE-2026-23950", expiry: new Date("2026-06-01")}, // https://nvd.nist.gov/vuln/detail/CVE-2026-23950
       // cdk-utils repo
       // suppression of vulnerability in tar. Waiting for next release of node 24.x
-      {id: "CVE-2026-24049", expiry: new Date("2026-06-01")} // https://nvd.nist.gov/vuln/detail/CVE-2026-24049
+      {id: "CVE-2026-24049", expiry: new Date("2026-06-01")}, // https://nvd.nist.gov/vuln/detail/CVE-2026-24049
       // cdk-utils repo
       // suppression of vulnerability in python wheel installed by aws-cli. Waiting for new release upstream
+      {id: "CVE-2025-69420", expiry: new Date("2026-06-01")}, // https://nvd.nist.gov/vuln/detail/CVE-2025-69420
+      // fhir facade repo
+      // suppression of vulnerability in openssl TimeStamp response verification - not applicable to our use case
+      {id: "CVE-2026-24842", expiry: new Date("2026-06-01")} // https://nvd.nist.gov/vuln/detail/CVE-2026-24842
+      // fhir facade repo
+      // suppression of vulnerability in node tar - not applicable to our use case
 
     ]
 
