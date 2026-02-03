@@ -105,6 +105,9 @@
       "AssistMeRegressionTestClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
       ],
+      "AssistMeDocumentSyncClaimFilters": [
+        "NONE"
+      ],
       "EnableDeleteCNAME": "true"
     },
     "account-resources": {

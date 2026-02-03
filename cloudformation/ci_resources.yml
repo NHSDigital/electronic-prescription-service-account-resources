@@ -1586,6 +1586,42 @@ Resources:
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref AssistMeRegressionTestClaimFilters
 
+  AssistMeDocumentSyncRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref AssistMeDocumentSyncClaimFilters
+  
+  GrantAssistMeDocumentSyncAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: AssistMeDocumentSyncRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetBucketPolicy
+              - s3:PutBucketPolicy
+              - s3:DeleteObject
+              - s3:PutObject
+              - s3:GetObject
+              - s3:ListBucket
+            Resource: 
+            - !Sub arn:aws:s3::${AWS::AccountId}::epsam-storagebucket*
+            - !Sub arn:aws:s3::${AWS::AccountId}::epsam-storagebucket*/*
+
 
 Outputs:
   ##################################################
@@ -1804,3 +1840,18 @@ Outputs:
     Value: !Ref AssistMeRegressionTestRole
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AssistMeRegressionTestRoleName"]]
+  
+  ##################################################
+  # EPS Assist Document Sync Role Outputs
+  ##################################################
+  AssistMeDocumentSyncRole:
+    Description: ARN of the IAM Role(AssistMeDocumentSyncRole)
+    Value: !GetAtt AssistMeDocumentSyncRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AssistMeDocumentSyncRole"]]
+  
+  AssistMeDocumentSyncRoleName:
+    Description: Name of the IAM Role(AssistMeDocumentSyncRole)
+    Value: !Ref AssistMeDocumentSyncRole
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AssistMeDocumentSyncRoleName"]]
