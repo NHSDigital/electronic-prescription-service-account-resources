@@ -131,12 +131,10 @@ Resources:
               - cloudformation:CreateStack
               - cloudformation:UpdateStack
               - cloudformation:DeleteStack
-              - cloudformation:DescribeStacks
+              - cloudformation:Describe*
               - cloudformation:ListExports
               - cloudformation:CreateChangeSet
-              - cloudformation:DescribeChangeSet
               - cloudformation:ExecuteChangeSet
-              - cloudformation:DescribeStackEvents
               - cloudformation:GetTemplateSummary
               - cloudformation:ListStacks
               - cloudformation:DeleteChangeSet
@@ -768,10 +766,10 @@ Resources:
               - ssm:ListTagsForResource
               - ssm:RemoveTagsFromResource
               - cloudformation:CreateStack
-              - cloudformation:DescribeStacks
               - cloudformation:CreateChangeSet
               - cloudformation:UpdateStack
               - cloudformation:DeleteStack
+              - cloudformation:Describe*
               - cloudwatch:DescribeAlarms
               - cloudwatch:DescribeAlarmsForMetric
               - cloudwatch:EnableAlarmActions
