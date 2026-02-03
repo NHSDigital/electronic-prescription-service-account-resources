@@ -55,6 +55,11 @@ Parameters:
     Description: >
       Subject claim filter for valid tokens for the AssistMeRegressionTest role
     Default: ""
+  AssistMeDocumentSyncClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the AssistMeDocumentSync role
+    Default: ""
   EnableDeleteCNAME:
     Type: String
     Description: Whether to allow delete CNAME permissions
