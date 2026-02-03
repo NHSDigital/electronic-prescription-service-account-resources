@@ -1,7 +1,6 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
-import {Lambda} from "@aws-sdk/client-lambda"
-import {DeleteFunctionRequest, ListVersionsByFunctionRequest} from "aws-sdk/clients/lambda"
+import {Lambda, DeleteFunctionCommandInput, ListVersionsByFunctionCommandInput} from "@aws-sdk/client-lambda"
 
 const LOG_LEVEL = (process.env.LOG_LEVEL ?? "info") as LogLevel
 const FUNCTION_ARN = process.env.FUNCTION_ARN ?? ""
@@ -55,7 +54,7 @@ export const listPaginatedVersionNumbers = async (
   accumulator: Array<number> = [],
   marker?: string
 ): Promise<Array<number>> => {
-  const params: ListVersionsByFunctionRequest = {
+  const params: ListVersionsByFunctionCommandInput = {
     FunctionName: function_arn,
     Marker: marker,
     MaxItems: 20
@@ -77,7 +76,7 @@ export const listPaginatedVersionNumbers = async (
 }
 
 export const deleteVersion = async (logger: Logger, lambda_sdk: Lambda, function_arn: string, version: number) => {
-  const params: DeleteFunctionRequest = {
+  const params: DeleteFunctionCommandInput = {
     FunctionName: function_arn,
     Qualifier: String(version)
   }
