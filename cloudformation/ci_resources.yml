@@ -1606,6 +1606,19 @@ Resources:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref AssistMeDocumentSyncClaimFilters
+
+  AssistMeDocumentSyncPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: AssistMeDocumentSyncRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudformation:ListExports
+            Resource: "*"
   
 Outputs:
   ##################################################
