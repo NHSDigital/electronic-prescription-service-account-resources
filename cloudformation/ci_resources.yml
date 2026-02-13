@@ -55,6 +55,11 @@ Parameters:
     Description: >
       Subject claim filter for valid tokens for the AssistMeRegressionTest role
     Default: ""
+  AssistMeDocumentSyncClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens for the AssistMeDocumentSync role
+    Default: ""
   EnableDeleteCNAME:
     Type: String
     Description: Whether to allow delete CNAME permissions
@@ -131,12 +136,10 @@ Resources:
               - cloudformation:CreateStack
               - cloudformation:UpdateStack
               - cloudformation:DeleteStack
-              - cloudformation:DescribeStacks
+              - cloudformation:Describe*
               - cloudformation:ListExports
               - cloudformation:CreateChangeSet
-              - cloudformation:DescribeChangeSet
               - cloudformation:ExecuteChangeSet
-              - cloudformation:DescribeStackEvents
               - cloudformation:GetTemplateSummary
               - cloudformation:ListStacks
               - cloudformation:DeleteChangeSet
@@ -769,10 +772,10 @@ Resources:
               - ssm:ListTagsForResource
               - ssm:RemoveTagsFromResource
               - cloudformation:CreateStack
-              - cloudformation:DescribeStacks
               - cloudformation:CreateChangeSet
               - cloudformation:UpdateStack
               - cloudformation:DeleteStack
+              - cloudformation:Describe*
               - cloudwatch:DescribeAlarms
               - cloudwatch:DescribeAlarmsForMetric
               - cloudwatch:EnableAlarmActions
@@ -1589,7 +1592,35 @@ Resources:
               ForAnyValue:StringLike:
                 token.actions.githubusercontent.com:sub: !Ref AssistMeRegressionTestClaimFilters
 
+  AssistMeDocumentSyncRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              ForAnyValue:StringLike:
+                token.actions.githubusercontent.com:sub: !Ref AssistMeDocumentSyncClaimFilters
 
+  AssistMeDocumentSyncPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - Ref: AssistMeDocumentSyncRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudformation:ListExports
+            Resource: "*"
+  
 Outputs:
   ##################################################
   # Cloudformation Deployment Role Outputs
@@ -1807,3 +1838,18 @@ Outputs:
     Value: !Ref AssistMeRegressionTestRole
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AssistMeRegressionTestRoleName"]]
+  
+  ##################################################
+  # EPS Assist Document Sync Role Outputs
+  ##################################################
+  AssistMeDocumentSyncRole:
+    Description: ARN of the IAM Role(AssistMeDocumentSyncRole)
+    Value: !GetAtt AssistMeDocumentSyncRole.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AssistMeDocumentSyncRole"]]
+  
+  AssistMeDocumentSyncRoleName:
+    Description: Name of the IAM Role(AssistMeDocumentSyncRole)
+    Value: !Ref AssistMeDocumentSyncRole
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AssistMeDocumentSyncRoleName"]]

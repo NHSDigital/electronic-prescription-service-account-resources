@@ -128,6 +128,7 @@ Resources:
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/vendedlogs/*"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/cloudfront/*"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:aws-waf-logs-*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/bedrock/*"
           - Sid: Allow API Gateway Role
             Effect: Allow
             Principal:
@@ -545,6 +546,22 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !ImportValue "cpt-ui-stateful-resources:StaticContentBucket:Arn"
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action:
+              - s3:PutObject*
+            Resource:
+              - !Join [
+                  "",
+                  [!GetAtt AuditLoggingBucket.Arn, "/epsam-kb/*"],
+                ]
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+              ArnLike:
+                aws:SourceArn: !ImportValue "epsam:kbDocsBucket:Arn"
+
   #endregion
 
   ALBLoggingBucket:

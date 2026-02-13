@@ -66,6 +66,9 @@
       "AssistMeRegressionTestClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
       ],
+      "AssistMeDocumentSyncClaimFilters": [
+        "repo:NHSDigital/eps-assist-me:*"
+      ],
       "EnableDeleteCNAME": "false"
     },
     "account-resources": {

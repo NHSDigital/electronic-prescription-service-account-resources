@@ -57,13 +57,13 @@ jobs:
       parameters_file_name: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
     steps:
     - name: checkout code
-      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
 
     - name: Assume create changeset role
-      uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_create_changeset_role}}
@@ -83,7 +83,7 @@ jobs:
 
     - name: Assume create deploy stack role
       if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
-      uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_deploy_role}}
@@ -98,7 +98,7 @@ jobs:
 
     - name: Assume create changeset role
       if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
-      uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_create_changeset_role}}
@@ -179,14 +179,14 @@ jobs:
       STACK_NAME: ${{ inputs.stack_name }}
     steps:
       - name: Checkout scripts
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.BRANCH_NAME }}
           sparse-checkout: |
             .github/scripts
 
       - name: Assume deploy changeset role
-        uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.cf_deploy_role }}
@@ -198,7 +198,7 @@ jobs:
         run: ./execute_changeset.sh
 
       - name: Checkout gh-pages
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: gh-pages
           path: gh-pages
