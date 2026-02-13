@@ -32,7 +32,7 @@
     "jest-junit": "^16.0.0"
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^2.30.2",
+    "@aws-lambda-powertools/logger": "^2.31.0",
     "@nhsdigital/eps-cdk-constructs": "^1.0.176",
     "archiver": "^7.0.1",
     "esbuild": "^0.27.3",
