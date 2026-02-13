@@ -202,7 +202,11 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
+              - ecr:BatchCheckLayerAvailability
+              - ecr:BatchGetImage
+              - ecr:CompleteLayerUpload
               - ecr:DescribeImages
+              - ecr:DescribeImageScanFindings
               - ecr:DescribeRepositories
               - ecr:ListImages
               - ecr:ListTagsForResource
@@ -211,9 +215,6 @@ Resources:
               - ecr:TagResource
               - ecr:UntagResource
               - ecr:UploadLayerPart
-              - ecr:CompleteLayerUpload
-              - ecr:BatchCheckLayerAvailability
-              - ecr:DescribeImageScanFindings
             Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:*"
           - Effect: Allow
             Action:
