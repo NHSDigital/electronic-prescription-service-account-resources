@@ -482,6 +482,11 @@ Resources:
             Condition:
               Bool:
                 aws:SecureTransport: false
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-2
+            Action: s3:GetObject
+            Resource: !Join ["", [!GetAtt TrustStoreDeploymentBucket.Arn, "/*"]]
   #endregion
 
   #region Audit Logging Bucket
