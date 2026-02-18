@@ -583,6 +583,18 @@ Resources:
             Action:
               - s3:PutObject*
             Resource:
+              - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/truststore-deployment/*"]]
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+              ArnLike:
+                aws:SourceArn: !GetAtt TrustStoreDeploymentBucket.Arn
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action:
+              - s3:PutObject*
+            Resource:
               - !Join [
                   "",
                   [!GetAtt AuditLoggingBucket.Arn, "/static-content/*"],
