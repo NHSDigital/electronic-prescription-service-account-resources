@@ -88,17 +88,6 @@ jobs:
           role-session-name: account-resources-cdk-diff
           output-credentials: true
 
-      - name: Parse Parameters
-        id: parse_parameters
-        shell: bash
-        env:
-          output_format: "env_vars"
-          TARGET_ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
-          STACK_NAME: ${{ inputs.STACK_NAME }}
-        run: |
-          PARAMETERS=$(python scripts/parse_parameters.py "${TARGET_ENVIRONMENT}" "${STACK_NAME}" )
-          echo "${PARAMETERS}" >> "$GITHUB_ENV"
-
       - name: get existing tag
         id: get_existing_tags
         if: ${{ inputs.DEPLOY_CDK_CODE == false }}
@@ -130,9 +119,14 @@ jobs:
           IS_PULL_REQUEST: "${{ inputs.IS_PULL_REQUEST }}"
           AWS_REGION: "${{ inputs.AWS_REGION }}"
 
-      - name: "Run ${{ inputs.DEPLOY_CDK_CODE && 'deploy' || 'diff' }} for cdk app ${{ inputs.CDK_APP_NAME }} existing tag"
+      - name: "Run diff for cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.STACK_NAME }} existing tag"
         if: ${{ inputs.DEPLOY_CDK_CODE == false }}
         run: |
+          echo "Doing some debug"
+          env
+          echo "Which node"
+          which node
+
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
           npm run cdk-diff --workspace packages/cdk  2>&1 | tee "cdk_deploy_diff_existing_tag.log"
         shell: bash
@@ -145,7 +139,7 @@ jobs:
           CDK_CONFIG_commitId: "${{ steps.get_existing_tags.outputs.COMMIT_ID }}"
           CDK_CONFIG_versionNumber: "${{ steps.get_existing_tags.outputs.VERSION_NUMBER }}"
 
-      - name: "Run ${{ inputs.DEPLOY_CDK_CODE && 'deploy' || 'diff' }} for cdk app ${{ inputs.CDK_APP_NAME }}"
+      - name: "Run diff for cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.STACK_NAME }} new tag"
         run: |
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
           npm run cdk-diff --workspace packages/cdk 2>&1 | tee "cdk_deploy_diff_new_tag.log"
@@ -159,6 +153,20 @@ jobs:
           CDK_CONFIG_commitId: "${{ inputs.COMMIT_ID }}"
           CDK_CONFIG_versionNumber: "${{ inputs.VERSION }}"
 
+      - name: "Run deploy for cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.STACK_NAME }} new tag"
+        if: ${{ inputs.DEPLOY_CDK_CODE == true }}
+        run: |
+          eval "$(tsx environmentSettings/setCdkConfig.ts)"
+          npm run cdk-deploy --workspace packages/cdk 2>&1 | tee "cdk_deploy_diff_new_tag.log"
+        shell: bash
+        env:
+          CDK_STACK_NAME: "${{ inputs.STACK_NAME }}"
+          AWS_REGION: "${{ inputs.AWS_REGION }}"
+          CDK_APP_NAME: "${{ inputs.CDK_APP_NAME }}"
+          CDK_CONFIG_isPullRequest: false
+          CDK_CONFIG_environment: "${{ inputs.TARGET_ENVIRONMENT }}"
+          CDK_CONFIG_commitId: "${{ inputs.COMMIT_ID }}"
+          CDK_CONFIG_versionNumber: "${{ inputs.VERSION }}"
       - name: Header output
         if: ${{ inputs.DEPLOY_CDK_CODE == false }}
         shell: bash
