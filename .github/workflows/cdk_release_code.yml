@@ -40,7 +40,7 @@ on:
 jobs:
   deploy_cdk_code:
     runs-on: ubuntu-22.04
-    name: "${{ inputs.DEPLOY_CDK_CODE && 'Deploy' || 'Diff' }} cdk app ${{ inputs.CDK_APP_NAME }}"
+    name: "${{ inputs.DEPLOY_CDK_CODE && 'Deploy' || 'Diff' }} cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.STACK_NAME }}"
     environment: ${{ fromJSON(inputs.DEPLOYMENT_ENVIRONMENT != '' && format('"{0}"', inputs.DEPLOYMENT_ENVIRONMENT) || 'null') }}
     permissions:
       id-token: write
@@ -56,6 +56,9 @@ jobs:
         run: |
           mkdir -p .build
           tar -xf artifact.tar
+      - name: Fix path
+        run: |
+          echo "node_modules/.bin" >> "$GITHUB_PATH"
       - name: Get asdf version
         id: asdf-version
         run: echo "version=$(awk '!/^#/ && NF {print $1; exit}' .tool-versions.asdf)" >> "$GITHUB_OUTPUT"
