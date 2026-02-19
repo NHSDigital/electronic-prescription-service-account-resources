@@ -7,30 +7,33 @@ type EnvironmentFile = {
   parameters?: Record<string, Record<string, unknown>>;
 };
 
-export function assignCdkConfigVariables(envArg: string, stackArg: string, baseDir = process.cwd()): AssignedVariables {
+export function assignCdkConfigVariables(
+  envArg: string, _stackArg: string, baseDir = process.cwd()
+): AssignedVariables {
   const environment = normaliseEnvironment(envArg)
-  const stack = normaliseStack(stackArg)
   const configPath = resolve(baseDir, "environmentSettings", `${environment}.json`)
 
   const fileContents = readFileSync(configPath, "utf8")
   const parsedFile = safeParseEnvironmentFile(fileContents, configPath)
-  const stackParameters = parsedFile.parameters?.[stack]
+  const stacks = parsedFile.parameters ?? {}
 
-  if (!stackParameters) {
-    throw new Error(`Stack "${stack}" not found in ${configPath}`)
+  if (!Object.keys(stacks).length) {
+    throw new Error(`No stack parameters found in ${configPath}`)
   }
 
   const assigned: AssignedVariables = {}
 
-  Object.entries(stackParameters).forEach(([key, rawValue]) => {
-    if (rawValue === undefined) {
-      return
-    }
+  Object.values(stacks).forEach((stackParameters) => {
+    Object.entries(stackParameters ?? {}).forEach(([key, rawValue]) => {
+      if (rawValue === undefined) {
+        return
+      }
 
-    const envKey = `CDK_CONFIG_${key}`
-    const envValue = serialiseValue(rawValue)
-    process.env[envKey] = envValue
-    assigned[envKey] = envValue
+      const envKey = `CDK_CONFIG_${key}`
+      const envValue = serialiseValue(rawValue)
+      process.env[envKey] = envValue
+      assigned[envKey] = envValue
+    })
   })
 
   return assigned
@@ -59,10 +62,6 @@ function serialiseValue(value: unknown): string {
 function normaliseEnvironment(input: string): string {
   const [env] = input.split("-")
   return env
-}
-
-function normaliseStack(input: string): string {
-  return input.replace(/-pr-\d+/i, "")
 }
 
 if (require.main === module) {
