@@ -125,11 +125,11 @@ jobs:
   cdk_diff_monitoring:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
-      STACK_NAME: monitoring
+      STACK_NAME: Monitoring
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
-      CDK_APP_NAME: MonitoringApp
+      CDK_APP_NAME: AccountResources
       DEPLOY_CDK_CODE: false
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
     secrets:
@@ -139,11 +139,11 @@ jobs:
   cdk_diff_account_resources_US:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
-      STACK_NAME: account-resources-cdk-us
+      STACK_NAME: AccountResources_US
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
-      CDK_APP_NAME: AccountResourcesApp_US
+      CDK_APP_NAME: AccountResources
       DEPLOY_CDK_CODE: false
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       AWS_REGION: us-east-1
@@ -154,11 +154,11 @@ jobs:
   cdk_diff_account_resources_UK:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
-      STACK_NAME: account-resources-cdk-uk
+      STACK_NAME: AccountResources_UK
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
-      CDK_APP_NAME: AccountResourcesApp_UK
+      CDK_APP_NAME: AccountResources
       DEPLOY_CDK_CODE: false
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       AWS_REGION: eu-west-2
@@ -171,11 +171,11 @@ jobs:
     if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_monitoring
     with:
-      STACK_NAME: monitoring
+      STACK_NAME: Monitoring
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
-      CDK_APP_NAME: MonitoringApp
+      CDK_APP_NAME: AccountResources
       DEPLOY_CDK_CODE: true
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
@@ -188,11 +188,11 @@ jobs:
     if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_account_resources_US
     with:
-      STACK_NAME: account-resources-cdk-us
+      STACK_NAME: AccountResources_US
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
-      CDK_APP_NAME: AccountResourcesApp_US
+      CDK_APP_NAME: AccountResources
       DEPLOY_CDK_CODE: true
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
@@ -206,11 +206,11 @@ jobs:
     if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_account_resources_UK
     with:
-      STACK_NAME: account-resources-cdk-uk
+      STACK_NAME: AccountResources_UK
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
-      CDK_APP_NAME: AccountResourcesApp_UK
+      CDK_APP_NAME: AccountResources
       DEPLOY_CDK_CODE: true
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
