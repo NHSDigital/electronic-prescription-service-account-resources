@@ -65,6 +65,7 @@ jobs:
             tsconfig.defaults.json \
             Makefile \
             scripts \
+            .github\
             environmentSettings 
 
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
