@@ -8,7 +8,7 @@ type EnvironmentFile = {
 };
 
 export function assignCdkConfigVariables(
-  envArg: string, _stackArg: string, baseDir = process.cwd()
+  envArg: string, baseDir = process.cwd()
 ): AssignedVariables {
   const environment = normaliseEnvironment(envArg)
   const configPath = resolve(baseDir, "environmentSettings", `${environment}.json`)
@@ -66,15 +66,14 @@ function normaliseEnvironment(input: string): string {
 
 if (require.main === module) {
   const envArg = process.env["CDK_CONFIG_environment"]
-  const stackArg = process.env["CDK_STACK_NAME"]
 
-  if (!envArg || !stackArg) {
-    console.error("Usage: ts-node scripts/setCdkConfig.ts <environment> <stack>")
+  if (!envArg) {
+    console.error("CDK_CONFIG_environment is not set")
     process.exit(1)
   }
 
   try {
-    const assigned = assignCdkConfigVariables(envArg, stackArg)
+    const assigned = assignCdkConfigVariables(envArg)
     Object.entries(assigned).forEach(([key, value]) => {
       console.log(`${key}=${value}`)
     })
