@@ -436,6 +436,57 @@ Resources:
             Resource:
               - !Join ["", [!GetAtt TrustStoreBucket.Arn, "/*"]]
               - !GetAtt TrustStoreBucket.Arn
+
+  TrustStoreDeploymentBucket:
+    Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+          - S3_BUCKET_REPLICATION_ENABLED
+          - S3_BUCKET_DEFAULT_LOCK_ENABLED
+          - S3_BUCKET_VERSIONING_ENABLED # This bucket will only contain copies of objects in the main truststore bucket, so versioning is not necessary
+    Properties:
+      LoggingConfiguration:
+        DestinationBucketName: !Ref AuditLoggingBucket
+        LogFilePrefix: truststore-deployment/
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Suspended
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              KMSMasterKeyID: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${TrustStoreBucketKMSKeyKMSKeyAlias}"
+              SSEAlgorithm: "aws:kms"
+
+  TrustStoreDeploymentBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+          - S3_BUCKET_SSL_REQUESTS_ONLY
+    Properties:
+      Bucket: !Ref TrustStoreDeploymentBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action:
+              - s3:*
+            Resource:
+              - !Join ["", [!GetAtt TrustStoreDeploymentBucket.Arn, "/*"]]
+              - !GetAtt TrustStoreDeploymentBucket.Arn
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-2
+            Action: s3:GetObject
+            Resource: !Join ["", [!GetAtt TrustStoreDeploymentBucket.Arn, "/*"]]
   #endregion
 
   #region Audit Logging Bucket
@@ -531,6 +582,18 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !GetAtt TrustStoreBucket.Arn
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action:
+              - s3:PutObject*
+            Resource:
+              - !Join ["", [!GetAtt AuditLoggingBucket.Arn, "/truststore-deployment/*"]]
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+              ArnLike:
+                aws:SourceArn: !GetAtt TrustStoreDeploymentBucket.Arn
           - Effect: Allow
             Principal:
               Service: logging.s3.amazonaws.com
@@ -1744,10 +1807,22 @@ Outputs:
 
   #region Trust Store Bucket Outputs
   TrustStoreBucket:
-    Description: ARN of the Truststore bucket
+    Description: ARN of the TrustStore source bucket
     Value: !GetAtt TrustStoreBucket.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "TrustStoreBucket"]]
+
+  TrustStoreDeploymentBucket:
+    Description: ARN of the TrustStore deployment bucket
+    Value: !GetAtt TrustStoreDeploymentBucket.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "TrustStoreDeploymentBucket"]]
+
+  TrustStoreBucketKMSKey:
+     Description: ARN of the TrustStore bucket KMS Key
+     Value: !GetAtt TrustStoreBucketKMSKey.Arn
+     Export:
+       Name: !Join [":", [!Ref "AWS::StackName", "TrustStoreBucketKMSKey"]]
   #endregion
 
   #region Audit Logging Bucket Outputs

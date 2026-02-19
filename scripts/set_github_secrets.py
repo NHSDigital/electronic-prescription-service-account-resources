@@ -1,6 +1,7 @@
 import argparse
 from dataclasses import dataclass, field
 import json
+import os
 from typing import TypedDict
 import time
 import boto3
@@ -272,6 +273,9 @@ def set_all_secrets(github: Github,
     # common secrets
     set_secret(github=github, repo_name=repo_name, secret_name="REGRESSION_TESTS_PEM",
                secret_value=secrets["regression_test_pem"],
+               set_dependabot=True)
+    set_secret(github=github, repo_name=repo_name, secret_name="APIM_STATUS_API_KEY",
+               secret_value=os.environ.get("apim_status_api_key"),
                set_dependabot=True)
 
     # proxygen roles
