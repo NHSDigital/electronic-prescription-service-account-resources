@@ -54,7 +54,6 @@ jobs:
 
       - name: extract build_artifact
         run: |
-          mkdir -p .build
           tar -xf artifact.tar
       - name: Get asdf version
         id: asdf-version
@@ -180,7 +179,6 @@ jobs:
         env:
           SUMMARY: "[${{ inputs.target_environment }}] CDK Changes for existing tag ${{ inputs.stack_name }}"
           STACK_NAME: ${{ inputs.STACK_NAME }}
-          PARAMETERS_FILE: ".build/${{ inputs.STACK_NAME }}_existing_tag.json"
           DIFF_FILE: ./cdk_deploy_diff_existing_tag.log
         run: ./.github/scripts/describe_cdk_changes.sh
   
@@ -190,7 +188,6 @@ jobs:
         env:
           SUMMARY: "[${{ inputs.target_environment }}] FULL CDK Changes for ${{ inputs.stack_name }}"
           STACK_NAME: ${{ inputs.STACK_NAME }}
-          PARAMETERS_FILE: ".build/${{ inputs.STACK_NAME }}.json"
           DIFF_FILE: ./cdk_deploy_diff_new_tag.log
         run: ./.github/scripts/describe_cdk_changes.sh
 
