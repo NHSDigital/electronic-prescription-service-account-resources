@@ -56,9 +56,6 @@ jobs:
         run: |
           mkdir -p .build
           tar -xf artifact.tar
-      - name: Fix path
-        run: |
-          echo "node_modules/.bin" >> "$GITHUB_PATH"
       - name: Get asdf version
         id: asdf-version
         run: echo "version=$(awk '!/^#/ && NF {print $1; exit}' .tool-versions.asdf)" >> "$GITHUB_OUTPUT"
@@ -122,11 +119,14 @@ jobs:
           IS_PULL_REQUEST: "${{ inputs.IS_PULL_REQUEST }}"
           AWS_REGION: "${{ inputs.AWS_REGION }}"
 
+      - name: Fix path
+        run: |
+          echo "node_modules/.bin" >> "$GITHUB_PATH"
       - name: "Run diff for cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.STACK_NAME }} existing tag"
         if: ${{ inputs.DEPLOY_CDK_CODE == false }}
         run: |
           echo "Doing some debug"
-          env
+          env | sort
           echo "Which node"
           which node
 
