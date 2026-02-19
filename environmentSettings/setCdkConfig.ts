@@ -75,10 +75,14 @@ if (require.main === module) {
   try {
     const assigned = assignCdkConfigVariables(envArg)
     Object.entries(assigned).forEach(([key, value]) => {
-      console.log(`${key}=${value}`)
+      console.log(`export ${key}=${shellQuote(value)}`)
     })
   } catch (error) {
     console.error((error as Error).message)
     process.exit(1)
   }
+}
+
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, "'\\''")}'`
 }

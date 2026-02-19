@@ -125,11 +125,6 @@ jobs:
       - name: "Run diff for cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.STACK_NAME }} existing tag"
         if: ${{ inputs.DEPLOY_CDK_CODE == false }}
         run: |
-          echo "Doing some debug"
-          env | sort
-          echo "Which node"
-          which node
-
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
           npm run cdk-diff --workspace packages/cdk  2>&1 | tee "cdk_deploy_diff_existing_tag.log"
         shell: bash
