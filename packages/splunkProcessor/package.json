@@ -10,8 +10,8 @@
     "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^2.30.2",
-    "@aws-sdk/client-firehose": "^3.985.0",
-    "@aws-sdk/client-kinesis": "^3.984.0"
+    "@aws-lambda-powertools/logger": "^2.31.0",
+    "@aws-sdk/client-firehose": "^3.993.0",
+    "@aws-sdk/client-kinesis": "^3.990.0"
   }
 }
