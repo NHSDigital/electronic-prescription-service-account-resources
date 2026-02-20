@@ -38,7 +38,7 @@ export class MetricAlarm extends Construct {
       })
 
     const alarm =new Alarm(this, `${props.alarmDefinition.name}Alarm`, {
-      alarmName: `${props.stackName}-${props.alarmDefinition.name}-new`,
+      alarmName: `${props.stackName}-${props.alarmDefinition.name}`,
       metric: metricFunction(props.alarmDefinition.metric),
       threshold: props.alarmDefinition.threshold ?? 0,
       evaluationPeriods: 1,
