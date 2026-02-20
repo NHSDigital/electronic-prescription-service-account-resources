@@ -166,6 +166,7 @@ jobs:
         run: |
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
           CDK_CHANGE_SET_NAME="${{ inputs.DEPLOYED_STACK_NAME }}-changeset-${{ inputs.VERSION }}-$(date +%s)"
+          export CDK_CHANGE_SET_NAME
           echo "CDK_CHANGE_SET_NAME=${CDK_CHANGE_SET_NAME}" >> "$GITHUB_ENV"
           npm run cdk-prepare-changeset --workspace packages/cdk 2>&1 | tee "cdk_deploy_new_tag.log"
         shell: bash
