@@ -60,14 +60,6 @@ Parameters:
     Description: >
       Subject claim filter for valid tokens for the AssistMeDocumentSync role
     Default: ""
-  EnableDeleteCNAME:
-    Type: String
-    Description: Whether to allow delete CNAME permissions
-    Default: false
-    AllowedValues: [true, false]
-
-Conditions:
-  ShouldCreateDeleteCNAMEpermissions: !Equals [true, !Ref EnableDeleteCNAME]
 
 Resources:
   ##################################################
@@ -227,7 +219,6 @@ Resources:
             Resource: !Sub "arn:aws:inspector2:${AWS::Region}:${AWS::AccountId}:*"
 
   RemoveOldCNAMERecordsPolicy:
-    Condition: ShouldCreateDeleteCNAMEpermissions
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -237,10 +228,18 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - route53:ChangeResourceRecordSets
               - route53:ListHostedZonesByName
               - route53:ListResourceRecordSets
             Resource: "*"
+          - Effect: Allow
+            Action:
+              - route53:ChangeResourceRecordSets
+            Resource: "*"
+            Condition:
+              ForAllValues:StringEquals:
+                route53:ChangeResourceRecordSetsRecordTypes: CNAME
+              ForAllValues:StringLike:
+                route53:ChangeResourceRecordSetsNormalizedRecordNames: _*
 
   UpdateCloudfrontKVS:
     Type: AWS::IAM::ManagedPolicy
