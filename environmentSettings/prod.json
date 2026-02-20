@@ -78,8 +78,7 @@
       ],
       "AssistMeDocumentSyncClaimFilters": [
         "NONE"
-      ],
-      "EnableDeleteCNAME": "false"
+      ]
     },
     "account-resources": {
       "LogRetentionDays": "90"
