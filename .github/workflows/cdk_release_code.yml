@@ -209,7 +209,7 @@ jobs:
         run: ./.github/scripts/describe_cdk_changes.sh
 
       - name: Check for destructive changes
-        if: ${{ inputs.DEPLOY_CDK_CODE == false }}
+        if: ${{ inputs.DEPLOY_CDK_CODE == true }}
         shell: bash
         env:
           STACK_NAME: ${{ inputs.DEPLOYED_STACK_NAME }}
