@@ -18,7 +18,7 @@ async function main() {
 
   const accountResourcesUKStackName = getConfigFromEnvVar("accountResourcesUKStackName")
   const accountResourcesUSStackName = getConfigFromEnvVar("accountResourcesUSStackName")
-  const monitoringStackName = getConfigFromEnvVar("accountResourcesUKStackName")
+  const monitoringStackName = getConfigFromEnvVar("monitoringStackName")
 
   new AccountResourcesStack_UK(app, "AccountResources_UK", {
     ...props,
