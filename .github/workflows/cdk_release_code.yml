@@ -165,7 +165,7 @@ jobs:
         if: ${{ inputs.DEPLOY_CDK_CODE == true }}
         run: |
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
-          CDK_CHANGE_SET_NAME="DESTRUCTIVE-${CDK_CONFIG_DEPLOYED_STACK_NAME}-changeset-${CDK_CONFIG_versionNumber}-$(date +%s)"
+          CDK_CHANGE_SET_NAME="${CDK_CONFIG_DEPLOYED_STACK_NAME}-changeset-${CDK_CONFIG_versionNumber}-$(date +%s)"
           export CDK_CHANGE_SET_NAME
           echo "CDK_CHANGE_SET_NAME=${CDK_CHANGE_SET_NAME}" >> "$GITHUB_ENV"
           npm run cdk-prepare-changeset --workspace packages/cdk 2>&1 | tee "cdk_deploy_new_tag.log"
