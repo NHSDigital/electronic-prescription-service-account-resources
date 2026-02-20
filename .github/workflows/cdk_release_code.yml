@@ -181,6 +181,7 @@ jobs:
           CDK_CONFIG_accountResourcesUKStackName: "account-resources-cdk-uk"
           CDK_CONFIG_accountResourcesUSStackName: "account-resources-cdk-us"
           CDK_CONFIG_monitoringStackName: "monitoring"
+          REQUIRE_APPROVAL: "never"
       - name: Header output
         if: ${{ inputs.DEPLOY_CDK_CODE == false }}
         shell: bash
@@ -214,9 +215,11 @@ jobs:
         env:
           STACK_NAME: ${{ inputs.DEPLOYED_STACK_NAME }}
           DIFF_FILE: ./cdk_deploy_diff_new_tag.log
+          AWS_REGION: ${{ inputs.AWS_REGION }}
         run: |
           aws cloudformation describe-change-set \
             --stack-name "${STACK_NAME}" \
+            --region "${AWS_REGION}" \
             --change-set-name "${CDK_CHANGE_SET_NAME}" > change_set_details.json 
           tsx scripts/checkReplacements.ts change_set_details.json
 
