@@ -217,7 +217,7 @@ jobs:
           STACK_NAME: ${{ inputs.DEPLOYED_STACK_NAME }}
           DIFF_FILE: ./cdk_deploy_diff_new_tag.log
           AWS_REGION: ${{ inputs.AWS_REGION }}
-          ALLOWED_CHANGES_FILENAME: "allowed_changes.json"
+          ALLOWED_CHANGES_FILENAME: "packages/cdk/allowedChanges.json"
         run: |
           npm run cdk-check-changeset --workspace packages/cdk
           
