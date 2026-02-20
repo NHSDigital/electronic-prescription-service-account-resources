@@ -12,7 +12,7 @@
     "@nhsdigital/eps-cdk-constructs": "^1.0.173",
     "aws-cdk-lib": "^2.238.0",
     "cdk-nag": "^2.37.55",
-    "constructs": "^10.4.5"
+    "constructs": "^10.5.1"
   },
   "devDependencies": {
     "aws-cdk": "^2.1106.0"
