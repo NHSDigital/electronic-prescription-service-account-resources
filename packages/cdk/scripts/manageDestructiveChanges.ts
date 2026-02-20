@@ -1,6 +1,6 @@
 import {readFile} from "node:fs/promises"
 
-import {AllowedDestructiveChange, checkDestructiveChangeSet} from "../utils/checkDestructiveChanges"
+import {AllowedDestructiveChange, checkDestructiveChangeSet} from "@nhsdigital/eps-cdk-constructs"
 
 const requireEnv = (name: string): string => {
   const value = process.env[name]
@@ -57,6 +57,7 @@ const main = async (): Promise<void> => {
   )
 
   console.log("Destructive change check completed successfully.")
+  console.log("No issues found, or destructive changes are in allowed changes file.")
 }
 
 main().catch(error => {
