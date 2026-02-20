@@ -144,6 +144,7 @@ jobs:
           CDK_CONFIG_monitoringStackName: "monitoring"
 
       - name: "Run diff for cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.DEPLOYED_STACK_NAME }} new tag"
+        if: ${{ inputs.DEPLOY_CDK_CODE == false }}
         run: |
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
           npm run cdk-diff --workspace packages/cdk 2>&1 | tee "cdk_deploy_diff_new_tag.log"
