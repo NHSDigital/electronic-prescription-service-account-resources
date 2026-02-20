@@ -14,20 +14,25 @@ try {
         return undefined
       }
       const replacement = resourceChange.Replacement
-      const needsReplacement = replacement === true || replacement === "True"
-      if (!needsReplacement) {
+      const action = resourceChange.Action
+      const replacementString = typeof replacement === "string" ? replacement : String(replacement ?? "")
+      const needsReplacement = replacementString === "True" || replacementString === "Conditional"
+      const isRemoval = action === "Remove"
+      if (!needsReplacement && !isRemoval) {
         return undefined
       }
       return {
         logicalId: resourceChange.LogicalResourceId ?? "<unknown logical id>",
         physicalId: resourceChange.PhysicalResourceId ?? "<unknown physical id>",
-        resourceType: resourceChange.ResourceType ?? "<unknown type>"
+        resourceType: resourceChange.ResourceType ?? "<unknown type>",
+        reason: needsReplacement ? `Replacement: ${replacementString}` : `Action: ${action}`
       }
     })
     .filter(Boolean) as Array<{
       logicalId: string;
       physicalId: string;
       resourceType: string;
+      reason: string;
     }>
 
   if (replacements.length === 0) {
@@ -35,9 +40,9 @@ try {
     process.exit(0)
   }
 
-  console.error("Resources that require replacement:")
-  replacements.forEach(({logicalId, physicalId, resourceType}) => {
-    console.error(`- LogicalId: ${logicalId}, PhysicalId: ${physicalId}, Type: ${resourceType}`)
+  console.error("Resources that require attention:")
+  replacements.forEach(({logicalId, physicalId, resourceType, reason}) => {
+    console.error(`- LogicalId: ${logicalId}, PhysicalId: ${physicalId}, Type: ${resourceType}, Reason: ${reason}`)
   })
   process.exit(1)
 } catch (error) {
