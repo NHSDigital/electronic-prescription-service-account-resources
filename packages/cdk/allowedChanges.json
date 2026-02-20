@@ -19,7 +19,7 @@
         "LogicalResourceId": "WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressionsLambdamonitoringsuppressionreporter4C6D6F0C6068F8CF",
         "PhysicalResourceId": "monitoring-WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressi-tpqS8dwriny6",
         "ResourceType": "AWS::Lambda::Permission",
-        "ExpiryDate": "2025-03-01T23:59:59Z",
+        "ExpiryDate": "2026-03-01T23:59:59Z",
         "StackName": "monitoring",
         "AllowedReason": "Initial deployment of new cdk style cdk stack"
     }
