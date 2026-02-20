@@ -5,7 +5,7 @@
         "ResourceType": "AWS::CDK::Metadata",
         "ExpiryDate": "2026-03-01T23:59:59Z",
         "StackName": "monitoring",
-        "AllowedReason": "Initial deployment of new cdk style cdk stack"
+        "AllowedReason": "Renaming stack in cdk app - no actual change to this resource"
     },
     {
         "LogicalResourceId": "ReportAlertSuppressionsScheduleRoleDefaultPolicy1DDE3593",
@@ -13,7 +13,7 @@
         "ResourceType": "AWS::IAM::Policy",
         "ExpiryDate": "2026-03-01T23:59:59Z",
         "StackName": "monitoring",
-        "AllowedReason": "Initial deployment of new cdk style cdk stack"
+        "AllowedReason": "Fixing policy due to stricter checking"
     },
     {
         "LogicalResourceId": "WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressionsLambdamonitoringsuppressionreporter4C6D6F0C6068F8CF",
@@ -21,6 +21,6 @@
         "ResourceType": "AWS::Lambda::Permission",
         "ExpiryDate": "2026-03-01T23:59:59Z",
         "StackName": "monitoring",
-        "AllowedReason": "Initial deployment of new cdk style cdk stack"
+        "AllowedReason": "Removing permission as its not needed"
     }
 ]
