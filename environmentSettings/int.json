@@ -68,8 +68,7 @@
       ],
       "AssistMeDocumentSyncClaimFilters": [
         "repo:NHSDigital/eps-assist-me:*"
-      ],
-      "EnableDeleteCNAME": "false"
+      ]
     },
     "account-resources": {
       "LogRetentionDays": "90"
