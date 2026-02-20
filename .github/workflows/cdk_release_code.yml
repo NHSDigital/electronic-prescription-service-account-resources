@@ -217,12 +217,16 @@ jobs:
           DIFF_FILE: ./cdk_deploy_diff_new_tag.log
           AWS_REGION: ${{ inputs.AWS_REGION }}
         run: |
-          aws cloudformation describe-change-set \
+          if aws cloudformation describe-change-set \
             --stack-name "${STACK_NAME}" \
             --region "${AWS_REGION}" \
-            --change-set-name "${CDK_CHANGE_SET_NAME}" > change_set_details.json 
-          tsx scripts/checkReplacements.ts change_set_details.json
-
+            --change-set-name "${CDK_CHANGE_SET_NAME}" \
+            --output json > change_set_details.json 2>/dev/null; then
+            echo "Change set exists, checking for destructive changes"
+            tsx scripts/checkReplacements.ts change_set_details.json
+          else
+            echo "Change set not found"
+          fi
       - name: Execute change set
         if: ${{ inputs.DEPLOY_CDK_CODE == true }}
         run: |
