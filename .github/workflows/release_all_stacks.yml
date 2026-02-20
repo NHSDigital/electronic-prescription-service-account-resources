@@ -168,7 +168,7 @@ jobs:
 
   cdk_deploy_monitoring:
     uses: ./.github/workflows/cdk_release_code.yml
-    if: ${{ inputs.execute_change_set == true }}
+    # if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_monitoring
     with:
       STACK_NAME: Monitoring
@@ -185,7 +185,7 @@ jobs:
 
   cdk_deploy_account_resources_US:
     uses: ./.github/workflows/cdk_release_code.yml
-    if: ${{ inputs.execute_change_set == true }}
+    # if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_account_resources_US
     with:
       STACK_NAME: AccountResources_US
@@ -203,7 +203,7 @@ jobs:
 
   cdk_deploy_account_resources_UK:
     uses: ./.github/workflows/cdk_release_code.yml
-    if: ${{ inputs.execute_change_set == true }}
+    # if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_account_resources_UK
     with:
       STACK_NAME: AccountResources_UK

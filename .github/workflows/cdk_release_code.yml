@@ -154,7 +154,7 @@ jobs:
         if: ${{ inputs.DEPLOY_CDK_CODE == true }}
         run: |
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
-          npm run cdk-deploy --workspace packages/cdk 2>&1 | tee "cdk_deploy_diff_new_tag.log"
+          npm run cdk-prepare-changeset --workspace packages/cdk 2>&1 | tee "cdk_deploy_diff_new_tag.log"
         shell: bash
         env:
           CDK_STACK_NAME: "${{ inputs.STACK_NAME }}"
