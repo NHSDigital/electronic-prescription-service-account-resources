@@ -125,7 +125,8 @@ jobs:
   cdk_diff_monitoring:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
-      STACK_NAME: Monitoring
+      CDK_RESOURCE_STACK_NAME: Monitoring
+      DEPLOYED_STACK_NAME: monitoring
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
@@ -139,7 +140,8 @@ jobs:
   cdk_diff_account_resources_US:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
-      STACK_NAME: AccountResources_US
+      CDK_RESOURCE_STACK_NAME: AccountResources_US
+      DEPLOYED_STACK_NAME: account_resources_cdk-us
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
@@ -154,7 +156,8 @@ jobs:
   cdk_diff_account_resources_UK:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
-      STACK_NAME: AccountResources_UK
+      CDK_RESOURCE_STACK_NAME: AccountResources_UK
+      DEPLOYED_STACK_NAME: account_resources_cdk-uk
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
@@ -171,7 +174,8 @@ jobs:
     # if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_monitoring
     with:
-      STACK_NAME: Monitoring
+      CDK_RESOURCE_STACK_NAME: Monitoring
+      DEPLOYED_STACK_NAME: monitoring
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
@@ -188,7 +192,8 @@ jobs:
     # if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_account_resources_US
     with:
-      STACK_NAME: AccountResources_US
+      CDK_RESOURCE_STACK_NAME: AccountResources_US
+      DEPLOYED_STACK_NAME: account_resources_cdk-us
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
@@ -206,7 +211,8 @@ jobs:
     # if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_account_resources_UK
     with:
-      STACK_NAME: AccountResources_UK
+      CDK_RESOURCE_STACK_NAME: AccountResources_UK
+      DEPLOYED_STACK_NAME: account_resources_cdk-uk
       TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}

@@ -1,4 +1,7 @@
 SHELL=/bin/bash -euo pipefail
+export CDK_CONFIG_accountResourcesUKStackName=account-resources-cdk-uk
+export CDK_CONFIG_accountResourcesUSStackName=account-resources-cdk-us
+export CDK_CONFIG_monitoringStackName=monitoring
 
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \

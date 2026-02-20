@@ -1,4 +1,9 @@
-import {createApp, getBooleanConfigFromEnvVar, getNumberConfigFromEnvVar} from "@nhsdigital/eps-cdk-constructs"
+import {
+  createApp,
+  getBooleanConfigFromEnvVar,
+  getNumberConfigFromEnvVar,
+  getConfigFromEnvVar
+} from "@nhsdigital/eps-cdk-constructs"
 import {AccountResourcesStack_UK} from "../stacks/AccountResourcesStack_UK"
 import {AccountResourcesStack_US} from "../stacks/AccountResourcesStack_US"
 import {MonitoringStack} from "../stacks/MonitoringStack"
@@ -11,20 +16,24 @@ async function main() {
     driftDetectionGroup: "account-resources"
   })
 
+  const accountResourcesUKStackName = getConfigFromEnvVar("accountResourcesUKStackName")
+  const accountResourcesUSStackName = getConfigFromEnvVar("accountResourcesUSStackName")
+  const monitoringStackName = getConfigFromEnvVar("accountResourcesUKStackName")
+
   new AccountResourcesStack_UK(app, "AccountResources_UK", {
     ...props,
-    stackName: "account-resources-cdk-uk"
+    stackName: accountResourcesUKStackName
   })
   new AccountResourcesStack_US(app, "AccountResources_US", {
     ...props,
     env: {
 	    region: "us-east-1"
     },
-    stackName: "account-resources-cdk-us"
+    stackName: accountResourcesUSStackName
   })
   new MonitoringStack(app, "Monitoring", {
     ...props,
-    stackName: "monitoring",
+    stackName: monitoringStackName,
     lambdaConcurrencyThreshold:  getNumberConfigFromEnvVar("lambdaConcurrencyThreshold"),
     lambdaConcurrencyWarningThreshold: getNumberConfigFromEnvVar("lambdaConcurrencyWarningThreshold"),
     enableAlerts: getBooleanConfigFromEnvVar("enableAlerts")
