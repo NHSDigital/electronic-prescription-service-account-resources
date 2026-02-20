@@ -42,10 +42,10 @@ const loadAllowedChanges = async (filename: string): Promise<Array<AllowedDestru
 }
 
 const main = async (): Promise<void> => {
-  const changeSetName = requireEnv("changeSetName")
-  const stackName = requireEnv("stackName")
-  const region = requireEnv("region")
-  const allowedChangesFilename = requireEnv("allowedChangesFilename")
+  const changeSetName = requireEnv("CDK_CHANGE_SET_NAME")
+  const stackName = requireEnv("STACK_NAME")
+  const region = requireEnv("AWS_REGION")
+  const allowedChangesFilename = requireEnv("ALLOWED_CHANGES_FILENAME")
 
   const allowedChanges = await loadAllowedChanges(allowedChangesFilename)
 
