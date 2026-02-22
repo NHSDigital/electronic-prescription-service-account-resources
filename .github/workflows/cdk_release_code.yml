@@ -225,10 +225,10 @@ jobs:
       - name: Execute change set
         if: ${{ inputs.DEPLOY_CDK_CODE == true }}
         run: |
-          echo "Would run deployment"
-          # aws cloudformation execute-change-set \
-          #   --stack-name "${{ inputs.DEPLOYED_STACK_NAME }}" \
-          #   --change-set-name ${CDK_CHANGE_SET_NAME}
+          echo "Executing change set"
+          aws cloudformation execute-change-set \
+            --stack-name "${{ inputs.DEPLOYED_STACK_NAME }}" \
+            --change-set-name "${CDK_CHANGE_SET_NAME}"
       - name: Checkout gh-pages
         if: ${{ inputs.DEPLOY_CDK_CODE == true }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
