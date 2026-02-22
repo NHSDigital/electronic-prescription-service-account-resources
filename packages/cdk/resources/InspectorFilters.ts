@@ -1,6 +1,11 @@
 import {Construct} from "constructs"
 import {CfnFilter} from "aws-cdk-lib/aws-inspectorv2"
 
+type CveSuppression = {
+  id: string
+  expiry: Date
+}
+
 export class InspectorFilters extends Construct {
 
   public constructor(scope: Construct, id: string){
@@ -8,7 +13,7 @@ export class InspectorFilters extends Construct {
 
     // This is a list of CVEs that are being suppressed in AWS Inspector findings.
     // Each CVE has an associated expiry date. Filters will only be added if the expiry date is less than today.
-    const cvesToSuppress = [
+    const cvesToSuppress: Array<CveSuppression> = [
       {id: "CVE-2023-24057", expiry: new Date("2027-01-01")}, // https://nvd.nist.gov/vuln/detail/cve-2023-24057
       // validator repo
       // hapi-fhir

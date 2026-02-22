@@ -1,0 +1,26 @@
+[
+    {
+        "LogicalResourceId": "CDKMetadata",
+        "PhysicalResourceId": "57d02940-0e6d-11f1-9897-068c912e4a47",
+        "ResourceType": "AWS::CDK::Metadata",
+        "ExpiryDate": "2026-03-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "Renaming stack in cdk app - no actual change to this resource"
+    },
+    {
+        "LogicalResourceId": "ReportAlertSuppressionsScheduleRoleDefaultPolicy1DDE3593",
+        "PhysicalResourceId": "monit-Repor-R5HWGFrt1XuY",
+        "ResourceType": "AWS::IAM::Policy",
+        "ExpiryDate": "2026-03-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "Fixing policy due to stricter checking"
+    },
+    {
+        "LogicalResourceId": "WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressionsLambdamonitoringsuppressionreporter4C6D6F0C6068F8CF",
+        "PhysicalResourceId": "monitoring-WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressi-tpqS8dwriny6",
+        "ResourceType": "AWS::Lambda::Permission",
+        "ExpiryDate": "2026-03-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "Removing permission as its not needed"
+    }
+]

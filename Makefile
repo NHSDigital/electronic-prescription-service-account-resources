@@ -1,4 +1,7 @@
 SHELL=/bin/bash -euo pipefail
+export CDK_CONFIG_accountResourcesUKStackName=account-resources-cdk-uk
+export CDK_CONFIG_accountResourcesUSStackName=account-resources-cdk-us
+export CDK_CONFIG_monitoringStackName=monitoring
 
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
@@ -171,49 +174,17 @@ show-eps-route-53-nameservers: guard-env
 cfn-guard:
 	./scripts/run_cfn_guard.sh
 
-cdk-synth: cdk-synth-monitoring cdk-synth-account-resources-US cdk-synth-account-resources-UK
+cdk-synth:
+	CDK_APP_NAME=AccountResources \
+	CDK_CONFIG_versionNumber=undefined \
+	CDK_CONFIG_commitId=undefined \
+	CDK_CONFIG_isPullRequest=false \
+	CDK_CONFIG_environment=dev \
+	CDK_CONFIG_lambdaConcurrencyThreshold=900 \
+	CDK_CONFIG_lambdaConcurrencyWarningThreshold=700 \
+	CDK_CONFIG_enableAlerts=false \
+	npm run cdk-synth --workspace packages/cdk/
 
-cdk-synth-monitoring: 
-	mkdir -p .local_config
-	VERSION_NUMBER=undefined \
-	COMMIT_ID=undefined \
-	IS_PULL_REQUEST=false \
-	LAMBDA_CONCURRENCY_THRESHOLD=900 \
-	LAMBDA_CONCURRENCY_WARNING_THRESHOLD=700 \
-	ENABLE_ALERTS=False \
-	STACK_NAME=account-resources-monitoring \
-		 ./.github/scripts/fix_cdk_json.sh .local_config/monitoring.config.json
-	CONFIG_FILE_NAME=.local_config/monitoring.config.json npx cdk synth \
-		--quiet \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/MonitoringApp.ts" 
-
-cdk-synth-account-resources-US: 
-	mkdir -p .local_config
-	VERSION_NUMBER=undefined \
-	COMMIT_ID=undefined \
-	IS_PULL_REQUEST=false \
-	LAMBDA_CONCURRENCY_THRESHOLD=900 \
-	LAMBDA_CONCURRENCY_WARNING_THRESHOLD=700 \
-	ENABLE_ALERTS=False \
-	STACK_NAME=account-resources-cdk-us \
-		 ./.github/scripts/fix_cdk_json.sh .local_config/account-resources-us.config.json
-	CONFIG_FILE_NAME=.local_config/account-resources-us.config.json npx cdk synth \
-		--quiet \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/AccountResourcesApp_US.ts" 
-
-cdk-synth-account-resources-UK: 
-	mkdir -p .local_config
-	VERSION_NUMBER=undefined \
-	COMMIT_ID=undefined \
-	IS_PULL_REQUEST=false \
-	LAMBDA_CONCURRENCY_THRESHOLD=900 \
-	LAMBDA_CONCURRENCY_WARNING_THRESHOLD=700 \
-	ENABLE_ALERTS=False \
-	STACK_NAME=account-resources-cdk-uk \
-		 ./.github/scripts/fix_cdk_json.sh .local_config/account-resources-uk.config.json
-	CONFIG_FILE_NAME=.local_config/account-resources-uk.config.json npx cdk synth \
-		--quiet \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/AccountResourcesApp_UK.ts" 
 create-npmrc:
 	gh auth login --scopes "read:packages"; \
 	echo "//npm.pkg.github.com/:_authToken=$$(gh auth token)" > .npmrc
