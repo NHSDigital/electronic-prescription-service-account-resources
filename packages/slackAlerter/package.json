@@ -13,7 +13,7 @@
     },
     "dependencies": {
         "@aws-lambda-powertools/logger": "^2.31.0",
-        "@middy/core": "^7.0.2",
+        "@middy/core": "^7.1.0",
         "uuid": "^13.0.0"
     },
     "devDependencies": {

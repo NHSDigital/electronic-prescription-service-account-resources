@@ -8,3 +8,8 @@ vulnerabilities:
   - id: CVE-2026-26996
     statement:  minimatch vulnerability accepted as risk - dependency of multiple packages
     expired_at: 2026-04-01
+licenses:
+  - id: LGPL-2.1-only
+    filepath: .venv/lib/python3.12/site-packages/pygithub-2.8.1.dist-info/METADATA
+  - id: LGPL-2.0-or-later
+    filepath: .venv/lib/python3.12/site-packages/chardet-5.2.0.dist-info/METADATA
