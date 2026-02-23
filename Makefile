@@ -3,13 +3,8 @@ export CDK_CONFIG_accountResourcesUKStackName=account-resources-cdk-uk
 export CDK_CONFIG_accountResourcesUSStackName=account-resources-cdk-us
 export CDK_CONFIG_monitoringStackName=monitoring
 
-guard-%:
-	@ if [ "${${*}}" = "" ]; then \
-		echo "Environment variable $* not set"; \
-		exit 1; \
-	fi
 
-.PHONY: install check-licenses lint
+.PHONY: install lint test
 
 install: install-python install-node install-hooks
 	sudo apt install faketime
@@ -23,18 +18,8 @@ install-node:
 install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
 
-check-licenses: check-licenses-python check-licenses-node
-
-check-licenses-python:
-	echo "Not currently implemented from makefile. Trivy used in qc"
-
-check-licenses-node:
-	echo "Not currently implemented from makefile. Trivy used in qc"
 
 lint: lint-cloudformation lint-node lint-githubactions lint-githubaction-scripts
-lint-cloudformation:
-	poetry run cfn-lint -I "cloudformation/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
-	poetry run cfn-lint -I "SAMtemplates/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
 
 lint-node:
 	npm run lint --workspace packages/certificateChecker
@@ -42,12 +27,6 @@ lint-node:
 	npm run lint --workspace packages/proxygen
 	npm run lint --workspace packages/lambdaJanitor
 	npm run lint --workspace packages/cdk
-
-lint-githubactions:
-	actionlint
-
-lint-githubaction-scripts:
-	shellcheck .github/scripts/*.sh
 
 test: generate-mock-certs
 	poetry run scripts/check_policy_length.py
@@ -84,12 +63,6 @@ deep-clean: clean
 	rm -rf venv
 	find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +
 	poetry env remove --all
-
-aws-configure:
-	aws configure sso --region eu-west-2
-
-aws-login:
-	aws sso login --sso-session sso-session
 
 sam-validate: 
 	sam validate --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
@@ -171,9 +144,6 @@ show-eps-route-53-nameservers: guard-env
 		--query "Stacks[*].Outputs[?OutputKey=='ProdCPTNameServers'].{OutputKey: OutputKey, OutputValue: OutputValue, Description: Description}" \
 		--profile prescription-$${env}
 
-cfn-guard:
-	./scripts/run_cfn_guard.sh
-
 cdk-synth:
 	CDK_APP_NAME=AccountResources \
 	CDK_CONFIG_versionNumber=undefined \
@@ -185,10 +155,8 @@ cdk-synth:
 	CDK_CONFIG_enableAlerts=false \
 	npm run cdk-synth --workspace packages/cdk/
 
-create-npmrc:
-	gh auth login --scopes "read:packages"; \
-	echo "//npm.pkg.github.com/:_authToken=$$(gh auth token)" > .npmrc
-	echo "@nhsdigital:registry=https://npm.pkg.github.com" >> .npmrc
-
 compile:
 	echo "Does nothing yet"
+
+%:
+	@$(MAKE) -f /usr/local/share/eps/Mk/common.mk $@
