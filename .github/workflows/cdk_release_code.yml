@@ -91,6 +91,7 @@ jobs:
           CDK_CHANGE_SET_NAME="${CDK_CONFIG_DEPLOYED_STACK_NAME}-changeset-${CDK_CONFIG_versionNumber}-$(date +%s)"
           export CDK_CHANGE_SET_NAME
           echo "CDK_CHANGE_SET_NAME=${CDK_CHANGE_SET_NAME}" >> "$GITHUB_ENV"
+          echo "Created changeset ${CDK_CHANGE_SET_NAME} for app ${CDK_APP_NAME} stack ${CDK_CONFIG_DEPLOYED_STACK_NAME}" >> "$GITHUB_STEP_SUMMARY"
           npm run cdk-prepare-changeset --workspace packages/cdk 2>&1 | tee "cdk_deploy_new_tag.log"
         shell: bash
         env:
