@@ -162,7 +162,6 @@ jobs:
           CDK_CONFIG_monitoringStackName: "monitoring"
 
       - name: "Run create changeset for cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.DEPLOYED_STACK_NAME }} new tag"
-        if: ${{ inputs.DEPLOY_CDK_CODE == true }}
         run: |
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
           CDK_CHANGE_SET_NAME="${CDK_CONFIG_DEPLOYED_STACK_NAME}-changeset-${CDK_CONFIG_versionNumber}-$(date +%s)"
