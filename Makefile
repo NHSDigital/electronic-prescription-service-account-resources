@@ -49,7 +49,9 @@ clean:
 	rm -rf .local_config
 	rm -rf packages/certificateChecker/coverage
 	rm -rf packages/certificateChecker/lib
+	rm -rf packages/certificateChecker/tests/mock-certs/
 	rm -rf packages/splunkProcessor/lib
+	rm -rf packages/splunkProcessor/coverage
 	rm -rf packages/slackAlerter/coverage
 	rm -rf packages/slackAlerter/lib
 	rm -rf packages/proxygen/coverage
