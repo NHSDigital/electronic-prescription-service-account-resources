@@ -7,7 +7,8 @@ export CDK_CONFIG_monitoringStackName=monitoring
 .PHONY: install lint test
 
 install: install-python install-node install-hooks
-	sudo apt install faketime
+	sudo apt update
+	sudo apt install -y faketime
 
 install-python:
 	poetry install
