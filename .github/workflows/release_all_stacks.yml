@@ -56,8 +56,6 @@ on:
           required: false
         cf_deploy_role:
           required: false
-        CDK_PULL_IMAGE_ROLE:
-          required: true
 
 env:
   BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
@@ -151,7 +149,6 @@ jobs:
       verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
 
   cdk_diff_account_resources_US:
     uses: ./.github/workflows/cdk_release_code.yml
@@ -169,7 +166,6 @@ jobs:
       verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
 
   cdk_diff_account_resources_UK:
     uses: ./.github/workflows/cdk_release_code.yml
@@ -187,7 +183,6 @@ jobs:
       verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
 
   cdk_deploy_monitoring:
     uses: ./.github/workflows/cdk_release_code.yml
@@ -208,7 +203,6 @@ jobs:
       verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
 
   cdk_deploy_account_resources_US:
     uses: ./.github/workflows/cdk_release_code.yml
@@ -229,7 +223,6 @@ jobs:
       verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
 
   cdk_deploy_account_resources_UK:
     uses: ./.github/workflows/cdk_release_code.yml
@@ -250,7 +243,6 @@ jobs:
       verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
 
 # ***************************************************
 # If you add a new stack for release, 
