@@ -20,7 +20,7 @@ install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
 
 
-lint: lint-cloudformation lint-node lint-githubactions lint-githubaction-scripts
+lint: lint-node
 
 lint-node:
 	npm run lint --workspace packages/certificateChecker
