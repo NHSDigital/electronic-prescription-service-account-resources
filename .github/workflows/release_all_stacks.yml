@@ -135,7 +135,7 @@ jobs:
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
 
   cdk_diff_monitoring:
-    uses: ./.github/workflows/cdk_release_code.yml
+    uses: ./.github/workflows/cdk_diff_code.yml
     with:
       CDK_RESOURCE_STACK_NAME: Monitoring
       DEPLOYED_STACK_NAME: monitoring
@@ -143,15 +143,14 @@ jobs:
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOY_CDK_CODE: false
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       runtime_docker_image: "${{ inputs.runtime_docker_image }}"
       verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
     secrets:
-      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
+      CLOUD_FORMATION_DIFF_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
 
   cdk_diff_account_resources_US:
-    uses: ./.github/workflows/cdk_release_code.yml
+    uses: ./.github/workflows/cdk_diff_code.yml
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_US
       DEPLOYED_STACK_NAME: account-resources-cdk-us
@@ -159,16 +158,15 @@ jobs:
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOY_CDK_CODE: false
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       AWS_REGION: us-east-1
       runtime_docker_image: "${{ inputs.runtime_docker_image }}"
       verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
     secrets:
-      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
+      CLOUD_FORMATION_DIFF_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
 
   cdk_diff_account_resources_UK:
-    uses: ./.github/workflows/cdk_release_code.yml
+    uses: ./.github/workflows/cdk_diff_code.yml
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_UK
       DEPLOYED_STACK_NAME: account-resources-cdk-uk
@@ -176,17 +174,16 @@ jobs:
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOY_CDK_CODE: false
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       AWS_REGION: eu-west-2
       runtime_docker_image: "${{ inputs.runtime_docker_image }}"
       verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
     secrets:
-      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
+      CLOUD_FORMATION_DIFF_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
 
   cdk_deploy_monitoring:
     uses: ./.github/workflows/cdk_release_code.yml
-    # if: ${{ inputs.execute_change_set == true }}
+    if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_monitoring
     with:
       CDK_RESOURCE_STACK_NAME: Monitoring
@@ -195,8 +192,6 @@ jobs:
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOY_CDK_CODE: true
-      IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: eu-west-2
       runtime_docker_image: "${{ inputs.runtime_docker_image }}"
@@ -206,7 +201,7 @@ jobs:
 
   cdk_deploy_account_resources_US:
     uses: ./.github/workflows/cdk_release_code.yml
-    # if: ${{ inputs.execute_change_set == true }}
+    if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_account_resources_US
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_US
@@ -215,8 +210,6 @@ jobs:
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOY_CDK_CODE: true
-      IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: us-east-1
       runtime_docker_image: "${{ inputs.runtime_docker_image }}"
@@ -226,7 +219,7 @@ jobs:
 
   cdk_deploy_account_resources_UK:
     uses: ./.github/workflows/cdk_release_code.yml
-    # if: ${{ inputs.execute_change_set == true }}
+    if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_account_resources_UK
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_UK
@@ -235,8 +228,6 @@ jobs:
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOY_CDK_CODE: true
-      IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: eu-west-2
       runtime_docker_image: "${{ inputs.runtime_docker_image }}"

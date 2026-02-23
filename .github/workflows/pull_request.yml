@@ -126,5 +126,5 @@ jobs:
       runtime_docker_image: "${{ needs.get_config_values.outputs.devcontainer_image }}:githubactions-${{ needs.get_config_values.outputs.devcontainer_version }}"
       verify_published_from_main_image: false
     secrets:
-      cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
+      cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
