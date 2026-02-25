@@ -3,16 +3,100 @@
         "LogicalResourceId": "ReportAlertSuppressionsScheduleRoleDefaultPolicy1DDE3593",
         "PhysicalResourceId": "monit-Repor-R5HWGFrt1XuY",
         "ResourceType": "AWS::IAM::Policy",
-        "ExpiryDate": "2026-03-01T23:59:59Z",
+        "PolicyAction": "Delete",
+        "Action": "Remove",
+        "ExpiryDate": "2026-04-01T23:59:59Z",
         "StackName": "monitoring",
-        "AllowedReason": "Fixing policy due to stricter checking"
+        "AllowedReason": "Dev account - removing default policy"
     },
     {
         "LogicalResourceId": "WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressionsLambdamonitoringsuppressionreporter4C6D6F0C6068F8CF",
         "PhysicalResourceId": "monitoring-WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressi-tpqS8dwriny6",
         "ResourceType": "AWS::Lambda::Permission",
-        "ExpiryDate": "2026-03-01T23:59:59Z",
+        "PolicyAction": "Delete",
+        "Action": "Remove",
+        "ExpiryDate": "2026-04-01T23:59:59Z",
         "StackName": "monitoring",
-        "AllowedReason": "Removing permission as its not needed"
+        "AllowedReason": "Dev account - Removing default permission as its not needed"
+    },
+    {
+        "LogicalResourceId": "ReportAlertSuppressionsScheduleRoleDefaultPolicy1DDE3593",
+        "PhysicalResourceId": "monit-Repor-tFB8F4bGR1ke",
+        "ResourceType": "AWS::IAM::Policy",
+        "PolicyAction": "Delete",
+        "Action": "Remove",
+        "ExpiryDate": "2026-04-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "Ref account - removing default policy"
+    },
+    {
+        "LogicalResourceId": "WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressionsLambdamonitoringsuppressionreporter4C6D6F0C6068F8CF",
+        "PhysicalResourceId": "monitoring-WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressi-hJVD69BpSvoW",
+        "ResourceType": "AWS::Lambda::Permission",
+        "PolicyAction": "Delete",
+        "Action": "Remove",
+        "ExpiryDate": "2026-04-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "Ref account - Removing default permission as its not needed"
+    },
+    {
+        "LogicalResourceId": "ReportAlertSuppressionsScheduleRoleDefaultPolicy1DDE3593",
+        "PhysicalResourceId": "monit-Repor-huYL0Gef3jUA",
+        "ResourceType": "AWS::IAM::Policy",
+        "PolicyAction": "Delete",
+        "Action": "Remove",
+        "ExpiryDate": "2026-04-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "QA account - removing default policy"
+    },
+    {
+        "LogicalResourceId": "WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressionsLambdamonitoringsuppressionreporter4C6D6F0C6068F8CF",
+        "PhysicalResourceId": "monitoring-WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressi-QnavewRUpGvS",
+        "ResourceType": "AWS::Lambda::Permission",
+        "PolicyAction": "Delete",
+        "Action": "Remove",
+        "ExpiryDate": "2026-04-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "QA account - Removing default permission as its not needed"
+    },
+    {
+        "LogicalResourceId": "ReportAlertSuppressionsScheduleRoleDefaultPolicy1DDE3593",
+        "PhysicalResourceId": "monit-Repor-iFwg1TcLenwO",
+        "ResourceType": "AWS::IAM::Policy",
+        "PolicyAction": "Delete",
+        "Action": "Remove",
+        "ExpiryDate": "2026-04-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "INT account - removing default policy"
+    },
+    {
+        "LogicalResourceId": "WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressionsLambdamonitoringsuppressionreporter4C6D6F0C6068F8CF",
+        "PhysicalResourceId": "monitoring-WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressi-5ZzwfrU90lE5",
+        "ResourceType": "AWS::Lambda::Permission",
+        "PolicyAction": "Delete",
+        "Action": "Remove",
+        "ExpiryDate": "2026-04-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "INT account - Removing default permission as its not needed"
+    },
+    {
+        "LogicalResourceId": "ReportAlertSuppressionsScheduleRoleDefaultPolicy1DDE3593",
+        "PhysicalResourceId": "monit-Repor-5SZT56Ci9HqW",
+        "ResourceType": "AWS::IAM::Policy",
+        "PolicyAction": "Delete",
+        "Action": "Remove",
+        "ExpiryDate": "2026-04-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "PROD account - removing default policy"
+    },
+    {
+        "LogicalResourceId": "WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressionsLambdamonitoringsuppressionreporter4C6D6F0C6068F8CF",
+        "PhysicalResourceId": "monitoring-WeeklyScheduleRuleAllowEventRuleMonitoringStackFunctionsReportAlertSuppressi-gyDt6J41iHpe",
+        "ResourceType": "AWS::Lambda::Permission",
+        "PolicyAction": "Delete",
+        "Action": "Remove",
+        "ExpiryDate": "2026-04-01T23:59:59Z",
+        "StackName": "monitoring",
+        "AllowedReason": "PROD account - Removing default permission as its not needed"
     }
 ]
