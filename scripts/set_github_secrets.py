@@ -2,7 +2,7 @@ import argparse
 from dataclasses import dataclass, field
 import json
 import os
-from typing import TypedDict
+from typing import Any, TypedDict
 import time
 import boto3
 from github import Github
@@ -72,6 +72,7 @@ class Secrets(TypedDict):
     qa_target_service_search_server: str
     ref_target_service_search_server: str
     recovery_target_service_search_server: str
+    dependabot_token: str
 
 
 class GithubTeams(TypedDict):
@@ -82,10 +83,11 @@ class GithubTeams(TypedDict):
 
 
 class RepoConfig(TypedDict):
-    repo_name: str
-    set_target_spine_servers: bool
-    set_account_resources_environments: bool
-    set_target_service_search_servers: bool
+    repoUrl: str
+    setTargetSpineServers: bool
+    isAccountResources: bool
+    setTargetServiceSearchServers: bool
+    isEchoRepo: bool
 
 
 @dataclass
@@ -93,6 +95,76 @@ class RepoEnvironment():
     name: str
     reviewers: list[ReviewerParams] = field(default_factory=list)
     deployment_branch_policy: EnvironmentDeploymentBranchPolicyParams | None = None
+
+
+def _as_bool(entry: dict[str, Any], camel_key: str, snake_key: str, default: bool = False) -> bool:
+    value = entry.get(camel_key)
+    if value is None:
+        value = entry.get(snake_key)
+    if value is None:
+        return default
+    return bool(value)
+
+
+def _normalise_repo_entry(entry: Any, fallback_repo_url: str | None = None) -> RepoConfig:
+    if isinstance(entry, str):
+        repo_url = entry
+        entry_dict: dict[str, Any] = {}
+    elif isinstance(entry, dict):
+        entry_dict = dict(entry)
+        repo_url = entry_dict.get("repoUrl") or entry_dict.get("repo") or fallback_repo_url
+    else:
+        raise ValueError("Unsupported repo entry type in repos.json")
+
+    if not repo_url:
+        raise ValueError("Repo entry missing repoUrl")
+
+    repo_url = repo_url.strip()
+    if not repo_url:
+        raise ValueError("Repo entry contains empty repoUrl")
+
+    return {
+        "repoUrl": repo_url,
+        "setTargetSpineServers": _as_bool(entry_dict,
+                                          camel_key="setTargetSpineServers",
+                                          snake_key="set_target_spine_servers"),
+        "isAccountResources": _as_bool(entry_dict,
+                                       camel_key="isAccountResources",
+                                       snake_key="is_account_resources"),
+        "setTargetServiceSearchServers": _as_bool(
+            entry_dict,
+            camel_key="setTargetServiceSearchServers",
+            snake_key="set_target_service_search_servers"
+        ),
+        "isEchoRepo": _as_bool(
+            entry_dict,
+            camel_key="isEchoRepo",
+            snake_key="is_echo_repo"
+        ),
+    }
+
+
+def _parse_repos_payload(payload: Any) -> list[RepoConfig]:
+    if isinstance(payload, list):
+        return [_normalise_repo_entry(entry) for entry in payload]
+    if isinstance(payload, dict):
+        repos_section = payload.get("repos")
+        if isinstance(repos_section, list):
+            return [_normalise_repo_entry(entry) for entry in repos_section]
+        if isinstance(repos_section, dict):
+            return [
+                _normalise_repo_entry(entry, fallback_repo_url=key)
+                for key, entry in repos_section.items()
+            ]
+    raise ValueError("repos.json must contain either a list of repos or a 'repos' section")
+
+
+def load_repo_configs_from_repo_status(github: Github) -> list[RepoConfig]:
+    print("Loading repo configuration from NHSDigital/eps-repo-status")
+    repo = github.get_repo("NHSDigital/eps-repo-status")
+    content_file = repo.get_contents("repos.json", ref="main")
+    payload = json.loads(content_file.decoded_content.decode("utf-8"))
+    return _parse_repos_payload(payload)
 
 
 def get_named_export(all_exports: list, export_name: str, required: bool) -> str | None:
@@ -199,50 +271,50 @@ def get_github_teams(github: Github) -> GithubTeams:
     return github_teams
 
 
-def set_secret(github: Github, repo_name: str, secret_name: str, secret_value: str, set_dependabot: bool):
-    repo = github.get_repo(repo_name)
+def set_secret(github: Github, repoUrl: str, secret_name: str, secret_value: str, set_dependabot: bool):
+    repo = github.get_repo(repoUrl)
     if secret_value is None:
-        print(f"Secret value for {secret_name} in repo {repo_name} is not set. Not setting")
+        print(f"Secret value for {secret_name} in repo {repoUrl} is not set. Not setting")
         return
-    print(f"Setting value for {secret_name} in repo {repo_name}")
+    print(f"Setting value for {secret_name} in repo {repoUrl}")
     repo.create_secret(secret_name=secret_name,
                        unencrypted_value=secret_value,
                        secret_type="actions")
     time.sleep(1)  # Sleep for 1 second to avoid rate limiting
     if (set_dependabot):
-        print(f"Setting value for {secret_name} in repo {repo_name} for dependabot")
+        print(f"Setting value for {secret_name} in repo {repoUrl} for dependabot")
         repo.create_secret(secret_name=secret_name,
                            unencrypted_value=secret_value,
                            secret_type="dependabot")
         time.sleep(1)  # Sleep for 1 second to avoid rate limiting
 
 
-def set_role_secrets(github: Github, repo_name: str, roles: Roles, env_name: str, set_dependabot: bool):
-    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CLOUD_FORMATION_DEPLOY_ROLE",
+def set_role_secrets(github: Github, repoUrl: str, roles: Roles, env_name: str, set_dependabot: bool):
+    set_secret(github=github, repoUrl=repoUrl, secret_name=f"{env_name}_CLOUD_FORMATION_DEPLOY_ROLE",
                secret_value=roles["cloud_formation_deploy_role"],
                set_dependabot=set_dependabot)
-    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CLOUD_FORMATION_CHECK_VERSION_ROLE",
+    set_secret(github=github, repoUrl=repoUrl, secret_name=f"{env_name}_CLOUD_FORMATION_CHECK_VERSION_ROLE",
                secret_value=roles["cloud_formation_check_version_role"],
                set_dependabot=set_dependabot)
-    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CLOUD_FORMATION_CREATE_CHANGESET_ROLE",
+    set_secret(github=github, repoUrl=repoUrl, secret_name=f"{env_name}_CLOUD_FORMATION_CREATE_CHANGESET_ROLE",
                secret_value=roles["cloud_formation_prepare_changeset_role"],
                set_dependabot=set_dependabot)
-    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CDK_PULL_IMAGE_ROLE",
+    set_secret(github=github, repoUrl=repoUrl, secret_name=f"{env_name}_CDK_PULL_IMAGE_ROLE",
                secret_value=roles["CDK_pull_image_role"],
                set_dependabot=set_dependabot)
-    set_secret(github=github, repo_name=repo_name, secret_name=f"{env_name}_CDK_PUSH_IMAGE_ROLE",
+    set_secret(github=github, repoUrl=repoUrl, secret_name=f"{env_name}_CDK_PUSH_IMAGE_ROLE",
                secret_value=roles["CDK_push_image_role"],
                set_dependabot=set_dependabot)
 
 
 def set_all_secrets(github: Github,
-                    repo_name: str,
-                    set_target_spine_servers: bool,
-                    set_target_service_search_servers: bool,
+                    repoUrl: str,
+                    setTargetSpineServers: bool,
+                    setTargetServiceSearchServers: bool,
                     set_account_resources_secrets: bool,
                     secrets: Secrets,
-                    echo_repos: bool):
-    response = input(f"Setting secrets in repo {repo_name}. Do you want to continue? (y/N): ")
+                    is_echo_repo: bool):
+    response = input(f"Setting secrets in repo {repoUrl}. Do you want to continue? (y/N): ")
 
     if response.lower() == "y":
         print("Continuing...")
@@ -251,132 +323,135 @@ def set_all_secrets(github: Github,
         return
 
     # automerge secrets
-    set_secret(github=github, repo_name=repo_name, secret_name="AUTOMERGE_PEM",
+    set_secret(github=github, repoUrl=repoUrl, secret_name="AUTOMERGE_PEM",
                secret_value=secrets["automerge_pem"],
                set_dependabot=True)
-    set_secret(github=github, repo_name=repo_name, secret_name="AUTOMERGE_APP_ID",
+    set_secret(github=github, repoUrl=repoUrl, secret_name="AUTOMERGE_APP_ID",
                secret_value="420347",
+               set_dependabot=True)
+    set_secret(github=github, repoUrl=repoUrl, secret_name="DEPENDABOT_TOKEN",
+               secret_value=secrets["dependabot_token"],
                set_dependabot=True)
 
     # dev secrets
-    set_secret(github=github, repo_name=repo_name, secret_name="DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE",
+    set_secret(github=github, repoUrl=repoUrl, secret_name="DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE",
                secret_value=secrets["dev_roles"]["release_notes_execute_lambda_role"],
                set_dependabot=False)
 
-    set_secret(github=github, repo_name=repo_name, secret_name="DEV_CONTAINER_PUSH_IMAGE_ROLE",
+    set_secret(github=github, repoUrl=repoUrl, secret_name="DEV_CONTAINER_PUSH_IMAGE_ROLE",
                secret_value=secrets["dev_roles"]["dev_container_push_image_role"],
                set_dependabot=True)
-    if echo_repos:
-        print(f"All required secrets set for echo repo {repo_name}.")
+    if is_echo_repo:
+        print(f"All required secrets set for echo repo {repoUrl}.")
         return
 
     # common secrets
-    set_secret(github=github, repo_name=repo_name, secret_name="REGRESSION_TESTS_PEM",
+    set_secret(github=github, repoUrl=repoUrl, secret_name="REGRESSION_TESTS_PEM",
                secret_value=secrets["regression_test_pem"],
                set_dependabot=True)
-    set_secret(github=github, repo_name=repo_name, secret_name="APIM_STATUS_API_KEY",
+    set_secret(github=github, repoUrl=repoUrl, secret_name="APIM_STATUS_API_KEY",
                secret_value=os.environ.get("apim_status_api_key"),
                set_dependabot=True)
 
     # proxygen roles
-    set_secret(github=github, repo_name=repo_name, secret_name="PROXYGEN_PTL_ROLE",
+    set_secret(github=github, repoUrl=repoUrl, secret_name="PROXYGEN_PTL_ROLE",
                secret_value=secrets["proxygen_ptl_role"],
                set_dependabot=True)
-    set_secret(github=github, repo_name=repo_name, secret_name="PROXYGEN_PROD_ROLE",
+    set_secret(github=github, repoUrl=repoUrl, secret_name="PROXYGEN_PROD_ROLE",
                secret_value=secrets["proxygen_prod_role"],
                set_dependabot=True)
 
     # artillery role
-    set_secret(github=github, repo_name=repo_name, secret_name="DEV_ARTILLERY_RUNNER_ROLE",
+    set_secret(github=github, repoUrl=repoUrl, secret_name="DEV_ARTILLERY_RUNNER_ROLE",
                secret_value=secrets["dev_roles"]["artillery_runner_role"],
                set_dependabot=True)
-    set_secret(github=github, repo_name=repo_name, secret_name="REF_ARTILLERY_RUNNER_ROLE",
+    set_secret(github=github, repoUrl=repoUrl, secret_name="REF_ARTILLERY_RUNNER_ROLE",
                secret_value=secrets["ref_roles"]["artillery_runner_role"],
                set_dependabot=False)
 
-    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["dev_roles"], env_name="DEV",
+    set_role_secrets(github=github, repoUrl=repoUrl, roles=secrets["dev_roles"], env_name="DEV",
                      set_dependabot=True)
-    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["int_roles"], env_name="INT",
+    set_role_secrets(github=github, repoUrl=repoUrl, roles=secrets["int_roles"], env_name="INT",
                      set_dependabot=False)
-    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["prod_roles"], env_name="PROD",
+    set_role_secrets(github=github, repoUrl=repoUrl, roles=secrets["prod_roles"], env_name="PROD",
                      set_dependabot=False)
-    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["qa_roles"], env_name="QA",
+    set_role_secrets(github=github, repoUrl=repoUrl, roles=secrets["qa_roles"], env_name="QA",
                      set_dependabot=False)
-    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["ref_roles"], env_name="REF",
+    set_role_secrets(github=github, repoUrl=repoUrl, roles=secrets["ref_roles"], env_name="REF",
                      set_dependabot=False)
-    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["ref_roles"], env_name="REF",
+    set_role_secrets(github=github, repoUrl=repoUrl, roles=secrets["ref_roles"], env_name="REF",
                      set_dependabot=False)
-    set_role_secrets(github=github, repo_name=repo_name, roles=secrets["recovery_roles"], env_name="RECOVERY",
+    set_role_secrets(github=github, repoUrl=repoUrl, roles=secrets["recovery_roles"], env_name="RECOVERY",
                      set_dependabot=False)
-    if set_target_spine_servers:
+    if setTargetSpineServers:
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="DEV_TARGET_SPINE_SERVER",
                    secret_value=secrets["dev_target_spine_server"],
                    set_dependabot=True)
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="REF_TARGET_SPINE_SERVER",
                    secret_value=secrets["ref_target_spine_server"],
                    set_dependabot=False)
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="QA_TARGET_SPINE_SERVER",
                    secret_value=secrets["qa_target_spine_server"],
                    set_dependabot=False)
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="INT_TARGET_SPINE_SERVER",
                    secret_value=secrets["int_target_spine_server"],
                    set_dependabot=False)
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="PROD_TARGET_SPINE_SERVER",
                    secret_value=secrets["prod_target_spine_server"],
                    set_dependabot=False)
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="RECOVERY_TARGET_SPINE_SERVER",
                    secret_value=secrets["recovery_target_spine_server"],
                    set_dependabot=False)
 
-    if set_target_service_search_servers:
+    if setTargetServiceSearchServers:
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="DEV_TARGET_SERVICE_SEARCH_SERVER",
                    secret_value=secrets["dev_target_service_search_server"],
                    set_dependabot=True)
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="INT_TARGET_SERVICE_SEARCH_SERVER",
                    secret_value=secrets["int_target_service_search_server"],
                    set_dependabot=False)
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="REF_TARGET_SERVICE_SEARCH_SERVER",
                    secret_value=secrets["ref_target_service_search_server"],
                    set_dependabot=False)
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="QA_TARGET_SERVICE_SEARCH_SERVER",
                    secret_value=secrets["qa_target_service_search_server"],
                    set_dependabot=False)
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="PROD_TARGET_SERVICE_SEARCH_SERVER",
                    secret_value=secrets["prod_target_service_search_server"],
                    set_dependabot=False)
         set_secret(github=github,
-                   repo_name=repo_name,
+                   repoUrl=repoUrl,
                    secret_name="RECOVERY_TARGET_SERVICE_SEARCH_SERVER",
                    secret_value=secrets["recovery_target_service_search_server"],
                    set_dependabot=False)
     if set_account_resources_secrets:
         # eps multi repo deployment pem
-        set_secret(github=github, repo_name=repo_name, secret_name="EPS_MULTI_REPO_DEPLOYMENT_PEM",
+        set_secret(github=github, repoUrl=repoUrl, secret_name="EPS_MULTI_REPO_DEPLOYMENT_PEM",
                    secret_value=secrets["eps_multi_repo_deployment_pem"],
                    set_dependabot=False)
-        set_secret(github=github, repo_name=repo_name, secret_name="EPS_MULTI_REPO_DEPLOYMENT_APP_ID",
+        set_secret(github=github, repoUrl=repoUrl, secret_name="EPS_MULTI_REPO_DEPLOYMENT_APP_ID",
                    secret_value="2278388",
                    set_dependabot=False)
 
@@ -400,11 +475,11 @@ def setup_repo_environment(repo: Repository, environment: RepoEnvironment):
 
 
 def setup_environments(github: Github,
-                       repo_name: str,
+                       repoUrl: str,
                        set_account_resources_environments: bool,
                        github_teams: GithubTeams,
-                       echo_repos: bool):
-    response = input(f"Setting environments in repo {repo_name}. Do you want to continue? (y/N): ")
+                       is_echo_repo: bool):
+    response = input(f"Setting environments in repo {repoUrl}. Do you want to continue? (y/N): ")
 
     if response.lower() == "y":
         print("Continuing...")
@@ -412,7 +487,7 @@ def setup_environments(github: Github,
         print("Returning.")
         return
 
-    repo = github.get_repo(repo_name)
+    repo = github.get_repo(repoUrl)
     eps_administrator_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_administrator_team"])
     eps_deployments_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_deployments_team"])
     eps_team_reviewer: ReviewerParams = ReviewerParams("Team", github_teams["eps_team"])
@@ -437,7 +512,7 @@ def setup_environments(github: Github,
             setup_account_resources_environments(repo=repo, environment=environment)
         return
 
-    if not echo_repos:
+    if not is_echo_repo:
         environments = common_environments + [
             RepoEnvironment("dev-pr"),
             RepoEnvironment("recovery", [eps_administrator_team_reviewer, eps_team_reviewer]),
@@ -459,20 +534,19 @@ def setup_environments(github: Github,
 def setup_repo(github: Github,
                repo: RepoConfig,
                secrets: Secrets,
-               github_teams: GithubTeams,
-               echo_repos: bool = False):
+               github_teams: GithubTeams):
     set_all_secrets(github=github,
-                    repo_name=repo["repo_name"],
-                    set_target_spine_servers=repo["set_target_spine_servers"],
-                    set_target_service_search_servers=repo["set_target_service_search_servers"],
-                    set_account_resources_secrets=repo["is_account_resources"],
+                    repoUrl=repo["repoUrl"],
+                    setTargetSpineServers=repo["setTargetSpineServers"],
+                    setTargetServiceSearchServers=repo["setTargetServiceSearchServers"],
+                    set_account_resources_secrets=repo["isAccountResources"],
                     secrets=secrets,
-                    echo_repos=echo_repos)
+                    is_echo_repo=repo["isEchoRepo"])
     setup_environments(github=github,
-                       repo_name=repo["repo_name"],
-                       set_account_resources_environments=repo["is_account_resources"],
+                       repoUrl=repo["repoUrl"],
+                       set_account_resources_environments=repo["isAccountResources"],
                        github_teams=github_teams,
-                       echo_repos=echo_repos)
+                       is_echo_repo=repo["isEchoRepo"])
     # TODO - setup other things automatically
     # see https://nhsd-confluence.digital.nhs.uk/spaces/APIMC/pages/693753388/Git+repository+checklist
 
@@ -544,7 +618,8 @@ def main():
         "prod_target_service_search_server": "api.nhs.uk",
         "qa_target_service_search_server": "api.nhs.uk",
         "ref_target_service_search_server": "api.nhs.uk",
-        "recovery_target_service_search_server": "api.nhs.uk"
+        "recovery_target_service_search_server": "api.nhs.uk",
+        "dependabot_token": os.environ.get("dependabot_token")
     }
 
     print("\n\n************************************************")
@@ -555,168 +630,13 @@ def main():
     print("************************************************")
     print("\n\n************************************************")
 
-    repos: list[RepoConfig] = [
-        {
-            "repo_name": "NHSDigital/electronic-prescription-service-clinical-prescription-tracker",
-            "set_target_spine_servers": True,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/prescriptionsforpatients",
-            "set_target_spine_servers": True,
-            "is_account_resources": False,
-            "set_target_service_search_servers": True
-        },
-        {
-            "repo_name": "NHSDigital/prescriptions-for-patients",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/electronic-prescription-service-api",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/electronic-prescription-service-release-notes",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/electronic-prescription-service-account-resources",
-            "set_target_spine_servers": False,
-            "is_account_resources": True,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-prescription-status-update-api",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-FHIR-validator-lambda",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-load-test",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-prescription-tracker-ui",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-aws-dashboards",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-cdk-utils",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-vpc-resources",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-assist-me",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/validation-service-fhir-r4",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/electronic-prescription-service-get-secrets",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/nhs-fhir-middy-error-handler",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/nhs-eps-spine-client",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/electronic-prescription-service-api-regression-tests",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-action-sbom",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-action-cfn-lint",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-common-workflows",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        }
-    ]
-
-    echo_repos = [
-        {
-            "repo_name": "NHSDigital/eps-storage-terraform",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        },
-        {
-            "repo_name": "NHSDigital/eps-spine-shared",
-            "set_target_spine_servers": False,
-            "is_account_resources": False,
-            "set_target_service_search_servers": False
-        }
-    ]
+    repos: list[RepoConfig] = load_repo_configs_from_repo_status(github)
 
     for repo in repos:
         setup_repo(github=github,
                    repo=repo,
                    secrets=secrets,
                    github_teams=github_teams)
-
-    for repo in echo_repos:
-        setup_repo(github=github,
-                   repo=repo,
-                   secrets=secrets,
-                   github_teams=github_teams,
-                   echo_repos=True)
 
 
 if __name__ == "__main__":
