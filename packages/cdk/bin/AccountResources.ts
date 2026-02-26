@@ -8,6 +8,9 @@ import {AccountResourcesStack_UK} from "../stacks/AccountResourcesStack_UK"
 import {AccountResourcesStack_US} from "../stacks/AccountResourcesStack_US"
 import {MonitoringStack} from "../stacks/MonitoringStack"
 
+// for what we can migrate see
+// https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-supported-resources.html
+
 async function main() {
   const {app, props} = createApp({
     productName: "Account Resources",
