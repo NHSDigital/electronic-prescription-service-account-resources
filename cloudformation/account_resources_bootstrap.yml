@@ -374,14 +374,6 @@ Resources:
   #endregion
 
   #region Other Secrets
-  ServiceSearchApiKey:
-    DependsOn: SecretsKMSKeyKMSKeyAlias
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Description: API key for service search
-      KmsKeyId: alias/SecretsKMSKeyAlias
-      SecretString: ChangeMe
-
   JiraToken:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -471,7 +463,6 @@ Resources:
               - !Ref SpineASID
               - !Ref SpinePartyKey
               - !Ref SpineCAChain
-              - !Ref ServiceSearchApiKey
 
   SplunkHECToken:
     DependsOn: SecretsKMSKeyKMSKeyAlias
@@ -746,12 +737,6 @@ Outputs:
   #endregion
 
   #region Other Secrets Outputs
-  ServiceSearchApiKey:
-    Description: ServiceSearchApiKey
-    Value: !GetAtt ServiceSearchApiKey.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ServiceSearchApiKey"]]
-
   JiraToken:
     Description: JiraToken
     Value: !GetAtt JiraToken.Id
