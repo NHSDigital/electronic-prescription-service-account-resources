@@ -3,6 +3,7 @@ import {IdentityProvider} from "../resources/IdentityProvider"
 import {Roles} from "../resources/Roles"
 import {Policies} from "../resources/Policies"
 import {ApiGatewayAccount} from "../resources/ApiGatewayAccount"
+import {IRole} from "aws-cdk-lib/aws-iam"
 
 export interface IAMStackProps extends StackProps {
   readonly stackName: string
@@ -11,12 +12,15 @@ export interface IAMStackProps extends StackProps {
 }
 
 export class IAMStack extends Stack {
+  readonly cloudFormationExecutionRole: IRole
+  readonly cloudFormationPrepareChangesetRole: IRole
+  readonly CloudFormationDeployRole: IRole
+  readonly apiGwCloudWatchRole: IRole
+
   public constructor(scope: App, id: string, props: IAMStackProps) {
     super(scope, id, props)
 
-    const identityProvider = new IdentityProvider(this, "IdentityProvider", {
-      importResources: true
-    })
+    const identityProvider = new IdentityProvider(this, "IdentityProvider")
     const roles = new Roles(this, "Roles", {
       gitHubIdentityProvider: identityProvider.gitHubIdentityProvider,
       deploySubjectClaimFilters: ["foo"],
@@ -49,6 +53,7 @@ export class IAMStack extends Stack {
       CDKPushImageRole: roles.CDKPushImageRole,
       assistMeRegressionTestRole: roles.assistMeRegressionTestRole,
       assistMeDocumentSyncRole: roles.assistMeDocumentSyncRole
+      // need a way of passing athenaResultsBucketKmsKey and athenaResultsBucket
     })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

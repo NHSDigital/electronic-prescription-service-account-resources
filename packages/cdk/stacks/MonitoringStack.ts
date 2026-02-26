@@ -13,6 +13,7 @@ import {nagSuppressions} from "../nagSuppressions"
 import {Rule, Schedule} from "aws-cdk-lib/aws-events"
 import {LambdaFunction} from "aws-cdk-lib/aws-events-targets"
 import {Role, ServicePrincipal} from "aws-cdk-lib/aws-iam"
+import {MonitoringEncryption} from "../resources/MonitoringStorage"
 
 export interface MonitoringStackProps extends StackProps {
   readonly stackName: string
@@ -68,6 +69,9 @@ export class MonitoringStack extends Stack {
       }),
       targets: [new LambdaFunction(functions.functions.reportAlertSuppressionsLambda.function)],
       role: reportAlertSuppressionsScheduleRole
+    })
+    new MonitoringEncryption(this, "MonitoringEncryption", {
+      accountId: this.account
     })
 
     nagSuppressions(this)

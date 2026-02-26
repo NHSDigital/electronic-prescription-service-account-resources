@@ -42,20 +42,20 @@ export class Roles extends Construct {
 
     // from account_resources.yaml
 
-    this.apiGwCloudWatchRole = new Role(this, "ApiGwCloudWatchRole", {
+    const apiGwCloudWatchRole = new Role(this, "ApiGwCloudWatchRole", {
       assumedBy: new ServicePrincipal("apigateway.amazonaws.com")
     })
     // this is used in an export
-    this.snsFeedbackLoggingRole = new Role(this, "SNSFeedbackLoggingRole", {
+    const snsFeedbackLoggingRole = new Role(this, "SNSFeedbackLoggingRole", {
       assumedBy: new ServicePrincipal("sns.amazonaws.com")
     })
     // this is used in a bucket policy and an export???
-    this.splunkDeliveryStreamBackupBucketRole = new Role(this, "SplunkDeliveryStreamBackupBucketRole", {
+    const splunkDeliveryStreamBackupBucketRole = new Role(this, "SplunkDeliveryStreamBackupBucketRole", {
       assumedBy: new ServicePrincipal("firehose.amazonaws.com")
     })
 
     // from ci-resources
-    this.CloudFormationDeployRole = new Role(this, "CloudFormationDeployRole", {
+    const CloudFormationDeployRole = new Role(this, "CloudFormationDeployRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -69,10 +69,10 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    this.cloudFormationExecutionRole = new Role(this, "CloudFormationExecutionRole", {
+    const cloudFormationExecutionRole = new Role(this, "CloudFormationExecutionRole", {
       assumedBy: new ServicePrincipal("cloudformation.amazonaws.com")
     })
-    this.cloudFormationCheckVersionRole = new Role(this, "CloudFormationCheckVersionRole", {
+    const cloudFormationCheckVersionRole = new Role(this, "CloudFormationCheckVersionRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -86,7 +86,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    this.cloudFormationPrepareChangesetRole = new Role(this, "CloudFormationPrepareChangesetRole", {
+    const cloudFormationPrepareChangesetRole = new Role(this, "CloudFormationPrepareChangesetRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -100,7 +100,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    this.releaseNotesExecuteLambdaRole = new Role(this, "ReleaseNotesExecuteLambdaRole", {
+    const releaseNotesExecuteLambdaRole = new Role(this, "ReleaseNotesExecuteLambdaRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -114,7 +114,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    this.artilleryRunnerRole = new Role(this, "ArtilleryRunnerRole", {
+    const artilleryRunnerRole = new Role(this, "ArtilleryRunnerRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -128,7 +128,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    this.proxygenPTLRole = new Role(this, "ProxygenPTLRole", {
+    const proxygenPTLRole = new Role(this, "ProxygenPTLRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -142,7 +142,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    this.proxygenProdRole = new Role(this, "ProxygenProdRole", {
+    const proxygenProdRole = new Role(this, "ProxygenProdRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -156,7 +156,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    this.CDKPullImageRole = new Role(this, "CDKPullImageRole", {
+    const CDKPullImageRole = new Role(this, "CDKPullImageRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -170,7 +170,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    this.CDKPushImageRole = new Role(this, "CDKPushImageRole", {
+    const CDKPushImageRole = new Role(this, "CDKPushImageRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -184,7 +184,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    this.assistMeRegressionTestRole = new Role(this, "AssistMeRegressionTestRole", {
+    const assistMeRegressionTestRole = new Role(this, "AssistMeRegressionTestRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -198,7 +198,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    this.assistMeDocumentSyncRole = new Role(this, "AssistMeDocumentSyncRole", {
+    const assistMeDocumentSyncRole = new Role(this, "AssistMeDocumentSyncRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -213,5 +213,20 @@ export class Roles extends Construct {
       )
     })
 
+    this.apiGwCloudWatchRole = apiGwCloudWatchRole
+    this.snsFeedbackLoggingRole = snsFeedbackLoggingRole
+    this.splunkDeliveryStreamBackupBucketRole = splunkDeliveryStreamBackupBucketRole
+    this.CloudFormationDeployRole = CloudFormationDeployRole
+    this.cloudFormationExecutionRole = cloudFormationExecutionRole
+    this.cloudFormationCheckVersionRole = cloudFormationCheckVersionRole
+    this.cloudFormationPrepareChangesetRole = cloudFormationPrepareChangesetRole
+    this.releaseNotesExecuteLambdaRole = releaseNotesExecuteLambdaRole
+    this.artilleryRunnerRole = artilleryRunnerRole
+    this.proxygenPTLRole = proxygenPTLRole
+    this.proxygenProdRole = proxygenProdRole
+    this.CDKPullImageRole = CDKPullImageRole
+    this.CDKPushImageRole = CDKPushImageRole
+    this.assistMeRegressionTestRole = assistMeRegressionTestRole
+    this.assistMeDocumentSyncRole = assistMeDocumentSyncRole
   }
 }

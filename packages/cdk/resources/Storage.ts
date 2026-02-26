@@ -1,0 +1,758 @@
+import {Construct} from "constructs"
+import {CfnBucket, CfnBucketPolicy} from "aws-cdk-lib/aws-s3"
+import {CfnKey, CfnAlias} from "aws-cdk-lib/aws-kms"
+import {IRole, ManagedPolicy, PolicyStatement} from "aws-cdk-lib/aws-iam"
+
+export interface StorageProps {
+  readonly logRetentionDays: number
+  readonly accountId: string
+  readonly region: string
+  readonly cloudFormationExecutionRole: IRole
+  readonly cloudFormationPrepareChangesetRole: IRole
+  readonly CloudFormationDeployRole: IRole
+  readonly splunkDeliveryStreamBackupBucketArn?: string
+  readonly artifactsBucketArn?: string
+  readonly trustStoreBucketArn?: string
+  readonly trustStoreDeploymentBucketArn?: string
+  readonly cptUIStatefulResourcesStaticContentBucketArn?: string
+  readonly epsamKbDocsBucketArn?: string
+}
+export class Storage extends Construct {
+
+  public constructor(scope: Construct, id: string, props: StorageProps) {
+    super(scope, id)
+    const auditLoggingBucket = new CfnBucket(this, "AuditLoggingBucket", {
+      versioningConfiguration: {
+        status: "Enabled"
+      },
+      publicAccessBlockConfiguration: {
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true
+      },
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [
+          {
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: "AES256"
+            }
+          }
+        ]
+      },
+      lifecycleConfiguration: {
+        rules: [
+          {
+            id: "Audit-IA-30d",
+            status: "Enabled",
+            prefix: "",
+            transitions: [
+              {
+                storageClass: "STANDARD_IA",
+                transitionInDays: 30
+              }
+            ]
+          }
+        ]
+      }
+    })
+    auditLoggingBucket.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_REPLICATION_ENABLED",
+          "S3_BUCKET_LOGGING_ENABLED",
+          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+        ]
+      }
+    }
+    const auditLoggingBucketPolicyStatement: Array<unknown> = [
+      {
+        Effect: "Deny",
+        Principal: "*",
+        Action: [
+          "s3:*"
+        ],
+        Resource: [
+          [
+            auditLoggingBucket.attrArn,
+            "/*"
+          ].join(""),
+          auditLoggingBucket.attrArn
+        ],
+        Condition: {
+          Bool: {
+            "aws:SecureTransport": false
+          }
+        }
+      }]
+    if (props.splunkDeliveryStreamBackupBucketArn) {
+      auditLoggingBucketPolicyStatement.push(this.createAuditLoggingPolicy(
+        auditLoggingBucket.attrArn,
+        props.accountId,
+        props.splunkDeliveryStreamBackupBucketArn,
+        "splunkDeliveryStreamBackup"
+      ))
+    }
+    if (props.artifactsBucketArn) {
+      auditLoggingBucketPolicyStatement.push(this.createAuditLoggingPolicy(
+        auditLoggingBucket.attrArn,
+        props.accountId,
+        props.artifactsBucketArn,
+        "artifact"
+      ))
+    }
+    if (props.trustStoreBucketArn) {
+      auditLoggingBucketPolicyStatement.push(this.createAuditLoggingPolicy(
+        auditLoggingBucket.attrArn,
+        props.accountId,
+        props.trustStoreBucketArn,
+        "trustStore"
+      ))
+    }
+    if (props.trustStoreDeploymentBucketArn) {
+      auditLoggingBucketPolicyStatement.push(this.createAuditLoggingPolicy(
+        auditLoggingBucket.attrArn,
+        props.accountId,
+        props.trustStoreDeploymentBucketArn,
+        "trustStore-deployment"
+      ))
+    }
+    if (props.cptUIStatefulResourcesStaticContentBucketArn) {
+      auditLoggingBucketPolicyStatement.push(this.createAuditLoggingPolicy(
+        auditLoggingBucket.attrArn,
+        props.accountId,
+        props.cptUIStatefulResourcesStaticContentBucketArn,
+        "/static-content/"
+      ))
+    }
+    if (props.epsamKbDocsBucketArn) {
+      auditLoggingBucketPolicyStatement.push(this.createAuditLoggingPolicy(
+        auditLoggingBucket.attrArn,
+        props.accountId,
+        props.epsamKbDocsBucketArn,
+        "/epsam-kb/"
+      ))
+    }
+    const auditLoggingBucketPolicy = new CfnBucketPolicy(this, "AuditLoggingBucketPolicy", {
+      bucket: auditLoggingBucket.ref,
+      policyDocument: {
+        Statement: auditLoggingBucketPolicyStatement
+      }
+    })
+    auditLoggingBucketPolicy.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_SSL_REQUESTS_ONLY"
+        ]
+      }
+    }
+
+    const artifactsBucketKmsKey = new CfnKey(this, "ArtifactsBucketKMSKey", {
+      enableKeyRotation: true,
+      keyPolicy: {
+        Version: "2012-10-17",
+        Id: "key-s3",
+        Statement: [
+          {
+            Sid: "Enable IAM User Permissions",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${props.accountId}:root`
+            },
+            Action: [
+              "kms:*"
+            ],
+            Resource: "*"
+          }
+        ]
+      }
+    })
+    const artifactsBucketKmsKeyAlias = new CfnAlias(this, "ArtifactsBucketKMSKeyAlias", {
+      aliasName: "alias/ArtifactsBucketKMSKeyAlias",
+      targetKeyId: artifactsBucketKmsKey.ref
+    })
+    const useArtifactBucketKmsKeyManagedPolicy = new ManagedPolicy(this, "AllowApiGwLoggingPolicy", {
+      statements: [
+        new PolicyStatement({
+          actions: [
+            "kms:DescribeKey",
+            "kms:GenerateDataKey*",
+            "kms:Encrypt",
+            "kms:ReEncrypt*",
+            "kms:Decrypt"
+          ],
+          resources: [
+            artifactsBucketKmsKey.attrArn
+          ]
+        })]
+    })
+
+    const artifactsBucket = new CfnBucket(this, "ArtifactsBucket", {
+      loggingConfiguration: {
+        destinationBucketName: auditLoggingBucket.ref,
+        logFilePrefix: "artifact/"
+      },
+      versioningConfiguration: {
+        status: "Enabled"
+      },
+      publicAccessBlockConfiguration: {
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true
+      },
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [
+          {
+            serverSideEncryptionByDefault: {
+              kmsMasterKeyId: `arn:aws:kms:${props.region}:${props.accountId}:${artifactsBucketKmsKeyAlias.ref}`,
+              sseAlgorithm: "aws:kms"
+            }
+          }
+        ]
+      },
+      lifecycleConfiguration: {
+        rules: [
+          {
+            id: "Artifacts-IA-30d-Expire-90d",
+            status: "Enabled",
+            prefix: "",
+            transitions: [
+              {
+                storageClass: "STANDARD_IA",
+                transitionInDays: 30
+              }
+            ],
+            expirationInDays: 90
+          }
+        ]
+      }
+    })
+    artifactsBucket.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_REPLICATION_ENABLED",
+          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+        ]
+      }
+    }
+    const artifactsBucketPolicy = new CfnBucketPolicy(this, "ArtifactsBucketPolicy", {
+      bucket: artifactsBucket.ref,
+      policyDocument: {
+        Statement: [
+          {
+            Effect: "Deny",
+            Principal: "*",
+            Action: [
+              "s3:*"
+            ],
+            Resource: [
+              [
+                artifactsBucket.attrArn,
+                "/*"
+              ].join(""),
+              artifactsBucket.attrArn
+            ],
+            Condition: {
+              Bool: {
+                "aws:SecureTransport": false
+              }
+            }
+          },
+          {
+            Effect: "Allow",
+            Principal: {
+              AWS: [
+                props.CloudFormationDeployRole.roleArn,
+                props.cloudFormationExecutionRole.roleArn,
+                props.cloudFormationPrepareChangesetRole.roleArn
+              ]
+            },
+            Action: [
+              "s3:GetObject*",
+              "s3:PutObject*",
+              "s3:GetBucket*",
+              "s3:List*"
+            ],
+            Resource: [
+              [
+                artifactsBucket.attrArn,
+                "/*"
+              ].join(""),
+              artifactsBucket.attrArn
+            ]
+          },
+          {
+            Effect: "Allow",
+            Principal: {
+              AWS: [
+                props.CloudFormationDeployRole.roleArn
+              ]
+            },
+            Action: [
+              "s3:DeleteObject*"
+            ],
+            Resource: [
+              [
+                artifactsBucket.attrArn,
+                "/*/*/*.lock"
+              ].join("")
+            ]
+          }
+        ]
+      }
+    })
+    artifactsBucketPolicy.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_SSL_REQUESTS_ONLY"
+        ]
+      }
+    }
+
+    props.cloudFormationExecutionRole.addManagedPolicy(useArtifactBucketKmsKeyManagedPolicy)
+    props.cloudFormationPrepareChangesetRole.addManagedPolicy(useArtifactBucketKmsKeyManagedPolicy)
+    props.CloudFormationDeployRole.addManagedPolicy(useArtifactBucketKmsKeyManagedPolicy)
+
+    const athenaResultsBucketKmsKey = new CfnKey(this, "AthenaResultsBucketKMSKey", {
+      enableKeyRotation: true,
+      keyPolicy: {
+        Version: "2012-10-17",
+        Id: "key-s3",
+        Statement: [
+          {
+            Sid: "Enable IAM User Permissions",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${props.accountId}:root`
+            },
+            Action: [
+              "kms:*"
+            ],
+            Resource: "*"
+          }
+        ]
+      }
+    })
+    const athenaResultsBucketKmsKeyKmsKeyAlias = new CfnAlias(this, "AthenaResultsBucketKMSKeyKMSKeyAlias", {
+      aliasName: "alias/AthenaResultsBucketKMSKeyAlias",
+      targetKeyId: athenaResultsBucketKmsKey.ref
+    })
+
+    const athenaResultsBucket = new CfnBucket(this, "AthenaResultsBucket", {
+      versioningConfiguration: {
+        status: "Enabled"
+      },
+      publicAccessBlockConfiguration: {
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true
+      },
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [
+          {
+            serverSideEncryptionByDefault: {
+              kmsMasterKeyId:
+                `arn:aws:kms:${props.region}:${props.accountId}:${athenaResultsBucketKmsKeyKmsKeyAlias.ref}`,
+              sseAlgorithm: "aws:kms"
+            }
+          }
+        ]
+      },
+      lifecycleConfiguration: {
+        rules: [
+          {
+            id: "AthenaResults-IA-30d-Expire-90d",
+            status: "Enabled",
+            prefix: "",
+            transitions: [
+              {
+                storageClass: "STANDARD_IA",
+                transitionInDays: 30
+              }
+            ],
+            expirationInDays: 90
+          }
+        ]
+      }
+    })
+    athenaResultsBucket.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_REPLICATION_ENABLED",
+          "S3_BUCKET_LOGGING_ENABLED",
+          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+        ]
+      }
+    }
+    const athenaResultsBucketPolicy = new CfnBucketPolicy(this, "AthenaResultsBucketPolicy", {
+      bucket: athenaResultsBucket.ref,
+      policyDocument: {
+        Statement: [
+          {
+            Effect: "Deny",
+            Principal: "*",
+            Action: [
+              "s3:*"
+            ],
+            Resource: [
+              [
+                athenaResultsBucket.attrArn,
+                "/*"
+              ].join(""),
+              athenaResultsBucket.attrArn
+            ],
+            Condition: {
+              Bool: {
+                "aws:SecureTransport": false
+              }
+            }
+          }
+        ]
+      }
+    })
+    athenaResultsBucketPolicy.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_SSL_REQUESTS_ONLY"
+        ]
+      }
+    }
+
+    const trustStoreBucketKmsKey = new CfnKey(this, "TrustStoreBucketKMSKey", {
+      enableKeyRotation: true,
+      keyPolicy: {
+        Version: "2012-10-17",
+        Id: "key-s3",
+        Statement: [
+          {
+            Sid: "Enable IAM User Permissions",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${props.accountId}:root`
+            },
+            Action: [
+              "kms:*"
+            ],
+            Resource: "*"
+          }
+        ]
+      }
+    })
+    const trustStoreBucketKmsKeyKmsKeyAlias = new CfnAlias(this, "TrustStoreBucketKMSKeyKMSKeyAlias", {
+      aliasName: "alias/TrustStoreBucketKMSKeyAlias",
+      targetKeyId: trustStoreBucketKmsKey.ref
+    })
+    const useTrustStoreBucketKmsKeyManagedPolicy = new ManagedPolicy(this, "UseTrustStoreBucketKmsKeyManagedPolicy", {
+      statements: [
+        new PolicyStatement({
+          actions: [
+            "kms:DescribeKey",
+            "kms:GenerateDataKey*",
+            "kms:Encrypt",
+            "kms:ReEncrypt*",
+            "kms:Decrypt"
+          ],
+          resources: [
+            trustStoreBucketKmsKey.attrArn
+          ]
+        })]
+    })
+
+    const trustStoreBucket = new CfnBucket(this, "TrustStoreBucket", {
+      loggingConfiguration: {
+        destinationBucketName: auditLoggingBucket.ref,
+        logFilePrefix: "truststore/"
+      },
+      publicAccessBlockConfiguration: {
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true
+      },
+      versioningConfiguration: {
+        status: "Enabled"
+      },
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [
+          {
+            serverSideEncryptionByDefault: {
+              kmsMasterKeyId: `arn:aws:kms:${props.region}:${props.accountId}:${trustStoreBucketKmsKeyKmsKeyAlias.ref}`,
+              sseAlgorithm: "aws:kms"
+            }
+          }
+        ]
+      }
+    })
+    trustStoreBucket.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_REPLICATION_ENABLED",
+          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+        ]
+      }
+    }
+    const trustStoreBucketPolicy = new CfnBucketPolicy(this, "TrustStoreBucketPolicy", {
+      bucket: trustStoreBucket.ref,
+      policyDocument: {
+        Statement: [
+          {
+            Effect: "Deny",
+            Principal: "*",
+            Action: [
+              "s3:*"
+            ],
+            Resource: [
+              [
+                trustStoreBucket.attrArn,
+                "/*"
+              ].join(""),
+              trustStoreBucket.attrArn
+            ],
+            Condition: {
+              Bool: {
+                "aws:SecureTransport": false
+              }
+            }
+          },
+          {
+            Effect: "Allow",
+            Principal: {
+              AWS: [
+                props.CloudFormationDeployRole.roleArn,
+                props.cloudFormationExecutionRole.roleArn,
+                `arn:aws:iam::${props.accountId}:role/cdk-hnb659fds-cfn-exec-role-${props.accountId}-eu-west-2`
+              ]
+            },
+            Action: [
+              "s3:GetObject*",
+              "s3:PutObject*",
+              "s3:GetBucket*",
+              "s3:List*"
+            ],
+            Resource: [
+              [
+                trustStoreBucket.attrArn,
+                "/*"
+              ].join(""),
+              trustStoreBucket.attrArn
+            ]
+          }
+        ]
+      }
+    })
+    trustStoreBucketPolicy.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_SSL_REQUESTS_ONLY"
+        ]
+      }
+    }
+
+    const trustStoreDeploymentBucket = new CfnBucket(this, "TrustStoreDeploymentBucket", {
+      loggingConfiguration: {
+        destinationBucketName: auditLoggingBucket.ref,
+        logFilePrefix: "truststore-deployment/"
+      },
+      publicAccessBlockConfiguration: {
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true
+      },
+      versioningConfiguration: {
+        status: "Suspended"
+      },
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [
+          {
+            serverSideEncryptionByDefault: {
+              kmsMasterKeyId: `arn:aws:kms:${props.region}:${props.accountId}:${trustStoreBucketKmsKeyKmsKeyAlias.ref}`,
+              sseAlgorithm: "aws:kms"
+            }
+          }
+        ]
+      }
+    })
+    trustStoreDeploymentBucket.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_REPLICATION_ENABLED",
+          "S3_BUCKET_DEFAULT_LOCK_ENABLED",
+          "S3_BUCKET_VERSIONING_ENABLED"
+        ]
+      }
+    }
+    const trustStoreDeploymentBucketPolicy = new CfnBucketPolicy(this, "TrustStoreDeploymentBucketPolicy", {
+      bucket: trustStoreDeploymentBucket.ref,
+      policyDocument: {
+        Statement: [
+          {
+            Effect: "Deny",
+            Principal: "*",
+            Action: [
+              "s3:*"
+            ],
+            Resource: [
+              [
+                trustStoreDeploymentBucket.attrArn,
+                "/*"
+              ].join(""),
+              trustStoreDeploymentBucket.attrArn
+            ],
+            Condition: {
+              Bool: {
+                "aws:SecureTransport": false
+              }
+            }
+          },
+          {
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${props.accountId}:role/cdk-hnb659fds-cfn-exec-role-${props.accountId}-eu-west-2`
+            },
+            Action: "s3:GetObject",
+            Resource: [
+              trustStoreDeploymentBucket.attrArn,
+              "/*"
+            ].join("")
+          }
+        ]
+      }
+    })
+    trustStoreDeploymentBucketPolicy.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_SSL_REQUESTS_ONLY"
+        ]
+      }
+    }
+
+    props.cloudFormationExecutionRole.addManagedPolicy(useTrustStoreBucketKmsKeyManagedPolicy)
+
+    const albLoggingBucket = new CfnBucket(this, "ALBLoggingBucket", {
+      versioningConfiguration: {
+        status: "Enabled"
+      },
+      publicAccessBlockConfiguration: {
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true
+      },
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [
+          {
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: "AES256"
+            }
+          }
+        ]
+      },
+      lifecycleConfiguration: {
+        rules: [
+          {
+            id: "ALBLogging-IA-30d-Expire-LogRetention",
+            status: "Enabled",
+            prefix: "",
+            transitions: [
+              {
+                storageClass: "STANDARD_IA",
+                transitionInDays: 30
+              }
+            ],
+            expirationInDays: props.logRetentionDays
+          }
+        ]
+      }
+    })
+    const albLoggingBucketPolicy = new CfnBucketPolicy(this, "ALBLoggingBucketPolicy", {
+      bucket: albLoggingBucket.ref,
+      policyDocument: {
+        Statement: [
+          {
+            Effect: "Deny",
+            Principal: "*",
+            Action: [
+              "s3:*"
+            ],
+            Resource: [
+              [
+                albLoggingBucket.attrArn,
+                "/*"
+              ].join(""),
+              albLoggingBucket.attrArn
+            ],
+            Condition: {
+              Bool: {
+                "aws:SecureTransport": false
+              }
+            }
+          },
+          {
+            Effect: "Allow",
+            Principal: {
+              AWS: "arn:aws:iam::652711504416:root"
+            },
+            Action: [
+              "s3:PutObject"
+            ],
+            Resource: [
+              [
+                albLoggingBucket.attrArn,
+                "/*"
+              ].join("")
+            ]
+          }
+        ]
+      }
+    })
+    albLoggingBucketPolicy.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_SSL_REQUESTS_ONLY"
+        ]
+      }
+    }
+
+    albLoggingBucket.cfnOptions.metadata = {
+      guard: {
+        SuppressedRules: [
+          "S3_BUCKET_REPLICATION_ENABLED",
+          "S3_BUCKET_LOGGING_ENABLED",
+          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+        ]
+      }
+    }
+
+  }
+
+  createAuditLoggingPolicy(
+    auditLoggingBucketArn: string,
+    accountId: string,
+    sourceArn:string,
+    prefix:string
+  ) {
+    return {
+      Effect: "Allow",
+      Principal: {
+        Service: "logging.s3.amazonaws.com"
+      },
+      Action: [
+        "s3:PutObject*"
+      ],
+      Resource: [
+        `${auditLoggingBucketArn}/${prefix}/*`
+      ],
+      Condition: {
+        StringEquals: {
+          "aws:SourceAccount": accountId
+        },
+        ArnLike: {
+          "aws:SourceArn": sourceArn
+        }
+      }
+    }
+  }
+}

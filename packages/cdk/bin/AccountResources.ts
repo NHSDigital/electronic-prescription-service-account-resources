@@ -24,13 +24,17 @@ async function main() {
   const accountResourcesUSStackName = getConfigFromEnvVar("accountResourcesUSStackName")
   const monitoringStackName = getConfigFromEnvVar("monitoringStackName")
 
-  new IAMStack(app, "IAM", {
+  const iamStack = new IAMStack(app, "IAM", {
     ...props,
     stackName: "iam-stack"
   })
   new AccountResourcesStack_UK(app, "AccountResources_UK", {
     ...props,
-    stackName: accountResourcesUKStackName
+    stackName: accountResourcesUKStackName,
+    cloudFormationExecutionRole: iamStack.cloudFormationExecutionRole,
+    cloudFormationPrepareChangesetRole: iamStack.cloudFormationPrepareChangesetRole,
+    CloudFormationDeployRole: iamStack.CloudFormationDeployRole,
+    apiGwCloudWatchRole: iamStack.apiGwCloudWatchRole
   })
   new AccountResourcesStack_US(app, "AccountResources_US", {
     ...props,
