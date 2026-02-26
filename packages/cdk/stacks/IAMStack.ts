@@ -1,8 +1,8 @@
 import {StackProps, Stack, App} from "aws-cdk-lib"
 import {IdentityProvider} from "../resources/IdentityProvider"
-import {CfnAccount} from "aws-cdk-lib/aws-apigateway"
 import {Roles} from "../resources/Roles"
 import {Policies} from "../resources/Policies"
+import {ApiGatewayAccount} from "../resources/ApiGatewayAccount"
 
 export interface IAMStackProps extends StackProps {
   readonly stackName: string
@@ -51,10 +51,10 @@ export class IAMStack extends Stack {
       assistMeDocumentSyncRole: roles.assistMeDocumentSyncRole
     })
 
-    const account = new CfnAccount(this, "Account", {
-      cloudWatchRoleArn: roles.apiGwCloudWatchRole.roleArn
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const apiGatewayAccount = new ApiGatewayAccount(this, "ApiGatewayAccount", {
+      apiGwCloudWatchRole: roles.apiGwCloudWatchRole,
+      allowApiGwLoggingPolicy: policies.allowApiGwLoggingPolicy
     })
-
-    account.node.addDependency(policies.allowApiGwLoggingPolicy)
   }
 }
