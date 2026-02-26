@@ -4,6 +4,7 @@ import {Roles} from "../resources/Roles"
 import {Policies} from "../resources/Policies"
 import {ApiGatewayAccount} from "../resources/ApiGatewayAccount"
 import {IRole} from "aws-cdk-lib/aws-iam"
+import {DeploymentPolicies} from "../resources/deploymentPolicies"
 
 export interface IAMStackProps extends StackProps {
   readonly stackName: string
@@ -56,6 +57,12 @@ export class IAMStack extends Stack {
       // need a way of passing athenaResultsBucketKmsKey and athenaResultsBucket
     })
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const deploymentPolicies = new DeploymentPolicies(this, "DeploymentPolicies", {
+      region: this.region,
+      accountId: this.account,
+      cloudFormationExecutionRole: roles.cloudFormationExecutionRole
+    })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const apiGatewayAccount = new ApiGatewayAccount(this, "ApiGatewayAccount", {
       apiGwCloudWatchRole: roles.apiGwCloudWatchRole,
