@@ -5,6 +5,7 @@ import {Policies} from "../resources/Policies"
 import {ApiGatewayAccount} from "../resources/ApiGatewayAccount"
 import {Role} from "aws-cdk-lib/aws-iam"
 import {DeploymentPolicies} from "../resources/deploymentPolicies"
+import {nagSuppressions} from "../nagSuppressions"
 
 export interface IAMStackProps extends StackProps {
   readonly stackName: string
@@ -75,5 +76,7 @@ export class IAMStack extends Stack {
     this.CloudFormationDeployRole = roles.CloudFormationDeployRole
     this.apiGwCloudWatchRole = roles.apiGwCloudWatchRole
     this.splunkDeliveryStreamBackupBucketRole = roles.splunkDeliveryStreamBackupBucketRole
+    nagSuppressions(this)
+
   }
 }

@@ -15,6 +15,7 @@ import {ConfigSecrets} from "../resources/ConfigSecrets"
 import {Role} from "aws-cdk-lib/aws-iam"
 import {SecretPolicies} from "../resources/secretPolicies"
 import {CfnBucket} from "aws-cdk-lib/aws-s3"
+import {nagSuppressions} from "../nagSuppressions"
 
 export interface AccountResourcesStackProps_UK extends StackProps {
   readonly stackName: string
@@ -110,6 +111,8 @@ export class AccountResourcesStack_UK extends Stack {
       FhirFacadeProxygenPublicKey: proxygenSecrets.PSUProxygenPublicKey,
       secretKMSKey: encryption.secretsKmsKey
     })
+    nagSuppressions(this)
+
     this.auditLoggingBucket = storage.auditLoggingBucket
   }
 }
