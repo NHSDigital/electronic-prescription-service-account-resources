@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import copy
+import datetime
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -189,6 +190,8 @@ def sanitize_definition(definition: Optional[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 def normalize_structure(value: Any) -> Any:
+    if isinstance(value, (datetime.date, datetime.datetime)):
+        return value.isoformat()
     if isinstance(value, dict):
         return {key: normalize_structure(value[key]) for key in sorted(value.keys())}
     if isinstance(value, list):
