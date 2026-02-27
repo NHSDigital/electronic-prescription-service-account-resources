@@ -54,7 +54,11 @@ DEFAULT_SET2 = [
     "cdk.out/IAM.template.json",
     "cdk.out/Monitoring.template.json",
 ]
-DEFAULT_OUTPUT_DIR = "template_comparison_results"
+DEFAULT_OUTPUT_DIR = "cdk.out/template_comparison_results"
+MANUAL_MAPPINGS = {
+    # Set1 logical ID -> Metadata/aws:cdk:path override for Set2
+    "CloudwatchResourcePolicy": "IAM/Policies/AWSLogDeliveryWrite20150319/ResourcePolicy",
+}
 
 
 @dataclass(frozen=True)
@@ -151,18 +155,41 @@ def resolve_paths(base_dir: Path, relative_paths: Iterable[str]) -> List[Path]:
     return resolved
 
 
-def compare_templates(set1: List[ResourceRecord], set2: List[ResourceRecord]):
+def compare_templates(
+    set1: List[ResourceRecord],
+    set2: List[ResourceRecord],
+    manual_mappings: Optional[Dict[str, str]] = None,
+):
+    manual_mappings = manual_mappings or {}
     set2_lookup: Dict[Tuple[str, str], List[ResourceRecord]] = {}
+    set2_path_lookup: Dict[str, List[ResourceRecord]] = {}
     for record in set2:
         set2_lookup.setdefault(record.match_key, []).append(record)
+        if record.metadata_path:
+            set2_path_lookup.setdefault(record.metadata_path, []).append(record)
 
     mapping = []
     set1_only = []
     matched_set2 = set()
+    manual_misses = []
 
     for record in set1:
-        candidates = set2_lookup.get(record.match_key, [])
-        match = next((c for c in candidates if c not in matched_set2), None)
+        match = None
+        manual_path = manual_mappings.get(record.raw_logical_id or "")
+        if manual_path:
+            manual_candidates = set2_path_lookup.get(manual_path, [])
+            match = next((c for c in manual_candidates if c not in matched_set2), None)
+            if match is None:
+                manual_misses.append(
+                    {
+                        "logical_id": record.raw_logical_id,
+                        "manual_path": manual_path,
+                        "reason": "manual_path_not_found",
+                    }
+                )
+        if match is None:
+            candidates = set2_lookup.get(record.match_key, [])
+            match = next((c for c in candidates if c not in matched_set2), None)
         if match:
             matched_set2.add(match)
             mapping.append(
@@ -196,7 +223,7 @@ def compare_templates(set1: List[ResourceRecord], set2: List[ResourceRecord]):
         if record not in matched_set2
     ]
 
-    return mapping, set1_only, set2_only
+    return mapping, set1_only, set2_only, manual_misses
 
 
 def write_json(data, path: Path):
@@ -238,7 +265,9 @@ def main() -> None:
     set1_records = build_set1_records(set1_paths)
     set2_records = build_set2_records(set2_paths)
 
-    mapping, set1_only, set2_only = compare_templates(set1_records, set2_records)
+    mapping, set1_only, set2_only, manual_misses = compare_templates(
+        set1_records, set2_records, MANUAL_MAPPINGS
+    )
 
     output_base = (base_dir / args.output_dir).resolve()
     write_json(mapping, output_base / "resource_mapping.json")
@@ -248,6 +277,10 @@ def main() -> None:
     print(f"Wrote {len(mapping)} mappings")
     print(f"Wrote {len(set1_only)} set1-only resources")
     print(f"Wrote {len(set2_only)} set2-only resources")
+    if manual_misses:
+        print("Manual mappings that could not be resolved:")
+        for miss in manual_misses:
+            print(f"  - {miss['logical_id']} -> {miss['manual_path']} ({miss['reason']})")
 
 
 if __name__ == "__main__":

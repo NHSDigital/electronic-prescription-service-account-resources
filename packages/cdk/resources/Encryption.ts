@@ -33,7 +33,7 @@ export class Encryption extends Construct {
   public constructor(scope: Construct, id: string, props: EncryptionProps) {
     super(scope, id)
 
-    const secretsKmsKey = new Key(this, "KmsKey", {
+    const secretsKmsKey = new Key(this, "SecretsKMSKey", {
       enableKeyRotation: true,
       removalPolicy: RemovalPolicy.DESTROY
     })
