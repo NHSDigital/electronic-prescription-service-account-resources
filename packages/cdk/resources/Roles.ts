@@ -1,7 +1,6 @@
 import {
   FederatedPrincipal,
   IOidcProvider,
-  IRole,
   Role,
   ServicePrincipal
 } from "aws-cdk-lib/aws-iam"
@@ -22,21 +21,21 @@ export interface RolesProps {
   readonly assistMeDocumentSyncClaimFilters: Array<string>
 }
 export class Roles extends Construct {
-  public readonly apiGwCloudWatchRole: IRole
-  public readonly snsFeedbackLoggingRole: IRole
-  public readonly splunkDeliveryStreamBackupBucketRole: IRole
-  public readonly CloudFormationDeployRole: IRole
-  public readonly cloudFormationExecutionRole: IRole
-  public readonly cloudFormationCheckVersionRole: IRole
-  public readonly cloudFormationPrepareChangesetRole: IRole
-  public readonly releaseNotesExecuteLambdaRole: IRole
-  public readonly artilleryRunnerRole: IRole
-  public readonly proxygenPTLRole: IRole
-  public readonly proxygenProdRole: IRole
-  public readonly CDKPullImageRole: IRole
-  public readonly CDKPushImageRole: IRole
-  public readonly assistMeRegressionTestRole: IRole
-  public readonly assistMeDocumentSyncRole: IRole
+  public readonly apiGwCloudWatchRole: Role
+  public readonly snsFeedbackLoggingRole: Role
+  public readonly splunkDeliveryStreamBackupBucketRole: Role
+  public readonly CloudFormationDeployRole: Role
+  public readonly cloudFormationExecutionRole: Role
+  public readonly cloudFormationCheckVersionRole: Role
+  public readonly cloudFormationPrepareChangesetRole: Role
+  public readonly releaseNotesExecuteLambdaRole: Role
+  public readonly artilleryRunnerRole: Role
+  public readonly proxygenPTLRole: Role
+  public readonly proxygenProdRole: Role
+  public readonly CDKPullImageRole: Role
+  public readonly CDKPushImageRole: Role
+  public readonly assistMeRegressionTestRole: Role
+  public readonly assistMeDocumentSyncRole: Role
   public constructor(scope: Construct, id: string, props: RolesProps) {
     super(scope, id)
 

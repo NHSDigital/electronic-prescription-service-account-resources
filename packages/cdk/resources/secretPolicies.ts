@@ -104,10 +104,12 @@ export class SecretPolicies extends Construct {
               props.secretKMSKey.keyArn
             ]
           })
+        ],
+        roles: [
+          props.cloudFormationDeployRole
         ]
       })
 
-    props.cloudFormationDeployRole.addManagedPolicy(allowCloudFormationSecretsAccessManagedPolicy)
     this.allowCloudFormationSecretsAccessManagedPolicy = allowCloudFormationSecretsAccessManagedPolicy
   }
 }

@@ -1,13 +1,13 @@
 import {Construct} from "constructs"
 import {CfnAlias, CfnKey} from "aws-cdk-lib/aws-kms"
 import {IRole, ManagedPolicy, PolicyStatement} from "aws-cdk-lib/aws-iam"
-import {CfnBucket, CfnBucketPolicy, IBucket} from "aws-cdk-lib/aws-s3"
+import {CfnBucket, CfnBucketPolicy} from "aws-cdk-lib/aws-s3"
 
 export interface MonitoringStorageProps {
   readonly accountId: string
   readonly region: string
   readonly splunkDeliveryStreamBackupBucketRole: IRole
-  readonly auditLoggingBucket: IBucket
+  readonly auditLoggingBucket: CfnBucket
 }
 export class MonitoringStorage extends Construct {
   public readonly splunkDeliveryStreamBackupKmsKey: CfnKey
@@ -52,14 +52,14 @@ export class MonitoringStorage extends Construct {
               "kms:ReEncrypt*"
             ],
             resources: [
-              this.splunkDeliveryStreamBackupKmsKey.attrArn
+              splunkDeliveryStreamBackupKmsKey.attrArn
             ]
           })
+        ],
+        roles: [
+          props.splunkDeliveryStreamBackupBucketRole
         ]
       })
-    props.splunkDeliveryStreamBackupBucketRole.addManagedPolicy(
-      this.splunkDeliveryStreamBackupBucketRoleKmsMangedPolicy
-    )
     const splunkDeliveryStreamBackupBucket = new CfnBucket(this, "SplunkDeliveryStreamBackupBucket", {
       versioningConfiguration: {
         status: "Enabled"
@@ -81,7 +81,7 @@ export class MonitoringStorage extends Construct {
             serverSideEncryptionByDefault: {
               sseAlgorithm: "aws:kms",
               kmsMasterKeyId:
-              `arn:aws:kms:${props.region}:${props.accountId}:key/${this.splunkDeliveryStreamBackupKmsKey.ref}`
+              `arn:aws:kms:${props.region}:${props.accountId}:key/${splunkDeliveryStreamBackupKmsKey.ref}`
             }
           }
         ]
@@ -111,6 +111,7 @@ export class MonitoringStorage extends Construct {
         ]
       }
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const splunkDeliveryStreamBackupBucketIamManagedPolicy =
       new ManagedPolicy(this, "SplunkDeliveryStreamBackupBucketIAMManagedPolicy", {
         statements: [
@@ -127,12 +128,11 @@ export class MonitoringStorage extends Construct {
               splunkDeliveryStreamBackupBucket.attrArn
             ]
           })
+        ],
+        roles: [
+          props.splunkDeliveryStreamBackupBucketRole
         ]
       })
-
-    props.splunkDeliveryStreamBackupBucketRole.addManagedPolicy(
-      splunkDeliveryStreamBackupBucketIamManagedPolicy
-    )
 
     const splunkDeliveryStreamBackupBucketPolicy = new CfnBucketPolicy(this, "SplunkDeliveryStreamBackupBucketPolicy", {
       bucket: splunkDeliveryStreamBackupBucket.ref,

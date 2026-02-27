@@ -28,7 +28,7 @@ async function main() {
     ...props,
     stackName: "iam-stack"
   })
-  new AccountResourcesStack_UK(app, "AccountResources_UK", {
+  const accountResourcesStack_UK = new AccountResourcesStack_UK(app, "AccountResources_UK", {
     ...props,
     stackName: accountResourcesUKStackName,
     cloudFormationExecutionRole: iamStack.cloudFormationExecutionRole,
@@ -48,7 +48,9 @@ async function main() {
     stackName: monitoringStackName,
     lambdaConcurrencyThreshold:  getNumberConfigFromEnvVar("lambdaConcurrencyThreshold"),
     lambdaConcurrencyWarningThreshold: getNumberConfigFromEnvVar("lambdaConcurrencyWarningThreshold"),
-    enableAlerts: getBooleanConfigFromEnvVar("enableAlerts")
+    enableAlerts: getBooleanConfigFromEnvVar("enableAlerts"),
+    splunkDeliveryStreamBackupBucketRole: iamStack.splunkDeliveryStreamBackupBucketRole,
+    auditLoggingBucket: accountResourcesStack_UK.auditLoggingBucket
   })
 }
 

@@ -3,7 +3,7 @@ import {IdentityProvider} from "../resources/IdentityProvider"
 import {Roles} from "../resources/Roles"
 import {Policies} from "../resources/Policies"
 import {ApiGatewayAccount} from "../resources/ApiGatewayAccount"
-import {IRole} from "aws-cdk-lib/aws-iam"
+import {Role} from "aws-cdk-lib/aws-iam"
 import {DeploymentPolicies} from "../resources/deploymentPolicies"
 
 export interface IAMStackProps extends StackProps {
@@ -13,10 +13,11 @@ export interface IAMStackProps extends StackProps {
 }
 
 export class IAMStack extends Stack {
-  readonly cloudFormationExecutionRole: IRole
-  readonly cloudFormationPrepareChangesetRole: IRole
-  readonly CloudFormationDeployRole: IRole
-  readonly apiGwCloudWatchRole: IRole
+  readonly cloudFormationExecutionRole: Role
+  readonly cloudFormationPrepareChangesetRole: Role
+  readonly CloudFormationDeployRole: Role
+  readonly apiGwCloudWatchRole: Role
+  readonly splunkDeliveryStreamBackupBucketRole: Role
 
   public constructor(scope: App, id: string, props: IAMStackProps) {
     super(scope, id, props)
@@ -68,5 +69,11 @@ export class IAMStack extends Stack {
       apiGwCloudWatchRole: roles.apiGwCloudWatchRole,
       allowApiGwLoggingPolicy: policies.allowApiGwLoggingPolicy
     })
+
+    this.cloudFormationExecutionRole = roles.cloudFormationExecutionRole
+    this.cloudFormationPrepareChangesetRole = roles.cloudFormationPrepareChangesetRole
+    this.CloudFormationDeployRole = roles.CloudFormationDeployRole
+    this.apiGwCloudWatchRole = roles.apiGwCloudWatchRole
+    this.splunkDeliveryStreamBackupBucketRole = roles.splunkDeliveryStreamBackupBucketRole
   }
 }

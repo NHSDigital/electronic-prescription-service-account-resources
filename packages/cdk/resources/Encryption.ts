@@ -2,19 +2,19 @@ import {Construct} from "constructs"
 import {CfnAlias, CfnKey, Key} from "aws-cdk-lib/aws-kms"
 import {
   CfnRole,
-  IRole,
   ManagedPolicy,
-  PolicyStatement
+  PolicyStatement,
+  Role
 } from "aws-cdk-lib/aws-iam"
 import {RemovalPolicy} from "aws-cdk-lib"
 
 export interface EncryptionProps {
   readonly accountId: string
   readonly region: string
-  readonly apiGwCloudWatchRole: IRole
-  readonly cloudFormationExecutionRole: IRole
-  readonly cloudFormationPrepareChangesetRole: IRole
-  readonly CloudFormationDeployRole: IRole
+  readonly apiGwCloudWatchRole: Role
+  readonly cloudFormationExecutionRole: Role
+  readonly cloudFormationPrepareChangesetRole: Role
+  readonly CloudFormationDeployRole: Role
 }
 export class Encryption extends Construct {
   public readonly secretsKmsKey: Key
@@ -33,28 +33,13 @@ export class Encryption extends Construct {
   public constructor(scope: Construct, id: string, props: EncryptionProps) {
     super(scope, id)
 
-    const lambdaEncryptCloudwatchKmsPolicy = new ManagedPolicy(this, "LambdaEncryptCloudwatchKmsPolicy", {
-      statements: [
-        new PolicyStatement({
-          actions: [
-            "kms:DescribeKey",
-            "kms:GenerateDataKey*",
-            "kms:Encrypt",
-            "kms:ReEncrypt*",
-            "kms:Decrypt"
-          ],
-          resources: [
-            this.cloudwatchLogsKmsKey.attrArn
-          ]
-        })]
-    })
-
     const secretsKmsKey = new Key(this, "KmsKey", {
       enableKeyRotation: true,
       removalPolicy: RemovalPolicy.DESTROY
     })
     secretsKmsKey.addAlias("alias/SecretsKMSKeyAlias")
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const useSecretsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSecretsKmsKeyManagedPolicy", {
       statements: [
         new PolicyStatement({
@@ -66,11 +51,13 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            this.secretsKmsKey.keyArn
+            secretsKmsKey.keyArn
           ]
-        })]
+        })],
+      roles: [
+        props.cloudFormationExecutionRole
+      ]
     })
-    props.cloudFormationExecutionRole.addManagedPolicy(useSecretsKmsKeyManagedPolicy)
 
     const snsKmsKey = new CfnKey(this, "SnsKMSKey", {
       enableKeyRotation: true,
@@ -126,6 +113,7 @@ export class Encryption extends Construct {
       targetKeyId: snsKmsKey.ref
     })
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const useSnsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSnsKmsKeyManagedPolicy", {
       statements: [
         new PolicyStatement({
@@ -137,20 +125,22 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            this.snsKmsKey.attrArn
+            snsKmsKey.attrArn
           ]
-        })]
+        })],
+      roles: [
+        props.cloudFormationExecutionRole
+      ]
     })
-    props.cloudFormationExecutionRole.addManagedPolicy(useSnsKmsKeyManagedPolicy)
 
-    const snsDecryptSecretsKmsPolicy = new ManagedPolicy(this, "LambdaDecryptSecretsKmsPolicy", {
+    const snsDecryptSecretsKmsPolicy = new ManagedPolicy(this, "SnsDecryptSecretsKmsPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
             "kms:Decrypt"
           ],
           resources: [
-            this.snsKmsKey.attrArn
+            snsKmsKey.attrArn
           ]
         })
       ]
@@ -196,6 +186,7 @@ export class Encryption extends Construct {
       aliasName: "alias/SqsKMSKeyAlias",
       targetKeyId: sqsKmsKey.ref
     })
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const useSqsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSqsKmsKeyManagedPolicy", {
       statements: [
         new PolicyStatement({
@@ -207,11 +198,13 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            this.sqsKmsKey.attrArn
+            sqsKmsKey.attrArn
           ]
-        })]
+        })],
+      roles: [
+        props.cloudFormationExecutionRole
+      ]
     })
-    props.cloudFormationExecutionRole.addManagedPolicy(useSqsKmsKeyManagedPolicy)
 
     const sqsDecryptSecretsKmsPolicy = new ManagedPolicy(this, "SqsDecryptSecretsKMSPolicy", {
       statements: [
@@ -220,7 +213,7 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            this.sqsKmsKey.attrArn
+            sqsKmsKey.attrArn
           ]
         })
       ]
@@ -328,7 +321,7 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            this.cloudwatchLogsKmsKey.attrArn
+            cloudwatchLogsKmsKey.attrArn
           ]
         })]
     })
@@ -340,10 +333,25 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            this.secretsKmsKey.keyArn
+            secretsKmsKey.keyArn
           ]
         })
       ]
+    })
+    const lambdaEncryptCloudwatchKmsPolicy = new ManagedPolicy(this, "LambdaEncryptCloudwatchKmsPolicy", {
+      statements: [
+        new PolicyStatement({
+          actions: [
+            "kms:DescribeKey",
+            "kms:GenerateDataKey*",
+            "kms:Encrypt",
+            "kms:ReEncrypt*",
+            "kms:Decrypt"
+          ],
+          resources: [
+            cloudwatchLogsKmsKey.attrArn
+          ]
+        })]
     })
 
     this.secretsKmsKey = secretsKmsKey

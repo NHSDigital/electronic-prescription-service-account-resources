@@ -12,27 +12,29 @@ import {MTLSSecrets} from "../resources/MTLSSecrets"
 import {ProxygenSecrets} from "../resources/ProxygenSecrets"
 import {AtlassianSecrets} from "../resources/AtlassianSecrets"
 import {ConfigSecrets} from "../resources/ConfigSecrets"
-import {IRole} from "aws-cdk-lib/aws-iam"
+import {Role} from "aws-cdk-lib/aws-iam"
 import {SecretPolicies} from "../resources/secretPolicies"
+import {CfnBucket} from "aws-cdk-lib/aws-s3"
 
 export interface AccountResourcesStackProps_UK extends StackProps {
   readonly stackName: string
   readonly version: string
   readonly commitId: string
-  readonly cloudFormationExecutionRole: IRole
-  readonly cloudFormationPrepareChangesetRole: IRole
-  readonly CloudFormationDeployRole: IRole
-  readonly apiGwCloudWatchRole: IRole
+  readonly cloudFormationExecutionRole: Role
+  readonly cloudFormationPrepareChangesetRole: Role
+  readonly CloudFormationDeployRole: Role
+  readonly apiGwCloudWatchRole: Role
 }
 
 export class AccountResourcesStack_UK extends Stack {
+  readonly auditLoggingBucket: CfnBucket
   public constructor(scope: App, id: string, props: AccountResourcesStackProps_UK){
     super(scope, id, props)
 
     Tags.of(this).add("stackName", props.stackName)
     new ECRRepositories(this, "ECRRepositories")
     new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
-    new Storage(this, "Storage", {
+    const storage = new Storage(this, "Storage", {
       logRetentionDays: 30,
       accountId: this.account,
       region: this.region,
@@ -108,5 +110,6 @@ export class AccountResourcesStack_UK extends Stack {
       FhirFacadeProxygenPublicKey: proxygenSecrets.PSUProxygenPublicKey,
       secretKMSKey: encryption.secretsKmsKey
     })
+    this.auditLoggingBucket = storage.auditLoggingBucket
   }
 }

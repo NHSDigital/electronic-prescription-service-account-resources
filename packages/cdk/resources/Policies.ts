@@ -305,7 +305,7 @@ export class Policies extends Construct {
         }),
         new PolicyStatement({
           actions: [
-            "arn:aws:apigateway:eu-west-2::/restapis*"
+            `arn:aws:apigateway:${props.region}:${props.accountId}:/restapis*`
           ],
           resources: [
             "apigateway:GET"
@@ -337,7 +337,7 @@ export class Policies extends Construct {
       ]
     })
 
-    const snsFeedbackLoggingPolicy = new ManagedPolicy(this, "AllowApiGwLoggingPolicy", {
+    const snsFeedbackLoggingPolicy = new ManagedPolicy(this, "SnsFeedbackLoggingPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -352,7 +352,7 @@ export class Policies extends Construct {
           ]
         })]
     })
-    props.snsFeedbackLoggingRole.addManagedPolicy(this.snsFeedbackLoggingPolicy)
+    props.snsFeedbackLoggingRole.addManagedPolicy(snsFeedbackLoggingPolicy)
     const epsReadOnlyPolicies: Array<PolicyStatement> = [
       new PolicyStatement({
         actions: [

@@ -13,7 +13,8 @@ import {nagSuppressions} from "../nagSuppressions"
 import {Rule, Schedule} from "aws-cdk-lib/aws-events"
 import {LambdaFunction} from "aws-cdk-lib/aws-events-targets"
 import {Role, ServicePrincipal} from "aws-cdk-lib/aws-iam"
-import {MonitoringEncryption} from "../resources/MonitoringStorage"
+import {MonitoringStorage} from "../resources/MonitoringStorage"
+import {CfnBucket} from "aws-cdk-lib/aws-s3"
 
 export interface MonitoringStackProps extends StackProps {
   readonly stackName: string
@@ -22,6 +23,8 @@ export interface MonitoringStackProps extends StackProps {
   readonly lambdaConcurrencyThreshold: number
   readonly lambdaConcurrencyWarningThreshold: number
   readonly enableAlerts: boolean
+  readonly splunkDeliveryStreamBackupBucketRole: Role
+  readonly auditLoggingBucket: CfnBucket
 }
 
 export class MonitoringStack extends Stack {
@@ -70,8 +73,11 @@ export class MonitoringStack extends Stack {
       targets: [new LambdaFunction(functions.functions.reportAlertSuppressionsLambda.function)],
       role: reportAlertSuppressionsScheduleRole
     })
-    new MonitoringEncryption(this, "MonitoringEncryption", {
-      accountId: this.account
+    new MonitoringStorage(this, "MonitoringStorage", {
+      accountId: this.account,
+      region: this.region,
+      splunkDeliveryStreamBackupBucketRole: props.splunkDeliveryStreamBackupBucketRole,
+      auditLoggingBucket: props.auditLoggingBucket
     })
 
     nagSuppressions(this)

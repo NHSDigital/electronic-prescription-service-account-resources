@@ -1,15 +1,15 @@
 import {Construct} from "constructs"
 import {CfnBucket, CfnBucketPolicy} from "aws-cdk-lib/aws-s3"
 import {CfnKey, CfnAlias} from "aws-cdk-lib/aws-kms"
-import {IRole, ManagedPolicy, PolicyStatement} from "aws-cdk-lib/aws-iam"
+import {ManagedPolicy, PolicyStatement, Role} from "aws-cdk-lib/aws-iam"
 
 export interface StorageProps {
   readonly logRetentionDays: number
   readonly accountId: string
   readonly region: string
-  readonly cloudFormationExecutionRole: IRole
-  readonly cloudFormationPrepareChangesetRole: IRole
-  readonly CloudFormationDeployRole: IRole
+  readonly cloudFormationExecutionRole: Role
+  readonly cloudFormationPrepareChangesetRole: Role
+  readonly CloudFormationDeployRole: Role
   readonly splunkDeliveryStreamBackupBucketArn?: string
   readonly artifactsBucketArn?: string
   readonly trustStoreBucketArn?: string
@@ -18,6 +18,7 @@ export interface StorageProps {
   readonly epsamKbDocsBucketArn?: string
 }
 export class Storage extends Construct {
+  public readonly auditLoggingBucket: CfnBucket
 
   public constructor(scope: Construct, id: string, props: StorageProps) {
     super(scope, id)
@@ -171,7 +172,8 @@ export class Storage extends Construct {
       aliasName: "alias/ArtifactsBucketKMSKeyAlias",
       targetKeyId: artifactsBucketKmsKey.ref
     })
-    const useArtifactBucketKmsKeyManagedPolicy = new ManagedPolicy(this, "AllowApiGwLoggingPolicy", {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const useArtifactBucketKmsKeyManagedPolicy = new ManagedPolicy(this, "UseArtifactBucketKmsKeyManagedPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -184,7 +186,12 @@ export class Storage extends Construct {
           resources: [
             artifactsBucketKmsKey.attrArn
           ]
-        })]
+        })],
+      roles: [
+        props.cloudFormationExecutionRole,
+        props.cloudFormationPrepareChangesetRole,
+        props.CloudFormationDeployRole
+      ]
     })
 
     const artifactsBucket = new CfnBucket(this, "ArtifactsBucket", {
@@ -310,10 +317,6 @@ export class Storage extends Construct {
       }
     }
 
-    props.cloudFormationExecutionRole.addManagedPolicy(useArtifactBucketKmsKeyManagedPolicy)
-    props.cloudFormationPrepareChangesetRole.addManagedPolicy(useArtifactBucketKmsKeyManagedPolicy)
-    props.CloudFormationDeployRole.addManagedPolicy(useArtifactBucketKmsKeyManagedPolicy)
-
     const athenaResultsBucketKmsKey = new CfnKey(this, "AthenaResultsBucketKMSKey", {
       enableKeyRotation: true,
       keyPolicy: {
@@ -436,6 +439,23 @@ export class Storage extends Construct {
               "kms:*"
             ],
             Resource: "*"
+          },
+          {
+            Sid: "Allow CloudFormation Access",
+            Effect: "Allow",
+            Principal: {
+              AWS: [
+                props.cloudFormationExecutionRole.roleArn
+              ]
+            },
+            Action: [
+              "kms:DescribeKey",
+              "kms:GenerateDataKey*",
+              "kms:Encrypt",
+              "kms:ReEncrypt*",
+              "kms:Decrypt"
+            ],
+            Resource: "*"
           }
         ]
       }
@@ -444,6 +464,7 @@ export class Storage extends Construct {
       aliasName: "alias/TrustStoreBucketKMSKeyAlias",
       targetKeyId: trustStoreBucketKmsKey.ref
     })
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const useTrustStoreBucketKmsKeyManagedPolicy = new ManagedPolicy(this, "UseTrustStoreBucketKmsKeyManagedPolicy", {
       statements: [
         new PolicyStatement({
@@ -457,7 +478,10 @@ export class Storage extends Construct {
           resources: [
             trustStoreBucketKmsKey.attrArn
           ]
-        })]
+        })],
+      roles: [
+        props.cloudFormationExecutionRole
+      ]
     })
 
     const trustStoreBucket = new CfnBucket(this, "TrustStoreBucket", {
@@ -629,8 +653,6 @@ export class Storage extends Construct {
       }
     }
 
-    props.cloudFormationExecutionRole.addManagedPolicy(useTrustStoreBucketKmsKeyManagedPolicy)
-
     const albLoggingBucket = new CfnBucket(this, "ALBLoggingBucket", {
       versioningConfiguration: {
         status: "Enabled"
@@ -725,7 +747,7 @@ export class Storage extends Construct {
         ]
       }
     }
-
+    this.auditLoggingBucket = auditLoggingBucket
   }
 
   createAuditLoggingPolicy(
