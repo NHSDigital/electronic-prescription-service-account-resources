@@ -21,6 +21,8 @@ import argparse
 import json
 import copy
 import datetime
+import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -133,6 +135,48 @@ MANUAL_MAPPINGS = {
 
 }
 
+PSEUDO_PLACEHOLDER_RE = re.compile(r"\${([^}]+)}")
+
+
+def build_default_pseudo_values() -> Dict[str, str]:
+    region = (
+        os.getenv("CDK_DEFAULT_REGION")
+        or os.getenv("AWS_REGION")
+        or os.getenv("AWS_DEFAULT_REGION")
+        or "eu-west-2"
+    )
+    defaults = {
+        "AWS::Region": region,
+        "AWS::Partition": os.getenv("AWS_PARTITION") or "aws",
+        "AWS::URLSuffix": os.getenv("AWS_URL_SUFFIX") or "amazonaws.com",
+    }
+    account_id = os.getenv("AWS_ACCOUNT_ID") or os.getenv("CDK_DEFAULT_ACCOUNT")
+    if account_id:
+        defaults["AWS::AccountId"] = account_id
+    return defaults
+
+
+def parse_pseudo_overrides(raw_entries: Iterable[str]) -> Dict[str, str]:
+    overrides: Dict[str, str] = {}
+    for entry in raw_entries:
+        if "=" not in entry:
+            raise ValueError(f"Invalid pseudo override '{entry}'. Use KEY=VALUE format.")
+        key, value = entry.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if not key:
+            raise ValueError(f"Invalid pseudo override '{entry}'. Missing key.")
+        overrides[key] = value
+    return overrides
+
+
+def substitute_pseudo_placeholders(value: str, pseudo_values: Dict[str, str]) -> str:
+    def _replace(match: re.Match[str]) -> str:
+        foo_bar = match.group(1)
+        return pseudo_values.get(foo_bar, match.group(0))
+
+    return PSEUDO_PLACEHOLDER_RE.sub(_replace, value)
+
 
 @dataclass(frozen=True)
 class ResourceRecord:
@@ -189,20 +233,80 @@ def sanitize_definition(definition: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     return clean
 
 
-def normalize_structure(value: Any) -> Any:
+def _stringify_value_for_join(value: Any, pseudo_values: Dict[str, str]) -> Optional[str]:
+    if isinstance(value, str):
+        return substitute_pseudo_placeholders(value, pseudo_values)
+    if isinstance(value, (int, float)):
+        return str(value)
+    if isinstance(value, dict):
+        return _stringify_intrinsic_dict(value, pseudo_values)
+    return None
+
+
+def _stringify_intrinsic_dict(value: Any, pseudo_values: Dict[str, str]) -> Optional[str]:
+    if not isinstance(value, dict):
+        return None
+    if len(value) == 1 and "Ref" in value and isinstance(value["Ref"], str):
+        ref_target = value["Ref"]
+        if ref_target in pseudo_values:
+            return pseudo_values[ref_target]
+        return f"${{{ref_target}}}"
+
+    join_spec = value.get("Fn::Join")
+    if isinstance(join_spec, list) and len(join_spec) == 2:
+        delimiter = _stringify_value_for_join(join_spec[0], pseudo_values)
+        items = join_spec[1]
+        if delimiter is None or not isinstance(items, list):
+            return None
+        parts: List[str] = []
+        for item in items:
+            part = _stringify_value_for_join(item, pseudo_values)
+            if part is None:
+                return None
+            parts.append(part)
+        return delimiter.join(parts)
+
+    sub_spec = value.get("Fn::Sub")
+    if isinstance(sub_spec, str):
+        return substitute_pseudo_placeholders(sub_spec, pseudo_values)
+    if (
+        isinstance(sub_spec, list)
+        and len(sub_spec) == 2
+        and isinstance(sub_spec[0], str)
+        and isinstance(sub_spec[1], dict)
+    ):
+        template = sub_spec[0]
+        variables = sub_spec[1]
+        rendered = template
+        for name, replacement in variables.items():
+            replacement_str = _stringify_value_for_join(replacement, pseudo_values)
+            if replacement_str is None:
+                return None
+            rendered = rendered.replace(f"${{{name}}}", replacement_str)
+        return substitute_pseudo_placeholders(rendered, pseudo_values)
+
+    return None
+
+
+def normalize_structure(value: Any, pseudo_values: Dict[str, str]) -> Any:
     if isinstance(value, (datetime.date, datetime.datetime)):
         return value.isoformat()
     if isinstance(value, dict):
-        return {key: normalize_structure(value[key]) for key in sorted(value.keys())}
+        intrinsic_string = _stringify_intrinsic_dict(value, pseudo_values)
+        if intrinsic_string is not None:
+            return intrinsic_string
+        return {key: normalize_structure(value[key], pseudo_values) for key in sorted(value.keys())}
     if isinstance(value, list):
-        normalized = [normalize_structure(item) for item in value]
+        normalized = [normalize_structure(item, pseudo_values) for item in value]
         if len(normalized) == 1:
             return normalized[0]
         return normalized
+    if isinstance(value, str):
+        return substitute_pseudo_placeholders(value, pseudo_values)
     return value
 
 
-def build_set1_records(paths: Iterable[Path]) -> List[ResourceRecord]:
+def build_set1_records(paths: Iterable[Path], pseudo_values: Dict[str, str]) -> List[ResourceRecord]:
     records: List[ResourceRecord] = []
     for template_path in paths:
         resources = load_yaml_resources(template_path)
@@ -211,7 +315,7 @@ def build_set1_records(paths: Iterable[Path]) -> List[ResourceRecord]:
             if not resource_type:
                 continue
             sanitized_definition = sanitize_definition(definition)
-            normalized_definition = normalize_structure(sanitized_definition)
+            normalized_definition = normalize_structure(sanitized_definition, pseudo_values)
             records.append(
                 ResourceRecord(
                     template=str(template_path),
@@ -227,7 +331,7 @@ def build_set1_records(paths: Iterable[Path]) -> List[ResourceRecord]:
     return records
 
 
-def build_set2_records(paths: Iterable[Path]) -> List[ResourceRecord]:
+def build_set2_records(paths: Iterable[Path], pseudo_values: Dict[str, str]) -> List[ResourceRecord]:
     records: List[ResourceRecord] = []
     for template_path in paths:
         resources = load_json_resources(template_path)
@@ -239,7 +343,7 @@ def build_set2_records(paths: Iterable[Path]) -> List[ResourceRecord]:
             metadata_path = metadata.get("aws:cdk:path")
             candidate = extract_candidate_from_path(metadata_path) or logical_id
             sanitized_definition = sanitize_definition(definition)
-            normalized_definition = normalize_structure(sanitized_definition)
+            normalized_definition = normalize_structure(sanitized_definition, pseudo_values)
             records.append(
                 ResourceRecord(
                     template=str(template_path),
@@ -379,14 +483,29 @@ def main() -> None:
         default=DEFAULT_OUTPUT_DIR,
         help="Directory to write the comparison artifacts.",
     )
+    parser.add_argument(
+        "--pseudo",
+        action="append",
+        default=[],
+        metavar="KEY=VALUE",
+        help="Override pseudo parameter values used when normalizing strings (can be repeated).",
+    )
     args = parser.parse_args()
 
     base_dir = args.base_dir.resolve()
     set1_paths = resolve_paths(base_dir, args.set1)
     set2_paths = resolve_paths(base_dir, args.set2)
 
-    set1_records = build_set1_records(set1_paths)
-    set2_records = build_set2_records(set2_paths)
+    try:
+        pseudo_overrides = parse_pseudo_overrides(args.pseudo)
+    except ValueError as exc:  # pragma: no cover - argument validation
+        raise SystemExit(str(exc)) from exc
+
+    pseudo_values = build_default_pseudo_values()
+    pseudo_values.update(pseudo_overrides)
+
+    set1_records = build_set1_records(set1_paths, pseudo_values)
+    set2_records = build_set2_records(set2_paths, pseudo_values)
 
     mapping, set1_only, set2_only, manual_misses, differences = compare_templates(
         set1_records, set2_records, MANUAL_MAPPINGS
