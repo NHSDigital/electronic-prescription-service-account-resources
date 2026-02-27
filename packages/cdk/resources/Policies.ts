@@ -246,9 +246,11 @@ export class Policies extends Construct {
           resources: [
             `arn:aws:logs:${props.region}:${props.accountId}:log-group:/aws/apigateway/*`
           ]
-        })]
+        })],
+      roles: [
+        props.apiGwCloudWatchRole
+      ]
     })
-    props.apiGwCloudWatchRole.addManagedPolicy(allowApiGwLoggingPolicy)
 
     // TODO - refactor to common
     const logDeliveryPolicy = new PolicyStatement({
