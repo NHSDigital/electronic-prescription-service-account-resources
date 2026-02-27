@@ -8,6 +8,8 @@ CDK-generated templates by correlating the logical IDs that appear in the
 1. `resource_mapping.json` - matched logical IDs between the two template sets.
 2. `set1_unmatched.json` - resources that exist only in the YAML templates.
 3. `set2_unmatched.json` - resources that exist only in the CDK templates.
+4. `resource_differences.json` - matched resources whose definitions differ
+    (ignoring Metadata and Tags).
 
 The script assumes PyYAML is available. Install it with `pip install pyyaml`
 if needed.
@@ -17,9 +19,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import copy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 try:
     import yaml  # type: ignore
@@ -137,6 +140,9 @@ class ResourceRecord:
     resource_type: str
     metadata_path: Optional[str]
     raw_logical_id: Optional[str] = None
+    definition: Optional[Dict[str, Any]] = None
+    sanitized_definition: Optional[Dict[str, Any]] = None
+    normalized_definition: Optional[Any] = None
 
     @property
     def match_key(self) -> Tuple[str, str]:
@@ -171,6 +177,28 @@ def extract_candidate_from_path(metadata_path: Optional[str]) -> Optional[str]:
     return candidate.split('/')[-1]
 
 
+def sanitize_definition(definition: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    if not definition:
+        return {}
+    clean = copy.deepcopy(definition)
+    clean.pop("Metadata", None)
+    props = clean.get("Properties")
+    if isinstance(props, dict):
+        props.pop("Tags", None)
+    return clean
+
+
+def normalize_structure(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: normalize_structure(value[key]) for key in sorted(value.keys())}
+    if isinstance(value, list):
+        normalized = [normalize_structure(item) for item in value]
+        if len(normalized) == 1:
+            return normalized[0]
+        return normalized
+    return value
+
+
 def build_set1_records(paths: Iterable[Path]) -> List[ResourceRecord]:
     records: List[ResourceRecord] = []
     for template_path in paths:
@@ -179,6 +207,8 @@ def build_set1_records(paths: Iterable[Path]) -> List[ResourceRecord]:
             resource_type = definition.get("Type")
             if not resource_type:
                 continue
+            sanitized_definition = sanitize_definition(definition)
+            normalized_definition = normalize_structure(sanitized_definition)
             records.append(
                 ResourceRecord(
                     template=str(template_path),
@@ -186,6 +216,9 @@ def build_set1_records(paths: Iterable[Path]) -> List[ResourceRecord]:
                     resource_type=resource_type,
                     metadata_path=None,
                     raw_logical_id=logical_id,
+                    definition=definition,
+                    sanitized_definition=sanitized_definition,
+                    normalized_definition=normalized_definition,
                 )
             )
     return records
@@ -202,6 +235,8 @@ def build_set2_records(paths: Iterable[Path]) -> List[ResourceRecord]:
             metadata = definition.get("Metadata", {})
             metadata_path = metadata.get("aws:cdk:path")
             candidate = extract_candidate_from_path(metadata_path) or logical_id
+            sanitized_definition = sanitize_definition(definition)
+            normalized_definition = normalize_structure(sanitized_definition)
             records.append(
                 ResourceRecord(
                     template=str(template_path),
@@ -209,6 +244,9 @@ def build_set2_records(paths: Iterable[Path]) -> List[ResourceRecord]:
                     resource_type=resource_type,
                     metadata_path=metadata_path,
                     raw_logical_id=logical_id,
+                    definition=definition,
+                    sanitized_definition=sanitized_definition,
+                    normalized_definition=normalized_definition,
                 )
             )
     return records
@@ -241,13 +279,14 @@ def compare_templates(
     set1_only = []
     matched_set2 = set()
     manual_misses = []
+    differences = []
 
     for record in set1:
         match = None
         manual_path = manual_mappings.get(record.raw_logical_id or "")
         if manual_path:
             manual_candidates = set2_path_lookup.get(manual_path, [])
-            match = next((c for c in manual_candidates if c not in matched_set2), None)
+            match = next((c for c in manual_candidates if id(c) not in matched_set2), None)
             if match is None:
                 manual_misses.append(
                     {
@@ -258,9 +297,9 @@ def compare_templates(
                 )
         if match is None:
             candidates = set2_lookup.get(record.match_key, [])
-            match = next((c for c in candidates if c not in matched_set2), None)
+            match = next((c for c in candidates if id(c) not in matched_set2), None)
         if match:
-            matched_set2.add(match)
+            matched_set2.add(id(match))
             mapping.append(
                 {
                     "set1_template": record.template,
@@ -272,6 +311,18 @@ def compare_templates(
                     "cdk_path": match.metadata_path,
                 }
             )
+            if record.normalized_definition != match.normalized_definition:
+                differences.append(
+                    {
+                        "set1_template": record.template,
+                        "set1_logical_id": record.raw_logical_id,
+                        "set2_template": match.template,
+                        "set2_logical_id": match.raw_logical_id,
+                        "set2_cdk_path": match.metadata_path,
+                        "set1_definition": record.sanitized_definition,
+                        "set2_definition": match.sanitized_definition,
+                    }
+                )
         else:
             set1_only.append(
                 {
@@ -289,15 +340,15 @@ def compare_templates(
             "cdk_path": record.metadata_path,
         }
         for record in set2
-        if record not in matched_set2
+        if id(record) not in matched_set2
     ]
 
-    return mapping, set1_only, set2_only, manual_misses
+    return mapping, set1_only, set2_only, manual_misses, differences
 
 
 def write_json(data, path: Path):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, sort_keys=True))
+    path.write_text(json.dumps(data, indent=2, sort_keys=True, default=str))
 
 
 def main() -> None:
@@ -334,7 +385,7 @@ def main() -> None:
     set1_records = build_set1_records(set1_paths)
     set2_records = build_set2_records(set2_paths)
 
-    mapping, set1_only, set2_only, manual_misses = compare_templates(
+    mapping, set1_only, set2_only, manual_misses, differences = compare_templates(
         set1_records, set2_records, MANUAL_MAPPINGS
     )
 
@@ -342,10 +393,12 @@ def main() -> None:
     write_json(mapping, output_base / "resource_mapping.json")
     write_json(set1_only, output_base / "set1_unmatched.json")
     write_json(set2_only, output_base / "set2_unmatched.json")
+    write_json(differences, output_base / "resource_differences.json")
 
     print(f"Wrote {len(mapping)} mappings")
     print(f"Wrote {len(set1_only)} set1-only resources")
     print(f"Wrote {len(set2_only)} set2-only resources")
+    print(f"Wrote {len(differences)} resource definition differences")
     if manual_misses:
         print("Manual mappings that could not be resolved:")
         for miss in manual_misses:
