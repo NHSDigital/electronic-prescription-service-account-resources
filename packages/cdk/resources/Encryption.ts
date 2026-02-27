@@ -40,7 +40,7 @@ export class Encryption extends Construct {
     secretsKmsKey.addAlias("alias/SecretsKMSKeyAlias")
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const useSecretsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSecretsKmsKeyManagedPolicy", {
+    const useSecretsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSecretsKMSKeyManagedPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -114,7 +114,7 @@ export class Encryption extends Construct {
     })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const useSnsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSnsKmsKeyManagedPolicy", {
+    const useSnsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSnsKMSKeyManagedPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -133,7 +133,7 @@ export class Encryption extends Construct {
       ]
     })
 
-    const snsDecryptSecretsKmsPolicy = new ManagedPolicy(this, "SnsDecryptSecretsKmsPolicy", {
+    const snsDecryptSecretsKmsPolicy = new ManagedPolicy(this, "SnsDecryptSecretsKMSPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -187,7 +187,7 @@ export class Encryption extends Construct {
       targetKeyId: sqsKmsKey.ref
     })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const useSqsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSqsKmsKeyManagedPolicy", {
+    const useSqsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSqsKMSKeyManagedPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -306,11 +306,11 @@ export class Encryption extends Construct {
         ]
       }
     })
-    const cloudwatchLogsKmsKeyAlias = new CfnAlias(this, "CloudwatchLogsKMSKeyAlias", {
+    const cloudwatchLogsKmsKeyAlias = new CfnAlias(this, "CloudwatchLogsKmsKeyAlias", {
       aliasName: "alias/CloudwatchLogsKMSKeyAlias",
       targetKeyId: cloudwatchLogsKmsKey.ref
     })
-    const useCloudwatchLogsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseCloudwatchLogsKmsKeyManagedPolicy", {
+    const useCloudwatchLogsKmsKeyManagedPolicy = new ManagedPolicy(this, "CloudwatchEncryptionKMSPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -326,7 +326,7 @@ export class Encryption extends Construct {
         })]
     })
 
-    const lambdaDecryptSecretsKmsPolicy = new ManagedPolicy(this, "LambdaDecryptSecretsKmsPolicy", {
+    const lambdaDecryptSecretsKmsPolicy = new ManagedPolicy(this, "LambdaDecryptSecretsKMSPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -338,7 +338,7 @@ export class Encryption extends Construct {
         })
       ]
     })
-    const lambdaEncryptCloudwatchKmsPolicy = new ManagedPolicy(this, "LambdaEncryptCloudwatchKmsPolicy", {
+    const lambdaEncryptCloudwatchKmsPolicy = new ManagedPolicy(this, "LambdaEncryptCloudwatchKMSPolicy", {
       statements: [
         new PolicyStatement({
           actions: [

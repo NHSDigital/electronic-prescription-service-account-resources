@@ -68,7 +68,7 @@ export class ConfigSecrets extends Construct {
           ]
         })]
     })
-    const lambdaAccessSecretsPolicy = new ManagedPolicy(this, "LambdaAccessSecretsManagedPolicy", {
+    const lambdaAccessSecretsPolicy = new ManagedPolicy(this, "LambdaAccessSecretsPolicy", {
       statements: [
         new PolicyStatement({
           actions: [

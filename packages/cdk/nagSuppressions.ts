@@ -86,7 +86,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/IAM/Policies/SnsFeedbackLoggingPolicy/Resource",
+    "/IAM/Policies/SNSFeedbackLoggingPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -262,7 +262,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/IAM/Policies/RemoveOldCnameRecordsPolicy/Resource",
+    "/IAM/Policies/RemoveOldCNAMERecordsPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -273,7 +273,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/IAM/Policies/UpdateCloudfrontKvs/Resource",
+    "/IAM/Policies/UpdateCloudfrontKVS/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -911,7 +911,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Storage/UseArtifactBucketKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Storage/UseArtifactBucketKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -922,7 +922,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Storage/UseArtifactBucketKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Storage/UseArtifactBucketKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -944,7 +944,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Storage/UseTrustStoreBucketKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Storage/UseTrustStoreBucketKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -955,7 +955,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Storage/UseTrustStoreBucketKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Storage/UseTrustStoreBucketKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -977,7 +977,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/UseSecretsKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Encryption/UseSecretsKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -988,7 +988,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/UseSecretsKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Encryption/UseSecretsKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -999,7 +999,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/UseSnsKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Encryption/UseSnsKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -1010,7 +1010,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/UseSnsKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Encryption/UseSnsKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -1021,7 +1021,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/UseSqsKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Encryption/UseSqsKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -1032,7 +1032,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/UseSqsKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Encryption/UseSqsKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -1043,7 +1043,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/UseCloudwatchLogsKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Encryption/CloudwatchEncryptionKMSPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -1054,7 +1054,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/UseCloudwatchLogsKmsKeyManagedPolicy/Resource",
+    "/AccountResources_UK/Encryption/CloudwatchEncryptionKMSPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -1065,7 +1065,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/LambdaEncryptCloudwatchKmsPolicy/Resource",
+    "/AccountResources_UK/Encryption/LambdaEncryptCloudwatchKMSPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -1076,7 +1076,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/LambdaEncryptCloudwatchKmsPolicy/Resource",
+    "/AccountResources_UK/Encryption/LambdaEncryptCloudwatchKMSPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",

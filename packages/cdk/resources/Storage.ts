@@ -2,6 +2,7 @@ import {Construct} from "constructs"
 import {CfnBucket, CfnBucketPolicy} from "aws-cdk-lib/aws-s3"
 import {CfnKey, CfnAlias} from "aws-cdk-lib/aws-kms"
 import {ManagedPolicy, PolicyStatement, Role} from "aws-cdk-lib/aws-iam"
+import {addSuppressions} from "@nhsdigital/eps-cdk-constructs"
 
 export interface StorageProps {
   readonly logRetentionDays: number
@@ -57,15 +58,12 @@ export class Storage extends Construct {
         ]
       }
     })
-    auditLoggingBucket.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_REPLICATION_ENABLED",
-          "S3_BUCKET_LOGGING_ENABLED",
-          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
-        ]
-      }
-    }
+    addSuppressions([auditLoggingBucket], [
+      "S3_BUCKET_REPLICATION_ENABLED",
+      "S3_BUCKET_LOGGING_ENABLED",
+      "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+    ])
+
     const auditLoggingBucketPolicyStatement: Array<unknown> = [
       {
         Effect: "Deny",
@@ -140,13 +138,9 @@ export class Storage extends Construct {
         Statement: auditLoggingBucketPolicyStatement
       }
     })
-    auditLoggingBucketPolicy.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_SSL_REQUESTS_ONLY"
-        ]
-      }
-    }
+    addSuppressions([auditLoggingBucketPolicy], [
+      "S3_BUCKET_SSL_REQUESTS_ONLY"
+    ])
 
     const artifactsBucketKmsKey = new CfnKey(this, "ArtifactsBucketKMSKey", {
       enableKeyRotation: true,
@@ -173,7 +167,7 @@ export class Storage extends Construct {
       targetKeyId: artifactsBucketKmsKey.ref
     })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const useArtifactBucketKmsKeyManagedPolicy = new ManagedPolicy(this, "UseArtifactBucketKmsKeyManagedPolicy", {
+    const useArtifactBucketKmsKeyManagedPolicy = new ManagedPolicy(this, "UseArtifactBucketKMSKeyManagedPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -235,14 +229,10 @@ export class Storage extends Construct {
         ]
       }
     })
-    artifactsBucket.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_REPLICATION_ENABLED",
-          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
-        ]
-      }
-    }
+    addSuppressions([artifactsBucket], [
+      "S3_BUCKET_REPLICATION_ENABLED",
+      "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+    ])
     const artifactsBucketPolicy = new CfnBucketPolicy(this, "ArtifactsBucketPolicy", {
       bucket: artifactsBucket.ref,
       policyDocument: {
@@ -309,13 +299,9 @@ export class Storage extends Construct {
         ]
       }
     })
-    artifactsBucketPolicy.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_SSL_REQUESTS_ONLY"
-        ]
-      }
-    }
+    addSuppressions([artifactsBucketPolicy], [
+      "S3_BUCKET_SSL_REQUESTS_ONLY"
+    ])
 
     const athenaResultsBucketKmsKey = new CfnKey(this, "AthenaResultsBucketKMSKey", {
       enableKeyRotation: true,
@@ -380,15 +366,11 @@ export class Storage extends Construct {
         ]
       }
     })
-    athenaResultsBucket.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_REPLICATION_ENABLED",
-          "S3_BUCKET_LOGGING_ENABLED",
-          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
-        ]
-      }
-    }
+    addSuppressions([athenaResultsBucket], [
+      "S3_BUCKET_REPLICATION_ENABLED",
+      "S3_BUCKET_LOGGING_ENABLED",
+      "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+    ])
     const athenaResultsBucketPolicy = new CfnBucketPolicy(this, "AthenaResultsBucketPolicy", {
       bucket: athenaResultsBucket.ref,
       policyDocument: {
@@ -415,13 +397,9 @@ export class Storage extends Construct {
         ]
       }
     })
-    athenaResultsBucketPolicy.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_SSL_REQUESTS_ONLY"
-        ]
-      }
-    }
+    addSuppressions([athenaResultsBucketPolicy], [
+      "S3_BUCKET_SSL_REQUESTS_ONLY"
+    ])
 
     const trustStoreBucketKmsKey = new CfnKey(this, "TrustStoreBucketKMSKey", {
       enableKeyRotation: true,
@@ -465,7 +443,7 @@ export class Storage extends Construct {
       targetKeyId: trustStoreBucketKmsKey.ref
     })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const useTrustStoreBucketKmsKeyManagedPolicy = new ManagedPolicy(this, "UseTrustStoreBucketKmsKeyManagedPolicy", {
+    const useTrustStoreBucketKmsKeyManagedPolicy = new ManagedPolicy(this, "UseTrustStoreBucketKMSKeyManagedPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -509,14 +487,10 @@ export class Storage extends Construct {
         ]
       }
     })
-    trustStoreBucket.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_REPLICATION_ENABLED",
-          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
-        ]
-      }
-    }
+    addSuppressions([trustStoreBucket], [
+      "S3_BUCKET_REPLICATION_ENABLED",
+      "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+    ])
     const trustStoreBucketPolicy = new CfnBucketPolicy(this, "TrustStoreBucketPolicy", {
       bucket: trustStoreBucket.ref,
       policyDocument: {
@@ -566,13 +540,9 @@ export class Storage extends Construct {
         ]
       }
     })
-    trustStoreBucketPolicy.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_SSL_REQUESTS_ONLY"
-        ]
-      }
-    }
+    addSuppressions([trustStoreBucketPolicy], [
+      "S3_BUCKET_SSL_REQUESTS_ONLY"
+    ])
 
     const trustStoreDeploymentBucket = new CfnBucket(this, "TrustStoreDeploymentBucket", {
       loggingConfiguration: {
@@ -599,15 +569,11 @@ export class Storage extends Construct {
         ]
       }
     })
-    trustStoreDeploymentBucket.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_REPLICATION_ENABLED",
-          "S3_BUCKET_DEFAULT_LOCK_ENABLED",
-          "S3_BUCKET_VERSIONING_ENABLED"
-        ]
-      }
-    }
+    addSuppressions([trustStoreDeploymentBucket], [
+      "S3_BUCKET_REPLICATION_ENABLED",
+      "S3_BUCKET_DEFAULT_LOCK_ENABLED",
+      "S3_BUCKET_VERSIONING_ENABLED"
+    ])
     const trustStoreDeploymentBucketPolicy = new CfnBucketPolicy(this, "TrustStoreDeploymentBucketPolicy", {
       bucket: trustStoreDeploymentBucket.ref,
       policyDocument: {
@@ -645,13 +611,9 @@ export class Storage extends Construct {
         ]
       }
     })
-    trustStoreDeploymentBucketPolicy.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_SSL_REQUESTS_ONLY"
-        ]
-      }
-    }
+    addSuppressions([trustStoreDeploymentBucketPolicy], [
+      "S3_BUCKET_SSL_REQUESTS_ONLY"
+    ])
 
     const albLoggingBucket = new CfnBucket(this, "ALBLoggingBucket", {
       versioningConfiguration: {
@@ -730,23 +692,14 @@ export class Storage extends Construct {
         ]
       }
     })
-    albLoggingBucketPolicy.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_SSL_REQUESTS_ONLY"
-        ]
-      }
-    }
-
-    albLoggingBucket.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_REPLICATION_ENABLED",
-          "S3_BUCKET_LOGGING_ENABLED",
-          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
-        ]
-      }
-    }
+    addSuppressions([albLoggingBucketPolicy], [
+      "S3_BUCKET_SSL_REQUESTS_ONLY"
+    ])
+    addSuppressions([albLoggingBucket], [
+      "S3_BUCKET_REPLICATION_ENABLED",
+      "S3_BUCKET_LOGGING_ENABLED",
+      "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+    ])
     this.auditLoggingBucket = auditLoggingBucket
   }
 

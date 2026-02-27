@@ -337,7 +337,7 @@ export class Policies extends Construct {
       ]
     })
 
-    const snsFeedbackLoggingPolicy = new ManagedPolicy(this, "SnsFeedbackLoggingPolicy", {
+    const snsFeedbackLoggingPolicy = new ManagedPolicy(this, "SNSFeedbackLoggingPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -698,7 +698,7 @@ export class Policies extends Construct {
       ]
     })
 
-    const removeOldCnameRecordsPolicy = new ManagedPolicy(this, "RemoveOldCnameRecordsPolicy", {
+    const removeOldCnameRecordsPolicy = new ManagedPolicy(this, "RemoveOldCNAMERecordsPolicy", {
       statements: [
         new PolicyStatement({
           actions: [
@@ -731,7 +731,7 @@ export class Policies extends Construct {
       ]
     })
 
-    const updateCloudfrontKvs = new ManagedPolicy(this, "UpdateCloudfrontKvs", {
+    const updateCloudfrontKvs = new ManagedPolicy(this, "UpdateCloudfrontKVS", {
       statements: [
         new PolicyStatement({
           actions: [

@@ -2,6 +2,7 @@ import {Construct} from "constructs"
 import {CfnAlias, CfnKey} from "aws-cdk-lib/aws-kms"
 import {IRole, ManagedPolicy, PolicyStatement} from "aws-cdk-lib/aws-iam"
 import {CfnBucket, CfnBucketPolicy} from "aws-cdk-lib/aws-s3"
+import {addSuppressions} from "@nhsdigital/eps-cdk-constructs"
 
 export interface MonitoringStorageProps {
   readonly accountId: string
@@ -103,14 +104,10 @@ export class MonitoringStorage extends Construct {
         ]
       }
     })
-    splunkDeliveryStreamBackupBucket.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_REPLICATION_ENABLED",
-          "S3_BUCKET_DEFAULT_LOCK_ENABLED"
-        ]
-      }
-    }
+    addSuppressions([splunkDeliveryStreamBackupBucket], [
+      "S3_BUCKET_REPLICATION_ENABLED",
+      "S3_BUCKET_DEFAULT_LOCK_ENABLED"
+    ])
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const splunkDeliveryStreamBackupBucketIamManagedPolicy =
       new ManagedPolicy(this, "SplunkDeliveryStreamBackupBucketIAMManagedPolicy", {
@@ -184,13 +181,9 @@ export class MonitoringStorage extends Construct {
         ]
       }
     })
-    splunkDeliveryStreamBackupBucketPolicy.cfnOptions.metadata = {
-      guard: {
-        SuppressedRules: [
-          "S3_BUCKET_SSL_REQUESTS_ONLY"
-        ]
-      }
-    }
+    addSuppressions([splunkDeliveryStreamBackupBucketPolicy], [
+      "S3_BUCKET_SSL_REQUESTS_ONLY"
+    ])
 
     this.splunkDeliveryStreamBackupKmsKey = splunkDeliveryStreamBackupKmsKey
     this.splunkDeliveryStreamBackupKmsKeyAlias = splunkDeliveryStreamBackupKmsKeyAlias
