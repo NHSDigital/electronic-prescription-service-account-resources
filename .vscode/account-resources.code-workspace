@@ -116,7 +116,10 @@
       "POWERTOOLS_DEV": true,
     },
     "eslint.useFlatConfig": true,
-    "eslint.format.enable": true
+    "eslint.format.enable": true,
+    "[typescript]": {
+      "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    }
   },
   "extensions": {
     "recommendations": [

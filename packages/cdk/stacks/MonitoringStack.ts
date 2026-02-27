@@ -2,7 +2,8 @@ import {
   StackProps,
   Stack,
   App,
-  Fn
+  Fn,
+  Tags
 } from "aws-cdk-lib"
 import {Alarms} from "../resources/Alarms"
 import {InspectorFilters} from "../resources/InspectorFilters"
@@ -12,20 +13,25 @@ import {nagSuppressions} from "../nagSuppressions"
 import {Rule, Schedule} from "aws-cdk-lib/aws-events"
 import {LambdaFunction} from "aws-cdk-lib/aws-events-targets"
 import {Role, ServicePrincipal} from "aws-cdk-lib/aws-iam"
+import {MonitoringStorage} from "../resources/MonitoringStorage"
+import {CfnBucket} from "aws-cdk-lib/aws-s3"
 
 export interface MonitoringStackProps extends StackProps {
   readonly stackName: string
   readonly version: string
   readonly commitId: string
+  readonly lambdaConcurrencyThreshold: number
+  readonly lambdaConcurrencyWarningThreshold: number
+  readonly enableAlerts: boolean
+  readonly splunkDeliveryStreamBackupBucketRole: Role
+  readonly auditLoggingBucket: CfnBucket
 }
 
 export class MonitoringStack extends Stack {
   public constructor(scope: App, id: string, props: MonitoringStackProps){
     super(scope, id, props)
 
-    const lambdaConcurrencyThreshold: number = this.node.tryGetContext("lambdaConcurrencyThreshold")
-    const lambdaConcurrencyWarningThreshold: number = this.node.tryGetContext("lambdaConcurrencyWarningThreshold")
-    const enableAlerts: boolean = this.node.tryGetContext("enableAlerts")
+    Tags.of(this).add("stackName", props.stackName)
 
     // Imports
     // import the existing slack alert topic until we migrate rest of slack alerter code to cdk
@@ -34,9 +40,9 @@ export class MonitoringStack extends Stack {
 
     const alarms = new Alarms(this, "Alarms", {
       stackName: props.stackName,
-      enableAlerts: enableAlerts,
-      lambdaConcurrencyThreshold: lambdaConcurrencyThreshold,
-      lambdaConcurrencyWarningThreshold: lambdaConcurrencyWarningThreshold,
+      enableAlerts: props.enableAlerts,
+      lambdaConcurrencyThreshold: props.lambdaConcurrencyThreshold,
+      lambdaConcurrencyWarningThreshold: props.lambdaConcurrencyWarningThreshold,
       slackAlertTopicArn: slackAlertTopic
     })
 
@@ -54,7 +60,7 @@ export class MonitoringStack extends Stack {
     // Create an EventBridge rule to trigger every Monday at 09:00 UTC
     const reportAlertSuppressionsScheduleRole = new Role(this, "ReportAlertSuppressionsScheduleRole", {
       assumedBy: new ServicePrincipal("events.amazonaws.com")
-    })
+    }).withoutPolicyUpdates()
     functions.functions.reportAlertSuppressionsLambda.function.grantInvoke(reportAlertSuppressionsScheduleRole)
     new Rule(this, "WeeklyScheduleRule", {
       schedule: Schedule.cron({
@@ -66,6 +72,12 @@ export class MonitoringStack extends Stack {
       }),
       targets: [new LambdaFunction(functions.functions.reportAlertSuppressionsLambda.function)],
       role: reportAlertSuppressionsScheduleRole
+    })
+    new MonitoringStorage(this, "MonitoringStorage", {
+      accountId: this.account,
+      region: this.region,
+      splunkDeliveryStreamBackupBucketRole: props.splunkDeliveryStreamBackupBucketRole,
+      auditLoggingBucket: props.auditLoggingBucket
     })
 
     nagSuppressions(this)

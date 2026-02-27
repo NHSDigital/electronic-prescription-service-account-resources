@@ -1,0 +1,214 @@
+name: cdk diff code
+
+on:
+  workflow_call:
+    inputs:
+      CDK_RESOURCE_STACK_NAME:
+        required: true
+        type: string
+      DEPLOYED_STACK_NAME:
+        required: true
+        type: string
+      TARGET_ENVIRONMENT:
+        required: true
+        type: string
+      VERSION:
+        required: true
+        type: string
+      COMMIT_ID:
+        required: true
+        type: string
+      CDK_APP_NAME:
+        required: true
+        type: string
+      IS_PULL_REQUEST:
+        required: true
+        type: boolean
+      DEPLOYMENT_ENVIRONMENT:
+        required: false
+        type: string
+      AWS_REGION:
+        required: false
+        type: string
+        default: eu-west-2
+      runtime_docker_image:
+        type: string
+        required: true
+      verify_published_from_main_image:
+        type: boolean
+        required: true
+    secrets:
+      CLOUD_FORMATION_DIFF_ROLE:
+        required: true
+
+jobs:
+  verify_attestation:
+    uses: NHSDigital/eps-common-workflows/.github/workflows/verify-attestation.yml@36677e1d6bfaa010d7b78942a1ade12fbefecb80
+    with:
+      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
+      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+  deploy_cdk_code:
+    runs-on: ubuntu-22.04
+    needs: verify_attestation
+    container:
+      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      options: --user 1001:1001 --group-add 128
+    defaults:
+      run:
+        shell: bash
+    name: "Diff cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.DEPLOYED_STACK_NAME }}"
+    environment: ${{ fromJSON(inputs.DEPLOYMENT_ENVIRONMENT != '' && format('"{0}"', inputs.DEPLOYMENT_ENVIRONMENT) || 'null') }}
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - name: copy .tool-versions
+        run: |
+          cp /home/vscode/.tool-versions "$HOME/.tool-versions"
+      - name: build_artifact download
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: cdk_build_artifact
+
+      - name: extract build_artifact
+        run: |
+          tar -xf artifact.tar
+
+      - name: Configure AWS Credentials for diff
+        id: connect-aws-deploy
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+        with:
+          aws-region: ${{ inputs.AWS_REGION }}
+          role-to-assume: ${{ secrets.CLOUD_FORMATION_DIFF_ROLE }}
+          role-session-name: account-resources-cdk-diff
+          output-credentials: true
+
+      - name: get existing tag
+        id: get_existing_tags
+        run: |
+          if aws cloudformation describe-stacks --stack-name "$STACK_NAME" >/dev/null 2>&1; then
+            VERSION_NUMBER=$(aws cloudformation describe-stacks \
+              --region "${AWS_REGION}" \
+              --stack-name "$STACK_NAME" \
+              --query "Stacks[0].Tags[?Key=='version'].Value" \
+              --output text)
+            COMMIT_ID=$(aws cloudformation describe-stacks \
+              --region "${AWS_REGION}" \
+              --stack-name "$STACK_NAME" \
+              --query "Stacks[0].Tags[?Key=='commit'].Value" \
+              --output text)
+          else
+            echo "Initial deployment. Using unknown tag"
+            VERSION_NUMBER="unknown"
+            COMMIT_ID="unknown"
+          fi
+          {
+            echo VERSION_NUMBER="${VERSION_NUMBER}"
+            echo COMMIT_ID="${COMMIT_ID}" 
+          } >> "$GITHUB_OUTPUT"
+
+        env:
+          STACK_NAME: "${{ inputs.DEPLOYED_STACK_NAME }}"
+          COMMIT_ID: "${{ inputs.COMMIT_ID }}"
+          IS_PULL_REQUEST: "${{ inputs.IS_PULL_REQUEST }}"
+          AWS_REGION: "${{ inputs.AWS_REGION }}"
+
+      - name: Fix path
+        run: |
+          echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: "Run diff for cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.DEPLOYED_STACK_NAME }} existing tag"
+        run: |
+          eval "$(tsx environmentSettings/setCdkConfig.ts)"
+          npm run cdk-diff --workspace packages/cdk  2>&1 | tee "cdk_deploy_diff_existing_tag.log"
+        shell: bash
+        env:
+          CDK_STACK_NAME: "${{ inputs.CDK_RESOURCE_STACK_NAME }}"
+          CDK_CONFIG_DEPLOYED_STACK_NAME: "${{ inputs.DEPLOYED_STACK_NAME }}"
+          AWS_REGION: "${{ inputs.AWS_REGION }}"
+          CDK_APP_NAME: "${{ inputs.CDK_APP_NAME }}"
+          CDK_CONFIG_isPullRequest: false
+          CDK_CONFIG_environment: "${{ inputs.TARGET_ENVIRONMENT }}"
+          CDK_CONFIG_commitId: "${{ steps.get_existing_tags.outputs.COMMIT_ID }}"
+          CDK_CONFIG_versionNumber: "${{ steps.get_existing_tags.outputs.VERSION_NUMBER }}"
+          CDK_CONFIG_accountResourcesUKStackName: "account-resources-cdk-uk"
+          CDK_CONFIG_accountResourcesUSStackName: "account-resources-cdk-us"
+          CDK_CONFIG_monitoringStackName: "monitoring"
+
+      - name: "Run diff for cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.DEPLOYED_STACK_NAME }} new tag"
+        run: |
+          eval "$(tsx environmentSettings/setCdkConfig.ts)"
+          npm run cdk-diff --workspace packages/cdk 2>&1 | tee "cdk_deploy_diff_new_tag.log"
+        shell: bash
+        env:
+          CDK_STACK_NAME: "${{ inputs.CDK_RESOURCE_STACK_NAME }}"
+          CDK_CONFIG_DEPLOYED_STACK_NAME: "${{ inputs.DEPLOYED_STACK_NAME }}"
+          AWS_REGION: "${{ inputs.AWS_REGION }}"
+          CDK_APP_NAME: "${{ inputs.CDK_APP_NAME }}"
+          CDK_CONFIG_isPullRequest: false
+          CDK_CONFIG_environment: "${{ inputs.TARGET_ENVIRONMENT }}"
+          CDK_CONFIG_commitId: "${{ inputs.COMMIT_ID }}"
+          CDK_CONFIG_versionNumber: "${{ inputs.VERSION }}"
+          CDK_CONFIG_accountResourcesUKStackName: "account-resources-cdk-uk"
+          CDK_CONFIG_accountResourcesUSStackName: "account-resources-cdk-us"
+          CDK_CONFIG_monitoringStackName: "monitoring"
+
+      - name: "Run create changeset for cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.DEPLOYED_STACK_NAME }} new tag"
+        if: ${{ inputs.IS_PULL_REQUEST == true }}
+        run: |
+          eval "$(tsx environmentSettings/setCdkConfig.ts)"
+          CDK_CHANGE_SET_NAME="${CDK_CONFIG_DEPLOYED_STACK_NAME}-changeset-${CDK_CONFIG_versionNumber}-$(date +%s)"
+          export CDK_CHANGE_SET_NAME
+          echo "CDK_CHANGE_SET_NAME=${CDK_CHANGE_SET_NAME}" >> "$GITHUB_ENV"
+          echo "Created changeset ${CDK_CHANGE_SET_NAME} for app ${CDK_APP_NAME} stack ${CDK_CONFIG_DEPLOYED_STACK_NAME}" >> "$GITHUB_STEP_SUMMARY"
+          npm run cdk-prepare-changeset --workspace packages/cdk 2>&1 | tee "cdk_deploy_new_tag.log"
+        shell: bash
+        env:
+          CDK_STACK_NAME: "${{ inputs.CDK_RESOURCE_STACK_NAME }}"
+          CDK_CONFIG_DEPLOYED_STACK_NAME: "${{ inputs.DEPLOYED_STACK_NAME }}"
+          AWS_REGION: "${{ inputs.AWS_REGION }}"
+          CDK_APP_NAME: "${{ inputs.CDK_APP_NAME }}"
+          CDK_CONFIG_isPullRequest: false
+          CDK_CONFIG_environment: "${{ inputs.TARGET_ENVIRONMENT }}"
+          CDK_CONFIG_commitId: "${{ inputs.COMMIT_ID }}"
+          CDK_CONFIG_versionNumber: "${{ inputs.VERSION }}"
+          CDK_CONFIG_accountResourcesUKStackName: "account-resources-cdk-uk"
+          CDK_CONFIG_accountResourcesUSStackName: "account-resources-cdk-us"
+          CDK_CONFIG_monitoringStackName: "monitoring"
+          REQUIRE_APPROVAL: "never"
+      - name: Header output
+        shell: bash
+        working-directory: .github/scripts
+        run: ./header_output.sh
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
+          STACK_NAME: ${{ inputs.DEPLOYED_STACK_NAME }}
+          VERSION: ${{ inputs.VERSION }}
+
+      - name: Describe existing tag CDK Changes
+        shell: bash
+        env:
+          SUMMARY: "[${{ inputs.target_environment }}] CDK Changes for existing tag ${{ inputs.DEPLOYED_STACK_NAME }}"
+          STACK_NAME: ${{ inputs.DEPLOYED_STACK_NAME }}
+          DIFF_FILE: ./cdk_deploy_diff_existing_tag.log
+        run: ./.github/scripts/describe_cdk_changes.sh
+  
+      - name: Describe Full CDK Changes
+        shell: bash
+        env:
+          SUMMARY: "[${{ inputs.target_environment }}] FULL CDK Changes for ${{ inputs.DEPLOYED_STACK_NAME }}"
+          STACK_NAME: ${{ inputs.DEPLOYED_STACK_NAME }}
+          DIFF_FILE: ./cdk_deploy_diff_new_tag.log
+        run: ./.github/scripts/describe_cdk_changes.sh
+
+      - name: Check for destructive changes
+        if: ${{ inputs.IS_PULL_REQUEST == true }}
+        shell: bash
+        env:
+          STACK_NAME: ${{ inputs.DEPLOYED_STACK_NAME }}
+          DIFF_FILE: ./cdk_deploy_diff_new_tag.log
+          AWS_REGION: ${{ inputs.AWS_REGION }}
+          ALLOWED_CHANGES_FILENAME: "${{ github.workspace }}/packages/cdk/allowedChanges.json"
+        run: |
+          npm run cdk-check-changeset --workspace packages/cdk
+          

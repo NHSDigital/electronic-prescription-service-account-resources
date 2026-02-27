@@ -66,12 +66,16 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
       VersionStages: ["valid-stage"]
     })
     jest.spyOn(jwt, "sign").mockImplementation(jest.fn(() => "mockSignedJWT"))
+    if (!nock.isActive()) {
+      nock.activate()
+    }
   })
 
   afterEach(() => {
     process.env.ALLOWED_ENVIRONMENTS = _SAVED_ALLOWED_ENVIRONMENTS
     jest.clearAllMocks()
     nock.cleanAll()
+    nock.restore()
   })
 
   it("throws error if missing required property on input", async () => {

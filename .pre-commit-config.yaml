@@ -26,7 +26,7 @@ repos:
       - id: lint-cloudformation
         name: Lint cloudformation
         entry: make
-        args: ["lint-cloudformation"]
+        args: ["cfn-guard-cloudformation"]
         language: system
         files: ^cloudformation
         pass_filenames: false
@@ -34,7 +34,7 @@ repos:
       - id: lint-githubactions
         name: Lint github actions
         entry: make
-        args: ["lint-githubactions"]
+        args: ["actionlint"]
         language: system
         files: ^.github
         types_or: [yaml]
@@ -43,7 +43,7 @@ repos:
       - id: lint-githubaction-scripts
         name: Lint github action scripts
         entry: make
-        args: ["lint-githubaction-scripts"]
+        args: ["shellcheck"]
         language: system
         files: ^.github/scripts
         types_or: [sh, shell]
@@ -101,7 +101,7 @@ repos:
         entry: bash
         args:
           - -c
-          - 'docker run -v "$LOCAL_WORKSPACE_FOLDER:/src" git-secrets --pre_commit_hook'
+          - 'git-secrets --pre_commit_hook'
         language: system
 
 fail_fast: true
