@@ -58,6 +58,75 @@ DEFAULT_OUTPUT_DIR = "cdk.out/template_comparison_results"
 MANUAL_MAPPINGS = {
     # Set1 logical ID -> Metadata/aws:cdk:path override for Set2
     "CloudwatchResourcePolicy": "IAM/Policies/AWSLogDeliveryWrite20150319/ResourcePolicy",
+    "FHIRFacadeRepo": "AccountResources_UK/ECRRepositories/fhir-facade-repo/fhir-facade-repo/Resource",
+    "ValidatorRepo": "AccountResources_UK/ECRRepositories/validator-repo/validator-repo/Resource",
+    "CDKUtilsBuildRepo": "AccountResources_UK/ECRRepositories/cdk-utils-build-repo/cdk-utils-build-repo/Resource",
+    "SecretsKMSKeyKMSKeyAlias": "AccountResources_UK/Encryption/SecretsKMSKey/Alias/Resource",
+    "PfpCAKeySecret": "AccountResources_UK/MTLSSecrets/PfpCAKey/staticSecret/Resource",
+    "PfpCACertSecret": "AccountResources_UK/MTLSSecrets/PfpCACert/staticSecret/Resource",
+    "PfpClientKeySecret": "AccountResources_UK/MTLSSecrets/PfpClientKey/staticSecret/Resource",
+    "PfpClientCertSecret": "AccountResources_UK/MTLSSecrets/PfpClientCert/staticSecret/Resource",
+    "PfpClientSandboxKeySecret": "AccountResources_UK/MTLSSecrets/PfpClientSandboxKey/staticSecret/Resource",
+    "PfpClientSandboxCertSecret": "AccountResources_UK/MTLSSecrets/PfpClientSandboxCert/staticSecret/Resource",
+    "ClinicalTrackerCAKeySecret": "AccountResources_UK/MTLSSecrets/ClinicalTrackerCAKey/staticSecret/Resource",
+    "ClinicalTrackerCACertSecret": "AccountResources_UK/MTLSSecrets/ClinicalTrackerCACert/staticSecret/Resource",
+    "ClinicalTrackerClientKeySecret": "AccountResources_UK/MTLSSecrets/ClinicalTrackerClientKey/staticSecret/Resource",
+    "ClinicalTrackerClientCertSecret":
+        "AccountResources_UK/MTLSSecrets/ClinicalTrackerClientCert/staticSecret/Resource",
+    "ClinicalTrackerClientSandboxKeySecret":
+        "AccountResources_UK/MTLSSecrets/ClinicalTrackerClientSandboxKey/staticSecret/Resource",
+    "ClinicalTrackerClientSandboxCertSecret":
+        "AccountResources_UK/MTLSSecrets/ClinicalTrackerClientSandboxCert/staticSecret/Resource",
+    "PsuCAKeySecret": "AccountResources_UK/MTLSSecrets/PSUCAKey/staticSecret/Resource",
+    "PsuCACertSecret": "AccountResources_UK/MTLSSecrets/PSUCACert/staticSecret/Resource",
+    "PsuClientKeySecret": "AccountResources_UK/MTLSSecrets/PSUClientKey/staticSecret/Resource",
+    "PsuClientCertSecret": "AccountResources_UK/MTLSSecrets/PSUClientCert/staticSecret/Resource",
+    "PsuClientSandboxKeySecret": "AccountResources_UK/MTLSSecrets/PSUClientSandboxKey/staticSecret/Resource",
+    "PsuClientSandboxCertSecret": "AccountResources_UK/MTLSSecrets/PSUClientSandboxCert/staticSecret/Resource",
+    "FhirFacadeCAKeySecret": "AccountResources_UK/MTLSSecrets/FhirFacadeCAKey/staticSecret/Resource",
+    "FhirFacadeCACertSecret": "AccountResources_UK/MTLSSecrets/FhirFacadeCACert/staticSecret/Resource",
+    "FhirFacadeClientKeySecret": "AccountResources_UK/MTLSSecrets/FhirFacadeClientKey/staticSecret/Resource",
+    "FhirFacadeClientCertSecret": "AccountResources_UK/MTLSSecrets/FhirFacadeClientCert/staticSecret/Resource",
+    "FhirFacadeClientSandboxKeySecret":
+        "AccountResources_UK/MTLSSecrets/FhirFacadeClientSandboxKey/staticSecret/Resource",
+    "SpinePrivateKey": "AccountResources_UK/ConfigSecrets/SpinePrivateKey/staticSecret/Resource",
+    "SpinePublicCertificate": "AccountResources_UK/ConfigSecrets/SpinePublicCertificate/staticSecret/Resource",
+    "SpineASID": "AccountResources_UK/ConfigSecrets/SpineASID/staticSecret/Resource",
+    "SpinePartyKey": "AccountResources_UK/ConfigSecrets/SpinePartyKey/staticSecret/Resource",
+    "SpineCAChain": "AccountResources_UK/ConfigSecrets/SpineCAChain/staticSecret/Resource",
+    "ServiceSearchApiKey": "AccountResources_UK/ConfigSecrets/ServiceSearchApiKey/staticSecret/Resource",
+    "JiraToken": "AccountResources_UK/AtlassianSecrets/JiraToken/staticSecret/Resource",
+    "ConfluenceToken": "AccountResources_UK/AtlassianSecrets/ConfluenceToken/staticSecret/Resource",
+    "PSUProxygenPrivateKey": "AccountResources_UK/ProxygenSecrets/PSUProxygenPrivateKey/staticSecret/Resource",
+    "PSUProxygenPublicKey": "AccountResources_UK/ProxygenSecrets/PSUProxygenPublicKey/staticSecret/Resource",
+    "CPSUProxygenPrivateKey": "AccountResources_UK/ProxygenSecrets/CPSUProxygenPrivateKey/staticSecret/Resource",
+    "CPSUProxygenPublicKey": "AccountResources_UK/ProxygenSecrets/CPSUProxygenPublicKey/staticSecret/Resource",
+    "ClinicalTrackerProxygenPrivateKey":
+        "AccountResources_UK/ProxygenSecrets/ClinicalTrackerProxygenPrivateKey/staticSecret/Resource",
+    "ClinicalTrackerProxygenPublicKey":
+        "AccountResources_UK/ProxygenSecrets/ClinicalTrackerProxygenPublicKey/staticSecret/Resource",
+    "FhirFacadeClientSandboxCertSecret":
+        "AccountResources_UK/MTLSSecrets/FhirFacadeClientSandboxCert/staticSecret/Resource",
+    "SplunkHECToken": "AccountResources_UK/ConfigSecrets/SplunkHECToken/staticSecret/Resource",
+    "SlackWebHookUrl": "AccountResources_UK/ConfigSecrets/SlackWebHookUrl/staticSecret/Resource",
+    "PrescribingProxygenPrivateKey":
+        "AccountResources_UK/ProxygenSecrets/PrescribingProxygenPrivateKey/staticSecret/Resource",
+    "PrescribingProxygenPublicKey":
+        "AccountResources_UK/ProxygenSecrets/PrescribingProxygenPublicKey/staticSecret/Resource",
+    "DispensingProxygenPrivateKey":
+        "AccountResources_UK/ProxygenSecrets/DispensingProxygenPrivateKey/staticSecret/Resource",
+    "DispensingProxygenPublicKey":
+        "AccountResources_UK/ProxygenSecrets/DispensingProxygenPublicKey/staticSecret/Resource",
+    "PrescriptionsForPatientsProxygenPrivateKey":
+        "AccountResources_UK/ProxygenSecrets/PrescriptionsForPatientsProxygenPrivateKey/staticSecret/Resource",
+    "PrescriptionsForPatientsProxygenPublicKey":
+        "AccountResources_UK/ProxygenSecrets/PrescriptionsForPatientsProxygenPublicKey/staticSecret/Resource",
+    "epsSigningCertChain": "AccountResources_UK/ConfigSecrets/EPSSigningCertChain/staticSecret/Resource",
+    "ptlPrescriptionSigningPrivateKey":
+        "AccountResources_UK/ConfigSecrets/PTLPrescriptionSigningPrivateKey/staticSecret/Resource",
+    "ptlPrescriptionSigningPublicKey":
+        "AccountResources_UK/ConfigSecrets/PTLPrescriptionSigningPublicKey/staticSecret/Resource",
+
 }
 
 

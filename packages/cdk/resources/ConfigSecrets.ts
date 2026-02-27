@@ -12,7 +12,11 @@ export interface ConfigSecretsProps {
 export class ConfigSecrets extends Construct {
   readonly accessSlackSecretsManagedPolicy: ManagedPolicy
   readonly lambdaAccessSecretsPolicy: ManagedPolicy
+  readonly epsSigningCertChainManagedPolicy: ManagedPolicy
   readonly splunkHECToken: Secret
+  readonly epsSigningCertChain: Secret
+  readonly ptlPrescriptionSigningPrivateKey: Secret
+  readonly ptlPrescriptionSigningPublicKey: Secret
 
   public constructor(scope: Construct, id: string, props: ConfigSecretsProps){
     super(scope, id)
@@ -57,6 +61,21 @@ export class ConfigSecrets extends Construct {
       description: "Splunk HEC token",
       encryptionKey: props.configSecretsKmsKey
     })
+    const epsSigningCertChain = new StaticSecret(this, "EPSSigningCertChain", {
+      secretName:  `${props.stackName}-EPSSigningCertChain`,
+      description: "Certificate chain for EPS signing",
+      encryptionKey: props.configSecretsKmsKey
+    })
+    const ptlPrescriptionSigningPrivateKey = new StaticSecret(this, "PTLPrescriptionSigningPrivateKey", {
+      secretName:  `${props.stackName}-PTLPrescriptionSigningPrivateKey`,
+      description: "Private key for PTL prescription signing",
+      encryptionKey: props.configSecretsKmsKey
+    })
+    const ptlPrescriptionSigningPublicKey = new StaticSecret(this, "PTLPrescriptionSigningPublicKey", {
+      secretName:  `${props.stackName}-PTLPrescriptionSigningPublicKey`,
+      description: "Public key for PTL prescription signing",
+      encryptionKey: props.configSecretsKmsKey
+    })
     const accessSlackSecretsManagedPolicy = new ManagedPolicy(this, "AccessSlackSecretsManagedPolicy", {
       statements: [
         new PolicyStatement({
@@ -85,9 +104,24 @@ export class ConfigSecrets extends Construct {
         })]
     })
 
+    const epsSigningCertChainManagedPolicy = new ManagedPolicy(this, "epsSigningCertChainManagedPolicy", {
+      statements: [
+        new PolicyStatement({
+          actions: [
+            "secretsmanager:GetSecretValue"
+          ],
+          resources: [
+            epsSigningCertChain.secret.secretArn
+          ]
+        })]
+    })
+
     this.accessSlackSecretsManagedPolicy = accessSlackSecretsManagedPolicy
     this.lambdaAccessSecretsPolicy = lambdaAccessSecretsPolicy
+    this.epsSigningCertChainManagedPolicy = epsSigningCertChainManagedPolicy
     this.splunkHECToken = splunkHECToken.secret
-
+    this.epsSigningCertChain = epsSigningCertChain.secret
+    this.ptlPrescriptionSigningPrivateKey = ptlPrescriptionSigningPrivateKey.secret
+    this.ptlPrescriptionSigningPublicKey = ptlPrescriptionSigningPublicKey.secret
   }
 }
