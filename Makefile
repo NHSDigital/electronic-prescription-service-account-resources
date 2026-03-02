@@ -23,10 +23,10 @@ install-hooks: install-python
 check-licenses: check-licenses-python check-licenses-node
 
 check-licenses-python:
-	scripts/check_python_licenses.sh
+	echo "Not currently implemented from makefile. Trivy used in qc"
 
 check-licenses-node:
-	npm run check-licenses --workspace packages/splunkProcessor
+	echo "Not currently implemented from makefile. Trivy used in qc"
 
 lint: lint-cloudformation lint-node lint-githubactions lint-githubaction-scripts
 lint-cloudformation:

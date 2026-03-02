@@ -15,7 +15,8 @@
         "repo:NHSDigital/eps-aws-dashboards:*",
         "repo:NHSDigital/eps-vpc-resources:*",
         "repo:NHSDigital/eps-storage-resources:*",
-        "repo:NHSDigital/eps-assist-me:*"
+        "repo:NHSDigital/eps-assist-me:*",
+        "repo:NHSDigital/eps-tool-hack-day:*"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -105,7 +106,9 @@
       "AssistMeRegressionTestClaimFilters": [
         "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
       ],
-      "EnableDeleteCNAME": "true"
+      "AssistMeDocumentSyncClaimFilters": [
+        "NONE"
+      ]
     },
     "account-resources": {
       "LogRetentionDays": "90"
