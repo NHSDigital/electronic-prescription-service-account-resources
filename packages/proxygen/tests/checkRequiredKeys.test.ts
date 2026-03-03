@@ -1,5 +1,7 @@
 /* eslint-disable  max-len */
 
+import {describe, expect, it} from "vitest"
+
 import {checkRequiredKeys, Proxygen} from "../src/helpers"
 
 // Mock data

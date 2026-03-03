@@ -1,14 +1,20 @@
 // createSignedJWT.test.ts
 
+import {
+  afterEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest"
 import jwt from "jsonwebtoken"
-import {jest} from "@jest/globals"
+import * as helpers from "../src/signingHelpers"
 
-jest.unstable_mockModule("../src/uuidHelper", () => ({
-  returnUuid: jest.fn().mockReturnValue("mockUuid")
+const mockedUuidHelper = vi.hoisted(() => ({
+  returnUuid: vi.fn().mockReturnValue("mockUuid")
 }))
 
-// import using await to ensure uuidHelper is mocked properly
-const helpers = await import("../src/signingHelpers")
+vi.mock("../src/uuidHelper", () => mockedUuidHelper)
 
 describe("createSignedJWT", () => {
   const mockPrivateKey = "mockPrivateKey"
@@ -18,11 +24,11 @@ describe("createSignedJWT", () => {
   const mockRealmUrl = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it("should create a signed JWT with the correct payload and header", () => {
-    jest.spyOn(jwt, "sign").mockImplementation(jest.fn(() => "mockSignedJWT"))
+    vi.spyOn(jwt, "sign").mockImplementation(() => "mockSignedJWT")
     const result = helpers.createSignedJWT(mockPrivateKey, mockKid, mockApiName, mockRealmUrl)
     const currentTimestamp = Math.floor(Date.now() / 1000)
 
@@ -48,7 +54,7 @@ describe("createSignedJWT", () => {
   })
 
   it("should handle different input values correctly", () => {
-    jest.spyOn(jwt, "sign").mockImplementation(jest.fn(() => "mockSignedJWT"))
+    vi.spyOn(jwt, "sign").mockImplementation(() => "mockSignedJWT")
     const newPrivateKey = "newMockPrivateKey"
     const newKid = "newMockKid"
     const newApiName = "newMockApiName"
@@ -78,7 +84,7 @@ describe("createSignedJWT", () => {
   })
 
   it("should use apiClient-client in sub and iss when apiClient is provided", () => {
-    jest.spyOn(jwt, "sign").mockImplementation(jest.fn(() => "mockSignedJWT"))
+    vi.spyOn(jwt, "sign").mockImplementation(() => "mockSignedJWT")
     const mockApiClient = "custom-api-client"
     const result = helpers.createSignedJWT(mockPrivateKey, mockKid, mockApiName, mockRealmUrl, mockApiClient)
     const currentTimestamp = Math.floor(Date.now() / 1000)

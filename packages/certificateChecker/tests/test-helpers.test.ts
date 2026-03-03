@@ -1,20 +1,43 @@
 import * as fs from "fs"
 import * as path from "path"
+import {
+  afterEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest"
+import {X509Certificate} from "crypto"
 import {checkCertificateExpiry, Secret} from "../src/helpers"
 import {Logger} from "@aws-lambda-powertools/logger"
-import {jest} from "@jest/globals"
 import {fileURLToPath} from "url"
 import {dirname} from "path"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
+const getCertificateMetadata = (certificateContents: string): {formattedEndDate: string, daysToExpiry: number} => {
+  const certificate = new X509Certificate(certificateContents)
+  const certificateEndDate = new Date(certificate.validTo)
+  const daysToExpiry = Math.ceil((certificateEndDate.getTime() - Date.now()) / (1000 * 3600 * 24))
+
+  return {
+    formattedEndDate: certificateEndDate.toDateString(),
+    daysToExpiry
+  }
+}
+
 describe("checkCertificateExpiry", () => {
   const logger = new Logger({serviceName: "test"})
 
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it("should log an info if a certificate has over 30 days left before expiry", () => {
-    const mockLoggerInfo = jest.spyOn(Logger.prototype, "info")
+    const mockLoggerInfo = vi.spyOn(Logger.prototype, "info")
     const validCertificateContents = fs.readFileSync(path.resolve(__dirname, "./mock-certs/valid-cert.pem"), "utf-8")
+    const {formattedEndDate} = getCertificateMetadata(validCertificateContents)
 
     const validSecret: Secret = {
       ARN: "valid-arn",
@@ -26,38 +49,24 @@ describe("checkCertificateExpiry", () => {
     }
     checkCertificateExpiry(validSecret, logger)
 
-    const today = new Date()
-
-    const futureDate = new Date(today)
-    futureDate.setDate(today.getDate() + 60)
-
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: "short",
-      month: "short",
-      day: "2-digit",
-      year: "numeric"
-    }
-    const formattedDate = futureDate.toLocaleDateString("en-US", options)
-
-    const formattedDateWithoutComma = formattedDate.replace(/,/g, "")
-
-    const testString = `Certificate valid-certificate is valid. Expiry date: ${formattedDateWithoutComma}`
+    const testString = `Certificate valid-certificate is valid. Expiry date: ${formattedEndDate}`
     const contextInfo = {
       "secret": {
         "Arn": "valid-arn",
         "Name": "valid-certificate",
-        "formattedEndDate": formattedDateWithoutComma
+        "formattedEndDate": formattedEndDate
       }
     }
     expect(mockLoggerInfo).toHaveBeenCalledWith(testString, contextInfo)
   })
 
   it("should log error for expiring certificate", () => {
-    const mockLoggerInfo = jest.spyOn(Logger.prototype, "error")
+    const mockLoggerInfo = vi.spyOn(Logger.prototype, "error")
     const expiringCertificateContents = fs.readFileSync(
       path.resolve(__dirname, "./mock-certs/expiring-cert.pem"),
       "utf-8"
     )
+    const {formattedEndDate, daysToExpiry} = getCertificateMetadata(expiringCertificateContents)
     const expiringSecret: Secret = {
       ARN: "expiring-arn",
       CreatedDate: new Date(),
@@ -66,42 +75,27 @@ describe("checkCertificateExpiry", () => {
       VersionId: "expiring-version-id",
       VersionStages: ["expiring-stage"]
     }
-    const today = new Date()
-
-    const futureDate = new Date(today)
-    futureDate.setDate(today.getDate() + 23)
-
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: "short",
-      month: "short",
-      day: "2-digit",
-      year: "numeric"
-    }
-
-    const formattedDate = futureDate.toLocaleDateString("en-US", options)
-
-    const formattedDateWithoutComma = formattedDate.replace(/,/g, "")
-
     checkCertificateExpiry(expiringSecret, logger)
     const contextInfo = {
       "secret": {
         "Arn": "expiring-arn",
         "Name": "expiring-certificate",
-        "daysToExpiry": 23,
-        "formattedEndDate": formattedDateWithoutComma
+        "daysToExpiry": daysToExpiry,
+        "formattedEndDate": formattedEndDate
       }
     }
 
     expect(mockLoggerInfo).toHaveBeenCalled()
     expect(mockLoggerInfo).toHaveBeenCalledWith(
-      "Certificate expiring-certificate expires in 23 days",
+      `Certificate expiring-certificate expires in ${daysToExpiry} days`,
       contextInfo
     )
   })
 
   it("should log a critical warning if a certificate is checked and has expired", () => {
-    const mockLoggerInfo = jest.spyOn(Logger.prototype, "critical")
+    const mockLoggerInfo = vi.spyOn(Logger.prototype, "critical")
     const expiredCertificateInfo = fs.readFileSync(path.resolve(__dirname, "./mock-certs/expired-cert.pem"), "utf-8")
+    const {formattedEndDate} = getCertificateMetadata(expiredCertificateInfo)
 
     const expiredSecret: Secret = {
       ARN: "expired-arn",
@@ -112,28 +106,11 @@ describe("checkCertificateExpiry", () => {
       VersionStages: ["expired-stage"]
     }
     checkCertificateExpiry(expiredSecret, logger)
-
-    const today = new Date()
-
-    const pastDate = new Date(today)
-    pastDate.setDate(today.getDate() - 2)
-
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: "short",
-      month: "short",
-      day: "2-digit",
-      year: "numeric"
-    }
-
-    const formattedDate = pastDate.toLocaleDateString("en-US", options)
-
-    const formattedDateWithoutComma = formattedDate.replace(/,/g, "")
-
     const contextInfo = {
       "secret": {
         "Arn": "expired-arn",
         "Name": "expired-certificate",
-        "formattedEndDate": formattedDateWithoutComma
+        "formattedEndDate": formattedEndDate
       }
     }
 
@@ -145,7 +122,7 @@ describe("checkCertificateExpiry", () => {
   })
 
   it("should log a warning if secret is set to ChangeMe", () => {
-    const mockLoggerWarn = jest.spyOn(Logger.prototype, "warn")
+    const mockLoggerWarn = vi.spyOn(Logger.prototype, "warn")
 
     const validSecret: Secret = {
       ARN: "change-me-arn",

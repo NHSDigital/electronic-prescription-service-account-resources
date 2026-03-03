@@ -1,15 +1,40 @@
-import fetchMock from "jest-fetch-mock"
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest"
 
 import {getSecrets} from "../src/secrets"
 import {SecretsStore} from "../src/types"
 
-fetchMock.enableMocks()
-
 const originalEnv = process.env
+const fetchMock = vi.fn()
+
+const mockJsonResponse = (body: unknown, init?: {status?: number}) => {
+  const status = init?.status ?? 200
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    json: async () => body
+  }
+}
+
+beforeAll(() => {
+  vi.stubGlobal("fetch", fetchMock)
+})
+
+afterAll(() => {
+  vi.unstubAllGlobals()
+})
 
 describe("Secrets", () => {
   beforeEach(() => {
-    fetchMock.resetMocks()
+    fetchMock.mockReset()
   })
 
   afterEach(() => {
@@ -18,27 +43,25 @@ describe("Secrets", () => {
 
   //Happy Path
   it("returns secret value when called with parameterStore store secret", async () => {
-    fetchMock
-      .once(JSON.stringify({
-        Parameter:{
-          Name: "someParameterSecret",
-          Value: "some value"
-        }
-      }))
+    fetchMock.mockResolvedValueOnce(mockJsonResponse({
+      Parameter: {
+        Name: "someParameterSecret",
+        Value: "some value"
+      }
+    }))
 
     const actual = await getSecrets(["someParameterSecret"], "parameterStore")
     expect(actual).toEqual({someParameterSecret: "some value"})
   })
 
   it("requests the secrets extension with the correct url when called with a parameterStore store secret", async () => {
-    fetchMock
-      .once(JSON.stringify({
-        Parameter:{
-          Name: "someParameterSecret",
-          Type: "SecureString",
-          Value: "some value"
-        }
-      }))
+    fetchMock.mockResolvedValueOnce(mockJsonResponse({
+      Parameter: {
+        Name: "someParameterSecret",
+        Type: "SecureString",
+        Value: "some value"
+      }
+    }))
 
     await getSecrets(["someParameterSecret"], "parameterStore")
     const expectedRequest = [
@@ -54,24 +77,20 @@ describe("Secrets", () => {
   })
 
   it("returns secret value when called with secretsManager store secret", async () => {
-    fetchMock
-      .once(JSON.stringify({
-        Name: "someSecretsManagerSecret",
-        SecretString:"some value"
-
-      }))
+    fetchMock.mockResolvedValueOnce(mockJsonResponse({
+      Name: "someSecretsManagerSecret",
+      SecretString: "some value"
+    }))
 
     const actual = await getSecrets(["someSecretsManagerSecret"], "secretsManager")
     expect(actual).toEqual({someSecretsManagerSecret: "some value"})
   })
 
   it("requests the secrets extension with the correct url when called with a secretsManager store secret", async () => {
-    fetchMock
-      .once(JSON.stringify({
-        Name: "someSecretsManagerSecret",
-        SecretString:"some value"
-
-      }))
+    fetchMock.mockResolvedValueOnce(mockJsonResponse({
+      Name: "someSecretsManagerSecret",
+      SecretString: "some value"
+    }))
 
     await getSecrets(["someSecretsManagerSecret"], "secretsManager")
     const expectedRequest = [
@@ -89,42 +108,34 @@ describe("Secrets", () => {
   it("throws Error when AWS_SESSION_TOKEN is not set", async () => {
     process.env.AWS_SESSION_TOKEN = undefined
 
-    expect(async () =>
-      await getSecrets(["someParameterSecret"], "parameterStore")
-    ).rejects.toThrow("AWS_SESSION_TOKEN not set")
+    await expect(getSecrets(["someParameterSecret"], "parameterStore"))
+      .rejects.toThrow("AWS_SESSION_TOKEN not set")
   })
 
   it("throws Error when EXTENSION_HTTP_PORT is not set", async () => {
     process.env.PARAMETERS_SECRETS_EXTENSION_HTTP_PORT = undefined
 
-    expect(async () =>
-      await getSecrets(["someParameterSecret"], "parameterStore")
-    ).rejects.toThrow("EXTENSION_HTTP_PORT not set")
+    await expect(getSecrets(["someParameterSecret"], "parameterStore"))
+      .rejects.toThrow("EXTENSION_HTTP_PORT not set")
   })
 
   it("throws Error when secretStore is not a valid option", async () => {
     const store = "someOtherStore" as SecretsStore
 
-    expect(async () =>
-      await getSecrets(["someSecret"], store)
-    ).rejects.toThrow("Invalid secrets store")
+    await expect(getSecrets(["someSecret"], store)).rejects.toThrow("Invalid secrets store")
   })
 
   it("throws Error when an error response is received from the secrets extension", async () => {
-    fetchMock
-      .once(JSON.stringify({}), {status: 400})
+    fetchMock.mockResolvedValueOnce(mockJsonResponse({}, {status: 400}))
 
-    expect(async () =>
-      await getSecrets(["someParameterSecret"], "parameterStore")
-    ).rejects.toThrow("Error response received from secrets extension")
+    await expect(getSecrets(["someParameterSecret"], "parameterStore"))
+      .rejects.toThrow("Error response received from secrets extension")
   })
 
   it("throws Error when an error occurs requesting the secrets extension", async () => {
-    fetchMock
-      .mockRejectOnce(new Error("Mock fetch error"))
+    fetchMock.mockRejectedValueOnce(new Error("Mock fetch error"))
 
-    expect(async () =>
-      await getSecrets(["someParameterSecret"], "parameterStore")
-    ).rejects.toThrow("Mock fetch error")
+    await expect(getSecrets(["someParameterSecret"], "parameterStore"))
+      .rejects.toThrow("Mock fetch error")
   })
 })
