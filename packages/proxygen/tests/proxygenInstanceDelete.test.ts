@@ -52,12 +52,16 @@ describe("Unit test for proxygenInstanceDelete", function () {
       VersionStages: ["valid-stage"]
     })
     vi.spyOn(jwt, "sign").mockImplementation(() => "mockSignedJWT")
+    if (!nock.isActive()) {
+      nock.activate()
+    }
   })
 
   afterEach(() => {
     process.env.ALLOWED_ENVIRONMENTS = _SAVED_ALLOWED_ENVIRONMENTS
     vi.clearAllMocks()
     nock.cleanAll()
+    nock.restore()
   })
 
   it("throws error if missing required property on input", async () => {

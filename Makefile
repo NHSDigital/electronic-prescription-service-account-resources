@@ -1,15 +1,14 @@
 SHELL=/bin/bash -euo pipefail
+export CDK_CONFIG_accountResourcesUKStackName=account-resources-cdk-uk
+export CDK_CONFIG_accountResourcesUSStackName=account-resources-cdk-us
+export CDK_CONFIG_monitoringStackName=monitoring
 
-guard-%:
-	@ if [ "${${*}}" = "" ]; then \
-		echo "Environment variable $* not set"; \
-		exit 1; \
-	fi
 
-.PHONY: install check-licenses lint
+.PHONY: install lint test
 
 install: install-python install-node install-hooks
-	sudo apt install faketime
+	sudo apt update
+	sudo apt install -y faketime
 
 install-python:
 	poetry install
@@ -20,18 +19,8 @@ install-node:
 install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
 
-check-licenses: check-licenses-python check-licenses-node
 
-check-licenses-python:
-	echo "Not currently implemented from makefile. Trivy used in qc"
-
-check-licenses-node:
-	echo "Not currently implemented from makefile. Trivy used in qc"
-
-lint: lint-cloudformation lint-node lint-githubactions lint-githubaction-scripts
-lint-cloudformation:
-	poetry run cfn-lint -I "cloudformation/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
-	poetry run cfn-lint -I "SAMtemplates/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
+lint: lint-node
 
 lint-node:
 	npm run lint --workspace packages/certificateChecker
@@ -39,12 +28,6 @@ lint-node:
 	npm run lint --workspace packages/proxygen
 	npm run lint --workspace packages/lambdaJanitor
 	npm run lint --workspace packages/cdk
-
-lint-githubactions:
-	actionlint
-
-lint-githubaction-scripts:
-	shellcheck .github/scripts/*.sh
 
 test: generate-mock-certs
 	poetry run scripts/check_policy_length.py
@@ -66,7 +49,9 @@ clean:
 	rm -rf .local_config
 	rm -rf packages/certificateChecker/coverage
 	rm -rf packages/certificateChecker/lib
+	rm -rf packages/certificateChecker/tests/mock-certs/
 	rm -rf packages/splunkProcessor/lib
+	rm -rf packages/splunkProcessor/coverage
 	rm -rf packages/slackAlerter/coverage
 	rm -rf packages/slackAlerter/lib
 	rm -rf packages/proxygen/coverage
@@ -81,12 +66,6 @@ deep-clean: clean
 	rm -rf venv
 	find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +
 	poetry env remove --all
-
-aws-configure:
-	aws configure sso --region eu-west-2
-
-aws-login:
-	aws sso login --sso-session sso-session
 
 sam-validate: 
 	sam validate --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
@@ -168,56 +147,19 @@ show-eps-route-53-nameservers: guard-env
 		--query "Stacks[*].Outputs[?OutputKey=='ProdCPTNameServers'].{OutputKey: OutputKey, OutputValue: OutputValue, Description: Description}" \
 		--profile prescription-$${env}
 
-cfn-guard:
-	./scripts/run_cfn_guard.sh
-
-cdk-synth: cdk-synth-monitoring cdk-synth-account-resources-US cdk-synth-account-resources-UK
-
-cdk-synth-monitoring: 
-	mkdir -p .local_config
-	VERSION_NUMBER=undefined \
-	COMMIT_ID=undefined \
-	IS_PULL_REQUEST=false \
-	LAMBDA_CONCURRENCY_THRESHOLD=900 \
-	LAMBDA_CONCURRENCY_WARNING_THRESHOLD=700 \
-	ENABLE_ALERTS=False \
-	STACK_NAME=account-resources-monitoring \
-		 ./.github/scripts/fix_cdk_json.sh .local_config/monitoring.config.json
-	CONFIG_FILE_NAME=.local_config/monitoring.config.json npx cdk synth \
-		--quiet \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/MonitoringApp.ts" 
-
-cdk-synth-account-resources-US: 
-	mkdir -p .local_config
-	VERSION_NUMBER=undefined \
-	COMMIT_ID=undefined \
-	IS_PULL_REQUEST=false \
-	LAMBDA_CONCURRENCY_THRESHOLD=900 \
-	LAMBDA_CONCURRENCY_WARNING_THRESHOLD=700 \
-	ENABLE_ALERTS=False \
-	STACK_NAME=account-resources-cdk-us \
-		 ./.github/scripts/fix_cdk_json.sh .local_config/account-resources-us.config.json
-	CONFIG_FILE_NAME=.local_config/account-resources-us.config.json npx cdk synth \
-		--quiet \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/AccountResourcesApp_US.ts" 
-
-cdk-synth-account-resources-UK: 
-	mkdir -p .local_config
-	VERSION_NUMBER=undefined \
-	COMMIT_ID=undefined \
-	IS_PULL_REQUEST=false \
-	LAMBDA_CONCURRENCY_THRESHOLD=900 \
-	LAMBDA_CONCURRENCY_WARNING_THRESHOLD=700 \
-	ENABLE_ALERTS=False \
-	STACK_NAME=account-resources-cdk-uk \
-		 ./.github/scripts/fix_cdk_json.sh .local_config/account-resources-uk.config.json
-	CONFIG_FILE_NAME=.local_config/account-resources-uk.config.json npx cdk synth \
-		--quiet \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/AccountResourcesApp_UK.ts" 
-create-npmrc:
-	gh auth login --scopes "read:packages"; \
-	echo "//npm.pkg.github.com/:_authToken=$$(gh auth token)" > .npmrc
-	echo "@nhsdigital:registry=https://npm.pkg.github.com" >> .npmrc
+cdk-synth:
+	CDK_APP_NAME=AccountResources \
+	CDK_CONFIG_versionNumber=undefined \
+	CDK_CONFIG_commitId=undefined \
+	CDK_CONFIG_isPullRequest=false \
+	CDK_CONFIG_environment=dev \
+	CDK_CONFIG_lambdaConcurrencyThreshold=900 \
+	CDK_CONFIG_lambdaConcurrencyWarningThreshold=700 \
+	CDK_CONFIG_enableAlerts=false \
+	npm run cdk-synth --workspace packages/cdk/
 
 compile:
 	echo "Does nothing yet"
+
+%:
+	@$(MAKE) -f /usr/local/share/eps/Mk/common.mk $@
