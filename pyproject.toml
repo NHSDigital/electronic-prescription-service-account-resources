@@ -1,7 +1,7 @@
 [project]
 python = "^3.12"
 name = "electronic-prescription-service-account-resources"
-dynamic = [ "version" ]
+version = "0.0.1"
 
 [tool.poetry]
 name = "electronic-prescription-service-account-resources"
