@@ -89,6 +89,7 @@ jobs:
         run: |
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
           # Changeset name must past this regex: [a-zA-Z][-a-zA-Z0-9]*|arn:[-a-zA-Z0-9:/]*
+          # See https://docs.aws.amazon.com/cli/latest/reference/cloudformation/describe-change-set.html
           VERSION_NUMBER_HYTHENATED="${CDK_CONFIG_versionNumber//./-}"
 
           CDK_CHANGE_SET_NAME="${CDK_CONFIG_DEPLOYED_STACK_NAME}-changeset-${VERSION_NUMBER_HYTHENATED}--$(date +%s)"
