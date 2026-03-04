@@ -85,10 +85,10 @@
     },
     "artillery-resources": {},
     "secrets": {},
-    "monitoring": {
-      "LAMBDA_CONCURRENCY_THRESHOLD": 900,
-      "LAMBDA_CONCURRENCY_WARNING_THRESHOLD": 200,
-      "ENABLE_ALERTS": true
+    "Monitoring": {
+      "lambdaConcurrencyThreshold": 900,
+      "lambdaConcurrencyWarningThreshold": 200,
+      "enableAlerts": true
     },
     "account-resources-cdk-us": {},
     "account-resources-cdk-uk": {}
