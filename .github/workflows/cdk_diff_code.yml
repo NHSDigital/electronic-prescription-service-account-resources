@@ -157,7 +157,11 @@ jobs:
         if: ${{ inputs.IS_PULL_REQUEST == true }}
         run: |
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
-          CDK_CHANGE_SET_NAME="${CDK_CONFIG_DEPLOYED_STACK_NAME}-changeset-${CDK_CONFIG_versionNumber}-$(date +%s)"
+          # Changeset name must past this regex: [a-zA-Z][-a-zA-Z0-9]*|arn:[-a-zA-Z0-9:/]*
+          # See https://docs.aws.amazon.com/cli/latest/reference/cloudformation/describe-change-set.html
+          VERSION_NUMBER_HYTHENATED="${CDK_CONFIG_versionNumber//./-}"
+
+          CDK_CHANGE_SET_NAME="${CDK_CONFIG_DEPLOYED_STACK_NAME}-changeset-${VERSION_NUMBER_HYTHENATED}--$(date +%s)"
           export CDK_CHANGE_SET_NAME
           echo "CDK_CHANGE_SET_NAME=${CDK_CHANGE_SET_NAME}" >> "$GITHUB_ENV"
           echo "Created changeset ${CDK_CHANGE_SET_NAME} for app ${CDK_APP_NAME} stack ${CDK_CONFIG_DEPLOYED_STACK_NAME}" >> "$GITHUB_STEP_SUMMARY"
