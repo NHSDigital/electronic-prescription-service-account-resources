@@ -27,7 +27,7 @@
     "@vitest/coverage-v8": "^4.0.17",
     "aws-cdk": "^2.1109.0",
     "eslint": "^9.39.2",
-    "eslint-plugin-import-newlines": "^1.4.0",
+    "eslint-plugin-import-newlines": "^2.0.0",
     "vitest": "^4.0.17"
   },
   "dependencies": {
