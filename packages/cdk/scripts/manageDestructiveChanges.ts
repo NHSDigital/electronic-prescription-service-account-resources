@@ -17,6 +17,7 @@ const parseAllowedChanges = (content: string, source: string): Array<AllowedDest
   try {
     parsed = JSON.parse(content)
   } catch (error) {
+    // eslint-disable-next-line preserve-caught-error
     throw new Error(`Unable to parse allowed changes file ${source}: ${(error as Error).message}`)
   }
 
@@ -34,6 +35,7 @@ const loadAllowedChanges = async (filename: string): Promise<Array<AllowedDestru
   } catch (error) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (error instanceof Error && "code" in error && (error as any).code === "ENOENT") {
+      // eslint-disable-next-line preserve-caught-error
       throw new Error(`Allowed changes file not found at ${filename}`)
     }
 
