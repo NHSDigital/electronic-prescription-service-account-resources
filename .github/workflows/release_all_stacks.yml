@@ -45,11 +45,8 @@ on:
         is_pull_request:
           required: true
           type: boolean
-        runtime_docker_image:
+        pinned_image:
           type: string
-          required: true
-        verify_published_from_main_image:
-          type: boolean
           required: true
       secrets:
         cf_create_changeset_role:
@@ -72,8 +69,7 @@ jobs:
       template: ./cloudformation/ci_resources.yml
       capabilities: CAPABILITY_IAM
       execute_change_set: ${{ inputs.execute_change_set }}
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       parameter_secrets: "{}"
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
@@ -90,8 +86,7 @@ jobs:
       template: ./cloudformation/account_resources.yml
       capabilities: CAPABILITY_NAMED_IAM
       execute_change_set: ${{ inputs.execute_change_set }}
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       parameter_secrets: "{}"
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
@@ -108,8 +103,7 @@ jobs:
       template: ./cloudformation/secrets.yml
       capabilities: CAPABILITY_NAMED_IAM
       execute_change_set: ${{ inputs.execute_change_set }}
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       parameter_secrets: "{}"
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
@@ -127,8 +121,7 @@ jobs:
       template: ./cloudformation/artillery_resources.yml
       capabilities: CAPABILITY_NAMED_IAM
       execute_change_set: ${{ inputs.execute_change_set }}
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       parameter_secrets: "{}"
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
@@ -144,8 +137,7 @@ jobs:
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       CLOUD_FORMATION_DIFF_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
 
@@ -160,8 +152,7 @@ jobs:
       CDK_APP_NAME: AccountResources
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       AWS_REGION: us-east-1
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       CLOUD_FORMATION_DIFF_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
 
@@ -176,8 +167,7 @@ jobs:
       CDK_APP_NAME: AccountResources
       IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
       AWS_REGION: eu-west-2
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       CLOUD_FORMATION_DIFF_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
 
@@ -194,8 +184,7 @@ jobs:
       CDK_APP_NAME: AccountResources
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: eu-west-2
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
 
@@ -212,8 +201,7 @@ jobs:
       CDK_APP_NAME: AccountResources
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: us-east-1
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
 
@@ -230,8 +218,7 @@ jobs:
       CDK_APP_NAME: AccountResources
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: eu-west-2
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
 
@@ -254,8 +241,7 @@ jobs:
       LOG_LEVEL: DEBUG
       LOG_RETENTION_DAYS: 30
       dynamic_vars: '{"CommitId": "${{ inputs.commit_id }}", "VersionNumber": "${{ inputs.version_number }}", "lambda_insights_log_group_name": "${{ inputs.lambda_insights_log_group_name }}", "deploy_drift_detection": "${{ inputs.deploy_drift_detection }}"}'
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
       parameter_secrets: "{}"
