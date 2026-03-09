@@ -53,7 +53,7 @@ jobs:
           mkdir -p .aws-sam/build/cloudformation/env
           cp -r environmentSettings/ .aws-sam/build/
 
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         name: upload build artifact
         with:
           name: packaged_code
