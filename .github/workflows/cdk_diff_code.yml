@@ -31,27 +31,18 @@ on:
         required: false
         type: string
         default: eu-west-2
-      runtime_docker_image:
+      pinned_image:
         type: string
-        required: true
-      verify_published_from_main_image:
-        type: boolean
         required: true
     secrets:
       CLOUD_FORMATION_DIFF_ROLE:
         required: true
 
 jobs:
-  verify_attestation:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/verify-attestation.yml@36677e1d6bfaa010d7b78942a1ade12fbefecb80
-    with:
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
   deploy_cdk_code:
     runs-on: ubuntu-22.04
-    needs: verify_attestation
     container:
-      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      image: ${{ inputs.pinned_image }}
       options: --user 1001:1001 --group-add 128
     defaults:
       run:
@@ -67,7 +58,7 @@ jobs:
         run: |
           cp /home/vscode/.tool-versions "$HOME/.tool-versions"
       - name: build_artifact download
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3
         with:
           name: cdk_build_artifact
 

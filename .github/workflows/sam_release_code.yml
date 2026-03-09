@@ -34,11 +34,8 @@ on:
         required: false
         type: string
         default: "{}"
-      runtime_docker_image:
+      pinned_image:
         type: string
-        required: true
-      verify_published_from_main_image:
-        type: boolean
         required: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
@@ -47,16 +44,10 @@ on:
         required: false
 
 jobs:
-  verify_attestation:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/verify-attestation.yml@36677e1d6bfaa010d7b78942a1ade12fbefecb80
-    with:
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
   sam_release_code:
     runs-on: ubuntu-22.04
-    needs: verify_attestation
     container:
-      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      image: ${{ inputs.pinned_image }}
       options: --user 1001:1001 --group-add 128
     defaults:
       run:
@@ -86,7 +77,7 @@ jobs:
           role-session-name: account-resources-deploy-sam-stack
 
       - name: download build artifact
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3
         with:
           name: ${{ inputs.BUILD_ARTIFACT }}
           path: .
