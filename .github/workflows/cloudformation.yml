@@ -31,11 +31,8 @@ on:
         required: false
         type: string
         default: "{}"
-      runtime_docker_image:
+      pinned_image:
         type: string
-        required: true
-      verify_published_from_main_image:
-        type: boolean
         required: true
     secrets:
       cf_deploy_role:
@@ -46,17 +43,11 @@ on:
         required: true
 
 jobs:
-  verify_attestation:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/verify-attestation.yml@36677e1d6bfaa010d7b78942a1ade12fbefecb80
-    with:
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
   create_change_set:
-    needs: verify_attestation
     name: Create ${{ inputs.stack_name }} change set
     runs-on: ubuntu-22.04
     container:
-      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      image: ${{ inputs.pinned_image }}
       options: --user 1001:1001 --group-add 128
     defaults:
       run:
@@ -189,10 +180,10 @@ jobs:
   execute_change_set:
     name: Execute ${{ inputs.stack_name }} change Set
     if: ${{ inputs.execute_change_set == true }}
-    needs: [create_change_set, verify_attestation]
+    needs: [create_change_set]
     runs-on: ubuntu-22.04
     container:
-      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      image: ${{ inputs.pinned_image }}
       options: --user 1001:1001 --group-add 128
     defaults:
       run:
