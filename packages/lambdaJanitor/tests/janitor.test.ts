@@ -1,3 +1,4 @@
+import {describe, expect, it} from "vitest"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {listPaginatedVersionNumbers} from "../src/janitor"
 import {mockHandler} from "./utils"

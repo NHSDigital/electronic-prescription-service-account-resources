@@ -4,7 +4,11 @@
     "dockerfile": "Dockerfile",
     "context": "..",
     "args": {
-      "DOCKER_GID": "${env:DOCKER_GID:}"
+      "DOCKER_GID": "${env:DOCKER_GID:}",
+      "IMAGE_NAME": "node_24_python_3_14",
+      "IMAGE_VERSION": "v1.0.7",
+      "USER_UID": "${localEnv:USER_ID:}",
+      "USER_GID": "${localEnv:GROUP_ID:}"
     }
   },
   "mounts": [
@@ -14,13 +18,8 @@
     "source=${env:HOME}${env:USERPROFILE}/.npmrc,target=/home/vscode/.npmrc,type=bind",
     "source=${env:HOME}${env:USERPROFILE}/.gitconfig,target=/home/vscode/.gitconfig,type=bind"
   ],
+  "postAttachCommand": "git-secrets --register-aws; git-secrets --add-provider -- cat /usr/share/secrets-scanner/nhsd-rules-deny.txt",
   "features": {
-    "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
-      "version": "latest",
-      "moby": "true",
-      "installDockerBuildx": "true"
-    }
   },
   "customizations": {
     "vscode": {
@@ -31,7 +30,6 @@
         "ms-python.flake8",
         "eamodio.gitlens",
         "github.vscode-pull-request-github",
-        "orta.vscode-jest",
         "lfm.vscode-makefile-term",
         "GrapeCity.gc-excelviewer",
         "redhat.vscode-xml",
@@ -39,7 +37,8 @@
         "timonwong.shellcheck",
         "mkhl.direnv",
         "github.vscode-github-actions",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "vitest.explorer"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/workspaces/electronic-prescription-service-account-resources/.venv/bin/python",
@@ -66,7 +65,5 @@
       }
     }
   },
-  "remoteEnv": { "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}" },
-  "updateRemoteUserUID": true,
-  "postCreateCommand": "docker build -f https://raw.githubusercontent.com/NHSDigital/eps-workflow-quality-checks/refs/tags/v4.0.4/dockerfiles/nhsd-git-secrets.dockerfile -t git-secrets .  && rm -f ~/.docker/config.json; git config --global --add safe.directory /workspaces/electronic-prescription-service-account-resources; make install; direnv allow . && poetry run pre-commit install --install-hooks -f"
+  "remoteEnv": { "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}" }
 }

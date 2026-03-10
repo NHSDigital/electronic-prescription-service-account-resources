@@ -1,15 +1,21 @@
 // getSecret.test.ts
 
-import {getSecret} from "../src/signingHelpers"
-import {mockClient} from "aws-sdk-client-mock"
-import "aws-sdk-client-mock-jest"
-import {jest} from "@jest/globals"
+import {
+  afterEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest"
 
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
+import {mockClient} from "aws-sdk-vitest-mock"
+
+import {getSecret} from "../src/signingHelpers"
 
 describe("getSecret", () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it("should return the correct secret for prescription-status-update-api", async () => {

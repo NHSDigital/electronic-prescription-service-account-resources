@@ -1,5 +1,5 @@
 const {getReingestionRecord} = require("../src/splunkProcessor.js")
-const {expect, describe, it} = require("@jest/globals")
+const {describe, it, expect} = globalThis
 
 describe("getReingestionRecord", () => {
   // Test case 1: Check if the function correctly returns a reingestion record with SAS

@@ -31,6 +31,9 @@ on:
         required: false
         type: string
         default: "{}"
+      pinned_image:
+        type: string
+        required: true
     secrets:
       cf_deploy_role:
         required: false
@@ -43,6 +46,12 @@ jobs:
   create_change_set:
     name: Create ${{ inputs.stack_name }} change set
     runs-on: ubuntu-22.04
+    container:
+      image: ${{ inputs.pinned_image }}
+      options: --user 1001:1001 --group-add 128
+    defaults:
+      run:
+        shell: bash
     permissions:
       id-token: write
       contents: read
@@ -56,6 +65,9 @@ jobs:
     outputs:
       parameters_file_name: ${{ steps.parse_parameters.outputs.PARAMETERS_FILE_NAME }}
     steps:
+    - name: copy .tool-versions
+      run: |
+        cp /home/vscode/.tool-versions "$HOME/.tool-versions"
     - name: checkout code
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with:
@@ -168,8 +180,14 @@ jobs:
   execute_change_set:
     name: Execute ${{ inputs.stack_name }} change Set
     if: ${{ inputs.execute_change_set == true }}
-    needs: create_change_set
+    needs: [create_change_set]
     runs-on: ubuntu-22.04
+    container:
+      image: ${{ inputs.pinned_image }}
+      options: --user 1001:1001 --group-add 128
+    defaults:
+      run:
+        shell: bash
     environment: ${{ inputs.target_environment }}
     permissions:
       id-token: write
@@ -178,6 +196,9 @@ jobs:
       CHANGE_SET_VERSION: ${{ inputs.change_set_version }}
       STACK_NAME: ${{ inputs.stack_name }}
     steps:
+      - name: copy .tool-versions
+        run: |
+          cp /home/vscode/.tool-versions "$HOME/.tool-versions"
       - name: Checkout scripts
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
