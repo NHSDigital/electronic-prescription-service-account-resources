@@ -56,6 +56,8 @@ jobs:
     permissions:
       id-token: write
       contents: write
+    env:
+      AWS_MAX_RETRY: 20
     outputs:
       parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
     steps:
