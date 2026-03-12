@@ -1,5 +1,5 @@
 {
-  "name": "Ubuntu",
+  "name": "eps-account-resources",
   "build": {
     "dockerfile": "Dockerfile",
     "context": "..",
