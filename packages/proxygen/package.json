@@ -7,7 +7,7 @@
     "license": "MIT",
     "dependencies": {
         "@aws-sdk/client-cloudwatch-logs": "^3.1007.0",
-        "@aws-sdk/client-secrets-manager": "^3.1003.0",
+        "@aws-sdk/client-secrets-manager": "^3.1007.0",
         "@middy/core": "^7.1.0",
         "@middy/input-output-logger": "^7.1.0",
         "axios": "^1.13.5",
@@ -23,7 +23,7 @@
     "devDependencies": {
         "@types/jsonwebtoken": "^9.0.10",
         "@types/uuid": "^11.0.0",
-        "aws-sdk-vitest-mock": "^1.0.6",
+        "aws-sdk-vitest-mock": "^1.0.46",
         "nock": "^14.0.10",
         "vitest": "^4.0.17"
     }
