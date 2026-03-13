@@ -614,7 +614,7 @@ def main():
         "ref_target_spine_server": "prescriptions.refspineservices.nhs.uk",
         "recovery_target_spine_server": "msg.veit07.devspineservices.nhs.uk",
         "dev_target_service_search_server": "int.api.service.nhs.uk",
-        "int_target_service_search_server": "int.api.service.nhs.uk",
+        "int_target_service_search_server": "api.service.nhs.uk",
         "prod_target_service_search_server": "api.service.nhs.uk",
         "qa_target_service_search_server": "int.api.service.nhs.uk",
         "ref_target_service_search_server": "api.service.nhs.uk",
