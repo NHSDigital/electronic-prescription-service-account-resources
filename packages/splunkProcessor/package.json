@@ -17,6 +17,6 @@
   },
   "devDependencies": {
     "aws-sdk-vitest-mock": "^1.0.46",
-    "vitest": "^4.0.17"
+    "vitest": "^4.1.0"
   }
 }

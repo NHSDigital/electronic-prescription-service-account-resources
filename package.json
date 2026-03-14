@@ -30,7 +30,7 @@
     "eslint": "^10.0.3",
     "eslint-plugin-import-newlines": "^2.0.0",
     "globals": "^17.4.0",
-    "vitest": "^4.0.17"
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.31.0",
