@@ -36,7 +36,7 @@
     "@aws-lambda-powertools/logger": "^2.31.0",
     "@nhsdigital/eps-cdk-constructs": "^1.4.1",
     "archiver": "^7.0.1",
-    "esbuild": "^0.27.3",
+    "esbuild": "^0.27.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
