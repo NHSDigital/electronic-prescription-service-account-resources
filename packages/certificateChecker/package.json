@@ -19,7 +19,7 @@
         "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
     },
     "devDependencies": {
-        "aws-sdk-vitest-mock": "^1.0.46",
+        "aws-sdk-vitest-mock": "^1.0.47",
         "vitest": "^4.0.17"
     }
 }
