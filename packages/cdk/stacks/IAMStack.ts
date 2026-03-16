@@ -4,7 +4,7 @@ import {Roles} from "../resources/Roles"
 import {Policies} from "../resources/Policies"
 import {ApiGatewayAccount} from "../resources/ApiGatewayAccount"
 import {Role} from "aws-cdk-lib/aws-iam"
-import {DeploymentPolicies} from "../resources/deploymentPolicies"
+import {DeploymentPolicies} from "../resources/DeploymentPolicies"
 import {nagSuppressions} from "../nagSuppressions"
 
 export interface IAMStackProps extends StackProps {

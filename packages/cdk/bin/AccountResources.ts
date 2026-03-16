@@ -6,7 +6,6 @@ import {
 } from "@nhsdigital/eps-cdk-constructs"
 import {AccountResourcesStack_UK} from "../stacks/AccountResourcesStack_UK"
 import {AccountResourcesStack_US} from "../stacks/AccountResourcesStack_US"
-import {MonitoringStack} from "../stacks/MonitoringStack"
 import {IAMStack} from "../stacks/IAMStack"
 import {SecretsStack} from "../stacks/SecretsStack"
 
@@ -23,19 +22,22 @@ async function main() {
 
   const accountResourcesUKStackName = getConfigFromEnvVar("accountResourcesUKStackName")
   const accountResourcesUSStackName = getConfigFromEnvVar("accountResourcesUSStackName")
-  const monitoringStackName = getConfigFromEnvVar("monitoringStackName")
 
   const iamStack = new IAMStack(app, "IAM", {
     ...props,
     stackName: "iam-stack"
   })
-  const accountResourcesStack_UK = new AccountResourcesStack_UK(app, "AccountResources_UK", {
+  new AccountResourcesStack_UK(app, "AccountResources_UK", {
     ...props,
     stackName: accountResourcesUKStackName,
     cloudFormationExecutionRole: iamStack.cloudFormationExecutionRole,
     cloudFormationPrepareChangesetRole: iamStack.cloudFormationPrepareChangesetRole,
     CloudFormationDeployRole: iamStack.CloudFormationDeployRole,
-    apiGwCloudWatchRole: iamStack.apiGwCloudWatchRole
+    apiGwCloudWatchRole: iamStack.apiGwCloudWatchRole,
+    splunkDeliveryStreamBackupBucketRole: iamStack.splunkDeliveryStreamBackupBucketRole,
+    enableAlerts: getBooleanConfigFromEnvVar("enableAlerts"),
+    lambdaConcurrencyThreshold:  getNumberConfigFromEnvVar("lambdaConcurrencyThreshold"),
+    lambdaConcurrencyWarningThreshold: getNumberConfigFromEnvVar("lambdaConcurrencyWarningThreshold")
   })
 
   new SecretsStack(app, "Secrets", {
@@ -50,15 +52,6 @@ async function main() {
 	    region: "us-east-1"
     },
     stackName: accountResourcesUSStackName
-  })
-  new MonitoringStack(app, "Monitoring", {
-    ...props,
-    stackName: monitoringStackName,
-    lambdaConcurrencyThreshold:  getNumberConfigFromEnvVar("lambdaConcurrencyThreshold"),
-    lambdaConcurrencyWarningThreshold: getNumberConfigFromEnvVar("lambdaConcurrencyWarningThreshold"),
-    enableAlerts: getBooleanConfigFromEnvVar("enableAlerts"),
-    splunkDeliveryStreamBackupBucketRole: iamStack.splunkDeliveryStreamBackupBucketRole,
-    auditLoggingBucket: accountResourcesStack_UK.auditLoggingBucket
   })
 }
 

@@ -6,7 +6,7 @@ export const nagSuppressions = (stack: Stack) => {
   safeAddNagSuppressionGroup(
     stack,
     [
-      "/Monitoring/Functions/ReadAlertSuppressionsPolicy/Resource"
+      "/AccountResources_UK/Functions/ReadAlertSuppressionsPolicy/Resource"
     ],
     [
       {
@@ -1087,7 +1087,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/Monitoring/MonitoringStorage/SplunkDeliveryStreamBackupBucketRoleKMSMangedPolicy/Resource",
+    "/AccountResources_UK/MonitoringStorage/SplunkDeliveryStreamBackupBucketRoleKMSMangedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -1098,7 +1098,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/Monitoring/MonitoringStorage/SplunkDeliveryStreamBackupBucketRoleKMSMangedPolicy/Resource",
+    "/AccountResources_UK/MonitoringStorage/SplunkDeliveryStreamBackupBucketRoleKMSMangedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
