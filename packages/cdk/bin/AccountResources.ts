@@ -8,6 +8,7 @@ import {AccountResourcesStack_UK} from "../stacks/AccountResourcesStack_UK"
 import {AccountResourcesStack_US} from "../stacks/AccountResourcesStack_US"
 import {MonitoringStack} from "../stacks/MonitoringStack"
 import {IAMStack} from "../stacks/IAMStack"
+import {SecretsStack} from "../stacks/SecretsStack"
 
 // for what we can migrate see
 // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-supported-resources.html
@@ -35,6 +36,13 @@ async function main() {
     cloudFormationPrepareChangesetRole: iamStack.cloudFormationPrepareChangesetRole,
     CloudFormationDeployRole: iamStack.CloudFormationDeployRole,
     apiGwCloudWatchRole: iamStack.apiGwCloudWatchRole
+  })
+
+  new SecretsStack(app, "Secrets", {
+    ...props,
+    stackName: "secrets-stack",
+    cloudFormationExecutionRole: iamStack.cloudFormationExecutionRole,
+    CloudFormationDeployRole: iamStack.CloudFormationDeployRole
   })
   new AccountResourcesStack_US(app, "AccountResources_US", {
     ...props,

@@ -977,7 +977,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/UseSecretsKMSKeyManagedPolicy/Resource",
+    "/Secrets/SecretsEncryption/UseSecretsKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
@@ -988,7 +988,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/AccountResources_UK/Encryption/UseSecretsKMSKeyManagedPolicy/Resource",
+    "/Secrets/SecretsEncryption/UseSecretsKMSKeyManagedPolicy/Resource",
     [
       {
         id: "AwsSolutions-IAM5",
