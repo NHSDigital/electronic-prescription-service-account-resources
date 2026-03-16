@@ -34,9 +34,6 @@
     }
   ],
   "settings": {
-    "jest.disabledWorkspaceFolders": [
-      "account-resources"
-    ],
     "files.exclude": {
       "packages/": true,
     },
@@ -111,10 +108,6 @@
       "node_modules",
       ".vscode"
     ],
-    "jest.jestCommandLine": "NODE_OPTIONS=--experimental-vm-modules node_modules/.bin/jest --no-cache",
-    "jest.nodeEnv": {
-      "POWERTOOLS_DEV": true,
-    },
     "eslint.useFlatConfig": true,
     "eslint.format.enable": true,
     "[typescript]": {
@@ -129,7 +122,6 @@
       "ms-python.flake8",
       "eamodio.gitlens",
       "github.vscode-pull-request-github",
-      "orta.vscode-jest",
       "42crunch.vscode-openapi",
       "mermade.openapi-lint",
       "redhat.vscode-yaml",

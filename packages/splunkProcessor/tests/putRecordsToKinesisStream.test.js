@@ -1,9 +1,6 @@
 const {putRecordsToKinesisStream} = require("../src/helpers.js")
-const {expect, describe, it} = require("@jest/globals")
-const {Kinesis} = require("@aws-sdk/client-kinesis")
+const {describe, it, expect, vi} = globalThis
 const {Logger} = require("@aws-lambda-powertools/logger")
-
-jest.mock("@aws-sdk/client-kinesis")
 
 const logger = new Logger({serviceName: "splunkProcessor", logLevel: "INFO"})
 
@@ -11,9 +8,9 @@ describe("putRecordsToKinesisStream", () => {
   it("should resolve when all records are successfully sent", async () => {
     const streamName = "test-stream"
     const records = [{Data: "Record1"}, {Data: "Record2"}]
-    const client = new Kinesis()
-    const resolve = jest.fn()
-    const reject = jest.fn()
+    const client = {putRecords: vi.fn()}
+    const resolve = vi.fn()
+    const reject = vi.fn()
 
     // Mock the successful response from AWS Kinesis
     client.putRecords.mockImplementationOnce((params, callback) => {
@@ -36,9 +33,9 @@ describe("putRecordsToKinesisStream", () => {
   it("should reject after reaching max attempts if some records fail", async () => {
     const streamName = "test-stream"
     const records = [{Data: "Record1"}, {Data: "Record2"}]
-    const client = new Kinesis()
-    const resolve = jest.fn()
-    const reject = jest.fn()
+    const client = {putRecords: vi.fn()}
+    const resolve = vi.fn()
+    const reject = vi.fn()
     const logger = new Logger({})
 
     // Mock the response with an error from AWS Kinesis

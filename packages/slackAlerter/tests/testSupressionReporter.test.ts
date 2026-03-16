@@ -1,26 +1,39 @@
-import {jest} from "@jest/globals"
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {lambdaHandler} from "../src/suppressionReporter"
 
-const mockedGetSecrets = jest.fn()
-const mockedPostSlackMessage = jest.fn()
+const {mockedGetSecrets, mockedPostSlackMessage} = vi.hoisted(() => ({
+  mockedGetSecrets: vi.fn(),
+  mockedPostSlackMessage: vi.fn()
+}))
 
-jest.unstable_mockModule("../src/secrets", () => ({
+vi.mock("../src/secrets", () => ({
   getSecrets: mockedGetSecrets
 }))
 
-jest.unstable_mockModule("../src/helpers", () => ({
+vi.mock("../src/helpers", () => ({
   postSlackMessage: mockedPostSlackMessage
 }))
 
-const lambdaHandlerModule = await import("../src/suppressionReporter")
-const {lambdaHandler} = lambdaHandlerModule
-
-const loggerErrorSpy = jest.spyOn(Logger.prototype, "error")
-const loggerInfoSpy = jest.spyOn(Logger.prototype, "info")
+let loggerErrorSpy: ReturnType<typeof vi.spyOn>
+let loggerInfoSpy: ReturnType<typeof vi.spyOn>
 
 describe("lambdaHandler", () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
+    loggerErrorSpy = vi.spyOn(Logger.prototype, "error")
+    loggerInfoSpy = vi.spyOn(Logger.prototype, "info")
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it("posts a slack message when suppressions exist", async () => {
@@ -100,7 +113,7 @@ describe("lambdaHandler", () => {
         ])
       }
     })
-    mockedPostSlackMessage.mockRejectedValue(new Error("Slack error") as never)
+    mockedPostSlackMessage.mockRejectedValue(new Error("Slack error"))
 
     await expect(lambdaHandler()).rejects.toThrow("Slack error")
     expect(loggerErrorSpy).toHaveBeenCalledWith(

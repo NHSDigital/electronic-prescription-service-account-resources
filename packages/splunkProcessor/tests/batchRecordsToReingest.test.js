@@ -1,5 +1,5 @@
 const {batchRecordsToReingest} = require("../src/splunkProcessor.js")
-const {expect, describe, it} = require("@jest/globals")
+const {describe, it, expect} = globalThis
 
 describe("batchRecordsToReingest", () => {
   it("should not send records for reingestion when batch is small", () => {

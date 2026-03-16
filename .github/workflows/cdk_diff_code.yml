@@ -31,27 +31,18 @@ on:
         required: false
         type: string
         default: eu-west-2
-      runtime_docker_image:
+      pinned_image:
         type: string
-        required: true
-      verify_published_from_main_image:
-        type: boolean
         required: true
     secrets:
       CLOUD_FORMATION_DIFF_ROLE:
         required: true
 
 jobs:
-  verify_attestation:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/verify-attestation.yml@36677e1d6bfaa010d7b78942a1ade12fbefecb80
-    with:
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
   deploy_cdk_code:
     runs-on: ubuntu-22.04
-    needs: verify_attestation
     container:
-      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      image: ${{ inputs.pinned_image }}
       options: --user 1001:1001 --group-add 128
     defaults:
       run:
@@ -67,7 +58,7 @@ jobs:
         run: |
           cp /home/vscode/.tool-versions "$HOME/.tool-versions"
       - name: build_artifact download
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: cdk_build_artifact
 
@@ -157,7 +148,11 @@ jobs:
         if: ${{ inputs.IS_PULL_REQUEST == true }}
         run: |
           eval "$(tsx environmentSettings/setCdkConfig.ts)"
-          CDK_CHANGE_SET_NAME="${CDK_CONFIG_DEPLOYED_STACK_NAME}-changeset-${CDK_CONFIG_versionNumber}-$(date +%s)"
+          # Changeset name must past this regex: [a-zA-Z][-a-zA-Z0-9]*|arn:[-a-zA-Z0-9:/]*
+          # See https://docs.aws.amazon.com/cli/latest/reference/cloudformation/describe-change-set.html
+          VERSION_NUMBER_HYTHENATED="${CDK_CONFIG_versionNumber//./-}"
+
+          CDK_CHANGE_SET_NAME="${CDK_CONFIG_DEPLOYED_STACK_NAME}-changeset-${VERSION_NUMBER_HYTHENATED}--$(date +%s)"
           export CDK_CHANGE_SET_NAME
           echo "CDK_CHANGE_SET_NAME=${CDK_CHANGE_SET_NAME}" >> "$GITHUB_ENV"
           echo "Created changeset ${CDK_CHANGE_SET_NAME} for app ${CDK_APP_NAME} stack ${CDK_CONFIG_DEPLOYED_STACK_NAME}" >> "$GITHUB_STEP_SUMMARY"
