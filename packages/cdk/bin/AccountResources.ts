@@ -46,7 +46,21 @@ async function main() {
     lambdaConcurrencyThreshold:  getNumberConfigFromEnvVar("lambdaConcurrencyThreshold"),
     lambdaConcurrencyWarningThreshold: getNumberConfigFromEnvVar("lambdaConcurrencyWarningThreshold"),
     lambdaDecryptSecretsKmsPolicy: secretsStack.lambdaDecryptSecretsKmsPolicy,
-    lambdaInsightsLogGroupName: getConfigFromEnvVar("lambdaInsightsLogGroupName")
+    lambdaInsightsLogGroupName: getConfigFromEnvVar("lambdaInsightsLogGroupName"),
+    clinicalTrackerCACertSecret: secretsStack.clinicalTrackerCACertSecret,
+    clinicalTrackerClientCertSecret: secretsStack.clinicalTrackerClientCertSecret,
+    clinicalTrackerClientSandboxCertSecret: secretsStack.clinicalTrackerClientSandboxCertSecret,
+    pfpCACertSecret: secretsStack.pfpCACertSecret,
+    pfpClientCertSecret: secretsStack.pfpClientCertSecret,
+    pfpClientSandboxCertSecret: secretsStack.pfpClientSandboxCertSecret,
+    psuCACertSecret: secretsStack.psuCACertSecret,
+    psuClientCertSecret: secretsStack.psuClientCertSecret,
+    psuClientSandboxCertSecret: secretsStack.psuClientSandboxCertSecret,
+    fhirFacadeCACertSecret: secretsStack.fhirFacadeCACertSecret,
+    fhirFacadeClientCertSecret: secretsStack.fhirFacadeClientCertSecret,
+    fhirFacadeClientSandboxCertSecret: secretsStack.fhirFacadeClientSandboxCertSecret,
+    spinePublicCertificate: secretsStack.spinePublicCertificate,
+    ptlPrescriptionSigningPublicKey: secretsStack.ptlPrescriptionSigningPublicKey
   })
 
   new AccountResourcesStack_US(app, "AccountResources_US", {

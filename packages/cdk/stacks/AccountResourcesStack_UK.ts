@@ -21,6 +21,7 @@ import {Topic} from "aws-cdk-lib/aws-sns"
 import {Alarms} from "../resources/Alarms"
 import {FunctionPolicies} from "../resources/FunctionPolicies"
 import {LogGroups} from "../resources/LogGroups"
+import {Secret} from "aws-cdk-lib/aws-secretsmanager"
 
 export interface AccountResourcesStackProps_UK extends StackProps {
   readonly stackName: string
@@ -36,6 +37,20 @@ export interface AccountResourcesStackProps_UK extends StackProps {
   readonly lambdaConcurrencyWarningThreshold: number
   readonly lambdaDecryptSecretsKmsPolicy: ManagedPolicy
   readonly lambdaInsightsLogGroupName: string
+  readonly clinicalTrackerCACertSecret: Secret
+  readonly clinicalTrackerClientCertSecret: Secret
+  readonly clinicalTrackerClientSandboxCertSecret: Secret
+  readonly pfpCACertSecret: Secret
+  readonly pfpClientCertSecret: Secret
+  readonly pfpClientSandboxCertSecret: Secret
+  readonly psuCACertSecret: Secret
+  readonly psuClientCertSecret: Secret
+  readonly psuClientSandboxCertSecret: Secret
+  readonly fhirFacadeCACertSecret: Secret
+  readonly fhirFacadeClientCertSecret: Secret
+  readonly fhirFacadeClientSandboxCertSecret: Secret
+  readonly spinePublicCertificate: Secret
+  readonly ptlPrescriptionSigningPublicKey: Secret
 }
 
 export class AccountResourcesStack_UK extends Stack {
@@ -90,7 +105,21 @@ export class AccountResourcesStack_UK extends Stack {
     const functionPolicies = new FunctionPolicies(this, "FunctionPolicies", {
       alertSuppressionsParameter: alarms.parameters.alertSuppressions,
       cloudwatchLogsKmsKey: encryption.cloudwatchLogsKmsKey,
-      lambdaInsightsLogGroup: logGroups.lambdaInsightsLogGroup
+      lambdaInsightsLogGroup: logGroups.lambdaInsightsLogGroup,
+      clinicalTrackerCACertSecret: props.clinicalTrackerCACertSecret,
+      clinicalTrackerClientCertSecret: props.clinicalTrackerClientCertSecret,
+      clinicalTrackerClientSandboxCertSecret: props.clinicalTrackerClientSandboxCertSecret,
+      pfpCACertSecret: props.pfpCACertSecret,
+      pfpClientCertSecret: props.pfpClientCertSecret,
+      pfpClientSandboxCertSecret: props.pfpClientSandboxCertSecret,
+      psuCACertSecret: props.psuCACertSecret,
+      psuClientCertSecret: props.psuClientCertSecret,
+      psuClientSandboxCertSecret: props.psuClientSandboxCertSecret,
+      fhirFacadeCACertSecret: props.fhirFacadeCACertSecret,
+      fhirFacadeClientCertSecret: props.fhirFacadeClientCertSecret,
+      fhirFacadeClientSandboxCertSecret: props.fhirFacadeClientSandboxCertSecret,
+      spinePublicCertificate: props.spinePublicCertificate,
+      ptlPrescriptionSigningPublicKey: props.ptlPrescriptionSigningPublicKey
     })
     const functions = new Functions(this, "Functions", {
       stackName: props.stackName,

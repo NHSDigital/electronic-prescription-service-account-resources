@@ -17,6 +17,7 @@ export class ConfigSecrets extends Construct {
   readonly epsSigningCertChain: Secret
   readonly ptlPrescriptionSigningPrivateKey: Secret
   readonly ptlPrescriptionSigningPublicKey: Secret
+  readonly spinePublicCertificate: Secret
 
   public constructor(scope: Construct, id: string, props: ConfigSecretsProps){
     super(scope, id)
@@ -123,5 +124,6 @@ export class ConfigSecrets extends Construct {
     this.epsSigningCertChain = epsSigningCertChain.secret
     this.ptlPrescriptionSigningPrivateKey = ptlPrescriptionSigningPrivateKey.secret
     this.ptlPrescriptionSigningPublicKey = ptlPrescriptionSigningPublicKey.secret
+    this.spinePublicCertificate = spinePublicCertificate.secret
   }
 }

@@ -14,6 +14,7 @@ import {SecretPolicies} from "../resources/SecretPolicies"
 import {CfnBucket} from "aws-cdk-lib/aws-s3"
 import {nagSuppressions} from "../nagSuppressions"
 import {SecretsEncryption} from "../resources/SecretsEncryption"
+import {Secret} from "aws-cdk-lib/aws-secretsmanager"
 
 export interface SecretsStackProps extends StackProps {
   readonly stackName: string
@@ -26,6 +27,20 @@ export interface SecretsStackProps extends StackProps {
 export class SecretsStack extends Stack {
   readonly auditLoggingBucket: CfnBucket
   readonly lambdaDecryptSecretsKmsPolicy: ManagedPolicy
+  readonly clinicalTrackerCACertSecret: Secret
+  readonly clinicalTrackerClientCertSecret: Secret
+  readonly clinicalTrackerClientSandboxCertSecret: Secret
+  readonly pfpCACertSecret: Secret
+  readonly pfpClientCertSecret: Secret
+  readonly pfpClientSandboxCertSecret: Secret
+  readonly psuCACertSecret: Secret
+  readonly psuClientCertSecret: Secret
+  readonly psuClientSandboxCertSecret: Secret
+  readonly fhirFacadeCACertSecret: Secret
+  readonly fhirFacadeClientCertSecret: Secret
+  readonly fhirFacadeClientSandboxCertSecret: Secret
+  readonly spinePublicCertificate: Secret
+  readonly ptlPrescriptionSigningPublicKey: Secret
   public constructor(scope: App, id: string, props: SecretsStackProps){
     super(scope, id, props)
 
@@ -48,7 +63,7 @@ export class SecretsStack extends Stack {
       stackName: props.stackName,
       atlassianSecretsKmsKey: encryption.secretsKmsKey
     })
-    new ConfigSecrets(this, "ConfigSecrets", {
+    const configSecrets = new ConfigSecrets(this, "ConfigSecrets", {
       stackName: props.stackName,
       configSecretsKmsKey: encryption.secretsKmsKey
     })
@@ -91,6 +106,20 @@ export class SecretsStack extends Stack {
       secretKMSKey: encryption.secretsKmsKey
     })
     this.lambdaDecryptSecretsKmsPolicy = encryption.lambdaDecryptSecretsKmsPolicy
+    this.clinicalTrackerCACertSecret = mtlsSecrets.ClinicalTrackerCACert
+    this.clinicalTrackerClientCertSecret = mtlsSecrets.ClinicalTrackerClientCert
+    this.clinicalTrackerClientSandboxCertSecret = mtlsSecrets.ClinicalTrackerClientSandboxCert
+    this.pfpCACertSecret = mtlsSecrets.PfpCACert
+    this.pfpClientCertSecret = mtlsSecrets.PfpClientCert
+    this.pfpClientSandboxCertSecret = mtlsSecrets.PfpClientSandboxCert
+    this.psuCACertSecret = mtlsSecrets.PSUCACert
+    this.psuClientCertSecret = mtlsSecrets.PSUClientCert
+    this.psuClientSandboxCertSecret = mtlsSecrets.PSUClientSandboxCert
+    this.fhirFacadeCACertSecret = mtlsSecrets.FhirFacadeCACert
+    this.fhirFacadeClientCertSecret = mtlsSecrets.FhirFacadeClientCert
+    this.fhirFacadeClientSandboxCertSecret = mtlsSecrets.FhirFacadeClientSandboxCert
+    this.spinePublicCertificate = configSecrets.spinePublicCertificate
+    this.ptlPrescriptionSigningPublicKey = configSecrets.ptlPrescriptionSigningPublicKey
     nagSuppressions(this)
   }
 }

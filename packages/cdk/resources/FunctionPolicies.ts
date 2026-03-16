@@ -4,11 +4,26 @@ import {ManagedPolicy, PolicyStatement} from "aws-cdk-lib/aws-iam"
 import {Stack} from "aws-cdk-lib"
 import {LogGroup} from "aws-cdk-lib/aws-logs"
 import {Key} from "aws-cdk-lib/aws-kms"
+import {Secret} from "aws-cdk-lib/aws-secretsmanager"
 
 export interface FunctionPoliciesProps {
   readonly alertSuppressionsParameter: IStringParameter
   readonly lambdaInsightsLogGroup: LogGroup
   readonly cloudwatchLogsKmsKey: Key
+  readonly clinicalTrackerCACertSecret: Secret
+  readonly clinicalTrackerClientCertSecret: Secret
+  readonly clinicalTrackerClientSandboxCertSecret: Secret
+  readonly pfpCACertSecret: Secret
+  readonly pfpClientCertSecret: Secret
+  readonly pfpClientSandboxCertSecret: Secret
+  readonly psuCACertSecret: Secret
+  readonly psuClientCertSecret: Secret
+  readonly psuClientSandboxCertSecret: Secret
+  readonly fhirFacadeCACertSecret: Secret
+  readonly fhirFacadeClientCertSecret: Secret
+  readonly fhirFacadeClientSandboxCertSecret: Secret
+  readonly spinePublicCertificate: Secret
+  readonly ptlPrescriptionSigningPublicKey: Secret
 }
 
 export class FunctionPolicies extends Construct {
@@ -68,9 +83,36 @@ export class FunctionPolicies extends Construct {
         })
       ]
     })
+    const certificateCheckerManagedPolicy = new ManagedPolicy(this, "CertificateCheckerManagedPolicy", {
+      description: "permissions for Lambda function to check if certificate is valid",
+      statements: [
+        new PolicyStatement({
+          actions: [
+            "secretsmanager:GetSecretValue"
+          ],
+          resources: [
+            props.clinicalTrackerCACertSecret.secretArn,
+            props.clinicalTrackerClientCertSecret.secretArn,
+            props.clinicalTrackerClientSandboxCertSecret.secretArn,
+            props.pfpCACertSecret.secretArn,
+            props.pfpClientCertSecret.secretArn,
+            props.pfpClientSandboxCertSecret.secretArn,
+            props.psuCACertSecret.secretArn,
+            props.psuClientCertSecret.secretArn,
+            props.psuClientSandboxCertSecret.secretArn,
+            props.fhirFacadeCACertSecret.secretArn,
+            props.fhirFacadeClientCertSecret.secretArn,
+            props.fhirFacadeClientSandboxCertSecret.secretArn,
+            props.spinePublicCertificate.secretArn,
+            props.ptlPrescriptionSigningPublicKey.secretArn
+          ]
+        })
+      ]
+    })
     this.policies = {
       readAlertSuppressionsPolicy: readAlertSuppressionsPolicy,
-      lambdaInsightsLogGroupPolicy: lambdaInsightsLogGroupPolicy
+      lambdaInsightsLogGroupPolicy: lambdaInsightsLogGroupPolicy,
+      certificateCheckerManagedPolicy: certificateCheckerManagedPolicy
     }
   }
 }
