@@ -156,6 +156,7 @@ cdk-synth:
 	CDK_CONFIG_lambdaConcurrencyThreshold=900 \
 	CDK_CONFIG_lambdaConcurrencyWarningThreshold=700 \
 	CDK_CONFIG_enableAlerts=false \
+	CDK_CONFIG_lambdaInsightsLogGroupName=foo_bar \
 	npm run cdk-synth --workspace packages/cdk/
 
 compile:

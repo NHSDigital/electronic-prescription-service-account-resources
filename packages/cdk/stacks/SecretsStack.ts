@@ -9,7 +9,7 @@ import {MTLSSecrets} from "../resources/MTLSSecrets"
 import {ProxygenSecrets} from "../resources/ProxygenSecrets"
 import {AtlassianSecrets} from "../resources/AtlassianSecrets"
 import {ConfigSecrets} from "../resources/ConfigSecrets"
-import {IRole} from "aws-cdk-lib/aws-iam"
+import {IRole, ManagedPolicy} from "aws-cdk-lib/aws-iam"
 import {SecretPolicies} from "../resources/SecretPolicies"
 import {CfnBucket} from "aws-cdk-lib/aws-s3"
 import {nagSuppressions} from "../nagSuppressions"
@@ -25,6 +25,7 @@ export interface SecretsStackProps extends StackProps {
 
 export class SecretsStack extends Stack {
   readonly auditLoggingBucket: CfnBucket
+  readonly lambdaDecryptSecretsKmsPolicy: ManagedPolicy
   public constructor(scope: App, id: string, props: SecretsStackProps){
     super(scope, id, props)
 
@@ -89,6 +90,7 @@ export class SecretsStack extends Stack {
       FhirFacadeProxygenPublicKey: proxygenSecrets.PSUProxygenPublicKey,
       secretKMSKey: encryption.secretsKmsKey
     })
+    this.lambdaDecryptSecretsKmsPolicy = encryption.lambdaDecryptSecretsKmsPolicy
     nagSuppressions(this)
   }
 }

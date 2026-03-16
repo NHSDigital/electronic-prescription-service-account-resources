@@ -27,6 +27,13 @@ async function main() {
     ...props,
     stackName: "iam-stack"
   })
+  const secretsStack = new SecretsStack(app, "Secrets", {
+    ...props,
+    stackName: "secrets-stack",
+    cloudFormationExecutionRole: iamStack.cloudFormationExecutionRole,
+    CloudFormationDeployRole: iamStack.CloudFormationDeployRole
+  })
+
   new AccountResourcesStack_UK(app, "AccountResources_UK", {
     ...props,
     stackName: accountResourcesUKStackName,
@@ -37,15 +44,11 @@ async function main() {
     splunkDeliveryStreamBackupBucketRole: iamStack.splunkDeliveryStreamBackupBucketRole,
     enableAlerts: getBooleanConfigFromEnvVar("enableAlerts"),
     lambdaConcurrencyThreshold:  getNumberConfigFromEnvVar("lambdaConcurrencyThreshold"),
-    lambdaConcurrencyWarningThreshold: getNumberConfigFromEnvVar("lambdaConcurrencyWarningThreshold")
+    lambdaConcurrencyWarningThreshold: getNumberConfigFromEnvVar("lambdaConcurrencyWarningThreshold"),
+    lambdaDecryptSecretsKmsPolicy: secretsStack.lambdaDecryptSecretsKmsPolicy,
+    lambdaInsightsLogGroupName: getConfigFromEnvVar("lambdaInsightsLogGroupName")
   })
 
-  new SecretsStack(app, "Secrets", {
-    ...props,
-    stackName: "secrets-stack",
-    cloudFormationExecutionRole: iamStack.cloudFormationExecutionRole,
-    CloudFormationDeployRole: iamStack.CloudFormationDeployRole
-  })
   new AccountResourcesStack_US(app, "AccountResources_US", {
     ...props,
     env: {

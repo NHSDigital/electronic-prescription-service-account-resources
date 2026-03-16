@@ -9,7 +9,7 @@ import {ECRRepositories} from "../resources/ECRRepositories"
 import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
 import {Storage} from "../resources/Storage"
 import {Encryption} from "../resources/Encryption"
-import {Role, ServicePrincipal} from "aws-cdk-lib/aws-iam"
+import {ManagedPolicy, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam"
 import {CfnBucket} from "aws-cdk-lib/aws-s3"
 import {nagSuppressions} from "../nagSuppressions"
 import {MonitoringStorage} from "../resources/MonitoringStorage"
@@ -19,6 +19,8 @@ import {Functions} from "../resources/Functions"
 import {InspectorFilters} from "../resources/InspectorFilters"
 import {Topic} from "aws-cdk-lib/aws-sns"
 import {Alarms} from "../resources/Alarms"
+import {FunctionPolicies} from "../resources/FunctionPolicies"
+import {LogGroups} from "../resources/LogGroups"
 
 export interface AccountResourcesStackProps_UK extends StackProps {
   readonly stackName: string
@@ -32,6 +34,8 @@ export interface AccountResourcesStackProps_UK extends StackProps {
   readonly enableAlerts: boolean
   readonly lambdaConcurrencyThreshold: number
   readonly lambdaConcurrencyWarningThreshold: number
+  readonly lambdaDecryptSecretsKmsPolicy: ManagedPolicy
+  readonly lambdaInsightsLogGroupName: string
 }
 
 export class AccountResourcesStack_UK extends Stack {
@@ -56,7 +60,7 @@ export class AccountResourcesStack_UK extends Stack {
       // cptUIStatefulResourcesStaticContentBucketArn
       // epsamKbDocsBucketArn
     })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const encryption =new Encryption(this, "Encryption", {
       accountId: this.account,
       region: this.region,
@@ -78,13 +82,24 @@ export class AccountResourcesStack_UK extends Stack {
 
     new InspectorFilters(this, "InspectorFilters")
 
+    const logGroups = new LogGroups(this, "LogGroups", {
+      cloudWatchLogsKmsKey: encryption.cloudwatchLogsKmsKey,
+      lambdaInsightsLogGroupName: props.lambdaInsightsLogGroupName,
+      logRetentionInDays: 30
+    })
+    const functionPolicies = new FunctionPolicies(this, "FunctionPolicies", {
+      alertSuppressionsParameter: alarms.parameters.alertSuppressions,
+      cloudwatchLogsKmsKey: encryption.cloudwatchLogsKmsKey,
+      lambdaInsightsLogGroup: logGroups.lambdaInsightsLogGroup
+    })
     const functions = new Functions(this, "Functions", {
       stackName: props.stackName,
       version: props.version,
       commitId: props.commitId,
       logRetentionInDays: 30,
       logLevel: "DEBUG",
-      alertSuppressionsParameter: alarms.parameters.alertSuppressions
+      readAlertSuppressionsPolicy: functionPolicies.policies.readAlertSuppressionsPolicy,
+      lambdaDecryptSecretsKmsPolicy: props.lambdaDecryptSecretsKmsPolicy
     })
 
     // Create an EventBridge rule to trigger every Monday at 09:00 UTC

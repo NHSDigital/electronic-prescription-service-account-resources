@@ -1,10 +1,15 @@
 import {Construct} from "constructs"
-import {CfnAlias, CfnKey} from "aws-cdk-lib/aws-kms"
+import {CfnAlias, Key} from "aws-cdk-lib/aws-kms"
 import {
+  AccountRootPrincipal,
+  ArnPrincipal,
   CfnRole,
+  Effect,
   ManagedPolicy,
+  PolicyDocument,
   PolicyStatement,
-  Role
+  Role,
+  ServicePrincipal
 } from "aws-cdk-lib/aws-iam"
 
 export interface EncryptionProps {
@@ -16,9 +21,9 @@ export interface EncryptionProps {
   readonly CloudFormationDeployRole: Role
 }
 export class Encryption extends Construct {
-  public readonly snsKmsKey: CfnKey
-  public readonly sqsKmsKey: CfnKey
-  public readonly cloudwatchLogsKmsKey: CfnKey
+  public readonly snsKmsKey: Key
+  public readonly sqsKmsKey: Key
+  public readonly cloudwatchLogsKmsKey: Key
   public readonly snsKmsKeyKmsKeyAlias: CfnAlias
   public readonly sqsKmsKeyKmsKeyAlias: CfnAlias
   public readonly cloudwatchLogsKmsKeyAlias: CfnAlias
@@ -30,58 +35,56 @@ export class Encryption extends Construct {
   public constructor(scope: Construct, id: string, props: EncryptionProps) {
     super(scope, id)
 
-    const snsKmsKey = new CfnKey(this, "SnsKMSKey", {
+    const snsKmsKey = new Key(this, "SnsKMSKey", {
       enableKeyRotation: true,
-      keyPolicy: {
-        Version: "2012-10-17",
-        Id: "key-sns",
-        Statement: [
-          {
-            Sid: "Enable IAM User Permissions",
-            Effect: "Allow",
-            Principal: {
-              AWS: `arn:aws:iam::${props.accountId}:root`
-            },
-            Action: [
+      policy: new PolicyDocument({
+        statements: [
+          new PolicyStatement({
+            sid: "Enable IAM User Permissions",
+            effect: Effect.ALLOW,
+            actions: [
               "kms:*"
             ],
-            Resource: "*"
-          },
-          {
-            Sid: "Enable Cloudwatch Alarms",
-            Effect: "Allow",
-            Principal: {
-              Service: "cloudwatch.amazonaws.com"
-            },
-            Action: [
+            principals: [
+              new AccountRootPrincipal
+            ],
+            resources: ["*"]
+          }),
+          new PolicyStatement({
+            sid: "Enable Cloudwatch Alarms",
+            effect: Effect.ALLOW,
+            actions: [
               "kms:DescribeKey",
               "kms:GenerateDataKey*",
               "kms:Encrypt*",
               "kms:ReEncrypt*",
               "kms:Decrypt"
             ],
-            Resource: "*"
-          },
-          {
-            Sid: "Enable SQS",
-            Effect: "Allow",
-            Principal: {
-              Service: "sqs.amazonaws.com"
-            },
-            Action: [
+            principals: [
+              new ServicePrincipal("cloudwatch.amazonaws.com")
+            ],
+            resources: ["*"]
+          }),
+          new PolicyStatement({
+            sid: "Enable SQS",
+            effect: Effect.ALLOW,
+            actions: [
               "kms:DescribeKey",
-              "kms:GenerateDataKey*",
+              "kms:GenerateDataKey",
               "kms:Decrypt"
             ],
-            Resource: "*"
-          }
+            principals: [
+              new ServicePrincipal("sqs.amazonaws.com")
+            ],
+            resources: ["*"]
+          })
         ]
-      }
+      })
     })
 
     const snsKmsKeyKmsKeyAlias = new CfnAlias(this, "SnsKMSKeyKMSKeyAlias", {
       aliasName: "alias/SnsKMSKeyAlias",
-      targetKeyId: snsKmsKey.ref
+      targetKeyId: snsKmsKey.keyArn
     })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -96,7 +99,7 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            snsKmsKey.attrArn
+            snsKmsKey.keyArn
           ]
         })],
       roles: [
@@ -111,51 +114,47 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            snsKmsKey.attrArn
+            snsKmsKey.keyArn
           ]
         })
       ]
     })
 
-    const sqsKmsKey = new CfnKey(this, "SqsKMSKey", {
+    const sqsKmsKey = new Key(this, "SqsKMSKey", {
       enableKeyRotation: true,
-      keyPolicy: {
-        Version: "2012-10-17",
-        Id: "key-sqs",
-        Statement: [
-          {
-            Sid: "Enable IAM User Permissions",
-            Effect: "Allow",
-            Principal: {
-              AWS: `arn:aws:iam::${props.accountId}:root`
-            },
-            Action: [
+      policy: new PolicyDocument({
+        statements: [
+          new PolicyStatement({
+            sid: "Enable IAM User Permissions",
+            effect: Effect.ALLOW,
+            actions: [
               "kms:*"
             ],
-            Resource: "*"
-          },
-          {
-            Sid: "Enable SNS",
-            Effect: "Allow",
-            Principal: {
-              Service: "sns.amazonaws.com"
-            },
-            Action: [
+            principals: [
+              new AccountRootPrincipal
+            ],
+            resources: ["*"]
+          }),
+          new PolicyStatement({
+            sid: "Enable SNS",
+            effect: Effect.ALLOW,
+            principals: [
+              new ServicePrincipal("sns.amazonaws.com")
+            ],
+            actions: [
               "kms:DescribeKey",
               "kms:GenerateDataKey*",
               "kms:Encrypt*",
               "kms:ReEncrypt*",
               "kms:Decrypt"
-            ],
-            Resource: "*"
-          }
+            ]
+          })
         ]
-      }
+      })
     })
-
     const sqsKmsKeyKmsKeyAlias = new CfnAlias(this, "SqsKMSKeyKMSKeyAlias", {
       aliasName: "alias/SqsKMSKeyAlias",
-      targetKeyId: sqsKmsKey.ref
+      targetKeyId: sqsKmsKey.keyArn
     })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const useSqsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSqsKMSKeyManagedPolicy", {
@@ -169,7 +168,7 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            sqsKmsKey.attrArn
+            sqsKmsKey.keyArn
           ]
         })],
       roles: [
@@ -184,7 +183,7 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            sqsKmsKey.attrArn
+            sqsKmsKey.keyArn
           ]
         })
       ]
@@ -192,38 +191,36 @@ export class Encryption extends Construct {
 
     const cfnApiGwCloudWatchRole = props.apiGwCloudWatchRole.node.defaultChild as CfnRole
     const cfnCloudFormationExecutionRole = props.cloudFormationExecutionRole.node.defaultChild as CfnRole
-    const cloudwatchLogsKmsKey = new CfnKey(this, "CloudwatchLogsKmsKey", {
+    const cloudwatchLogsKmsKey = new Key(this, "CloudwatchLogsKmsKey", {
       enableKeyRotation: true,
-      keyPolicy: {
-        Version: "2012-10-17",
-        Id: "key-policy-id",
-        Statement: [
-          {
-            Sid: "Enable IAM User Permissions",
-            Effect: "Allow",
-            Principal: {
-              AWS: `arn:aws:iam::${props.accountId}:root`
-            },
-            Action: [
+      policy: new PolicyDocument({
+        statements: [
+          new PolicyStatement({
+            sid: "Enable IAM User Permissions",
+            effect: Effect.ALLOW,
+            actions: [
               "kms:*"
             ],
-            Resource: "*"
-          },
-          {
-            Sid: "Allow Service Logging",
-            Effect: "Allow",
-            Principal: {
-              Service: `logs.${props.region}.amazonaws.com`
-            },
-            Action: [
+            principals: [
+              new AccountRootPrincipal
+            ],
+            resources: ["*"]
+          }),
+          new PolicyStatement({
+            sid: "Allow service logging",
+            effect: Effect.ALLOW,
+            actions: [
               "kms:Encrypt*",
               "kms:Decrypt*",
               "kms:ReEncrypt*",
               "kms:GenerateDataKey*",
               "kms:Describe*"
             ],
-            Resource: "*",
-            Condition: {
+            principals: [
+              new ServicePrincipal(`logs.${props.region}.amazonaws.com`)
+            ],
+            resources: ["*"],
+            conditions: {
               ArnEquals: {
                 "kms:EncryptionContext:aws:logs:arn": [
                   `arn:aws:logs:${props.region}:${props.accountId}:log-group:/aws/apigateway/*`,
@@ -242,44 +239,47 @@ export class Encryption extends Construct {
                 ]
               }
             }
-          },
-          {
-            Sid: "Allow API Gateway Role",
-            Effect: "Allow",
-            Principal: {
-              AWS: cfnApiGwCloudWatchRole.attrArn
-            },
-            Action: [
+          }),
+          new PolicyStatement({
+            sid: "Allow API Gateway Role",
+            effect: Effect.ALLOW,
+            actions: [
               "kms:DescribeKey",
               "kms:GenerateDataKey*",
               "kms:Encrypt",
               "kms:ReEncrypt*"
             ],
-            Resource: `arn:aws:logs:${props.region}:${props.accountId}:log-group:/aws/apigateway/*`
-          },
-          {
-            Sid: "Allow Deployment Role",
-            Effect: "Allow",
-            Principal: {
-              AWS: [
-                cfnCloudFormationExecutionRole.attrArn,
-                `arn:aws:iam::${props.accountId}:role/cdk-hnb659fds-cfn-exec-role-${props.accountId}-eu-west-2`
-              ]
-            },
-            Action: [
+            principals: [
+              new ArnPrincipal(cfnApiGwCloudWatchRole.attrArn)
+            ],
+            resources: [
+              `arn:aws:logs:${props.region}:${props.accountId}:log-group:/aws/apigateway/*`
+            ]
+          }),
+          new PolicyStatement({
+            sid: "Allow Deployment Role",
+            effect: Effect.ALLOW,
+            actions: [
               "kms:DescribeKey",
               "kms:GenerateDataKey*",
               "kms:Encrypt",
               "kms:ReEncrypt*"
             ],
-            Resource: "*"
-          }
+            principals: [
+              new ArnPrincipal(cfnCloudFormationExecutionRole.attrArn),
+              new ArnPrincipal(
+                `arn:aws:iam::${props.accountId}:role/cdk-hnb659fds-cfn-exec-role-${props.accountId}-eu-west-2`)
+            ],
+            resources: [
+              "*"
+            ]
+          })
         ]
-      }
+      })
     })
     const cloudwatchLogsKmsKeyAlias = new CfnAlias(this, "CloudwatchLogsKmsKeyAlias", {
       aliasName: "alias/CloudwatchLogsKMSKeyAlias",
-      targetKeyId: cloudwatchLogsKmsKey.ref
+      targetKeyId: cloudwatchLogsKmsKey.keyArn
     })
     const useCloudwatchLogsKmsKeyManagedPolicy = new ManagedPolicy(this, "CloudwatchEncryptionKMSPolicy", {
       statements: [
@@ -292,7 +292,7 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            cloudwatchLogsKmsKey.attrArn
+            cloudwatchLogsKmsKey.keyArn
           ]
         })]
     })
@@ -308,7 +308,7 @@ export class Encryption extends Construct {
             "kms:Decrypt"
           ],
           resources: [
-            cloudwatchLogsKmsKey.attrArn
+            cloudwatchLogsKmsKey.keyArn
           ]
         })]
     })
