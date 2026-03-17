@@ -1,8 +1,10 @@
 import {Construct} from "constructs"
 import {LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda"
-import {ManagedPolicy} from "aws-cdk-lib/aws-iam"
-import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
+import {ManagedPolicy, Role} from "aws-cdk-lib/aws-iam"
+import {TypescriptLambdaFunction} from "../constructs/TypescriptLambdaFunction"
 import {resolve} from "path"
+import {Key} from "aws-cdk-lib/aws-kms"
+import {CfnDeliveryStream} from "aws-cdk-lib/aws-kinesisfirehose"
 
 export interface FunctionsProps {
   readonly stackName: string
@@ -12,6 +14,11 @@ export interface FunctionsProps {
   readonly logLevel: string
   readonly readAlertSuppressionsPolicy: ManagedPolicy
   readonly lambdaDecryptSecretsKmsPolicy: ManagedPolicy
+  readonly cloudWatchLogsKmsKey: Key
+  readonly splunkDeliveryStream: CfnDeliveryStream
+  readonly splunkSubscriptionFilterRole: Role
+  readonly lambdaInsightsLogGroupPolicy: ManagedPolicy
+  readonly cloudwatchEncryptionKMSPolicy: ManagedPolicy
 }
 
 export class Functions extends Construct {
@@ -24,7 +31,7 @@ export class Functions extends Construct {
     const parameterAndSecretsLayerArn =
       "arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:20"
     const parameterAndSecretsLayer = LayerVersion.fromLayerVersionArn(
-      this, "LayerFromArn", parameterAndSecretsLayerArn)
+      this, "parameterAndSecretsLayer", parameterAndSecretsLayerArn)
 
     const reportAlertSuppressionsLambda = new TypescriptLambdaFunction(this, "ReportAlertSuppressionsLambda", {
       functionName: `${props.stackName}-suppression-reporter`,
@@ -42,7 +49,13 @@ export class Functions extends Construct {
         parameterAndSecretsLayer
       ],
       projectBaseDir: resolve(__dirname, "../../.."),
-      runtime: Runtime.NODEJS_24_X
+      runtime: Runtime.NODEJS_24_X,
+      cloudWatchLogsKmsKey: props.cloudWatchLogsKmsKey,
+      splunkDeliveryStream: props.splunkDeliveryStream,
+      splunkSubscriptionFilterRole: props.splunkSubscriptionFilterRole,
+      lambdaInsightsLogGroupPolicy: props.lambdaInsightsLogGroupPolicy,
+      cloudwatchEncryptionKMSPolicy: props.cloudwatchEncryptionKMSPolicy,
+      addSplunkSubscriptionFilter: true
     })
 
     this.functions = {

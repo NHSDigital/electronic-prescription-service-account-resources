@@ -22,6 +22,7 @@ import {Alarms} from "../resources/Alarms"
 import {FunctionPolicies} from "../resources/FunctionPolicies"
 import {LogGroups} from "../resources/LogGroups"
 import {Secret} from "aws-cdk-lib/aws-secretsmanager"
+import {Splunk} from "../resources/Splunk"
 
 export interface AccountResourcesStackProps_UK extends StackProps {
   readonly stackName: string
@@ -51,6 +52,8 @@ export interface AccountResourcesStackProps_UK extends StackProps {
   readonly fhirFacadeClientSandboxCertSecret: Secret
   readonly spinePublicCertificate: Secret
   readonly ptlPrescriptionSigningPublicKey: Secret
+  readonly splunkHECEndpoint: string
+  readonly hecToken: string
 }
 
 export class AccountResourcesStack_UK extends Stack {
@@ -100,7 +103,8 @@ export class AccountResourcesStack_UK extends Stack {
     const logGroups = new LogGroups(this, "LogGroups", {
       cloudWatchLogsKmsKey: encryption.cloudwatchLogsKmsKey,
       lambdaInsightsLogGroupName: props.lambdaInsightsLogGroupName,
-      logRetentionInDays: 30
+      logRetentionInDays: 30,
+      stackName: props.stackName
     })
     const functionPolicies = new FunctionPolicies(this, "FunctionPolicies", {
       alertSuppressionsParameter: alarms.parameters.alertSuppressions,
@@ -121,6 +125,30 @@ export class AccountResourcesStack_UK extends Stack {
       spinePublicCertificate: props.spinePublicCertificate,
       ptlPrescriptionSigningPublicKey: props.ptlPrescriptionSigningPublicKey
     })
+    const monitoringStorage = new MonitoringStorage(this, "MonitoringStorage", {
+      accountId: this.account,
+      region: this.region,
+      splunkDeliveryStreamBackupBucketRole: props.splunkDeliveryStreamBackupBucketRole,
+      auditLoggingBucket: storage.auditLoggingBucket
+    })
+
+    const splunk = new Splunk(this, "Splunk", {
+      stackName: props.stackName,
+      version: props.version,
+      commitId: props.commitId,
+      logRetentionInDays: 30,
+      logLevel: "DEBUG",
+      cloudWatchLogsKmsKey: encryption.cloudwatchLogsKmsKey,
+      lambdaInsightsLogGroupPolicy: functionPolicies.policies.lambdaInsightsLogGroupPolicy,
+      cloudwatchEncryptionKMSPolicy: encryption.useCloudwatchLogsKmsKeyManagedPolicy,
+      splunkHECEndpoint: props.splunkHECEndpoint,
+      splunkDeliveryStreamBackupBucket: monitoringStorage.splunkDeliveryStreamBackupBucket,
+      splunkDeliveryStreamBackupKMSKey: monitoringStorage.splunkDeliveryStreamBackupKmsKey,
+      hecToken: props.hecToken,
+      splunkDeliveryStreamBackupBucketRole: props.splunkDeliveryStreamBackupBucketRole,
+      splunkDeliveryStreamLogGroup: logGroups.splunkDeliveryStreamLogGroup,
+      splunkDeliveryStreamLogStream: logGroups.splunkDeliveryStreamLogStream
+    })
     const functions = new Functions(this, "Functions", {
       stackName: props.stackName,
       version: props.version,
@@ -128,7 +156,12 @@ export class AccountResourcesStack_UK extends Stack {
       logRetentionInDays: 30,
       logLevel: "DEBUG",
       readAlertSuppressionsPolicy: functionPolicies.policies.readAlertSuppressionsPolicy,
-      lambdaDecryptSecretsKmsPolicy: props.lambdaDecryptSecretsKmsPolicy
+      lambdaDecryptSecretsKmsPolicy: props.lambdaDecryptSecretsKmsPolicy,
+      splunkDeliveryStream: splunk.splunkDeliveryStream,
+      splunkSubscriptionFilterRole: splunk.splunkSubscriptionFilterRole,
+      lambdaInsightsLogGroupPolicy: functionPolicies.policies.lambdaInsightsLogGroupPolicy,
+      cloudwatchEncryptionKMSPolicy: encryption.useCloudwatchLogsKmsKeyManagedPolicy,
+      cloudWatchLogsKmsKey: encryption.cloudwatchLogsKmsKey
     })
 
     // Create an EventBridge rule to trigger every Monday at 09:00 UTC
@@ -146,12 +179,6 @@ export class AccountResourcesStack_UK extends Stack {
       }),
       targets: [new LambdaFunction(functions.functions.reportAlertSuppressionsLambda.function)],
       role: reportAlertSuppressionsScheduleRole
-    })
-    new MonitoringStorage(this, "MonitoringStorage", {
-      accountId: this.account,
-      region: this.region,
-      splunkDeliveryStreamBackupBucketRole: props.splunkDeliveryStreamBackupBucketRole,
-      auditLoggingBucket: storage.auditLoggingBucket
     })
 
     // TODO - move monitoring stack into here

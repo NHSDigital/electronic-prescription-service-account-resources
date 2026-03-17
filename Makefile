@@ -157,6 +157,8 @@ cdk-synth:
 	CDK_CONFIG_lambdaConcurrencyWarningThreshold=700 \
 	CDK_CONFIG_enableAlerts=false \
 	CDK_CONFIG_lambdaInsightsLogGroupName=foo_bar \
+	CDK_CONFIG_splunkHECEndpoint=https://example.com:8088/services/collector/event \
+	CDK_CONFIG_hecToken=example-token \
 	npm run cdk-synth --workspace packages/cdk/
 
 compile:

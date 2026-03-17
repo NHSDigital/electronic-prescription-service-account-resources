@@ -60,7 +60,9 @@ async function main() {
     fhirFacadeClientCertSecret: secretsStack.fhirFacadeClientCertSecret,
     fhirFacadeClientSandboxCertSecret: secretsStack.fhirFacadeClientSandboxCertSecret,
     spinePublicCertificate: secretsStack.spinePublicCertificate,
-    ptlPrescriptionSigningPublicKey: secretsStack.ptlPrescriptionSigningPublicKey
+    ptlPrescriptionSigningPublicKey: secretsStack.ptlPrescriptionSigningPublicKey,
+    splunkHECEndpoint: getConfigFromEnvVar("splunkHECEndpoint"),
+    hecToken: getConfigFromEnvVar("hecToken")
   })
 
   new AccountResourcesStack_US(app, "AccountResources_US", {

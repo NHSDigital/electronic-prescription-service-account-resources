@@ -2,7 +2,7 @@
   "name": "cdk",
   "version": "0.1.0",
   "scripts": {
-    "cdk-synth": "cdk synth  --output ../../cdk.out --quiet --app \"tsx -- bin/${CDK_APP_NAME}.ts\"",
+    "cdk-synth": "cdk synth --debug --output ../../cdk.out --quiet --app \"tsx -- bin/${CDK_APP_NAME}.ts\"",
     "cdk-diff": "cdk diff ${CDK_STACK_NAME}  --output ../../cdk.out --app \"tsx -- bin/${CDK_APP_NAME}.ts\"",
     "cdk-prepare-changeset": "cdk deploy ${CDK_STACK_NAME} --change-set-name ${CDK_CHANGE_SET_NAME} --method prepare-change-set --app \"tsx -- bin/${CDK_APP_NAME}.ts\" --ci true --require-approval ${REQUIRE_APPROVAL}",
     "cdk-check-changeset": "tsx scripts/manageDestructiveChanges.ts",

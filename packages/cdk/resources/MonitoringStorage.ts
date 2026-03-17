@@ -14,6 +14,7 @@ export class MonitoringStorage extends Construct {
   public readonly splunkDeliveryStreamBackupKmsKey: CfnKey
   public readonly splunkDeliveryStreamBackupKmsKeyAlias: CfnAlias
   public readonly splunkDeliveryStreamBackupBucketRoleKmsMangedPolicy: ManagedPolicy
+  public readonly splunkDeliveryStreamBackupBucket: CfnBucket
 
   public constructor(scope: Construct, id: string, props: MonitoringStorageProps) {
     super(scope, id)
@@ -188,5 +189,6 @@ export class MonitoringStorage extends Construct {
     this.splunkDeliveryStreamBackupKmsKey = splunkDeliveryStreamBackupKmsKey
     this.splunkDeliveryStreamBackupKmsKeyAlias = splunkDeliveryStreamBackupKmsKeyAlias
     this.splunkDeliveryStreamBackupBucketRoleKmsMangedPolicy = splunkDeliveryStreamBackupBucketRoleKmsMangedPolicy
+    this.splunkDeliveryStreamBackupBucket = splunkDeliveryStreamBackupBucket
   }
 }
