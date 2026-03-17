@@ -42,6 +42,7 @@ export class SecretsStack extends Stack {
   readonly spinePublicCertificate: Secret
   readonly ptlPrescriptionSigningPublicKey: Secret
   readonly accessSlackSecretsManagedPolicy: ManagedPolicy
+  readonly proxygenManagedPolicy: ManagedPolicy
 
   public constructor(scope: App, id: string, props: SecretsStackProps){
     super(scope, id, props)
@@ -69,7 +70,7 @@ export class SecretsStack extends Stack {
       stackName: props.stackName,
       configSecretsKmsKey: encryption.secretsKmsKey
     })
-    new SecretPolicies(this, "SecretPolicies", {
+    const secretPolicies = new SecretPolicies(this, "SecretPolicies", {
       region: this.region,
       accountId: this.account,
       cloudFormationDeployRole: props.CloudFormationDeployRole,
@@ -89,6 +90,8 @@ export class SecretsStack extends Stack {
       PSUClientSandboxCert: mtlsSecrets.PSUClientSandboxCert,
       PSUProxygenPrivateKey: proxygenSecrets.PSUProxygenPrivateKey,
       PSUProxygenPublicKey: proxygenSecrets.PSUProxygenPublicKey,
+      CPSUProxygenPrivateKey: proxygenSecrets.CPSUProxygenPrivateKey,
+      CPSUProxygenPublicKey: proxygenSecrets.CPSUProxygenPublicKey,
       ClinicalTrackerCAKey: mtlsSecrets.ClinicalTrackerCAKey,
       ClinicalTrackerCACert: mtlsSecrets.ClinicalTrackerCACert,
       ClinicalTrackerClientKey: mtlsSecrets.ClinicalTrackerClientKey,
@@ -103,8 +106,10 @@ export class SecretsStack extends Stack {
       FhirFacadeClientCert: mtlsSecrets.FhirFacadeClientCert,
       FhirFacadeClientSandboxKey: mtlsSecrets.FhirFacadeClientSandboxKey,
       FhirFacadeClientSandboxCert: mtlsSecrets.FhirFacadeClientSandboxCert,
-      FhirFacadeProxygenPrivateKey: proxygenSecrets.PSUProxygenPrivateKey,
-      FhirFacadeProxygenPublicKey: proxygenSecrets.PSUProxygenPublicKey,
+      prescribingProxygenPrivateKey: proxygenSecrets.prescribingProxygenPrivateKey,
+      prescribingProxygenPublicKey: proxygenSecrets.prescribingProxygenPublicKey,
+      dispensingProxygenPrivateKey: proxygenSecrets.dispensingProxygenPrivateKey,
+      dispensingProxygenPublicKey: proxygenSecrets.dispensingProxygenPublicKey,
       secretKMSKey: encryption.secretsKmsKey
     })
     this.lambdaDecryptSecretsKmsPolicy = encryption.lambdaDecryptSecretsKmsPolicy
@@ -123,6 +128,7 @@ export class SecretsStack extends Stack {
     this.spinePublicCertificate = configSecrets.spinePublicCertificate
     this.ptlPrescriptionSigningPublicKey = configSecrets.ptlPrescriptionSigningPublicKey
     this.accessSlackSecretsManagedPolicy = configSecrets.accessSlackSecretsManagedPolicy
+    this.proxygenManagedPolicy = secretPolicies.proxygenManagedPolicy
     nagSuppressions(this, "Secrets")
   }
 }

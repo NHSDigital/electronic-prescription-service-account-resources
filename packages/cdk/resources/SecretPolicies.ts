@@ -25,6 +25,8 @@ export interface SecretPoliciesProps {
   readonly PSUClientSandboxCert: ISecret
   readonly PSUProxygenPrivateKey: ISecret
   readonly PSUProxygenPublicKey: ISecret
+  readonly CPSUProxygenPublicKey: ISecret
+  readonly CPSUProxygenPrivateKey: ISecret
 
   readonly ClinicalTrackerCAKey: ISecret
   readonly ClinicalTrackerCACert: ISecret
@@ -41,14 +43,17 @@ export interface SecretPoliciesProps {
   readonly FhirFacadeClientCert: ISecret
   readonly FhirFacadeClientSandboxKey: ISecret
   readonly FhirFacadeClientSandboxCert: ISecret
-  readonly FhirFacadeProxygenPrivateKey: ISecret
-  readonly FhirFacadeProxygenPublicKey: ISecret
+  readonly prescribingProxygenPrivateKey: ISecret
+  readonly prescribingProxygenPublicKey: ISecret
+  readonly dispensingProxygenPrivateKey: ISecret
+  readonly dispensingProxygenPublicKey: ISecret
 
   readonly secretKMSKey: IKey
 
 }
 export class SecretPolicies extends Construct {
   public readonly allowCloudFormationSecretsAccessManagedPolicy: ManagedPolicy
+  public readonly proxygenManagedPolicy: ManagedPolicy
 
   public constructor(scope: Construct, id: string, props: SecretPoliciesProps) {
     super(scope, id)
@@ -77,6 +82,8 @@ export class SecretPolicies extends Construct {
               props.PSUClientSandboxCert.secretArn,
               props.PSUProxygenPrivateKey.secretArn,
               props.PSUProxygenPublicKey.secretArn,
+              props.CPSUProxygenPrivateKey.secretArn,
+              props.CPSUProxygenPublicKey.secretArn,
               props.ClinicalTrackerCAKey.secretArn,
               props.ClinicalTrackerCACert.secretArn,
               props.ClinicalTrackerClientKey.secretArn,
@@ -91,9 +98,40 @@ export class SecretPolicies extends Construct {
               props.FhirFacadeClientCert.secretArn,
               props.FhirFacadeClientSandboxKey.secretArn,
               props.FhirFacadeClientSandboxCert.secretArn,
-              props.FhirFacadeProxygenPrivateKey.secretArn,
-              props.FhirFacadeProxygenPublicKey.secretArn
+              props.prescribingProxygenPrivateKey.secretArn,
+              props.prescribingProxygenPublicKey.secretArn,
+              props.dispensingProxygenPrivateKey.secretArn,
+              props.dispensingProxygenPublicKey.secretArn
+            ]
+          }),
+          new PolicyStatement({
+            actions: [
+              "kms:Decrypt"
+            ],
+            resources: [
+              props.secretKMSKey.keyArn
+            ]
+          })
+        ],
+        roles: [
+          props.cloudFormationDeployRole
+        ]
+      })
 
+    const proxygenManagedPolicy =
+      new ManagedPolicy(this, "ProxygenManagedPolicy", {
+        statements: [
+          new PolicyStatement({
+            actions: [
+              "secretsmanager:GetSecretValue"
+            ],
+            resources: [
+              props.PSUProxygenPrivateKey.secretArn,
+              props.CPSUProxygenPrivateKey.secretArn,
+              props.ClinicalTrackerProxygenPublicKey.secretArn,
+              props.prescribingProxygenPrivateKey.secretArn,
+              props.dispensingProxygenPrivateKey.secretArn,
+              props.PfpProxygenPrivateKey.secretArn
             ]
           }),
           new PolicyStatement({
@@ -111,5 +149,6 @@ export class SecretPolicies extends Construct {
       })
 
     this.allowCloudFormationSecretsAccessManagedPolicy = allowCloudFormationSecretsAccessManagedPolicy
+    this.proxygenManagedPolicy = proxygenManagedPolicy
   }
 }

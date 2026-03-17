@@ -1,6 +1,6 @@
 import {Construct} from "constructs"
 import {LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda"
-import {ManagedPolicy, Role} from "aws-cdk-lib/aws-iam"
+import {ManagedPolicy, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam"
 import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
 import {resolve} from "path"
 import {Key} from "aws-cdk-lib/aws-kms"
@@ -79,6 +79,21 @@ export class Functions extends Construct {
       lambdaInsightsLogGroupPolicy: props.lambdaInsightsLogGroupPolicy,
       cloudwatchEncryptionKMSPolicy: props.cloudwatchEncryptionKMSPolicy,
       addSplunkSubscriptionFilter: true
+    })
+    // Create an EventBridge rule to trigger every Monday at 09:00 UTC
+    const reportAlertSuppressionsScheduleRole = new Role(this, "ReportAlertSuppressionsScheduleRole", {
+      assumedBy: new ServicePrincipal("events.amazonaws.com")
+    }).withoutPolicyUpdates()
+    new Rule(this, "reportAlertSuppressionsLambdaSchedule", {
+      schedule: Schedule.cron({
+        minute: "0",
+        hour: "9",
+        weekDay: "MON",
+        month: "*",
+        year: "*"
+      }),
+      targets: [new LambdaFunction(reportAlertSuppressionsLambda.function)],
+      role: reportAlertSuppressionsScheduleRole
     })
 
     const slackAlerterLambda = new TypescriptLambdaFunction(this, "SlackAlerterLambda", {

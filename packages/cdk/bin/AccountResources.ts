@@ -63,7 +63,10 @@ async function main() {
     ptlPrescriptionSigningPublicKey: secretsStack.ptlPrescriptionSigningPublicKey,
     splunkHECEndpoint: getConfigFromEnvVar("splunkHECEndpoint"),
     snsFeedbackLoggingRole: iamStack.snsFeedbackLoggingRole,
-    accessSlackSecretsManagedPolicy: secretsStack.accessSlackSecretsManagedPolicy
+    accessSlackSecretsManagedPolicy: secretsStack.accessSlackSecretsManagedPolicy,
+    proxygenPTLRole: iamStack.proxygenPTLRole,
+    proxygenProdRole: iamStack.proxygenProdRole,
+    proxygenManagedPolicy: secretsStack.proxygenManagedPolicy
   })
 
   new AccountResourcesStack_US(app, "AccountResources_US", {

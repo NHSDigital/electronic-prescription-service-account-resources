@@ -20,6 +20,8 @@ export class IAMStack extends Stack {
   readonly apiGwCloudWatchRole: Role
   readonly splunkDeliveryStreamBackupBucketRole: Role
   readonly snsFeedbackLoggingRole: Role
+  readonly proxygenPTLRole: Role
+  readonly proxygenProdRole: Role
 
   public constructor(scope: App, id: string, props: IAMStackProps) {
     super(scope, id, props)
@@ -78,6 +80,8 @@ export class IAMStack extends Stack {
     this.apiGwCloudWatchRole = roles.apiGwCloudWatchRole
     this.splunkDeliveryStreamBackupBucketRole = roles.splunkDeliveryStreamBackupBucketRole
     this.snsFeedbackLoggingRole = roles.snsFeedbackLoggingRole
+    this.proxygenPTLRole = roles.proxygenPTLRole
+    this.proxygenProdRole = roles.proxygenProdRole
     nagSuppressions(this, "IAM")
 
   }

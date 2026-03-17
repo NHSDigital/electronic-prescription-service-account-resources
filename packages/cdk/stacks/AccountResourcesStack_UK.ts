@@ -9,12 +9,10 @@ import {ECRRepositories} from "../resources/ECRRepositories"
 import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
 import {Storage} from "../resources/Storage"
 import {Encryption} from "../resources/Encryption"
-import {ManagedPolicy, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam"
+import {ManagedPolicy, Role} from "aws-cdk-lib/aws-iam"
 import {CfnBucket} from "aws-cdk-lib/aws-s3"
 import {nagSuppressions} from "../nagSuppressions"
 import {MonitoringStorage} from "../resources/MonitoringStorage"
-import {LambdaFunction} from "aws-cdk-lib/aws-events-targets"
-import {Rule, Schedule} from "aws-cdk-lib/aws-events"
 import {Functions} from "../resources/Functions"
 import {InspectorFilters} from "../resources/InspectorFilters"
 import {Topic} from "aws-cdk-lib/aws-sns"
@@ -24,6 +22,7 @@ import {LogGroups} from "../resources/LogGroups"
 import {Secret} from "aws-cdk-lib/aws-secretsmanager"
 import {Splunk} from "../resources/Splunk"
 import {Slack} from "../resources/Slack"
+import {Proxygen} from "../resources/Proxygen"
 
 export interface AccountResourcesStackProps_UK extends StackProps {
   readonly stackName: string
@@ -57,6 +56,9 @@ export interface AccountResourcesStackProps_UK extends StackProps {
   readonly snsFeedbackLoggingRole: Role
   readonly fhirValidatorUkCoreLambdaArn?: string
   readonly accessSlackSecretsManagedPolicy: ManagedPolicy
+  readonly proxygenPTLRole: Role
+  readonly proxygenProdRole: Role
+  readonly proxygenManagedPolicy: ManagedPolicy
 }
 
 export class AccountResourcesStack_UK extends Stack {
@@ -159,7 +161,7 @@ export class AccountResourcesStack_UK extends Stack {
       splunkDeliveryStreamLogGroup: logGroups.splunkDeliveryStreamLogGroup,
       splunkDeliveryStreamLogStream: logGroups.splunkDeliveryStreamLogStream
     })
-    const functions = new Functions(this, "Functions", {
+    new Functions(this, "Functions", {
       stackName: props.stackName,
       version: props.version,
       commitId: props.commitId,
@@ -194,24 +196,19 @@ export class AccountResourcesStack_UK extends Stack {
       FHIRValidatorDeleteVersionPolicy: functionPolicies.FHIRValidatorDeleteVersionPolicy
     })
 
-    // Create an EventBridge rule to trigger every Monday at 09:00 UTC
-    const reportAlertSuppressionsScheduleRole = new Role(this, "ReportAlertSuppressionsScheduleRole", {
-      assumedBy: new ServicePrincipal("events.amazonaws.com")
-    }).withoutPolicyUpdates()
-    functions.functions.reportAlertSuppressionsLambda.function.grantInvoke(reportAlertSuppressionsScheduleRole)
-    new Rule(this, "WeeklyScheduleRule", {
-      schedule: Schedule.cron({
-        minute: "0",
-        hour: "9",
-        weekDay: "MON",
-        month: "*",
-        year: "*"
-      }),
-      targets: [new LambdaFunction(functions.functions.reportAlertSuppressionsLambda.function)],
-      role: reportAlertSuppressionsScheduleRole
+    new Proxygen(this, "Proxygen", {
+      stackName: props.stackName,
+      version: props.version,
+      commitId: props.commitId,
+      logRetentionInDays: 30,
+      logLevel: "DEBUG",
+      proxygenPTLRole: props.proxygenPTLRole,
+      proxygenProdRole: props.proxygenProdRole,
+      proxygenManagedPolicy: props.proxygenManagedPolicy,
+      cloudWatchLogsKmsKey: encryption.cloudwatchLogsKmsKey,
+      lambdaInsightsLogGroupPolicy: functionPolicies.lambdaInsightsLogGroupPolicy,
+      cloudwatchEncryptionKMSPolicy: encryption.useCloudwatchLogsKmsKeyManagedPolicy
     })
-
-    // TODO - move monitoring stack into here
     nagSuppressions(this, "AccountResources_UK")
 
     this.auditLoggingBucket = storage.auditLoggingBucket
