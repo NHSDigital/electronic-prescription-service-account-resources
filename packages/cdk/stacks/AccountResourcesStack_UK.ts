@@ -2,8 +2,7 @@ import {
   StackProps,
   Stack,
   App,
-  Tags,
-  Fn
+  Tags
 } from "aws-cdk-lib"
 import {ECRRepositories} from "../resources/ECRRepositories"
 import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
@@ -15,7 +14,6 @@ import {nagSuppressions} from "../nagSuppressions"
 import {MonitoringStorage} from "../resources/MonitoringStorage"
 import {Functions} from "../resources/Functions"
 import {InspectorFilters} from "../resources/InspectorFilters"
-import {Topic} from "aws-cdk-lib/aws-sns"
 import {Alarms} from "../resources/Alarms"
 import {FunctionPolicies} from "../resources/FunctionPolicies"
 import {LogGroups} from "../resources/LogGroups"
@@ -91,16 +89,6 @@ export class AccountResourcesStack_UK extends Stack {
       apiGwCloudWatchRole: props.apiGwCloudWatchRole,
       cloudFormationExecutionRole: props.cloudFormationExecutionRole
     })
-    const slackAlertTopic = Topic.fromTopicArn(this, "SlackAlertTopic",
-      Fn.importValue("lambda-resources:SlackAlertsSnsTopicArn"))
-
-    const alarms = new Alarms(this, "Alarms", {
-      stackName: props.stackName,
-      enableAlerts: props.enableAlerts,
-      lambdaConcurrencyThreshold: props.lambdaConcurrencyThreshold,
-      lambdaConcurrencyWarningThreshold: props.lambdaConcurrencyWarningThreshold,
-      slackAlertTopicArn: slackAlertTopic
-    })
 
     new InspectorFilters(this, "InspectorFilters")
 
@@ -114,6 +102,13 @@ export class AccountResourcesStack_UK extends Stack {
       snsFeedbackLoggingRole: props.snsFeedbackLoggingRole,
       stackName: props.stackName,
       sqsKMSKey: encryption.sqsKmsKey
+    })
+    const alarms = new Alarms(this, "Alarms", {
+      stackName: props.stackName,
+      enableAlerts: props.enableAlerts,
+      lambdaConcurrencyThreshold: props.lambdaConcurrencyThreshold,
+      lambdaConcurrencyWarningThreshold: props.lambdaConcurrencyWarningThreshold,
+      slackAlertsSnsTopic: slack.slackAlertsSnsTopic
     })
     const functionPolicies = new FunctionPolicies(this, "FunctionPolicies", {
       alertSuppressionsParameter: alarms.parameters.alertSuppressions,

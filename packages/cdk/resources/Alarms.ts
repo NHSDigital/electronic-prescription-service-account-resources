@@ -9,7 +9,7 @@ export interface AlarmsProps {
   readonly enableAlerts: boolean
   readonly lambdaConcurrencyThreshold: number
   readonly lambdaConcurrencyWarningThreshold: number
-  readonly slackAlertTopicArn: ITopic
+  readonly slackAlertsSnsTopic: ITopic
 }
 
 export class Alarms extends Construct {
@@ -53,7 +53,7 @@ export class Alarms extends Construct {
         enableAlerts: props.enableAlerts,
         namespace: "AWS/States",
         alarmDefinition: a,
-        slackAlertTopic: props.slackAlertTopicArn
+        slackAlertTopic: props.slackAlertsSnsTopic
       })
       this.stepFunctionAlarms = {...this.stepFunctionAlarms, [a.name]: alarm.alarms[a.name]}
     }
@@ -91,7 +91,7 @@ export class Alarms extends Construct {
         enableAlerts: props.enableAlerts,
         namespace: "AWS/States",
         alarmDefinition: a,
-        slackAlertTopic: props.slackAlertTopicArn
+        slackAlertTopic: props.slackAlertsSnsTopic
       })
       this.lambdaAlarms = {...this.lambdaAlarms, [a.name]: alarm.alarms[a.name]}
     }
