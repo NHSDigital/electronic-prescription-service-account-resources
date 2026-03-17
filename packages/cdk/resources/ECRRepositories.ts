@@ -2,15 +2,12 @@ import {Construct} from "constructs"
 import {ECRRepository} from "../constructs/ECRRepository"
 
 export class ECRRepositories extends Construct {
+  readonly repositories: Array<ECRRepository>
 
   public constructor(scope: Construct, id: string){
     super(scope, id)
+    this.repositories = []
     const repositoryNames = [
-      // these are commented out until they are removed from account-resources cloudformation stack
-      // and then imported into this stack
-      // "fhir-facade-repo",
-      // "validator-repo",
-      // "cdk-utils-build-repo",
       "dev-container-account-resources",
       "dev-container-fhir-facade",
       "dev-container-pfp",
@@ -42,9 +39,10 @@ export class ECRRepositories extends Construct {
       "validator-repo"
     ]
     for (const repositoryName of repositoryNames){
-      new ECRRepository(this, repositoryName, {
+      const repository = new ECRRepository(this, repositoryName, {
         repositoryName: repositoryName
       })
+      this.repositories.push(repository)
     }
   }
 }

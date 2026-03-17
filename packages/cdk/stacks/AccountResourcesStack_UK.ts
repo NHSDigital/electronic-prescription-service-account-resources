@@ -23,6 +23,7 @@ import {FunctionPolicies} from "../resources/FunctionPolicies"
 import {LogGroups} from "../resources/LogGroups"
 import {Secret} from "aws-cdk-lib/aws-secretsmanager"
 import {Splunk} from "../resources/Splunk"
+import {Slack} from "../resources/Slack"
 
 export interface AccountResourcesStackProps_UK extends StackProps {
   readonly stackName: string
@@ -53,6 +54,9 @@ export interface AccountResourcesStackProps_UK extends StackProps {
   readonly spinePublicCertificate: Secret
   readonly ptlPrescriptionSigningPublicKey: Secret
   readonly splunkHECEndpoint: string
+  readonly snsFeedbackLoggingRole: Role
+  readonly fhirValidatorUkCoreLambdaArn?: string
+  readonly accessSlackSecretsManagedPolicy: ManagedPolicy
 }
 
 export class AccountResourcesStack_UK extends Stack {
@@ -61,7 +65,8 @@ export class AccountResourcesStack_UK extends Stack {
     super(scope, id, props)
 
     Tags.of(this).add("stackName", props.stackName)
-    new ECRRepositories(this, "ECRRepositories")
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const ecrRepositories = new ECRRepositories(this, "ECRRepositories")
     new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
     const storage = new Storage(this, "Storage", {
       logRetentionDays: 30,
@@ -105,6 +110,11 @@ export class AccountResourcesStack_UK extends Stack {
       logRetentionInDays: 30,
       stackName: props.stackName
     })
+    const slack = new Slack(this, "Slack", {
+      snsFeedbackLoggingRole: props.snsFeedbackLoggingRole,
+      stackName: props.stackName,
+      sqsKMSKey: encryption.sqsKmsKey
+    })
     const functionPolicies = new FunctionPolicies(this, "FunctionPolicies", {
       alertSuppressionsParameter: alarms.parameters.alertSuppressions,
       cloudwatchLogsKmsKey: encryption.cloudwatchLogsKmsKey,
@@ -122,7 +132,9 @@ export class AccountResourcesStack_UK extends Stack {
       fhirFacadeClientCertSecret: props.fhirFacadeClientCertSecret,
       fhirFacadeClientSandboxCertSecret: props.fhirFacadeClientSandboxCertSecret,
       spinePublicCertificate: props.spinePublicCertificate,
-      ptlPrescriptionSigningPublicKey: props.ptlPrescriptionSigningPublicKey
+      ptlPrescriptionSigningPublicKey: props.ptlPrescriptionSigningPublicKey,
+      slackAlerterSqsQueue: slack.slackAlerterSqsQueue,
+      fhirValidatorUkCoreLambdaArn: props.fhirValidatorUkCoreLambdaArn
     })
     const monitoringStorage = new MonitoringStorage(this, "MonitoringStorage", {
       accountId: this.account,
@@ -138,7 +150,7 @@ export class AccountResourcesStack_UK extends Stack {
       logRetentionInDays: 30,
       logLevel: "DEBUG",
       cloudWatchLogsKmsKey: encryption.cloudwatchLogsKmsKey,
-      lambdaInsightsLogGroupPolicy: functionPolicies.policies.lambdaInsightsLogGroupPolicy,
+      lambdaInsightsLogGroupPolicy: functionPolicies.lambdaInsightsLogGroupPolicy,
       cloudwatchEncryptionKMSPolicy: encryption.useCloudwatchLogsKmsKeyManagedPolicy,
       splunkHECEndpoint: props.splunkHECEndpoint,
       splunkDeliveryStreamBackupBucket: monitoringStorage.splunkDeliveryStreamBackupBucket,
@@ -153,13 +165,33 @@ export class AccountResourcesStack_UK extends Stack {
       commitId: props.commitId,
       logRetentionInDays: 30,
       logLevel: "DEBUG",
-      readAlertSuppressionsPolicy: functionPolicies.policies.readAlertSuppressionsPolicy,
+      readAlertSuppressionsPolicy: functionPolicies.readAlertSuppressionsPolicy,
       lambdaDecryptSecretsKmsPolicy: props.lambdaDecryptSecretsKmsPolicy,
       splunkDeliveryStream: splunk.splunkDeliveryStream,
       splunkSubscriptionFilterRole: splunk.splunkSubscriptionFilterRole,
-      lambdaInsightsLogGroupPolicy: functionPolicies.policies.lambdaInsightsLogGroupPolicy,
+      lambdaInsightsLogGroupPolicy: functionPolicies.lambdaInsightsLogGroupPolicy,
       cloudwatchEncryptionKMSPolicy: encryption.useCloudwatchLogsKmsKeyManagedPolicy,
-      cloudWatchLogsKmsKey: encryption.cloudwatchLogsKmsKey
+      cloudWatchLogsKmsKey: encryption.cloudwatchLogsKmsKey,
+      certificateCheckerManagedPolicy: functionPolicies.certificateCheckerManagedPolicy,
+      clinicalTrackerCACertSecret: props.clinicalTrackerCACertSecret,
+      clinicalTrackerClientCertSecret: props.clinicalTrackerClientCertSecret,
+      clinicalTrackerClientSandboxCertSecret: props.clinicalTrackerClientSandboxCertSecret,
+      pfpCACertSecret: props.pfpCACertSecret,
+      pfpClientCertSecret: props.pfpClientCertSecret,
+      pfpClientSandboxCertSecret: props.pfpClientSandboxCertSecret,
+      psuCACertSecret: props.psuCACertSecret,
+      psuClientCertSecret: props.psuClientCertSecret,
+      psuClientSandboxCertSecret: props.psuClientSandboxCertSecret,
+      fhirFacadeCACertSecret: props.fhirFacadeCACertSecret,
+      fhirFacadeClientCertSecret: props.fhirFacadeClientCertSecret,
+      fhirFacadeClientSandboxCertSecret: props.fhirFacadeClientSandboxCertSecret,
+      spinePublicCertificate: props.spinePublicCertificate,
+      ptlPrescriptionSigningPublicKey: props.ptlPrescriptionSigningPublicKey,
+      sqsDecryptSecretsKmsPolicy: encryption.sqsDecryptSecretsKmsPolicy,
+      accessSlackSecretsManagedPolicy: props.accessSlackSecretsManagedPolicy,
+      readSlackAlerterSqsQueuePolicy: functionPolicies.readSlackAlerterSqsQueuePolicy,
+      FHIRValidatorListLambdaPolicy: functionPolicies.FHIRValidatorListLambdaPolicy,
+      FHIRValidatorDeleteVersionPolicy: functionPolicies.FHIRValidatorDeleteVersionPolicy
     })
 
     // Create an EventBridge rule to trigger every Monday at 09:00 UTC

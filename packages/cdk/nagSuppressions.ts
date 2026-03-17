@@ -242,6 +242,27 @@ export const nagSuppressions = (stack: Stack, stackName: string) => {
       ]
     )
 
+    safeAddNagSuppression(
+      stack,
+      "/AccountResources_UK/Slack/SlackAlertsSnsTopic/Resource",
+      [
+        {
+          id: "AwsSolutions-SNS3",
+          reason: "Suppress error from cloudformation migration"
+        }
+      ]
+    )
+    safeAddNagSuppression(
+      stack,
+      "/AccountResources_UK/Slack/SlackAlertsSnsTopic/Resource",
+      [
+        {
+          id: "EpsNagPack-EPS17",
+          reason: "Suppress error from cloudformation migration"
+        }
+      ]
+    )
+
   }
   if (stackName === "IAM") {
     safeAddNagSuppression(

@@ -19,6 +19,7 @@ export class IAMStack extends Stack {
   readonly CloudFormationDeployRole: Role
   readonly apiGwCloudWatchRole: Role
   readonly splunkDeliveryStreamBackupBucketRole: Role
+  readonly snsFeedbackLoggingRole: Role
 
   public constructor(scope: App, id: string, props: IAMStackProps) {
     super(scope, id, props)
@@ -76,6 +77,7 @@ export class IAMStack extends Stack {
     this.CloudFormationDeployRole = roles.CloudFormationDeployRole
     this.apiGwCloudWatchRole = roles.apiGwCloudWatchRole
     this.splunkDeliveryStreamBackupBucketRole = roles.splunkDeliveryStreamBackupBucketRole
+    this.snsFeedbackLoggingRole = roles.snsFeedbackLoggingRole
     nagSuppressions(this, "IAM")
 
   }

@@ -61,7 +61,9 @@ async function main() {
     fhirFacadeClientSandboxCertSecret: secretsStack.fhirFacadeClientSandboxCertSecret,
     spinePublicCertificate: secretsStack.spinePublicCertificate,
     ptlPrescriptionSigningPublicKey: secretsStack.ptlPrescriptionSigningPublicKey,
-    splunkHECEndpoint: getConfigFromEnvVar("splunkHECEndpoint")
+    splunkHECEndpoint: getConfigFromEnvVar("splunkHECEndpoint"),
+    snsFeedbackLoggingRole: iamStack.snsFeedbackLoggingRole,
+    accessSlackSecretsManagedPolicy: secretsStack.accessSlackSecretsManagedPolicy
   })
 
   new AccountResourcesStack_US(app, "AccountResources_US", {

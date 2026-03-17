@@ -710,7 +710,7 @@ Resources:
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-LambdaJanitor"
         LogRetentionDays: !Ref LogRetentionDays
-        EnableSplunk: true
+        EnableSplunk: true@@
         IncludeAdditionalPolicies: true
         AdditionalPolicies: !Join
           - ","

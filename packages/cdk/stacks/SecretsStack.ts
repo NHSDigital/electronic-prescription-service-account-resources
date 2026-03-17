@@ -41,6 +41,8 @@ export class SecretsStack extends Stack {
   readonly fhirFacadeClientSandboxCertSecret: Secret
   readonly spinePublicCertificate: Secret
   readonly ptlPrescriptionSigningPublicKey: Secret
+  readonly accessSlackSecretsManagedPolicy: ManagedPolicy
+
   public constructor(scope: App, id: string, props: SecretsStackProps){
     super(scope, id, props)
 
@@ -120,6 +122,7 @@ export class SecretsStack extends Stack {
     this.fhirFacadeClientSandboxCertSecret = mtlsSecrets.FhirFacadeClientSandboxCert
     this.spinePublicCertificate = configSecrets.spinePublicCertificate
     this.ptlPrescriptionSigningPublicKey = configSecrets.ptlPrescriptionSigningPublicKey
+    this.accessSlackSecretsManagedPolicy = configSecrets.accessSlackSecretsManagedPolicy
     nagSuppressions(this, "Secrets")
   }
 }

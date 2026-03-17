@@ -5,6 +5,7 @@ import {Stack} from "aws-cdk-lib"
 import {LogGroup} from "aws-cdk-lib/aws-logs"
 import {Key} from "aws-cdk-lib/aws-kms"
 import {Secret} from "aws-cdk-lib/aws-secretsmanager"
+import {Queue} from "aws-cdk-lib/aws-sqs"
 
 export interface FunctionPoliciesProps {
   readonly alertSuppressionsParameter: IStringParameter
@@ -24,10 +25,17 @@ export interface FunctionPoliciesProps {
   readonly fhirFacadeClientSandboxCertSecret: Secret
   readonly spinePublicCertificate: Secret
   readonly ptlPrescriptionSigningPublicKey: Secret
+  readonly slackAlerterSqsQueue: Queue
+  readonly fhirValidatorUkCoreLambdaArn?: string
 }
 
 export class FunctionPolicies extends Construct {
-  policies: {[key: string]: ManagedPolicy}
+  readAlertSuppressionsPolicy: ManagedPolicy
+  lambdaInsightsLogGroupPolicy: ManagedPolicy
+  certificateCheckerManagedPolicy: ManagedPolicy
+  readSlackAlerterSqsQueuePolicy: ManagedPolicy
+  FHIRValidatorListLambdaPolicy: ManagedPolicy
+  FHIRValidatorDeleteVersionPolicy: ManagedPolicy
 
   public constructor(scope: Construct, id: string, props: FunctionPoliciesProps){
     super(scope, id)
@@ -109,10 +117,63 @@ export class FunctionPolicies extends Construct {
         })
       ]
     })
-    this.policies = {
-      readAlertSuppressionsPolicy: readAlertSuppressionsPolicy,
-      lambdaInsightsLogGroupPolicy: lambdaInsightsLogGroupPolicy,
-      certificateCheckerManagedPolicy: certificateCheckerManagedPolicy
+
+    const readSlackAlerterSqsQueuePolicy = new ManagedPolicy(this, "ReadSlackAlerterSqsQueuePolicy", {
+      description: "permissions for Lambda function to read Slack Alerter SQS queue",
+      statements: [
+        new PolicyStatement({
+          actions: [
+            "sqs:ChangeMessageVisibility",
+            "sqs:DeleteMessage",
+            "sqs:ReceiveMessage",
+            "sqs:GetQueueAttributes",
+            "sqs:GetQueueUrl",
+            "sqs:ListQueues"
+          ],
+          resources: [
+            props.slackAlerterSqsQueue.queueArn
+          ]
+        })
+      ]
+    })
+
+    let FHIRValidatorListLambdaPolicy: ManagedPolicy
+    let FHIRValidatorDeleteVersionPolicy: ManagedPolicy
+    if (props.fhirValidatorUkCoreLambdaArn){
+      FHIRValidatorListLambdaPolicy = new ManagedPolicy(this, "FHIRValidatorListLambdaPolicy", {
+        description: "permissions for Lambda function to list FHIR validators",
+        statements: [
+          new PolicyStatement({
+            actions: [
+              "lambda:ListVersionsByFunction"
+            ],
+            resources: [
+              props.fhirValidatorUkCoreLambdaArn
+            ]
+          })
+        ]
+      })
+
+      FHIRValidatorDeleteVersionPolicy = new ManagedPolicy(this, "FHIRValidatorDeleteVersionPolicy", {
+        description: "permissions for Lambda function to delete FHIR validator versions",
+        statements: [
+          new PolicyStatement({
+            actions: [
+              "lambda:DeleteFunction"
+            ],
+            resources: [
+              `${props.fhirValidatorUkCoreLambdaArn}:*`
+            ]
+          })
+        ]
+      })
+      this.FHIRValidatorListLambdaPolicy = FHIRValidatorListLambdaPolicy
+      this.FHIRValidatorDeleteVersionPolicy = FHIRValidatorDeleteVersionPolicy
     }
+
+    this.readAlertSuppressionsPolicy = readAlertSuppressionsPolicy
+    this.lambdaInsightsLogGroupPolicy = lambdaInsightsLogGroupPolicy
+    this.certificateCheckerManagedPolicy = certificateCheckerManagedPolicy
+    this.readSlackAlerterSqsQueuePolicy = readSlackAlerterSqsQueuePolicy
   }
 }

@@ -9,10 +9,9 @@ import {CfnKey, Key} from "aws-cdk-lib/aws-kms"
 import {LogGroup, LogStream} from "aws-cdk-lib/aws-logs"
 import {CfnBucket} from "aws-cdk-lib/aws-s3"
 import {Construct} from "constructs"
-import {TypescriptLambdaFunction} from "../constructs/TypescriptLambdaFunction"
+import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
 import {resolve} from "path"
 import {Runtime} from "aws-cdk-lib/aws-lambda"
-import {Secret} from "aws-cdk-lib/aws-secretsmanager"
 
 export interface SplunkProps {
   readonly splunkHECEndpoint: string
@@ -81,7 +80,6 @@ export class Splunk extends Construct {
         ]
       })
 
-    const hecToken = Secret.fromSecretNameV2(this, "hecToken", "account-resources-SplunkHECToken")
     const splunkDestinationConfigurationProperty: CfnDeliveryStream.SplunkDestinationConfigurationProperty = {
       hecEndpoint: props.splunkHECEndpoint,
       hecEndpointType: "Event",
@@ -100,7 +98,7 @@ export class Splunk extends Construct {
         logGroupName: props.splunkDeliveryStreamLogGroup.logGroupName,
         logStreamName: props.splunkDeliveryStreamLogStream.logStreamName
       },
-      hecToken: hecToken.secretValue.toString(),
+      hecToken: "{{resolve:secretsmanager:account-resources-SplunkHECToken:SecretString}}",
       processingConfiguration: {
         enabled: true,
         processors: [{
