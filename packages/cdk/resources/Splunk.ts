@@ -12,6 +12,7 @@ import {Construct} from "constructs"
 import {TypescriptLambdaFunction} from "../constructs/TypescriptLambdaFunction"
 import {resolve} from "path"
 import {Runtime} from "aws-cdk-lib/aws-lambda"
+import {Secret} from "aws-cdk-lib/aws-secretsmanager"
 
 export interface SplunkProps {
   readonly splunkHECEndpoint: string
@@ -28,7 +29,6 @@ export interface SplunkProps {
   readonly cloudWatchLogsKmsKey: Key
   readonly lambdaInsightsLogGroupPolicy: ManagedPolicy
   readonly cloudwatchEncryptionKMSPolicy: ManagedPolicy
-  readonly hecToken: string
 }
 
 export class Splunk extends Construct {
@@ -81,6 +81,7 @@ export class Splunk extends Construct {
         ]
       })
 
+    const hecToken = Secret.fromSecretNameV2(this, "hecToken", "account-resources-SplunkHECToken")
     const splunkDestinationConfigurationProperty: CfnDeliveryStream.SplunkDestinationConfigurationProperty = {
       hecEndpoint: props.splunkHECEndpoint,
       hecEndpointType: "Event",
@@ -99,7 +100,7 @@ export class Splunk extends Construct {
         logGroupName: props.splunkDeliveryStreamLogGroup.logGroupName,
         logStreamName: props.splunkDeliveryStreamLogStream.logStreamName
       },
-      hecToken: props.hecToken,
+      hecToken: hecToken.secretValue.toString(),
       processingConfiguration: {
         enabled: true,
         processors: [{

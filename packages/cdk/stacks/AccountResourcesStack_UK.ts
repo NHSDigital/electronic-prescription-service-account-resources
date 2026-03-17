@@ -53,7 +53,6 @@ export interface AccountResourcesStackProps_UK extends StackProps {
   readonly spinePublicCertificate: Secret
   readonly ptlPrescriptionSigningPublicKey: Secret
   readonly splunkHECEndpoint: string
-  readonly hecToken: string
 }
 
 export class AccountResourcesStack_UK extends Stack {
@@ -144,7 +143,6 @@ export class AccountResourcesStack_UK extends Stack {
       splunkHECEndpoint: props.splunkHECEndpoint,
       splunkDeliveryStreamBackupBucket: monitoringStorage.splunkDeliveryStreamBackupBucket,
       splunkDeliveryStreamBackupKMSKey: monitoringStorage.splunkDeliveryStreamBackupKmsKey,
-      hecToken: props.hecToken,
       splunkDeliveryStreamBackupBucketRole: props.splunkDeliveryStreamBackupBucketRole,
       splunkDeliveryStreamLogGroup: logGroups.splunkDeliveryStreamLogGroup,
       splunkDeliveryStreamLogStream: logGroups.splunkDeliveryStreamLogStream
@@ -182,7 +180,7 @@ export class AccountResourcesStack_UK extends Stack {
     })
 
     // TODO - move monitoring stack into here
-    nagSuppressions(this)
+    nagSuppressions(this, "AccountResources_UK")
 
     this.auditLoggingBucket = storage.auditLoggingBucket
   }

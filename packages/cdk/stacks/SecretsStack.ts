@@ -120,6 +120,6 @@ export class SecretsStack extends Stack {
     this.fhirFacadeClientSandboxCertSecret = mtlsSecrets.FhirFacadeClientSandboxCert
     this.spinePublicCertificate = configSecrets.spinePublicCertificate
     this.ptlPrescriptionSigningPublicKey = configSecrets.ptlPrescriptionSigningPublicKey
-    nagSuppressions(this)
+    nagSuppressions(this, "Secrets")
   }
 }

@@ -76,7 +76,7 @@ export class IAMStack extends Stack {
     this.CloudFormationDeployRole = roles.CloudFormationDeployRole
     this.apiGwCloudWatchRole = roles.apiGwCloudWatchRole
     this.splunkDeliveryStreamBackupBucketRole = roles.splunkDeliveryStreamBackupBucketRole
-    nagSuppressions(this)
+    nagSuppressions(this, "IAM")
 
   }
 }
