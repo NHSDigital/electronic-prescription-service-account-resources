@@ -17,8 +17,6 @@ export interface EncryptionProps {
   readonly region: string
   readonly apiGwCloudWatchRole: Role
   readonly cloudFormationExecutionRole: Role
-  readonly cloudFormationPrepareChangesetRole: Role
-  readonly CloudFormationDeployRole: Role
 }
 export class Encryption extends Construct {
   public readonly snsKmsKey: Key

@@ -30,7 +30,7 @@ export interface AccountResourcesStackProps_UK extends StackProps {
   readonly commitId: string
   readonly cloudFormationExecutionRole: Role
   readonly cloudFormationPrepareChangesetRole: Role
-  readonly CloudFormationDeployRole: Role
+  readonly cloudFormationDeployRole: Role
   readonly apiGwCloudWatchRole: Role
   readonly splunkDeliveryStreamBackupBucketRole: Role
   readonly enableAlerts: boolean
@@ -62,7 +62,7 @@ export interface AccountResourcesStackProps_UK extends StackProps {
 }
 
 export class AccountResourcesStack_UK extends Stack {
-  readonly auditLoggingBucket: CfnBucket
+  public readonly auditLoggingBucket: CfnBucket
   public constructor(scope: App, id: string, props: AccountResourcesStackProps_UK){
     super(scope, id, props)
 
@@ -76,7 +76,7 @@ export class AccountResourcesStack_UK extends Stack {
       region: this.region,
       cloudFormationExecutionRole: props.cloudFormationExecutionRole,
       cloudFormationPrepareChangesetRole: props.cloudFormationPrepareChangesetRole,
-      CloudFormationDeployRole: props.CloudFormationDeployRole
+      cloudFormationDeployRole: props.cloudFormationDeployRole
       // need a way to pass these in
       // artifactsBucketArn
       // trustStoreBucketArn
@@ -89,9 +89,7 @@ export class AccountResourcesStack_UK extends Stack {
       accountId: this.account,
       region: this.region,
       apiGwCloudWatchRole: props.apiGwCloudWatchRole,
-      cloudFormationExecutionRole: props.cloudFormationExecutionRole,
-      cloudFormationPrepareChangesetRole: props.cloudFormationPrepareChangesetRole,
-      CloudFormationDeployRole: props.CloudFormationDeployRole
+      cloudFormationExecutionRole: props.cloudFormationExecutionRole
     })
     const slackAlertTopic = Topic.fromTopicArn(this, "SlackAlertTopic",
       Fn.importValue("lambda-resources:SlackAlertsSnsTopicArn"))

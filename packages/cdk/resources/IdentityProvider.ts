@@ -3,6 +3,7 @@ import {Construct} from "constructs"
 
 export class IdentityProvider extends Construct {
   public readonly gitHubIdentityProvider: IOidcProvider
+
   public constructor(scope: Construct, id: string) {
     super(scope, id)
 
@@ -11,6 +12,7 @@ export class IdentityProvider extends Construct {
       clientIds: [ "sts.amazonaws.com", "eps-storage-terraform" ],
       thumbprints: ["6938fd4d98bab03faadb97b34396831e3780aea1"]
     })
+
     this.gitHubIdentityProvider = gitHubIdentityProvider
   }
 }

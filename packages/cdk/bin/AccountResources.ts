@@ -31,15 +31,23 @@ async function main() {
     ...props,
     stackName: "secrets-stack",
     cloudFormationExecutionRole: iamStack.cloudFormationExecutionRole,
-    CloudFormationDeployRole: iamStack.CloudFormationDeployRole
+    cloudFormationDeployRole: iamStack.cloudFormationDeployRole
   })
 
+  // safely retrieve fhirValidatorUkCoreLambdaArn from environment variable to allow for bootstrapping
+  let fhirValidatorUkCoreLambdaArn: string | undefined
+  try {
+    fhirValidatorUkCoreLambdaArn = getConfigFromEnvVar("fhirValidatorUkCoreLambdaArn")
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    console.warn("FHIR Validator UK Core Lambda ARN not found in environment variables.")
+  }
   new AccountResourcesStack_UK(app, "AccountResources_UK", {
     ...props,
     stackName: accountResourcesUKStackName,
     cloudFormationExecutionRole: iamStack.cloudFormationExecutionRole,
     cloudFormationPrepareChangesetRole: iamStack.cloudFormationPrepareChangesetRole,
-    CloudFormationDeployRole: iamStack.CloudFormationDeployRole,
+    cloudFormationDeployRole: iamStack.cloudFormationDeployRole,
     apiGwCloudWatchRole: iamStack.apiGwCloudWatchRole,
     splunkDeliveryStreamBackupBucketRole: iamStack.splunkDeliveryStreamBackupBucketRole,
     enableAlerts: getBooleanConfigFromEnvVar("enableAlerts"),
@@ -66,7 +74,8 @@ async function main() {
     accessSlackSecretsManagedPolicy: secretsStack.accessSlackSecretsManagedPolicy,
     proxygenPTLRole: iamStack.proxygenPTLRole,
     proxygenProdRole: iamStack.proxygenProdRole,
-    proxygenManagedPolicy: secretsStack.proxygenManagedPolicy
+    proxygenManagedPolicy: secretsStack.proxygenManagedPolicy,
+    fhirValidatorUkCoreLambdaArn: fhirValidatorUkCoreLambdaArn
   })
 
   new AccountResourcesStack_US(app, "AccountResources_US", {

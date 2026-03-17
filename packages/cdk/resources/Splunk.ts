@@ -31,9 +31,9 @@ export interface SplunkProps {
 }
 
 export class Splunk extends Construct {
-  public splunkSubscriptionFilterRole: Role
-  public splunkSubscriptionFilterDeliveryStreamManagedPolicy: ManagedPolicy
-  public splunkDeliveryStream: CfnDeliveryStream
+  public readonly splunkSubscriptionFilterRole: Role
+  public readonly splunkSubscriptionFilterDeliveryStreamManagedPolicy: ManagedPolicy
+  public readonly splunkDeliveryStream: CfnDeliveryStream
 
   public constructor(scope: Construct, id: string, props: SplunkProps){
     super(scope, id)

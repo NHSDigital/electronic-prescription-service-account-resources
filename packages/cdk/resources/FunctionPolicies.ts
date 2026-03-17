@@ -30,12 +30,12 @@ export interface FunctionPoliciesProps {
 }
 
 export class FunctionPolicies extends Construct {
-  readAlertSuppressionsPolicy: ManagedPolicy
-  lambdaInsightsLogGroupPolicy: ManagedPolicy
-  certificateCheckerManagedPolicy: ManagedPolicy
-  readSlackAlerterSqsQueuePolicy: ManagedPolicy
-  FHIRValidatorListLambdaPolicy: ManagedPolicy
-  FHIRValidatorDeleteVersionPolicy: ManagedPolicy
+  public readonly readAlertSuppressionsPolicy: ManagedPolicy
+  public readonly lambdaInsightsLogGroupPolicy: ManagedPolicy
+  public readonly certificateCheckerManagedPolicy: ManagedPolicy
+  public readonly readSlackAlerterSqsQueuePolicy: ManagedPolicy
+  public readonly FHIRValidatorListLambdaPolicy: ManagedPolicy
+  public readonly FHIRValidatorDeleteVersionPolicy: ManagedPolicy
 
   public constructor(scope: Construct, id: string, props: FunctionPoliciesProps){
     super(scope, id)

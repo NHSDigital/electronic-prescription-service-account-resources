@@ -21,28 +21,28 @@ export interface SecretsStackProps extends StackProps {
   readonly version: string
   readonly commitId: string
   readonly cloudFormationExecutionRole: IRole
-  readonly CloudFormationDeployRole: IRole
+  readonly cloudFormationDeployRole: IRole
 }
 
 export class SecretsStack extends Stack {
-  readonly auditLoggingBucket: CfnBucket
-  readonly lambdaDecryptSecretsKmsPolicy: ManagedPolicy
-  readonly clinicalTrackerCACertSecret: Secret
-  readonly clinicalTrackerClientCertSecret: Secret
-  readonly clinicalTrackerClientSandboxCertSecret: Secret
-  readonly pfpCACertSecret: Secret
-  readonly pfpClientCertSecret: Secret
-  readonly pfpClientSandboxCertSecret: Secret
-  readonly psuCACertSecret: Secret
-  readonly psuClientCertSecret: Secret
-  readonly psuClientSandboxCertSecret: Secret
-  readonly fhirFacadeCACertSecret: Secret
-  readonly fhirFacadeClientCertSecret: Secret
-  readonly fhirFacadeClientSandboxCertSecret: Secret
-  readonly spinePublicCertificate: Secret
-  readonly ptlPrescriptionSigningPublicKey: Secret
-  readonly accessSlackSecretsManagedPolicy: ManagedPolicy
-  readonly proxygenManagedPolicy: ManagedPolicy
+  public readonly auditLoggingBucket: CfnBucket
+  public readonly lambdaDecryptSecretsKmsPolicy: ManagedPolicy
+  public readonly clinicalTrackerCACertSecret: Secret
+  public readonly clinicalTrackerClientCertSecret: Secret
+  public readonly clinicalTrackerClientSandboxCertSecret: Secret
+  public readonly pfpCACertSecret: Secret
+  public readonly pfpClientCertSecret: Secret
+  public readonly pfpClientSandboxCertSecret: Secret
+  public readonly psuCACertSecret: Secret
+  public readonly psuClientCertSecret: Secret
+  public readonly psuClientSandboxCertSecret: Secret
+  public readonly fhirFacadeCACertSecret: Secret
+  public readonly fhirFacadeClientCertSecret: Secret
+  public readonly fhirFacadeClientSandboxCertSecret: Secret
+  public readonly spinePublicCertificate: Secret
+  public readonly ptlPrescriptionSigningPublicKey: Secret
+  public readonly accessSlackSecretsManagedPolicy: ManagedPolicy
+  public readonly proxygenManagedPolicy: ManagedPolicy
 
   public constructor(scope: App, id: string, props: SecretsStackProps){
     super(scope, id, props)
@@ -73,39 +73,39 @@ export class SecretsStack extends Stack {
     const secretPolicies = new SecretPolicies(this, "SecretPolicies", {
       region: this.region,
       accountId: this.account,
-      cloudFormationDeployRole: props.CloudFormationDeployRole,
-      PfpCAKey: mtlsSecrets.PfpCAKey,
-      PfpCACert: mtlsSecrets.PfpCACert,
-      PfpClientKey: mtlsSecrets.PfpClientKey,
-      PfpClientCert: mtlsSecrets.PfpClientCert,
-      PfpClientSandboxKey: mtlsSecrets.PfpClientSandboxKey,
-      PfpClientSandboxCert: mtlsSecrets.PfpClientSandboxCert,
-      PfpProxygenPrivateKey: proxygenSecrets.PSUProxygenPrivateKey,
-      PfpProxygenPublicKey: proxygenSecrets.PSUProxygenPublicKey,
-      PSUCAKey: mtlsSecrets.PSUCAKey,
-      PSUCACert: mtlsSecrets.PSUCACert,
-      PSUClientKey: mtlsSecrets.PSUClientKey,
-      PSUClientCert: mtlsSecrets.PSUClientCert,
-      PSUClientSandboxKey: mtlsSecrets.PSUClientSandboxKey,
-      PSUClientSandboxCert: mtlsSecrets.PSUClientSandboxCert,
-      PSUProxygenPrivateKey: proxygenSecrets.PSUProxygenPrivateKey,
-      PSUProxygenPublicKey: proxygenSecrets.PSUProxygenPublicKey,
-      CPSUProxygenPrivateKey: proxygenSecrets.CPSUProxygenPrivateKey,
-      CPSUProxygenPublicKey: proxygenSecrets.CPSUProxygenPublicKey,
-      ClinicalTrackerCAKey: mtlsSecrets.ClinicalTrackerCAKey,
-      ClinicalTrackerCACert: mtlsSecrets.ClinicalTrackerCACert,
-      ClinicalTrackerClientKey: mtlsSecrets.ClinicalTrackerClientKey,
-      ClinicalTrackerClientCert: mtlsSecrets.ClinicalTrackerClientCert,
-      ClinicalTrackerClientSandboxKey: mtlsSecrets.ClinicalTrackerClientSandboxKey,
-      ClinicalTrackerClientSandboxCert: mtlsSecrets.ClinicalTrackerClientSandboxCert,
-      ClinicalTrackerProxygenPrivateKey: proxygenSecrets.ClinicalTrackerProxygenPrivateKey,
-      ClinicalTrackerProxygenPublicKey: proxygenSecrets.ClinicalTrackerProxygenPublicKey,
-      FhirFacadeCAKey: mtlsSecrets.FhirFacadeCAKey,
-      FhirFacadeCACert: mtlsSecrets.FhirFacadeCACert,
-      FhirFacadeClientKey: mtlsSecrets.FhirFacadeClientKey,
-      FhirFacadeClientCert: mtlsSecrets.FhirFacadeClientCert,
-      FhirFacadeClientSandboxKey: mtlsSecrets.FhirFacadeClientSandboxKey,
-      FhirFacadeClientSandboxCert: mtlsSecrets.FhirFacadeClientSandboxCert,
+      cloudFormationDeployRole: props.cloudFormationDeployRole,
+      pfpCAKey: mtlsSecrets.pfpCAKey,
+      pfpCACert: mtlsSecrets.pfpCACert,
+      pfpClientKey: mtlsSecrets.pfpClientKey,
+      pfpClientCert: mtlsSecrets.pfpClientCert,
+      pfpClientSandboxKey: mtlsSecrets.pfpClientSandboxKey,
+      pfpClientSandboxCert: mtlsSecrets.pfpClientSandboxCert,
+      pfpProxygenPrivateKey: proxygenSecrets.psuProxygenPrivateKey,
+      pfpProxygenPublicKey: proxygenSecrets.psuProxygenPublicKey,
+      psuCAKey: mtlsSecrets.psuCAKey,
+      psuCACert: mtlsSecrets.psuCACert,
+      psuClientKey: mtlsSecrets.psuClientKey,
+      psuClientCert: mtlsSecrets.psuClientCert,
+      psuClientSandboxKey: mtlsSecrets.psuClientSandboxKey,
+      psuClientSandboxCert: mtlsSecrets.psuClientSandboxCert,
+      psuProxygenPrivateKey: proxygenSecrets.psuProxygenPrivateKey,
+      psuProxygenPublicKey: proxygenSecrets.psuProxygenPublicKey,
+      cpsuProxygenPrivateKey: proxygenSecrets.cpsuProxygenPrivateKey,
+      cpsuProxygenPublicKey: proxygenSecrets.cpsuProxygenPublicKey,
+      clinicalTrackerCAKey: mtlsSecrets.clinicalTrackerCAKey,
+      clinicalTrackerCACert: mtlsSecrets.clinicalTrackerCACert,
+      clinicalTrackerClientKey: mtlsSecrets.clinicalTrackerClientKey,
+      clinicalTrackerClientCert: mtlsSecrets.clinicalTrackerClientCert,
+      clinicalTrackerClientSandboxKey: mtlsSecrets.clinicalTrackerClientSandboxKey,
+      clinicalTrackerClientSandboxCert: mtlsSecrets.clinicalTrackerClientSandboxCert,
+      clinicalTrackerProxygenPrivateKey: proxygenSecrets.clinicalTrackerProxygenPrivateKey,
+      clinicalTrackerProxygenPublicKey: proxygenSecrets.clinicalTrackerProxygenPublicKey,
+      fhirFacadeCAKey: mtlsSecrets.fhirFacadeCAKey,
+      fhirFacadeCACert: mtlsSecrets.fhirFacadeCACert,
+      fhirFacadeClientKey: mtlsSecrets.fhirFacadeClientKey,
+      fhirFacadeClientCert: mtlsSecrets.fhirFacadeClientCert,
+      fhirFacadeClientSandboxKey: mtlsSecrets.fhirFacadeClientSandboxKey,
+      fhirFacadeClientSandboxCert: mtlsSecrets.fhirFacadeClientSandboxCert,
       prescribingProxygenPrivateKey: proxygenSecrets.prescribingProxygenPrivateKey,
       prescribingProxygenPublicKey: proxygenSecrets.prescribingProxygenPublicKey,
       dispensingProxygenPrivateKey: proxygenSecrets.dispensingProxygenPrivateKey,
@@ -113,18 +113,18 @@ export class SecretsStack extends Stack {
       secretKMSKey: encryption.secretsKmsKey
     })
     this.lambdaDecryptSecretsKmsPolicy = encryption.lambdaDecryptSecretsKmsPolicy
-    this.clinicalTrackerCACertSecret = mtlsSecrets.ClinicalTrackerCACert
-    this.clinicalTrackerClientCertSecret = mtlsSecrets.ClinicalTrackerClientCert
-    this.clinicalTrackerClientSandboxCertSecret = mtlsSecrets.ClinicalTrackerClientSandboxCert
-    this.pfpCACertSecret = mtlsSecrets.PfpCACert
-    this.pfpClientCertSecret = mtlsSecrets.PfpClientCert
-    this.pfpClientSandboxCertSecret = mtlsSecrets.PfpClientSandboxCert
-    this.psuCACertSecret = mtlsSecrets.PSUCACert
-    this.psuClientCertSecret = mtlsSecrets.PSUClientCert
-    this.psuClientSandboxCertSecret = mtlsSecrets.PSUClientSandboxCert
-    this.fhirFacadeCACertSecret = mtlsSecrets.FhirFacadeCACert
-    this.fhirFacadeClientCertSecret = mtlsSecrets.FhirFacadeClientCert
-    this.fhirFacadeClientSandboxCertSecret = mtlsSecrets.FhirFacadeClientSandboxCert
+    this.clinicalTrackerCACertSecret = mtlsSecrets.clinicalTrackerCACert
+    this.clinicalTrackerClientCertSecret = mtlsSecrets.clinicalTrackerClientCert
+    this.clinicalTrackerClientSandboxCertSecret = mtlsSecrets.clinicalTrackerClientSandboxCert
+    this.pfpCACertSecret = mtlsSecrets.pfpCACert
+    this.pfpClientCertSecret = mtlsSecrets.pfpClientCert
+    this.pfpClientSandboxCertSecret = mtlsSecrets.pfpClientSandboxCert
+    this.psuCACertSecret = mtlsSecrets.psuCACert
+    this.psuClientCertSecret = mtlsSecrets.psuClientCert
+    this.psuClientSandboxCertSecret = mtlsSecrets.psuClientSandboxCert
+    this.fhirFacadeCACertSecret = mtlsSecrets.fhirFacadeCACert
+    this.fhirFacadeClientCertSecret = mtlsSecrets.fhirFacadeClientCert
+    this.fhirFacadeClientSandboxCertSecret = mtlsSecrets.fhirFacadeClientSandboxCert
     this.spinePublicCertificate = configSecrets.spinePublicCertificate
     this.ptlPrescriptionSigningPublicKey = configSecrets.ptlPrescriptionSigningPublicKey
     this.accessSlackSecretsManagedPolicy = configSecrets.accessSlackSecretsManagedPolicy

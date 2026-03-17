@@ -10,7 +10,7 @@ export interface StorageProps {
   readonly region: string
   readonly cloudFormationExecutionRole: Role
   readonly cloudFormationPrepareChangesetRole: Role
-  readonly CloudFormationDeployRole: Role
+  readonly cloudFormationDeployRole: Role
   readonly splunkDeliveryStreamBackupBucketArn?: string
   readonly artifactsBucketArn?: string
   readonly trustStoreBucketArn?: string
@@ -184,7 +184,7 @@ export class Storage extends Construct {
       roles: [
         props.cloudFormationExecutionRole,
         props.cloudFormationPrepareChangesetRole,
-        props.CloudFormationDeployRole
+        props.cloudFormationDeployRole
       ]
     })
 
@@ -260,7 +260,7 @@ export class Storage extends Construct {
             Effect: "Allow",
             Principal: {
               AWS: [
-                props.CloudFormationDeployRole.roleArn,
+                props.cloudFormationDeployRole.roleArn,
                 props.cloudFormationExecutionRole.roleArn,
                 props.cloudFormationPrepareChangesetRole.roleArn
               ]
@@ -283,7 +283,7 @@ export class Storage extends Construct {
             Effect: "Allow",
             Principal: {
               AWS: [
-                props.CloudFormationDeployRole.roleArn
+                props.cloudFormationDeployRole.roleArn
               ]
             },
             Action: [
@@ -518,7 +518,7 @@ export class Storage extends Construct {
             Effect: "Allow",
             Principal: {
               AWS: [
-                props.CloudFormationDeployRole.roleArn,
+                props.cloudFormationDeployRole.roleArn,
                 props.cloudFormationExecutionRole.roleArn,
                 `arn:aws:iam::${props.accountId}:role/cdk-hnb659fds-cfn-exec-role-${props.accountId}-eu-west-2`
               ]

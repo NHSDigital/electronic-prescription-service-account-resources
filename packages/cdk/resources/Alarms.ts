@@ -13,9 +13,9 @@ export interface AlarmsProps {
 }
 
 export class Alarms extends Construct {
-  parameters: {[key: string]: StringParameter}
-  stepFunctionAlarms: Array<{[key: string]: Alarm}>
-  lambdaAlarms: Array<{[key: string]: Alarm}>
+  public readonly parameters: {[key: string]: StringParameter}
+  public readonly stepFunctionAlarms: Array<{[key: string]: Alarm}>
+  public readonly lambdaAlarms: Array<{[key: string]: Alarm}>
 
   public constructor(scope: Construct, id: string, props: AlarmsProps){
     super(scope, id)

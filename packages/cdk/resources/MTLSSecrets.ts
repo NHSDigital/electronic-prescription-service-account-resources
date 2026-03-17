@@ -9,33 +9,33 @@ export interface MTLSSecretsProps {
   readonly MTLSSecretsKmsKey: IKey
 }
 export class MTLSSecrets extends Construct {
-  readonly PfpCAKey: Secret
-  readonly PfpCACert: Secret
-  readonly PfpClientKey: Secret
-  readonly PfpClientCert: Secret
-  readonly PfpClientSandboxKey: Secret
-  readonly PfpClientSandboxCert: Secret
+  public readonly pfpCAKey: Secret
+  public readonly pfpCACert: Secret
+  public readonly pfpClientKey: Secret
+  public readonly pfpClientCert: Secret
+  public readonly pfpClientSandboxKey: Secret
+  public readonly pfpClientSandboxCert: Secret
 
-  readonly PSUCAKey: Secret
-  readonly PSUCACert: Secret
-  readonly PSUClientKey: Secret
-  readonly PSUClientCert: Secret
-  readonly PSUClientSandboxKey: Secret
-  readonly PSUClientSandboxCert: Secret
+  public readonly psuCAKey: Secret
+  public readonly psuCACert: Secret
+  public readonly psuClientKey: Secret
+  public readonly psuClientCert: Secret
+  public readonly psuClientSandboxKey: Secret
+  public readonly psuClientSandboxCert: Secret
 
-  readonly ClinicalTrackerCAKey: Secret
-  readonly ClinicalTrackerCACert: Secret
-  readonly ClinicalTrackerClientKey: Secret
-  readonly ClinicalTrackerClientCert: Secret
-  readonly ClinicalTrackerClientSandboxKey: Secret
-  readonly ClinicalTrackerClientSandboxCert: Secret
+  public readonly clinicalTrackerCAKey: Secret
+  public readonly clinicalTrackerCACert: Secret
+  public readonly clinicalTrackerClientKey: Secret
+  public readonly clinicalTrackerClientCert: Secret
+  public readonly clinicalTrackerClientSandboxKey: Secret
+  public readonly clinicalTrackerClientSandboxCert: Secret
 
-  readonly FhirFacadeCAKey: Secret
-  readonly FhirFacadeCACert: Secret
-  readonly FhirFacadeClientKey: Secret
-  readonly FhirFacadeClientCert: Secret
-  readonly FhirFacadeClientSandboxKey: Secret
-  readonly FhirFacadeClientSandboxCert: Secret
+  public readonly fhirFacadeCAKey: Secret
+  public readonly fhirFacadeCACert: Secret
+  public readonly fhirFacadeClientKey: Secret
+  public readonly fhirFacadeClientCert: Secret
+  public readonly fhirFacadeClientSandboxKey: Secret
+  public readonly fhirFacadeClientSandboxCert: Secret
 
   public constructor(scope: Construct, id: string, props: MTLSSecretsProps){
     super(scope, id)
@@ -163,32 +163,32 @@ export class MTLSSecrets extends Construct {
       encryptionKey: props.MTLSSecretsKmsKey
     })
 
-    this.ClinicalTrackerCACert = clinicalTrackerCACert.secret
-    this.ClinicalTrackerCAKey = clinicalTrackerCAKey.secret
-    this.ClinicalTrackerClientCert = clinicalTrackerClientCert.secret
-    this.ClinicalTrackerClientKey = clinicalTrackerClientKey.secret
-    this.ClinicalTrackerClientSandboxCert = clinicalTrackerClientSandboxCert.secret
-    this.ClinicalTrackerClientSandboxKey = clinicalTrackerClientSandboxKey.secret
+    this.clinicalTrackerCACert = clinicalTrackerCACert.secret
+    this.clinicalTrackerCAKey = clinicalTrackerCAKey.secret
+    this.clinicalTrackerClientCert = clinicalTrackerClientCert.secret
+    this.clinicalTrackerClientKey = clinicalTrackerClientKey.secret
+    this.clinicalTrackerClientSandboxCert = clinicalTrackerClientSandboxCert.secret
+    this.clinicalTrackerClientSandboxKey = clinicalTrackerClientSandboxKey.secret
 
-    this.FhirFacadeCACert = fhirFacadeCACert.secret
-    this.FhirFacadeCAKey = fhirFacadeCAKey.secret
-    this.FhirFacadeClientCert = fhirFacadeClientCert.secret
-    this.FhirFacadeClientKey = fhirFacadeClientKey.secret
-    this.FhirFacadeClientSandboxCert = fhirFacadeClientSandboxCert.secret
-    this.FhirFacadeClientSandboxKey = fhirFacadeClientSandboxKey.secret
+    this.fhirFacadeCACert = fhirFacadeCACert.secret
+    this.fhirFacadeCAKey = fhirFacadeCAKey.secret
+    this.fhirFacadeClientCert = fhirFacadeClientCert.secret
+    this.fhirFacadeClientKey = fhirFacadeClientKey.secret
+    this.fhirFacadeClientSandboxCert = fhirFacadeClientSandboxCert.secret
+    this.fhirFacadeClientSandboxKey = fhirFacadeClientSandboxKey.secret
 
-    this.PfpCACert = pfpCACert.secret
-    this.PfpCAKey = pfpCAKey.secret
-    this.PfpClientCert = pfpClientCert.secret
-    this.PfpClientKey = pfpClientKey.secret
-    this.PfpClientSandboxCert = pfpClientSandboxCert.secret
-    this.PfpClientSandboxKey = pfpClientSandboxKey.secret
+    this.pfpCACert = pfpCACert.secret
+    this.pfpCAKey = pfpCAKey.secret
+    this.pfpClientCert = pfpClientCert.secret
+    this.pfpClientKey = pfpClientKey.secret
+    this.pfpClientSandboxCert = pfpClientSandboxCert.secret
+    this.pfpClientSandboxKey = pfpClientSandboxKey.secret
 
-    this.PSUCACert = psuCACert.secret
-    this.PSUCAKey = psuCAKey.secret
-    this.PSUClientCert = psuClientCert.secret
-    this.PSUClientKey = psuClientKey.secret
-    this.PSUClientSandboxCert = psuClientSandboxCert.secret
-    this.PSUClientSandboxKey = psuClientSandboxKey.secret
+    this.psuCACert = psuCACert.secret
+    this.psuCAKey = psuCAKey.secret
+    this.psuClientCert = psuClientCert.secret
+    this.psuClientKey = psuClientKey.secret
+    this.psuClientSandboxCert = psuClientSandboxCert.secret
+    this.psuClientSandboxKey = psuClientSandboxKey.secret
   }
 }

@@ -2,7 +2,7 @@ import {Construct} from "constructs"
 import {ECRRepository} from "../constructs/ECRRepository"
 
 export class ECRRepositories extends Construct {
-  readonly repositories: Array<ECRRepository>
+  public readonly repositories: Array<ECRRepository>
 
   public constructor(scope: Construct, id: string){
     super(scope, id)

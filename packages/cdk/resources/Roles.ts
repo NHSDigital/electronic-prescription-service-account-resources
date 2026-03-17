@@ -24,7 +24,7 @@ export class Roles extends Construct {
   public readonly apiGwCloudWatchRole: Role
   public readonly snsFeedbackLoggingRole: Role
   public readonly splunkDeliveryStreamBackupBucketRole: Role
-  public readonly CloudFormationDeployRole: Role
+  public readonly cloudFormationDeployRole: Role
   public readonly cloudFormationExecutionRole: Role
   public readonly cloudFormationCheckVersionRole: Role
   public readonly cloudFormationPrepareChangesetRole: Role
@@ -32,10 +32,11 @@ export class Roles extends Construct {
   public readonly artilleryRunnerRole: Role
   public readonly proxygenPTLRole: Role
   public readonly proxygenProdRole: Role
-  public readonly CDKPullImageRole: Role
-  public readonly CDKPushImageRole: Role
+  public readonly cdkPullImageRole: Role
+  public readonly cdkPushImageRole: Role
   public readonly assistMeRegressionTestRole: Role
   public readonly assistMeDocumentSyncRole: Role
+
   public constructor(scope: Construct, id: string, props: RolesProps) {
     super(scope, id)
 
@@ -54,7 +55,7 @@ export class Roles extends Construct {
     })
 
     // from ci-resources
-    const CloudFormationDeployRole = new Role(this, "CloudFormationDeployRole", {
+    const cloudFormationDeployRole = new Role(this, "CloudFormationDeployRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -155,7 +156,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    const CDKPullImageRole = new Role(this, "CDKPullImageRole", {
+    const cdkPullImageRole = new Role(this, "CDKPullImageRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -169,7 +170,7 @@ export class Roles extends Construct {
         "sts:AssumeRoleWithWebIdentity"
       )
     })
-    const CDKPushImageRole = new Role(this, "CDKPushImageRole", {
+    const cdkPushImageRole = new Role(this, "CDKPushImageRole", {
       assumedBy: new FederatedPrincipal(
         props.gitHubIdentityProvider.openIdConnectProviderArn,
         {
@@ -215,7 +216,7 @@ export class Roles extends Construct {
     this.apiGwCloudWatchRole = apiGwCloudWatchRole
     this.snsFeedbackLoggingRole = snsFeedbackLoggingRole
     this.splunkDeliveryStreamBackupBucketRole = splunkDeliveryStreamBackupBucketRole
-    this.CloudFormationDeployRole = CloudFormationDeployRole
+    this.cloudFormationDeployRole = cloudFormationDeployRole
     this.cloudFormationExecutionRole = cloudFormationExecutionRole
     this.cloudFormationCheckVersionRole = cloudFormationCheckVersionRole
     this.cloudFormationPrepareChangesetRole = cloudFormationPrepareChangesetRole
@@ -223,8 +224,8 @@ export class Roles extends Construct {
     this.artilleryRunnerRole = artilleryRunnerRole
     this.proxygenPTLRole = proxygenPTLRole
     this.proxygenProdRole = proxygenProdRole
-    this.CDKPullImageRole = CDKPullImageRole
-    this.CDKPushImageRole = CDKPushImageRole
+    this.cdkPullImageRole = cdkPullImageRole
+    this.cdkPushImageRole = cdkPushImageRole
     this.assistMeRegressionTestRole = assistMeRegressionTestRole
     this.assistMeDocumentSyncRole = assistMeDocumentSyncRole
   }

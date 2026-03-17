@@ -45,7 +45,10 @@ export interface FunctionsProps {
 }
 
 export class Functions extends Construct {
-  functions: {[key: string]: TypescriptLambdaFunction}
+  public readonly reportAlertSuppressionsLambda: TypescriptLambdaFunction
+  public readonly certExpiryCheckFunction: TypescriptLambdaFunction
+  public readonly slackAlerterLambda: TypescriptLambdaFunction
+  public readonly lambdaJanitor: TypescriptLambdaFunction
 
   public constructor(scope: Construct, id: string, props: FunctionsProps){
     super(scope, id)
@@ -212,11 +215,9 @@ export class Functions extends Construct {
       targets: [new LambdaFunction(certExpiryCheckFunction.function, {})]
     })
 
-    this.functions = {
-      reportAlertSuppressionsLambda: reportAlertSuppressionsLambda,
-      certExpiryCheckFunction: certExpiryCheckFunction,
-      slackAlerterLambda: slackAlerterLambda,
-      lambdaJanitor: lambdaJanitor
-    }
+    this.reportAlertSuppressionsLambda = reportAlertSuppressionsLambda
+    this.certExpiryCheckFunction = certExpiryCheckFunction
+    this.slackAlerterLambda = slackAlerterLambda
+    this.lambdaJanitor = lambdaJanitor
   }
 }

@@ -9,18 +9,18 @@ export interface ProxygenSecretsProps {
   readonly proxygenSecretsKmsKey: IKey
 }
 export class ProxygenSecrets extends Construct {
-  readonly CPSUProxygenPrivateKey: Secret
-  readonly CPSUProxygenPublicKey: Secret
-  readonly ClinicalTrackerProxygenPrivateKey: Secret
-  readonly ClinicalTrackerProxygenPublicKey: Secret
-  readonly PSUProxygenPrivateKey: Secret
-  readonly PSUProxygenPublicKey: Secret
-  readonly prescribingProxygenPrivateKey: Secret
-  readonly prescribingProxygenPublicKey: Secret
-  readonly dispensingProxygenPrivateKey: Secret
-  readonly dispensingProxygenPublicKey: Secret
-  readonly prescriptionsForPatientsProxygenPrivateKey: Secret
-  readonly prescriptionsForPatientsProxygenPublicKey: Secret
+  public readonly cpsuProxygenPrivateKey: Secret
+  public readonly cpsuProxygenPublicKey: Secret
+  public readonly clinicalTrackerProxygenPrivateKey: Secret
+  public readonly clinicalTrackerProxygenPublicKey: Secret
+  public readonly psuProxygenPrivateKey: Secret
+  public readonly psuProxygenPublicKey: Secret
+  public readonly prescribingProxygenPrivateKey: Secret
+  public readonly prescribingProxygenPublicKey: Secret
+  public readonly dispensingProxygenPrivateKey: Secret
+  public readonly dispensingProxygenPublicKey: Secret
+  public readonly prescriptionsForPatientsProxygenPrivateKey: Secret
+  public readonly prescriptionsForPatientsProxygenPublicKey: Secret
 
   public constructor(scope: Construct, id: string, props: ProxygenSecretsProps){
     super(scope, id)
@@ -88,12 +88,12 @@ export class ProxygenSecrets extends Construct {
         encryptionKey: props.proxygenSecretsKmsKey
       })
 
-    this.CPSUProxygenPrivateKey = cpsuProxygenPrivateKey.secret
-    this.CPSUProxygenPublicKey = cpsuProxygenPublicKey.secret
-    this.ClinicalTrackerProxygenPrivateKey = clinicalTrackerProxygenPrivateKey.secret
-    this.ClinicalTrackerProxygenPublicKey = clinicalTrackerProxygenPublicKey.secret
-    this.PSUProxygenPrivateKey = psuProxygenPrivateKey.secret
-    this.PSUProxygenPublicKey = psuProxygenPublicKey.secret
+    this.cpsuProxygenPrivateKey = cpsuProxygenPrivateKey.secret
+    this.cpsuProxygenPublicKey = cpsuProxygenPublicKey.secret
+    this.clinicalTrackerProxygenPrivateKey = clinicalTrackerProxygenPrivateKey.secret
+    this.clinicalTrackerProxygenPublicKey = clinicalTrackerProxygenPublicKey.secret
+    this.psuProxygenPrivateKey = psuProxygenPrivateKey.secret
+    this.psuProxygenPublicKey = psuProxygenPublicKey.secret
     this.prescribingProxygenPrivateKey = prescribingProxygenPrivateKey.secret
     this.prescribingProxygenPublicKey = prescribingProxygenPublicKey.secret
     this.dispensingProxygenPrivateKey = dispensingProxygenPrivateKey.secret

@@ -10,9 +10,9 @@ export interface LogGroupProps {
   readonly stackName: string
 }
 export class LogGroups extends Construct {
-  public lambdaInsightsLogGroup: LogGroup
-  public splunkDeliveryStreamLogGroup: LogGroup
-  public splunkDeliveryStreamLogStream: LogStream
+  public readonly lambdaInsightsLogGroup: LogGroup
+  public readonly splunkDeliveryStreamLogGroup: LogGroup
+  public readonly splunkDeliveryStreamLogStream: LogStream
 
   public constructor(scope: Construct, id: string, props: LogGroupProps){
     super(scope, id)

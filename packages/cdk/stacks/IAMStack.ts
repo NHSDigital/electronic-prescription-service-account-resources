@@ -14,14 +14,14 @@ export interface IAMStackProps extends StackProps {
 }
 
 export class IAMStack extends Stack {
-  readonly cloudFormationExecutionRole: Role
-  readonly cloudFormationPrepareChangesetRole: Role
-  readonly CloudFormationDeployRole: Role
-  readonly apiGwCloudWatchRole: Role
-  readonly splunkDeliveryStreamBackupBucketRole: Role
-  readonly snsFeedbackLoggingRole: Role
-  readonly proxygenPTLRole: Role
-  readonly proxygenProdRole: Role
+  public readonly cloudFormationExecutionRole: Role
+  public readonly cloudFormationPrepareChangesetRole: Role
+  public readonly cloudFormationDeployRole: Role
+  public readonly apiGwCloudWatchRole: Role
+  public readonly splunkDeliveryStreamBackupBucketRole: Role
+  public readonly snsFeedbackLoggingRole: Role
+  public readonly proxygenPTLRole: Role
+  public readonly proxygenProdRole: Role
 
   public constructor(scope: App, id: string, props: IAMStackProps) {
     super(scope, id, props)
@@ -47,7 +47,7 @@ export class IAMStack extends Stack {
       apiGwCloudWatchRole: roles.apiGwCloudWatchRole,
       snsFeedbackLoggingRole: roles.snsFeedbackLoggingRole,
       splunkDeliveryStreamBackupBucketRole: roles.splunkDeliveryStreamBackupBucketRole,
-      CloudFormationDeployRole: roles.CloudFormationDeployRole,
+      cloudFormationDeployRole: roles.cloudFormationDeployRole,
       cloudFormationExecutionRole: roles.cloudFormationExecutionRole,
       cloudFormationCheckVersionRole: roles.cloudFormationCheckVersionRole,
       cloudFormationPrepareChangesetRole: roles.cloudFormationPrepareChangesetRole,
@@ -55,8 +55,8 @@ export class IAMStack extends Stack {
       artilleryRunnerRole: roles.artilleryRunnerRole,
       proxygenPTLRole: roles.proxygenPTLRole,
       proxygenProdRole: roles.proxygenProdRole,
-      CDKPullImageRole: roles.CDKPullImageRole,
-      CDKPushImageRole: roles.CDKPushImageRole,
+      cdkPullImageRole: roles.cdkPullImageRole,
+      cdkPushImageRole: roles.cdkPushImageRole,
       assistMeRegressionTestRole: roles.assistMeRegressionTestRole,
       assistMeDocumentSyncRole: roles.assistMeDocumentSyncRole
       // need a way of passing athenaResultsBucketKmsKey and athenaResultsBucket
@@ -76,7 +76,7 @@ export class IAMStack extends Stack {
 
     this.cloudFormationExecutionRole = roles.cloudFormationExecutionRole
     this.cloudFormationPrepareChangesetRole = roles.cloudFormationPrepareChangesetRole
-    this.CloudFormationDeployRole = roles.CloudFormationDeployRole
+    this.cloudFormationDeployRole = roles.cloudFormationDeployRole
     this.apiGwCloudWatchRole = roles.apiGwCloudWatchRole
     this.splunkDeliveryStreamBackupBucketRole = roles.splunkDeliveryStreamBackupBucketRole
     this.snsFeedbackLoggingRole = roles.snsFeedbackLoggingRole

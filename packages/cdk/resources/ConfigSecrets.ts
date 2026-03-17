@@ -10,14 +10,14 @@ export interface ConfigSecretsProps {
   readonly configSecretsKmsKey: IKey
 }
 export class ConfigSecrets extends Construct {
-  readonly accessSlackSecretsManagedPolicy: ManagedPolicy
-  readonly lambdaAccessSecretsPolicy: ManagedPolicy
-  readonly epsSigningCertChainManagedPolicy: ManagedPolicy
-  readonly splunkHECToken: Secret
-  readonly epsSigningCertChain: Secret
-  readonly ptlPrescriptionSigningPrivateKey: Secret
-  readonly ptlPrescriptionSigningPublicKey: Secret
-  readonly spinePublicCertificate: Secret
+  public readonly accessSlackSecretsManagedPolicy: ManagedPolicy
+  public readonly lambdaAccessSecretsPolicy: ManagedPolicy
+  public readonly epsSigningCertChainManagedPolicy: ManagedPolicy
+  public readonly splunkHECToken: Secret
+  public readonly epsSigningCertChain: Secret
+  public readonly ptlPrescriptionSigningPrivateKey: Secret
+  public readonly ptlPrescriptionSigningPublicKey: Secret
+  public readonly spinePublicCertificate: Secret
 
   public constructor(scope: Construct, id: string, props: ConfigSecretsProps){
     super(scope, id)

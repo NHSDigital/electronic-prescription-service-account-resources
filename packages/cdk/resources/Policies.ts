@@ -15,7 +15,7 @@ export interface PoliciesProps {
   readonly apiGwCloudWatchRole: IRole
   readonly snsFeedbackLoggingRole: IRole
   readonly splunkDeliveryStreamBackupBucketRole: IRole
-  readonly CloudFormationDeployRole: IRole
+  readonly cloudFormationDeployRole: IRole
   readonly cloudFormationExecutionRole: IRole
   readonly cloudFormationCheckVersionRole: IRole
   readonly cloudFormationPrepareChangesetRole: IRole
@@ -23,8 +23,8 @@ export interface PoliciesProps {
   readonly artilleryRunnerRole: IRole
   readonly proxygenPTLRole: IRole
   readonly proxygenProdRole: IRole
-  readonly CDKPullImageRole: IRole
-  readonly CDKPushImageRole: IRole
+  readonly cdkPullImageRole: IRole
+  readonly cdkPushImageRole: IRole
   readonly assistMeRegressionTestRole: IRole
   readonly assistMeDocumentSyncRole: IRole
   readonly athenaResultsBucketKmsKey?: IKey
@@ -214,7 +214,7 @@ export class Policies extends Construct {
         })
       ],
       roles: [
-        props.CloudFormationDeployRole,
+        props.cloudFormationDeployRole,
         props.cloudFormationCheckVersionRole,
         props.releaseNotesExecuteLambdaRole,
         props.cloudFormationPrepareChangesetRole,
@@ -223,7 +223,7 @@ export class Policies extends Construct {
         props.proxygenProdRole
       ]
     })
-    props.CloudFormationDeployRole.addManagedPolicy(allowOpenIdProviderPermissionsPolicy)
+    props.cloudFormationDeployRole.addManagedPolicy(allowOpenIdProviderPermissionsPolicy)
     const allowApiGwLoggingPolicy = new ManagedPolicy(this, "AllowApiGwLoggingPolicy", {
       statements: [
         new PolicyStatement({
@@ -448,7 +448,7 @@ export class Policies extends Construct {
         })
       ],
       roles: [
-        props.CloudFormationDeployRole
+        props.cloudFormationDeployRole
       ]
     })
 
@@ -464,7 +464,7 @@ export class Policies extends Construct {
         })
       ],
       roles: [
-        props.CloudFormationDeployRole,
+        props.cloudFormationDeployRole,
         props.cloudFormationPrepareChangesetRole
       ]
     })
@@ -494,7 +494,7 @@ export class Policies extends Construct {
         })
       ],
       roles: [
-        props.CDKPullImageRole
+        props.cdkPullImageRole
       ]
     })
 
@@ -538,7 +538,7 @@ export class Policies extends Construct {
         })
       ],
       roles: [
-        props.CDKPushImageRole
+        props.cdkPushImageRole
       ]
     })
 
@@ -616,7 +616,7 @@ export class Policies extends Construct {
         })
       ],
       roles: [
-        props.CloudFormationDeployRole
+        props.cloudFormationDeployRole
       ]
     })
 
@@ -679,7 +679,7 @@ export class Policies extends Construct {
         })
       ],
       roles: [
-        props.CloudFormationDeployRole
+        props.cloudFormationDeployRole
       ]
     })
 
@@ -729,7 +729,7 @@ export class Policies extends Construct {
         })
       ],
       roles: [
-        props.CloudFormationDeployRole
+        props.cloudFormationDeployRole
       ]
     })
 
@@ -749,7 +749,7 @@ export class Policies extends Construct {
         })
       ],
       roles: [
-        props.CloudFormationDeployRole
+        props.cloudFormationDeployRole
       ]
     })
     this.allowApiGwLoggingPolicy = allowApiGwLoggingPolicy
