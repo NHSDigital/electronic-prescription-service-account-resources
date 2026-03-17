@@ -57,6 +57,11 @@ export interface AccountResourcesStackProps_UK extends StackProps {
   readonly proxygenPTLRole: Role
   readonly proxygenProdRole: Role
   readonly proxygenManagedPolicy: ManagedPolicy
+  readonly artifactsBucketArn?: string
+  readonly trustStoreBucketArn?: string
+  readonly trustStoreDeploymentBucketArn?: string
+  readonly cptUIStatefulResourcesStaticContentBucketArn?: string
+  readonly epsamKbDocsBucketArn?: string
 }
 
 export class AccountResourcesStack_UK extends Stack {
@@ -74,13 +79,12 @@ export class AccountResourcesStack_UK extends Stack {
       region: this.region,
       cloudFormationExecutionRole: props.cloudFormationExecutionRole,
       cloudFormationPrepareChangesetRole: props.cloudFormationPrepareChangesetRole,
-      cloudFormationDeployRole: props.cloudFormationDeployRole
-      // need a way to pass these in
-      // artifactsBucketArn
-      // trustStoreBucketArn
-      // trustStoreDeploymentBucketArn
-      // cptUIStatefulResourcesStaticContentBucketArn
-      // epsamKbDocsBucketArn
+      cloudFormationDeployRole: props.cloudFormationDeployRole,
+      artifactsBucketArn: props.artifactsBucketArn,
+      trustStoreBucketArn: props.trustStoreBucketArn,
+      trustStoreDeploymentBucketArn: props.trustStoreDeploymentBucketArn,
+      cptUIStatefulResourcesStaticContentBucketArn: props.cptUIStatefulResourcesStaticContentBucketArn,
+      epsamKbDocsBucketArn: props.epsamKbDocsBucketArn
     })
 
     const encryption =new Encryption(this, "Encryption", {

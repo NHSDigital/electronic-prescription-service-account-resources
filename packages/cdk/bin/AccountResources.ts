@@ -4,6 +4,7 @@ import {
   getNumberConfigFromEnvVar,
   getConfigFromEnvVar
 } from "@nhsdigital/eps-cdk-constructs"
+import {tryGetConfigFromEnvVar} from "./utils"
 import {AccountResourcesStack_UK} from "../stacks/AccountResourcesStack_UK"
 import {AccountResourcesStack_US} from "../stacks/AccountResourcesStack_US"
 import {IAMStack} from "../stacks/IAMStack"
@@ -34,14 +35,6 @@ async function main() {
     cloudFormationDeployRole: iamStack.cloudFormationDeployRole
   })
 
-  // safely retrieve fhirValidatorUkCoreLambdaArn from environment variable to allow for bootstrapping
-  let fhirValidatorUkCoreLambdaArn: string | undefined
-  try {
-    fhirValidatorUkCoreLambdaArn = getConfigFromEnvVar("fhirValidatorUkCoreLambdaArn")
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
-    console.warn("FHIR Validator UK Core Lambda ARN not found in environment variables.")
-  }
   new AccountResourcesStack_UK(app, "AccountResources_UK", {
     ...props,
     stackName: accountResourcesUKStackName,
@@ -75,7 +68,13 @@ async function main() {
     proxygenPTLRole: iamStack.proxygenPTLRole,
     proxygenProdRole: iamStack.proxygenProdRole,
     proxygenManagedPolicy: secretsStack.proxygenManagedPolicy,
-    fhirValidatorUkCoreLambdaArn: fhirValidatorUkCoreLambdaArn
+    fhirValidatorUkCoreLambdaArn: tryGetConfigFromEnvVar("fhirValidatorUkCoreLambdaArn"),
+    artifactsBucketArn: tryGetConfigFromEnvVar("artifactsBucketArn"),
+    trustStoreBucketArn: tryGetConfigFromEnvVar("trustStoreBucketArn"),
+    trustStoreDeploymentBucketArn: tryGetConfigFromEnvVar("trustStoreDeploymentBucketArn"),
+    cptUIStatefulResourcesStaticContentBucketArn:
+      tryGetConfigFromEnvVar("cptUIStatefulResourcesStaticContentBucketArn"),
+    epsamKbDocsBucketArn: tryGetConfigFromEnvVar("epsamKbDocsBucketArn")
   })
 
   new AccountResourcesStack_US(app, "AccountResources_US", {
