@@ -2438,4 +2438,77 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "AccessSlackSecretsManagedPolicy"]]
+  PSUProxygenProdPrivateKey:
+    Description: PSUProxygenProdPrivateKey
+    Value: !GetAtt PSUProxygenProdPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PSUProxygenProdPrivateKey"]]
+  PSUProxygenProdKid:
+    Description: PSUProxygenProdKid
+    Value: !GetAtt PSUProxygenProdKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PSUProxygenProdKid"]]
+  PSUProxygenPTLPrivateKey:
+    Description: PSUProxygenPTLPrivateKey
+    Value: !GetAtt PSUProxygenPTLPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PSUProxygenPTLPrivateKey"]]
+  PSUProxygenPTLKid:
+    Description: PSUProxygenPTLKid
+    Value: !GetAtt PSUProxygenPTLKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PSUProxygenPTLKid"]]
+  CPSUProxygenProdPrivateKey:
+    Description: CPSUProxygenProdPrivateKey
+    Value: !GetAtt CPSUProxygenProdPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CPSUProxygenProdPrivateKey"]]
+  CPSUProxygenProdKid:
+    Description: CPSUProxygenProdKid
+    Value: !GetAtt CPSUProxygenProdKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CPSUProxygenProdKid"]]
+  CPSUProxygenPTLPrivateKey:
+    Description: CPSUProxygenPTLPrivateKey
+    Value: !GetAtt CPSUProxygenPTLPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CPSUProxygenPTLPrivateKey"]]
+  CPSUProxygenPTLKid:
+    Description: CPSUProxygenPTLKid
+    Value: !GetAtt CPSUProxygenPTLKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CPSUProxygenPTLKid"]]
+  ClinicalTrackerProxygenProdPrivateKey:
+    Description: ClinicalTrackerProxygenProdPrivateKey
+    Value: !GetAtt ClinicalTrackerProxygenProdPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenProdPrivateKey"]]
+  ClinicalTrackerProxygenProdKid:
+    Description: ClinicalTrackerProxygenProdKid
+    Value: !GetAtt ClinicalTrackerProxygenProdKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenProdKid"]]
+  ClinicalTrackerProxygenPTLPrivateKey:
+    Description: ClinicalTrackerProxygenPTLPrivateKey
+    Value: !GetAtt ClinicalTrackerProxygenPTLPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPTLPrivateKey"]]
+  ClinicalTrackerProxygenPTLKid:
+    Description: ClinicalTrackerProxygenPTLKid
+    Value: !GetAtt ClinicalTrackerProxygenPTLKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPTLKid"]]
+
   #endregion
