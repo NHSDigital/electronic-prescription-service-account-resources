@@ -26,11 +26,11 @@ vi.mock("../src/signingHelpers", () => ({
 
 const realm_url = "https://mock-realm-url"
 
-describe("getAccessToken", () => {
+describe("getAccessToken - proxygen arn passed in", () => {
   const mockEvent: Proxygen = {
     apiName: "prescription-status-update-api",
     kid: "mockKid",
-    proxygenSecretName: "proxygen-secret-name"
+    proxygenSecretName: "arn:aws:secretsmanager:proxygen-secret-name"
   }
   const mockPrivateKey = "mockPrivateKey"
   const mockAccessToken = "mockAccessToken"

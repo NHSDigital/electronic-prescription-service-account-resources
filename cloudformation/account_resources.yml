@@ -1566,6 +1566,60 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-PSU-ProxygenPublicKey"
 
+  PSUProxygenProdPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for psu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-PrivateKey-prod"
+
+  PSUProxygenProdPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for psu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-PublicKey-prod"
+
+  PSUProxygenProdKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for psu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-kid-prod"
+
+  PSUProxygenPTLPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for psu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-PrivateKey-ptl"
+
+  PSUProxygenPTLPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for psu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-PublicKey-ptl"
+
+  PSUProxygenPTLKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for psu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-kid-ptl"
+
   CPSUProxygenPrivateKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1584,6 +1638,60 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-CPSU-ProxygenPublicKey"
 
+  CPSUProxygenProdPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for cpsu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-PrivateKey-prod"
+
+  CPSUProxygenProdPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for cpsu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-PublicKey-prod"
+
+  CPSUProxygenProdKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for cpsu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-kid-prod"
+
+  CPSUProxygenPTLPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for cpsu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-PrivateKey-ptl"
+
+  CPSUProxygenPTLPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for cpsu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-PublicKey-ptl"
+
+  CPSUProxygenPTLKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for cpsu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-kid-ptl"
+
   ClinicalTrackerProxygenPrivateKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1601,6 +1709,60 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-ClinicalTracker-ProxygenPublicKey"
+
+  ClinicalTrackerProxygenProdPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for clinical tracker proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-PrivateKey-prod"
+
+  ClinicalTrackerProxygenProdPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for clinical tracker proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-PublicKey-prod"
+
+  ClinicalTrackerProxygenProdKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for clinical tracker proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-kid-prod"
+
+  ClinicalTrackerProxygenPTLPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for clinical tracker proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-PrivateKey-ptl"
+
+  ClinicalTrackerProxygenPTLPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for clinical tracker proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-PublicKey-ptl"
+
+  ClinicalTrackerProxygenPTLKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for clinical tracker proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-kid-ptl"
 
   LambdaAccessSecretsPolicy:
     Type: AWS::IAM::ManagedPolicy

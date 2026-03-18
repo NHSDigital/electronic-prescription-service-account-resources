@@ -7,8 +7,24 @@ export function getRealmURL() {
 }
 
 export async function getAccessToken(event: Proxygen, realm_url: string) {
-  const privateKey = await getSecret(event.proxygenSecretName)
-  const signedJWT = createSignedJWT(privateKey, event.kid, event.apiName, realm_url, event.apiClient)
+  const environment = event.environment
+  const baseSecretName = event.proxygenSecretName
+  let kid = event.kid
+  let privateKey
+
+  // if proxygen secret name passed in is an arn, then get the value from secrets using the arn
+  // if its not, then we get the value for private key and kid from secrets depending on the environment
+  if (baseSecretName.startsWith("arn:aws:secretsmanager")) {
+    privateKey = await getSecret(baseSecretName)
+  } else if (environment === "prod") {
+    privateKey = await getSecret(`${baseSecretName}-PrivateKey-prod`)
+    kid = await getSecret(`${baseSecretName}-kid-prod`)
+  } else {
+    privateKey = await getSecret(`${baseSecretName}-PrivateKey-ptl`)
+    kid = await getSecret(`${baseSecretName}-kid-ptl`)
+  }
+
+  const signedJWT = createSignedJWT(privateKey, kid, event.apiName, realm_url, event.apiClient)
   const payload = {
     grant_type: "client_credentials",
     client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
