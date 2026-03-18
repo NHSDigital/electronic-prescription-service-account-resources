@@ -229,8 +229,24 @@ export class AccountResourcesStack_UK extends Stack {
       value: "CHANGE_ME",
       exportName: `${props.stackName}:Bucket:AuditLoggingBucket:Name`
     })
-    nagSuppressions(this, "AccountResources_UK")
 
+    // account-resources:CloudwatchEncryptionKMSPolicyArn
+    // used by
+    // pfp
+    // psu
+    // cpt
+    // cpt-api
+    // monitoring
+    // epsam
+    // lambda-resources
+    // fhir-validator
+    // vpc-resources
+    // prescribe-dispense
+    new CfnOutput(this, "CloudwatchEncryptionKMSPolicyArn", {
+      value: encryption.useCloudwatchLogsKmsKeyManagedPolicy.managedPolicyArn,
+      exportName: `${props.stackName}:ManagedPolicy:CloudwatchEncryptionKMSPolicy:Arn`
+    })
+    nagSuppressions(this, "AccountResources_UK")
     this.auditLoggingBucket = storage.auditLoggingBucket
   }
 }

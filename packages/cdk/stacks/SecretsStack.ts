@@ -145,11 +145,141 @@ export class SecretsStack extends Stack {
       value: "CHANGE_ME",
       exportName: `${props.stackName}:Secret:ClinicalTrackerCAKey:Value`
     })
-
+    // account-resources:ClinicalTrackerClientCertSecret
+    // used by lambda-resources and ci-resources
     new CfnOutput(this, "ClinicalTrackerClientCertArn", {
       // value: mtlsSecrets.clinicalTrackerClientCert.secretArn,
       value: "CHANGE_ME",
       exportName: `${props.stackName}:Secret:ClinicalTrackerClientCert:Arn`
+    })
+    // account-resources:ClinicalTrackerClientKeySecret
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "ClinicalTrackerClientKey", {
+      //value: mtlsSecrets.clinicalTrackerClientKey.secretArn,
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:Secret:ClinicalTrackerClientKey:Arn`
+    })
+
+    // account-resources:ClinicalTrackerClientSandboxCertSecret
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "ClinicalTrackerClientSandboxCert", {
+      // value: mtlsSecrets.clinicalTrackerClientSandboxCert.secretArn,
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:Secret:ClinicalTrackerClientSandboxCert:Arn`
+    })
+
+    // account-resources:ClinicalTrackerClientSandboxKeySecret
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "ClinicalTrackerClientSandboxKey", {
+      // value: mtlsSecrets.clinicalTrackerClientSandboxKey.secretArn,
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:Secret:ClinicalTrackerClientSandboxKey:Arn`
+    })
+
+    // account-resources:ClinicalTrackerProxygenPrivateKey
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "ClinicalTrackerProxygenPrivateKey", {
+      // value: proxygenSecrets.clinicalTrackerProxygenPrivateKey.secretArn,
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenPrivateKey:Arn`
+    })
+
+    // account-resources:ClinicalTrackerProxygenPublicKey
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "ClinicalTrackerProxygenPublicKey", {
+      // value: proxygenSecrets.clinicalTrackerProxygenPublicKey.secretArn,
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenPublicKey:Arn`
+    })
+
+    // account-resources:CPSUProxygenPrivateKey
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "CPSUProxygenPrivateKey", {
+      value: proxygenSecrets.cpsuProxygenPrivateKey.secretArn,
+      exportName: `${props.stackName}:Secret:CPSUProxygenPrivateKey:Arn`
+    })
+
+    // account-resources:CPSUProxygenPublicKey
+    // used by ci-resources
+    new CfnOutput(this, "CPSUProxygenPublicKey", {
+      value: proxygenSecrets.cpsuProxygenPublicKey.secretArn,
+      exportName: `${props.stackName}:Secret:CPSUProxygenPublicKey:Arn`
+    })
+
+    // account-resources:FhirFacadeCACertSecret
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "FhirFacadeCACert", {
+      value: mtlsSecrets.fhirFacadeCACert.secretArn,
+      exportName: `${props.stackName}:Secret:FhirFacadeCACert:Arn`
+    })
+
+    // account-resources:FhirFacadeCAKeySecret
+    // used by ci-resources
+    new CfnOutput(this, "FhirFacadeCAKey", {
+      value: mtlsSecrets.fhirFacadeCAKey.secretArn,
+      exportName: `${props.stackName}:Secret:FhirFacadeCAKey:Arn`
+    })
+
+    // account-resources:FhirFacadeClientCertSecret
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "FhirFacadeClientCert", {
+      value: mtlsSecrets.fhirFacadeClientCert.secretArn,
+      exportName: `${props.stackName}:Secret:FhirFacadeClientCert:Arn`
+    })
+
+    // account-resources:FhirFacadeClientKeySecret
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "FhirFacadeClientKey", {
+      value: mtlsSecrets.fhirFacadeClientKey.secretArn,
+      exportName: `${props.stackName}:Secret:FhirFacadeClientKey:Arn`
+    })
+
+    // account-resources:FhirFacadeClientSandboxCertSecret
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "FhirFacadeClientSandboxCert", {
+      value: mtlsSecrets.fhirFacadeClientSandboxCert.secretArn,
+      exportName: `${props.stackName}:Secret:FhirFacadeClientSandboxCert:Arn`
+    })
+
+    // account-resources:FhirFacadeClientSandboxKeySecret
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "FhirFacadeClientSandboxKey", {
+      value: mtlsSecrets.fhirFacadeClientSandboxKey.secretArn,
+      exportName: `${props.stackName}:Secret:FhirFacadeClientSandboxKey:Arn`
+    })
+
+    // account-resources:LambdaAccessSecretsPolicy
+    // used by
+    // pfp
+    // psu
+    // cpt-api
+    // cpt
+    // prescribe-dispense
+    new CfnOutput(this, "LambdaAccessSecretsPolicy", {
+      value: configSecrets.lambdaAccessSecretsPolicy.managedPolicyArn,
+      exportName: `${props.stackName}:Policy:LambdaAccessSecrets:Arn`
+    })
+
+    // account-resources:LambdaDecryptSecretsKMSPolicy
+    // used by
+    // pfp
+    // psu
+    // cpt-api
+    // lambda-resources
+    // monitoring
+    // cpt-ui
+    // prescribe-dispense
+    // fhir-validator
+    new CfnOutput(this, "LambdaDecryptSecretsKMSPolicy", {
+      value: encryption.lambdaDecryptSecretsKmsPolicy.managedPolicyArn,
+      exportName: `${props.stackName}:Policy:LambdaDecryptSecretsKMS:Arn`
+    })
+
+    // account-resources:PfpCACertSecret
+    // used by lambda-resources
+    new CfnOutput(this, "PfpCACertSecret", {
+      value: mtlsSecrets.pfpCACert.secretArn,
+      exportName: `${props.stackName}:Secret:PfpCACert:Arn`
     })
     nagSuppressions(this, "Secrets")
   }
