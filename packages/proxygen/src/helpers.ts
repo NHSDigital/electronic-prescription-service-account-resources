@@ -10,7 +10,7 @@ export async function getAccessToken(event: Proxygen, realm_url: string) {
   const environment = event.environment
   const baseSecretName = event.proxygenSecretName
   let kid = event.kid
-  let privateKey
+  let privateKey: string
 
   // if proxygen secret name passed in is an arn, then get the value from secrets using the arn
   // if its not, then we get the value for private key and kid from secrets depending on the environment
