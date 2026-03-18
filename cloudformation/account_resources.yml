@@ -1566,6 +1566,69 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-PSU-ProxygenPublicKey"
 
+  PSUProxygenKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: kid for psu proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-PSU-ProxygenKid"
+
+  PSUProxygenProdPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for psu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-PrivateKey-prod"
+
+  PSUProxygenProdPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for psu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-PublicKey-prod"
+
+  PSUProxygenProdKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for psu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-kid-prod"
+
+  PSUProxygenPTLPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for psu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-PrivateKey-ptl"
+
+  PSUProxygenPTLPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for psu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-PublicKey-ptl"
+
+  PSUProxygenPTLKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for psu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "PSUProxygen-kid-ptl"
+
   CPSUProxygenPrivateKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1584,6 +1647,69 @@ Resources:
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-CPSU-ProxygenPublicKey"
 
+  CPSUProxygenKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Kid for cpsu proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-CPSU-ProxygenKid"
+
+  CPSUProxygenProdPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for cpsu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-PrivateKey-prod"
+
+  CPSUProxygenProdPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for cpsu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-PublicKey-prod"
+
+  CPSUProxygenProdKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for cpsu proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-kid-prod"
+
+  CPSUProxygenPTLPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for cpsu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-PrivateKey-ptl"
+
+  CPSUProxygenPTLPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for cpsu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-PublicKey-ptl"
+
+  CPSUProxygenPTLKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for cpsu proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "CPSUProxygen-kid-ptl"
+
   ClinicalTrackerProxygenPrivateKey:
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
@@ -1601,6 +1727,69 @@ Resources:
       KmsKeyId: alias/SecretsKMSKeyAlias
       SecretString: ChangeMe
       Name: !Sub "${AWS::StackName}-ClinicalTracker-ProxygenPublicKey"
+
+  ClinicalTrackerProxygenKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Kid for clinical tracker proxygen
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: !Sub "${AWS::StackName}-ClinicalTracker-ProxygenKid"
+
+  ClinicalTrackerProxygenProdPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for clinical tracker proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-PrivateKey-prod"
+
+  ClinicalTrackerProxygenProdPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for clinical tracker proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-PublicKey-prod"
+
+  ClinicalTrackerProxygenProdKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for clinical tracker proxygen prod
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-kid-prod"
+
+  ClinicalTrackerProxygenPTLPrivateKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Private key for clinical tracker proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-PrivateKey-ptl"
+
+  ClinicalTrackerProxygenPTLPublicKey:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Public key for clinical tracker proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-PublicKey-ptl"
+
+  ClinicalTrackerProxygenPTLKid:
+    DependsOn: SecretsKMSKeyKMSKeyAlias
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: KID for clinical tracker proxygen ptl
+      KmsKeyId: alias/SecretsKMSKeyAlias
+      SecretString: ChangeMe
+      Name: "ClinicalTrackerProxygen-kid-ptl"
 
   LambdaAccessSecretsPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -2235,6 +2424,12 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PSUProxygenPublicKey"]]
 
+  PSUProxygenKid:
+    Description: PSUProxygenKid
+    Value: !GetAtt PSUProxygenKid.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PSUProxygenKid"]]
+
   CPSUProxygenPrivateKey:
     Description: CPSUProxygenPrivateKey
     Value: !GetAtt CPSUProxygenPrivateKey.Id
@@ -2246,6 +2441,12 @@ Outputs:
     Value: !GetAtt CPSUProxygenPublicKey.Id
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "CPSUProxygenPublicKey"]]
+
+  CPSUProxygenKid:
+    Description: CPSUProxygenKid
+    Value: !GetAtt CPSUProxygenKid.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CPSUProxygenKid"]]
 
   ClinicalTrackerProxygenPrivateKey:
     Description: ClinicalTrackerProxygenPrivateKey
@@ -2263,6 +2464,12 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPublicKey"]]
+  ClinicalTrackerProxygenKid:
+    Description: ClinicalTrackerProxygenKid
+    Value: !GetAtt ClinicalTrackerProxygenKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenKid"]]
 
   SlackWebHookUrl:
     Description: Slack webhook url
@@ -2276,4 +2483,77 @@ Outputs:
     Export:
       Name:
         !Join [":", [!Ref "AWS::StackName", "AccessSlackSecretsManagedPolicy"]]
+  PSUProxygenProdPrivateKey:
+    Description: PSUProxygenProdPrivateKey
+    Value: !GetAtt PSUProxygenProdPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PSUProxygenProdPrivateKey"]]
+  PSUProxygenProdKid:
+    Description: PSUProxygenProdKid
+    Value: !GetAtt PSUProxygenProdKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PSUProxygenProdKid"]]
+  PSUProxygenPTLPrivateKey:
+    Description: PSUProxygenPTLPrivateKey
+    Value: !GetAtt PSUProxygenPTLPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PSUProxygenPTLPrivateKey"]]
+  PSUProxygenPTLKid:
+    Description: PSUProxygenPTLKid
+    Value: !GetAtt PSUProxygenPTLKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "PSUProxygenPTLKid"]]
+  CPSUProxygenProdPrivateKey:
+    Description: CPSUProxygenProdPrivateKey
+    Value: !GetAtt CPSUProxygenProdPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CPSUProxygenProdPrivateKey"]]
+  CPSUProxygenProdKid:
+    Description: CPSUProxygenProdKid
+    Value: !GetAtt CPSUProxygenProdKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CPSUProxygenProdKid"]]
+  CPSUProxygenPTLPrivateKey:
+    Description: CPSUProxygenPTLPrivateKey
+    Value: !GetAtt CPSUProxygenPTLPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CPSUProxygenPTLPrivateKey"]]
+  CPSUProxygenPTLKid:
+    Description: CPSUProxygenPTLKid
+    Value: !GetAtt CPSUProxygenPTLKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "CPSUProxygenPTLKid"]]
+  ClinicalTrackerProxygenProdPrivateKey:
+    Description: ClinicalTrackerProxygenProdPrivateKey
+    Value: !GetAtt ClinicalTrackerProxygenProdPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenProdPrivateKey"]]
+  ClinicalTrackerProxygenProdKid:
+    Description: ClinicalTrackerProxygenProdKid
+    Value: !GetAtt ClinicalTrackerProxygenProdKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenProdKid"]]
+  ClinicalTrackerProxygenPTLPrivateKey:
+    Description: ClinicalTrackerProxygenPTLPrivateKey
+    Value: !GetAtt ClinicalTrackerProxygenPTLPrivateKey.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPTLPrivateKey"]]
+  ClinicalTrackerProxygenPTLKid:
+    Description: ClinicalTrackerProxygenPTLKid
+    Value: !GetAtt ClinicalTrackerProxygenPTLKid.Id
+    Export:
+      Name:
+        !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenPTLKid"]]
+
   #endregion

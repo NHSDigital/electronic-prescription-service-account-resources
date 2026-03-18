@@ -29,6 +29,9 @@ vulnerabilities:
   - id: CVE-2026-32597
     statement: Transitive dependency vulnerability in pyjwt
     expired_at: 2026-06-01
+  - id: CVE-2026-33036
+    statement: fast-xml-parser dependency of @aws/sdk
+    expired_at: 2026-06-01
 licenses:
   - id: LGPL-2.1-only
     filepath: .venv/lib/python3.12/site-packages/pygithub-2.8.1.dist-info/METADATA
