@@ -2,7 +2,8 @@ import {
   StackProps,
   Stack,
   App,
-  Tags
+  Tags,
+  CfnOutput
 } from "aws-cdk-lib"
 import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
 import {MTLSSecrets} from "../resources/MTLSSecrets"
@@ -129,6 +130,27 @@ export class SecretsStack extends Stack {
     this.ptlPrescriptionSigningPublicKey = configSecrets.ptlPrescriptionSigningPublicKey
     this.accessSlackSecretsManagedPolicy = configSecrets.accessSlackSecretsManagedPolicy
     this.proxygenManagedPolicy = secretPolicies.proxygenManagedPolicy
+
+    // account-resources:ClinicalTrackerCACertSecret
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "ClinicalTrackerCACertArn", {
+      //value: mtlsSecrets.clinicalTrackerCACert.secretArn,
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:Secret:ClinicalTrackerCACert:Arn`
+    })
+    // account-resources:ClinicalTrackerCAKeySecret
+    // used by lambda-resources and ci-resources
+    new CfnOutput(this, "ClinicalTrackerCAKeyArn", {
+      //value: mtlsSecrets.clinicalTrackerCAKey.secretArn,
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:Secret:ClinicalTrackerCAKey:Value`
+    })
+
+    new CfnOutput(this, "ClinicalTrackerClientCertArn", {
+      // value: mtlsSecrets.clinicalTrackerClientCert.secretArn,
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:Secret:ClinicalTrackerClientCert:Arn`
+    })
     nagSuppressions(this, "Secrets")
   }
 }

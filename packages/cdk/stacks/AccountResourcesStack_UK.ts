@@ -2,7 +2,8 @@ import {
   StackProps,
   Stack,
   App,
-  Tags
+  Tags,
+  CfnOutput
 } from "aws-cdk-lib"
 import {ECRRepositories} from "../resources/ECRRepositories"
 import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
@@ -205,6 +206,28 @@ export class AccountResourcesStack_UK extends Stack {
       cloudWatchLogsKmsKey: encryption.cloudwatchLogsKmsKey,
       lambdaInsightsLogGroupPolicy: functionPolicies.lambdaInsightsLogGroupPolicy,
       cloudwatchEncryptionKMSPolicy: encryption.useCloudwatchLogsKmsKeyManagedPolicy
+    })
+
+    // account-resources:AccessSlackSecretsManagedPolicy
+    // used by lambda-resources stack
+    new CfnOutput(this, "AccessSlackSecretsManagedPolicy", {
+      //value: props.accessSlackSecretsManagedPolicy.managedPolicyArn,
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:ManagedPolicy:AccessSlackSecretsManagedPolicy:Arn`
+    })
+    // account-resources:ALBLoggingBucketName
+    // used by prescribe-dispense stack
+    new CfnOutput(this, "ALBLoggingBucketName", {
+      //value: storage.albLoggingBucket.bucketName || "UNDEFINED",
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:Bucket:ALBLoggingBucket:Name`
+    })
+    // account-resources:AuditLoggingBucket
+    // used by cpt-ui-stateful-resources and epsam stacks
+    new CfnOutput(this, "AuditLoggingBucketName", {
+      //value: storage.auditLoggingBucket.bucketName || "UNDEFINED",
+      value: "CHANGE_ME",
+      exportName: `${props.stackName}:Bucket:AuditLoggingBucket:Name`
     })
     nagSuppressions(this, "AccountResources_UK")
 

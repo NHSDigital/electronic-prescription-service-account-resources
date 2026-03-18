@@ -20,6 +20,7 @@ export interface StorageProps {
 }
 export class Storage extends Construct {
   public readonly auditLoggingBucket: CfnBucket
+  public readonly albLoggingBucket: CfnBucket
 
   public constructor(scope: Construct, id: string, props: StorageProps) {
     super(scope, id)
@@ -701,6 +702,7 @@ export class Storage extends Construct {
       "S3_BUCKET_DEFAULT_LOCK_ENABLED"
     ])
     this.auditLoggingBucket = auditLoggingBucket
+    this.albLoggingBucket = albLoggingBucket
   }
 
   createAuditLoggingPolicy(
