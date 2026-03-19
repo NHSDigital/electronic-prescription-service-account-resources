@@ -144,6 +144,7 @@ jobs:
         package_cdk_code,
         tag_release,
         get_config_values,
+        deploy_qa_stacks,
       ]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
