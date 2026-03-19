@@ -44,14 +44,20 @@ jobs:
   
   tag_release:
     needs: [quality_checks, package_code, package_cdk_code, get_commit_id, get_config_values]
-    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@383f3f9eaf3cb553ebcd74897bfed4d5e387629e
+    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@7a89b111ae752548e8e3f3fbaeb89bd6ecca0698
+    permissions:
+      id-token: write
+      contents: write
     with:
       dry_run: false
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       branch_name: main
       tag_format: ${{ needs.get_config_values.outputs.tag_format }}
-    secrets: inherit
-
+      update_jira: true
+      jira_release_prefix: "account-resources"
+    secrets:
+      EXECUTE_JIRA_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
+  
   deploy_dev_stacks:
     needs: [get_commit_id, package_code, package_cdk_code, tag_release, get_config_values]
     uses: ./.github/workflows/release_all_stacks.yml
@@ -72,21 +78,6 @@ jobs:
     secrets:
       cf_create_changeset_role: ${{ secrets.DEV_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-
-  create_release_notes_post_dev:
-    needs: [tag_release, deploy_dev_stacks]
-    uses: ./.github/workflows/create_confluence_release_notes.yml
-    with:
-      VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
-      CREATE_INT_RELEASE_NOTES: true
-      CREATE_INT_RC_RELEASE_NOTES: false
-      CREATE_PROD_RELEASE_NOTES: true
-      MARK_JIRA_RELEASED: false
-    secrets:
-      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
 
   deploy_ref_stacks:
     needs:
@@ -145,22 +136,6 @@ jobs:
     secrets:
       cf_create_changeset_role: ${{ secrets.QA_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
-  create_release_notes_pre_int:
-    needs: [tag_release, deploy_qa_stacks]
-    uses: ./.github/workflows/create_confluence_release_notes.yml
-    with:
-      VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
-      CREATE_INT_RELEASE_NOTES: false
-      CREATE_INT_RC_RELEASE_NOTES: true
-      CREATE_PROD_RELEASE_NOTES: false
-      MARK_JIRA_RELEASED: false
-      TARGET_ENVIRONMENT: int-ci
-    secrets:
-      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-
   deploy_int_stacks:
     needs:
       [
@@ -168,7 +143,6 @@ jobs:
         package_code,
         package_cdk_code,
         tag_release,
-        create_release_notes_pre_int,
         get_config_values,
       ]
     uses: ./.github/workflows/release_all_stacks.yml
@@ -189,21 +163,6 @@ jobs:
     secrets:
       cf_create_changeset_role: ${{ secrets.INT_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
-
-  create_release_notes_post_int:
-    needs: [tag_release, deploy_int_stacks]
-    uses: ./.github/workflows/create_confluence_release_notes.yml
-    with:
-      VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
-      CREATE_INT_RELEASE_NOTES: true
-      CREATE_INT_RC_RELEASE_NOTES: false
-      CREATE_PROD_RELEASE_NOTES: false
-      MARK_JIRA_RELEASED: false
-    secrets:
-      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
 
   deploy_prod_stacks:
     needs:
@@ -233,18 +192,3 @@ jobs:
     secrets:
       cf_create_changeset_role: ${{ secrets.PROD_CLOUD_FORMATION_CREATE_CHANGESET_ROLE }}
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
-
-  create_release_notes_post_prod:
-    needs: [tag_release, deploy_prod_stacks]
-    uses: ./.github/workflows/create_confluence_release_notes.yml
-    with:
-      VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
-      CREATE_INT_RELEASE_NOTES: false
-      CREATE_INT_RC_RELEASE_NOTES: false
-      CREATE_PROD_RELEASE_NOTES: true
-      MARK_JIRA_RELEASED: true
-    secrets:
-      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
