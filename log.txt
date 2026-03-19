@@ -3,6 +3,7 @@ Exports in use:
     - lambda-resources
   account-resources:ALBLoggingBucketName
     - prescribe-dispense
+    - prescribe-dispense-sandox
   account-resources:AuditLoggingBucket
     - cpt-ui-stateful-resources
     - epsam
@@ -23,55 +24,92 @@ Exports in use:
   account-resources:ClinicalTrackerClientSandboxKeySecret
     - lambda-resources
     - ci-resources
+  account-resources:ClinicalTrackerProxygenKid
+    - lambda-resources
   account-resources:ClinicalTrackerProxygenPrivateKey
     - lambda-resources
     - ci-resources
+  account-resources:ClinicalTrackerProxygenProdKid
+    - lambda-resources
+  account-resources:ClinicalTrackerProxygenProdPrivateKey
+    - lambda-resources
+  account-resources:ClinicalTrackerProxygenPTLKid
+    - lambda-resources
+  account-resources:ClinicalTrackerProxygenPTLPrivateKey
+    - lambda-resources
   account-resources:ClinicalTrackerProxygenPublicKey
     - ci-resources
   account-resources:CloudwatchEncryptionKMSPolicyArn
-    - pfp-Functions-9AIPUYS90ESY-CapabilityStatementResources-1FXFPEOMMFZKF
-    - psu-Functions-1CX9JNKACL5GX-CapabilityStatementResources-XHSJS759RQXR
-    - cpt-api-v1-8-8-beta
-    - cpt
-    - psu-StateMachines-430UGRYC5S5-Format1UpdatePrescriptionsStatusStateMachineResources-PK1OFNXP3LG9
-    - monitoring
-    - cpt-api-v1-8-9-beta
-    - psu-Functions-1CX9JNKACL5GX-PostDatedNotifyLambdaResources-1K09YGZYE7JF2
-    - psu-Functions-1CX9JNKACL5GX-NotifyProcessorResources-1KP3K1EQSK0TW
-    - pfp-Functions-9AIPUYS90ESY-EnrichPrescriptionsResources-BH67RECLQHFH
-    - psu-StateMachines-430UGRYC5S5-UpdatePrescriptionStatusStateMachineResources-7DZNCBFQ91OG
-    - pfp-StateMachines-1XJT6ID36UIE9-GetMyPrescriptionsStateMachineResources-MTJ7ADPU16G9
-    - psu-Functions-1CX9JNKACL5GX-NHSNotifyUpdateCallbackResources-V75ZHH57R7AV
-    - psu-Functions-1CX9JNKACL5GX-StatusResources-1CH4ODAQVGBH2
-    - psu-Functions-1CX9JNKACL5GX-GetStatusUpdatesResources-1VUDJIJR4SX9U
-    - pfp-Functions-9AIPUYS90ESY-GetMyPrescriptionsResources-OR36NNXZCQ2B
+    - psu-sandbox-StatusResources-3GXUMH86VSLT
+    - pfp-sandbox-StatusResources-15UUCW2GVSZZ3
+    - psu-sandbox-SandboxResources-1519JPYW7G4RW
+    - pfp-sandbox-CapabilityStatementResources-1VUZBPJ4908WT
+    - pfp-sandox-CapabilityStatementResources-10AL9D6MMTDVU
+    - cpt-sandbox-SandboxResources-1L01UXN6KTICY
     - cpt-ui-stateless-resources
+    - pfp-Functions-1QTO81W3BJPXZ-EnrichPrescriptionsResources-1CLBULHLSS4I7
+    - psu-Functions-ZK9K4HF7LRZ2-UpdatePrescriptionStatusResources-3TU60WKIO9DJ
+    - psu-Functions-ZK9K4HF7LRZ2-StatusResources-633BAZP0DE1H
+    - psu-sandbox-CapabilityStatementResources-5WO9I9S8LP19
+    - pfp-Functions-1QTO81W3BJPXZ-CapabilityStatementResources-G12LA6H5669B
+    - psu-Functions-ZK9K4HF7LRZ2-GetStatusUpdatesResources-1IWLWELOYGKUB
+    - psu-Functions-ZK9K4HF7LRZ2-ConvertRequestToFhirFormatResources-18DENEPUY1ZTL
     - epsam
-    - psu-Functions-1CX9JNKACL5GX-UpdatePrescriptionStatusResources-NG1EZYP3YC6I
-    - pfp-Functions-9AIPUYS90ESY-StatusResources-82RONI12GCSB
-    - psu-Functions-1CX9JNKACL5GX-ConvertRequestToFhirFormatResources-1N12STAXGPJ8O
-    - psu-Functions-1CX9JNKACL5GX-CheckPrescriptionStatusUpdatesResources-1NQI6LV461LP7
+    - psu-Functions-ZK9K4HF7LRZ2-CapabilityStatementResources-16OJZHPTFJAQ3
+    - psu-StateMachines-SYGRL4DW73FO-UpdatePrescriptionStatusStateMachineResources-OU3OLLU9FBLN
+    - cpt-api-v1-8-9-beta
+    - pfp-StateMachines-3XW0V0YMPTU0-GetMyPrescriptionsStateMachineResources-1BT4QXMDJPZC0
+    - psu-Functions-ZK9K4HF7LRZ2-NotifyProcessorResources-15RH5HHBJCBZV
+    - psu-Functions-ZK9K4HF7LRZ2-PsuRestoreValidationResources-1NZ6ACUEU780N
+    - cpt
+    - pfp-sandox-SandboxResources-QGJ2ADENAC17
+    - pfp-sandox-StatusResources-1X1D2FHYLSJX0
+    - psu-Functions-ZK9K4HF7LRZ2-PostDatedNotifyLambdaResources-1WGQ0S4G869MM
+    - psu-StateMachines-SYGRL4DW73FO-Format1UpdatePrescriptionsStatusStateMachineResources-EPE50CE5SAQU
+    - pfp-Functions-1QTO81W3BJPXZ-StatusResources-VIIU80MGKVIO
+    - cpt-api-v1-8-8-beta
+    - psu-Functions-ZK9K4HF7LRZ2-CheckPrescriptionStatusUpdatesResources-EXFL0IEY73LM
+    - psu-Functions-ZK9K4HF7LRZ2-NHSNotifyUpdateCallbackResources-VV1GEWZQQ2BT
+    - pfp-Functions-1QTO81W3BJPXZ-GetMyPrescriptionsResources-12Y425P0ZBLVS
+    - cpt-sandbox-StatusResources-P84PJNGX2GML
+    - pfp-sandbox-SandboxResources-Y9YO531VPZ2L
+    - monitoring
   account-resources:CloudwatchLogsKmsKeyArn
-    - cpt-api-v1-8-8-beta
-    - cpt
-    - cpt-ui-stateful-resources
-    - pfp-StateMachines-1XJT6ID36UIE9
-    - lambda-resources
-    - monitoring
     - cpt-api-v1-8-9-beta
+    - pfp-StateMachines-3XW0V0YMPTU0
+    - psu-StateMachines-SYGRL4DW73FO
+    - cpt
+    - pfp-sandox
     - fhir-validator
-    - pfp-Apis-BGQQGUE00T7Y-RestApiGatewayResources-F17G2YU6UO64
-    - pfp-Functions-9AIPUYS90ESY
-    - psu-Functions-1CX9JNKACL5GX
-    - psu-StateMachines-430UGRYC5S5
-    - vpc-resources
-    - prescribe-dispense
-    - psu-Apis-P87X49O41O5W-RestApiGatewayResources-JU62UAREY4FH
+    - psu-Functions-ZK9K4HF7LRZ2
+    - pfp-Functions-1QTO81W3BJPXZ
+    - pfp-sandbox
     - cpt-ui-stateless-resources
+    - prescribe-dispense
+    - cpt-ui-stateful-resources
+    - psu-sandbox
+    - prescribe-dispense-sandox
+    - cpt-api-v1-8-8-beta
+    - psu-Apis-1OZWMQ456D64S-RestApiGatewayResources-142YY4KLK8J4T
+    - pfp-Apis-IVNAZ11W9BKT-RestApiGatewayResources-J8VVMZJU3RBU
+    - vpc-resources
+    - lambda-resources
+    - cpt-sandbox
     - epsam
+    - monitoring
+  account-resources:CPSUProxygenKid
+    - lambda-resources
   account-resources:CPSUProxygenPrivateKey
     - lambda-resources
     - ci-resources
+  account-resources:CPSUProxygenProdKid
+    - lambda-resources
+  account-resources:CPSUProxygenProdPrivateKey
+    - lambda-resources
+  account-resources:CPSUProxygenPTLKid
+    - lambda-resources
+  account-resources:CPSUProxygenPTLPrivateKey
+    - lambda-resources
   account-resources:CPSUProxygenPublicKey
     - ci-resources
   account-resources:FhirFacadeCACertSecret
@@ -92,58 +130,73 @@ Exports in use:
     - lambda-resources
     - ci-resources
   account-resources:LambdaAccessSecretsPolicy
-    - pfp-Functions-9AIPUYS90ESY
-    - psu-Functions-1CX9JNKACL5GX
     - cpt-api-v1-8-8-beta
-    - cpt
-    - prescribe-dispense
     - cpt-api-v1-8-9-beta
+    - cpt
+    - psu-Functions-ZK9K4HF7LRZ2
+    - pfp-Functions-1QTO81W3BJPXZ
+    - prescribe-dispense
+    - psu-sandbox
+    - prescribe-dispense-sandox
   account-resources:LambdaDecryptSecretsKMSPolicy
-    - pfp-Functions-9AIPUYS90ESY-CapabilityStatementResources-1FXFPEOMMFZKF
-    - psu-Functions-1CX9JNKACL5GX-CapabilityStatementResources-XHSJS759RQXR
-    - cpt-api-v1-8-8-beta
-    - cpt
-    - lambda-resources-ExpiryFunctionResources-CDU0KH0O88BR
-    - monitoring
-    - psu-Functions-1CX9JNKACL5GX-PostDatedNotifyLambdaResources-1K09YGZYE7JF2
-    - pfp-Functions-9AIPUYS90ESY-EnrichPrescriptionsResources-BH67RECLQHFH
-    - lambda-resources-ProxygenPTLInstanceGetFunctionResources-LIMTMOPIWQ29
-    - lambda-resources-ProxygenPTLMTLSSecretPutFunctionResources-86OKBPLU2F82
-    - psu-Functions-1CX9JNKACL5GX-NHSNotifyUpdateCallbackResources-V75ZHH57R7AV
-    - psu-Functions-1CX9JNKACL5GX-StatusResources-1CH4ODAQVGBH2
-    - lambda-resources-DriftDetectorResources-XY01NQZLUE89
-    - pfp-Functions-9AIPUYS90ESY-GetMyPrescriptionsResources-OR36NNXZCQ2B
+    - lambda-resources-ExpiryFunctionResources-1IZL8GQADKL7W
+    - psu-sandbox-StatusResources-3GXUMH86VSLT
+    - pfp-sandbox-StatusResources-15UUCW2GVSZZ3
+    - lambda-resources-DriftDetectorResources-BVGSXUSKKOZ3
+    - psu-sandbox-SandboxResources-1519JPYW7G4RW
+    - pfp-sandbox-CapabilityStatementResources-1VUZBPJ4908WT
+    - pfp-sandox-CapabilityStatementResources-10AL9D6MMTDVU
+    - cpt-sandbox-SandboxResources-1L01UXN6KTICY
     - cpt-ui-stateless-resources
-    - lambda-resources-ProxygenPTLInstanceDeleteFunctionResources-4X6VKNHVAUJB
-    - psu-Functions-1CX9JNKACL5GX-ConvertRequestToFhirFormatResources-1N12STAXGPJ8O
-    - lambda-resources-ProxygenPTLInstancePutFunctionResources-1N3SNRZ72VDO9
+    - lambda-resources-ProxygenProdSpecPublishFunctionResources-1RD998EEBH84G
+    - lambda-resources-ProxygenPTLSpecPublishFunctionResources-1G96GY8EX4YTD
+    - pfp-Functions-1QTO81W3BJPXZ-EnrichPrescriptionsResources-1CLBULHLSS4I7
+    - lambda-resources-ProxygenPTLMTLSSecretPutFunctionResources-1ODPPDP7LN09G
+    - lambda-resources-ProxygenPTLInstanceGetFunctionResources-5J5WU5JVMZ71
+    - lambda-resources-LambdaJanitorResources-KR9FAW7K9G22
+    - psu-Functions-ZK9K4HF7LRZ2-UpdatePrescriptionStatusResources-3TU60WKIO9DJ
+    - lambda-resources-ProxygenProdMTLSSecretPutFunctionResources-1R2ISR82HAPOZ
+    - psu-sandbox-CapabilityStatementResources-5WO9I9S8LP19
+    - psu-Functions-ZK9K4HF7LRZ2-StatusResources-633BAZP0DE1H
+    - pfp-Functions-1QTO81W3BJPXZ-CapabilityStatementResources-G12LA6H5669B
+    - psu-Functions-ZK9K4HF7LRZ2-GetStatusUpdatesResources-1IWLWELOYGKUB
+    - psu-Functions-ZK9K4HF7LRZ2-ConvertRequestToFhirFormatResources-18DENEPUY1ZTL
+    - psu-Functions-ZK9K4HF7LRZ2-CapabilityStatementResources-16OJZHPTFJAQ3
     - cpt-api-v1-8-9-beta
-    - lambda-resources-LambdaJanitorResources-14FBKTPO5381S
-    - lambda-resources-SlackAlerterResources-ICFNZ83E3KLF
-    - psu-Functions-1CX9JNKACL5GX-NotifyProcessorResources-1KP3K1EQSK0TW
-    - lambda-resources-ProxygenProdSpecPublishFunctionResources-DWWFXKSS7XMR
-    - lambda-resources-ProxygenProdInstancePutFunctionResources-1LZAU822ZOKD8
-    - lambda-resources-ProxygenPTLSpecPublishFunctionResources-1TQ76WJ87Y3GK
+    - psu-Functions-ZK9K4HF7LRZ2-NotifyProcessorResources-15RH5HHBJCBZV
+    - psu-Functions-ZK9K4HF7LRZ2-PsuRestoreValidationResources-1NZ6ACUEU780N
+    - lambda-resources-ProxygenPTLInstanceDeleteFunctionResources-6N15WV3BLUUL
+    - cpt
+    - pfp-sandox-SandboxResources-QGJ2ADENAC17
     - prescribe-dispense
-    - psu-Functions-1CX9JNKACL5GX-GetStatusUpdatesResources-1VUDJIJR4SX9U
-    - lambda-resources-ProxygenProdMTLSSecretPutFunctionResources-1PCTY206W677E
-    - psu-Functions-1CX9JNKACL5GX-UpdatePrescriptionStatusResources-NG1EZYP3YC6I
-    - pfp-Functions-9AIPUYS90ESY-StatusResources-82RONI12GCSB
-    - psu-Functions-1CX9JNKACL5GX-CheckPrescriptionStatusUpdatesResources-1NQI6LV461LP7
+    - prescribe-dispense-sandox
+    - pfp-sandox-StatusResources-1X1D2FHYLSJX0
+    - psu-Functions-ZK9K4HF7LRZ2-PostDatedNotifyLambdaResources-1WGQ0S4G869MM
+    - pfp-Functions-1QTO81W3BJPXZ-StatusResources-VIIU80MGKVIO
+    - cpt-api-v1-8-8-beta
+    - lambda-resources-ProxygenPTLInstancePutFunctionResources-F0GARYSXZTJJ
+    - lambda-resources-SlackAlerterResources-1BAO8EDC6JNEA
+    - psu-Functions-ZK9K4HF7LRZ2-CheckPrescriptionStatusUpdatesResources-EXFL0IEY73LM
+    - psu-Functions-ZK9K4HF7LRZ2-NHSNotifyUpdateCallbackResources-VV1GEWZQQ2BT
+    - pfp-Functions-1QTO81W3BJPXZ-GetMyPrescriptionsResources-12Y425P0ZBLVS
+    - cpt-sandbox-StatusResources-P84PJNGX2GML
+    - pfp-sandbox-SandboxResources-Y9YO531VPZ2L
+    - lambda-resources-ProxygenProdInstancePutFunctionResources-6NP20G31XC02
+    - monitoring
   account-resources:LambdaEncryptCloudwatchKMSPolicy
-    - fhir-validator-FHIRValidatorUKCoreResources-9Y09N5JJOUB9
-    - lambda-resources-ProxygenPTLInstancePutFunctionResources-1N3SNRZ72VDO9
-    - lambda-resources-ExpiryFunctionResources-CDU0KH0O88BR
-    - lambda-resources-LambdaJanitorResources-14FBKTPO5381S
-    - lambda-resources-SlackAlerterResources-ICFNZ83E3KLF
-    - lambda-resources-ProxygenProdSpecPublishFunctionResources-DWWFXKSS7XMR
-    - lambda-resources-ProxygenProdInstancePutFunctionResources-1LZAU822ZOKD8
-    - lambda-resources-ProxygenPTLSpecPublishFunctionResources-1TQ76WJ87Y3GK
-    - lambda-resources-ProxygenPTLInstanceGetFunctionResources-LIMTMOPIWQ29
-    - lambda-resources-ProxygenPTLMTLSSecretPutFunctionResources-86OKBPLU2F82
-    - lambda-resources-DriftDetectorResources-XY01NQZLUE89
-    - lambda-resources-ProxygenProdMTLSSecretPutFunctionResources-1PCTY206W677E
-    - lambda-resources-ProxygenPTLInstanceDeleteFunctionResources-4X6VKNHVAUJB
+    - lambda-resources-ExpiryFunctionResources-1IZL8GQADKL7W
+    - lambda-resources-DriftDetectorResources-BVGSXUSKKOZ3
+    - lambda-resources-ProxygenPTLInstanceDeleteFunctionResources-6N15WV3BLUUL
+    - lambda-resources-ProxygenProdSpecPublishFunctionResources-1RD998EEBH84G
+    - lambda-resources-ProxygenPTLSpecPublishFunctionResources-1G96GY8EX4YTD
+    - lambda-resources-ProxygenPTLMTLSSecretPutFunctionResources-1ODPPDP7LN09G
+    - lambda-resources-ProxygenPTLInstancePutFunctionResources-F0GARYSXZTJJ
+    - lambda-resources-ProxygenPTLInstanceGetFunctionResources-5J5WU5JVMZ71
+    - lambda-resources-SlackAlerterResources-1BAO8EDC6JNEA
+    - lambda-resources-LambdaJanitorResources-KR9FAW7K9G22
+    - fhir-validator-FHIRValidatorUKCoreResources-B6COCNUTFRL5
+    - lambda-resources-ProxygenProdMTLSSecretPutFunctionResources-1R2ISR82HAPOZ
+    - lambda-resources-ProxygenProdInstancePutFunctionResources-6NP20G31XC02
   account-resources:PfpCACertSecret
     - lambda-resources
   account-resources:PfpClientCertSecret
@@ -175,9 +228,19 @@ Exports in use:
   account-resources:PsuClientSandboxKeySecret
     - lambda-resources
     - ci-resources
+  account-resources:PSUProxygenKid
+    - lambda-resources
   account-resources:PSUProxygenPrivateKey
     - lambda-resources
     - ci-resources
+  account-resources:PSUProxygenProdKid
+    - lambda-resources
+  account-resources:PSUProxygenProdPrivateKey
+    - lambda-resources
+  account-resources:PSUProxygenPTLKid
+    - lambda-resources
+  account-resources:PSUProxygenPTLPrivateKey
+    - lambda-resources
   account-resources:PSUProxygenPublicKey
     - ci-resources
   account-resources:SecretsKMSKeyAlias
@@ -189,34 +252,37 @@ Exports in use:
   account-resources:SnsKMSKey
     - lambda-resources
   account-resources:SpineASID
-    - pfp-Functions-9AIPUYS90ESY
     - cpt-api-v1-8-8-beta
-    - cpt
     - cpt-api-v1-8-9-beta
+    - cpt
+    - pfp-Functions-1QTO81W3BJPXZ
   account-resources:SpineCAChain
-    - pfp-Functions-9AIPUYS90ESY
     - cpt-api-v1-8-8-beta
-    - cpt
-    - prescribe-dispense
     - cpt-api-v1-8-9-beta
+    - cpt
+    - pfp-Functions-1QTO81W3BJPXZ
+    - prescribe-dispense
+    - prescribe-dispense-sandox
   account-resources:SpinePartyKey
-    - pfp-Functions-9AIPUYS90ESY
     - cpt-api-v1-8-8-beta
-    - cpt
     - cpt-api-v1-8-9-beta
+    - cpt
+    - pfp-Functions-1QTO81W3BJPXZ
   account-resources:SpinePrivateKey
-    - pfp-Functions-9AIPUYS90ESY
     - cpt-api-v1-8-8-beta
-    - cpt
-    - prescribe-dispense
     - cpt-api-v1-8-9-beta
+    - cpt
+    - pfp-Functions-1QTO81W3BJPXZ
+    - prescribe-dispense
+    - prescribe-dispense-sandox
   account-resources:SpinePublicCertificate
-    - pfp-Functions-9AIPUYS90ESY
     - cpt-api-v1-8-8-beta
-    - cpt
-    - prescribe-dispense
-    - lambda-resources
     - cpt-api-v1-8-9-beta
+    - cpt
+    - lambda-resources
+    - pfp-Functions-1QTO81W3BJPXZ
+    - prescribe-dispense
+    - prescribe-dispense-sandox
   account-resources:SplunkDeliveryStreamBackupBucket
     - lambda-resources
   account-resources:SplunkDeliveryStreamBackupBucketRole
@@ -231,10 +297,14 @@ Exports in use:
     - lambda-resources
   account-resources:TrustStoreBucket
     - cpt-api-v1-8-8-beta
-    - cpt
-    - pfp-Apis-BGQQGUE00T7Y
     - cpt-api-v1-8-9-beta
-    - psu-Apis-P87X49O41O5W
+    - psu-Apis-1OZWMQ456D64S
+    - pfp-Apis-IVNAZ11W9BKT
+    - cpt
+    - pfp-sandox
+    - pfp-sandbox
+    - psu-sandbox
+    - cpt-sandbox
   account-resources:TrustStoreBucketKMSKey
     - cpt-api-v1-8-8-beta
     - cpt-api-v1-8-9-beta
@@ -243,12 +313,10 @@ Exports in use:
     - cpt-api-v1-8-9-beta
   ci-resources:AssistMeDocumentSyncRole
     - epsam
-  ci-resources:AssistMeRegressionTestRole
-    - epsam
   ci-resources:CloudFormationDeployRole
     - account-resources
-    - cpt-ui-stateful-resources
     - cpt-ui-stateless-resources
+    - cpt-ui-stateful-resources
     - epsam
   ci-resources:CloudFormationDeployRoleName
     - account-resources
@@ -265,88 +333,138 @@ Exports in use:
   ci-resources:ProxygenPTLRoleName
     - lambda-resources
   lambda-resources:LambdaInsightsLogGroupPolicy
-    - pfp-Functions-9AIPUYS90ESY-CapabilityStatementResources-1FXFPEOMMFZKF
-    - psu-Functions-1CX9JNKACL5GX-CapabilityStatementResources-XHSJS759RQXR
-    - cpt-api-v1-8-8-beta
-    - cpt
-    - lambda-resources-ExpiryFunctionResources-CDU0KH0O88BR
-    - monitoring
-    - psu-Functions-1CX9JNKACL5GX-PostDatedNotifyLambdaResources-1K09YGZYE7JF2
-    - pfp-Functions-9AIPUYS90ESY-EnrichPrescriptionsResources-BH67RECLQHFH
-    - lambda-resources-ProxygenPTLInstanceGetFunctionResources-LIMTMOPIWQ29
-    - lambda-resources-ProxygenPTLMTLSSecretPutFunctionResources-86OKBPLU2F82
-    - psu-Functions-1CX9JNKACL5GX-NHSNotifyUpdateCallbackResources-V75ZHH57R7AV
-    - psu-Functions-1CX9JNKACL5GX-StatusResources-1CH4ODAQVGBH2
-    - lambda-resources-DriftDetectorResources-XY01NQZLUE89
-    - pfp-Functions-9AIPUYS90ESY-GetMyPrescriptionsResources-OR36NNXZCQ2B
+    - lambda-resources-ExpiryFunctionResources-1IZL8GQADKL7W
+    - psu-sandbox-StatusResources-3GXUMH86VSLT
+    - pfp-sandbox-StatusResources-15UUCW2GVSZZ3
+    - lambda-resources-DriftDetectorResources-BVGSXUSKKOZ3
+    - psu-sandbox-SandboxResources-1519JPYW7G4RW
+    - pfp-sandbox-CapabilityStatementResources-1VUZBPJ4908WT
+    - pfp-sandox-CapabilityStatementResources-10AL9D6MMTDVU
+    - cpt-sandbox-SandboxResources-1L01UXN6KTICY
     - cpt-ui-stateless-resources
-    - lambda-resources-ProxygenPTLInstanceDeleteFunctionResources-4X6VKNHVAUJB
-    - psu-Functions-1CX9JNKACL5GX-ConvertRequestToFhirFormatResources-1N12STAXGPJ8O
-    - fhir-validator-FHIRValidatorUKCoreResources-9Y09N5JJOUB9
-    - lambda-resources-ProxygenPTLInstancePutFunctionResources-1N3SNRZ72VDO9
-    - cpt-api-v1-8-9-beta
-    - lambda-resources-LambdaJanitorResources-14FBKTPO5381S
-    - lambda-resources-SlackAlerterResources-ICFNZ83E3KLF
-    - psu-Functions-1CX9JNKACL5GX-NotifyProcessorResources-1KP3K1EQSK0TW
-    - lambda-resources-ProxygenProdSpecPublishFunctionResources-DWWFXKSS7XMR
-    - lambda-resources-ProxygenProdInstancePutFunctionResources-1LZAU822ZOKD8
-    - lambda-resources-ProxygenPTLSpecPublishFunctionResources-1TQ76WJ87Y3GK
-    - psu-Functions-1CX9JNKACL5GX-GetStatusUpdatesResources-1VUDJIJR4SX9U
-    - lambda-resources-ProxygenProdMTLSSecretPutFunctionResources-1PCTY206W677E
+    - lambda-resources-ProxygenProdSpecPublishFunctionResources-1RD998EEBH84G
+    - lambda-resources-ProxygenPTLSpecPublishFunctionResources-1G96GY8EX4YTD
+    - pfp-Functions-1QTO81W3BJPXZ-EnrichPrescriptionsResources-1CLBULHLSS4I7
+    - lambda-resources-ProxygenPTLMTLSSecretPutFunctionResources-1ODPPDP7LN09G
+    - lambda-resources-ProxygenPTLInstanceGetFunctionResources-5J5WU5JVMZ71
+    - lambda-resources-LambdaJanitorResources-KR9FAW7K9G22
+    - psu-Functions-ZK9K4HF7LRZ2-UpdatePrescriptionStatusResources-3TU60WKIO9DJ
+    - lambda-resources-ProxygenProdMTLSSecretPutFunctionResources-1R2ISR82HAPOZ
+    - psu-sandbox-CapabilityStatementResources-5WO9I9S8LP19
+    - psu-Functions-ZK9K4HF7LRZ2-StatusResources-633BAZP0DE1H
+    - pfp-Functions-1QTO81W3BJPXZ-CapabilityStatementResources-G12LA6H5669B
+    - psu-Functions-ZK9K4HF7LRZ2-GetStatusUpdatesResources-1IWLWELOYGKUB
+    - psu-Functions-ZK9K4HF7LRZ2-ConvertRequestToFhirFormatResources-18DENEPUY1ZTL
     - epsam
-    - psu-Functions-1CX9JNKACL5GX-UpdatePrescriptionStatusResources-NG1EZYP3YC6I
-    - pfp-Functions-9AIPUYS90ESY-StatusResources-82RONI12GCSB
-    - psu-Functions-1CX9JNKACL5GX-CheckPrescriptionStatusUpdatesResources-1NQI6LV461LP7
+    - psu-Functions-ZK9K4HF7LRZ2-CapabilityStatementResources-16OJZHPTFJAQ3
+    - cpt-api-v1-8-9-beta
+    - psu-Functions-ZK9K4HF7LRZ2-NotifyProcessorResources-15RH5HHBJCBZV
+    - psu-Functions-ZK9K4HF7LRZ2-PsuRestoreValidationResources-1NZ6ACUEU780N
+    - lambda-resources-ProxygenPTLInstanceDeleteFunctionResources-6N15WV3BLUUL
+    - cpt
+    - pfp-sandox-SandboxResources-QGJ2ADENAC17
+    - pfp-sandox-StatusResources-1X1D2FHYLSJX0
+    - psu-Functions-ZK9K4HF7LRZ2-PostDatedNotifyLambdaResources-1WGQ0S4G869MM
+    - pfp-Functions-1QTO81W3BJPXZ-StatusResources-VIIU80MGKVIO
+    - cpt-api-v1-8-8-beta
+    - lambda-resources-ProxygenPTLInstancePutFunctionResources-F0GARYSXZTJJ
+    - lambda-resources-SlackAlerterResources-1BAO8EDC6JNEA
+    - fhir-validator-FHIRValidatorUKCoreResources-B6COCNUTFRL5
+    - psu-Functions-ZK9K4HF7LRZ2-CheckPrescriptionStatusUpdatesResources-EXFL0IEY73LM
+    - psu-Functions-ZK9K4HF7LRZ2-NHSNotifyUpdateCallbackResources-VV1GEWZQQ2BT
+    - pfp-Functions-1QTO81W3BJPXZ-GetMyPrescriptionsResources-12Y425P0ZBLVS
+    - cpt-sandbox-StatusResources-P84PJNGX2GML
+    - pfp-sandbox-SandboxResources-Y9YO531VPZ2L
+    - lambda-resources-ProxygenProdInstancePutFunctionResources-6NP20G31XC02
+    - monitoring
   lambda-resources:SlackAlertsSnsTopicArn
-    - fhir-validator-Alarms-17KHHRAM4N9J9
+    - pfp-Alarms-Z2MWT2IQSJHZ
+    - psu-Alarms-6TMTL08LWLHL
+    - fhir-validator-Alarms-1SHNCITGUEM8
     - monitoring
-    - psu-Alarms-1WLO2ZW09VWU8
-    - pfp-Alarms-ML958DBD2MGR
   lambda-resources:SplunkDeliveryStream
-    - cpt-api-v1-8-8-beta
-    - cpt
-    - cpt-ui-stateful-resources
-    - pfp-StateMachines-1XJT6ID36UIE9
-    - monitoring
     - cpt-api-v1-8-9-beta
+    - pfp-StateMachines-3XW0V0YMPTU0
+    - psu-StateMachines-SYGRL4DW73FO
+    - cpt
+    - pfp-sandox
     - fhir-validator
-    - pfp-Apis-BGQQGUE00T7Y-RestApiGatewayResources-F17G2YU6UO64
-    - pfp-Functions-9AIPUYS90ESY
-    - psu-Functions-1CX9JNKACL5GX
-    - psu-StateMachines-430UGRYC5S5
-    - prescribe-dispense
-    - psu-Apis-P87X49O41O5W-RestApiGatewayResources-JU62UAREY4FH
+    - psu-Functions-ZK9K4HF7LRZ2
+    - pfp-Functions-1QTO81W3BJPXZ
+    - pfp-sandbox
     - cpt-ui-stateless-resources
+    - prescribe-dispense
+    - cpt-ui-stateful-resources
+    - psu-sandbox
+    - prescribe-dispense-sandox
+    - cpt-api-v1-8-8-beta
+    - psu-Apis-1OZWMQ456D64S-RestApiGatewayResources-142YY4KLK8J4T
+    - pfp-Apis-IVNAZ11W9BKT-RestApiGatewayResources-J8VVMZJU3RBU
+    - cpt-sandbox
     - epsam
+    - monitoring
   lambda-resources:SplunkSubscriptionFilterRole
-    - cpt-api-v1-8-8-beta
-    - cpt
-    - cpt-ui-stateful-resources
-    - pfp-StateMachines-1XJT6ID36UIE9
-    - monitoring
     - cpt-api-v1-8-9-beta
+    - pfp-StateMachines-3XW0V0YMPTU0
+    - psu-StateMachines-SYGRL4DW73FO
+    - cpt
+    - pfp-sandox
     - fhir-validator
-    - pfp-Apis-BGQQGUE00T7Y-RestApiGatewayResources-F17G2YU6UO64
-    - pfp-Functions-9AIPUYS90ESY
-    - psu-Functions-1CX9JNKACL5GX
-    - psu-StateMachines-430UGRYC5S5
-    - prescribe-dispense
-    - psu-Apis-P87X49O41O5W-RestApiGatewayResources-JU62UAREY4FH
+    - psu-Functions-ZK9K4HF7LRZ2
+    - pfp-Functions-1QTO81W3BJPXZ
+    - pfp-sandbox
     - cpt-ui-stateless-resources
+    - prescribe-dispense
+    - cpt-ui-stateful-resources
+    - psu-sandbox
+    - prescribe-dispense-sandox
+    - cpt-api-v1-8-8-beta
+    - psu-Apis-1OZWMQ456D64S-RestApiGatewayResources-142YY4KLK8J4T
+    - pfp-Apis-IVNAZ11W9BKT-RestApiGatewayResources-J8VVMZJU3RBU
+    - cpt-sandbox
     - epsam
-  secrets:DispensingProxygenPrivateKey
+    - monitoring
+  secrets:DispensingProxygenProdKid
+    - lambda-resources
+  secrets:DispensingProxygenProdPrivateKey
+    - lambda-resources
+  secrets:DispensingProxygenPtlKid
+    - lambda-resources
+  secrets:DispensingProxygenPtlPrivateKey
     - lambda-resources
   secrets:epsSigningCertChain
     - prescribe-dispense
+    - prescribe-dispense-sandox
   secrets:epsSigningCertChainManagedPolicy
     - prescribe-dispense
+    - prescribe-dispense-sandox
+  secrets:FhirDispensingProxygenKid
+    - lambda-resources
   secrets:FhirDispensingProxygenPrivateKey
+    - lambda-resources
+  secrets:FhirPrescribingProxygenKid
     - lambda-resources
   secrets:FhirPrescribingProxygenPrivateKey
     - lambda-resources
-  secrets:PrescribingProxygenPrivateKey
+  secrets:PrescribingProxygenProdKid
+    - lambda-resources
+  secrets:PrescribingProxygenProdPrivateKey
+    - lambda-resources
+  secrets:PrescribingProxygenPtlKid
+    - lambda-resources
+  secrets:PrescribingProxygenPtlPrivateKey
+    - lambda-resources
+  secrets:PrescriptionsForPatientsProxygenKid
     - lambda-resources
   secrets:PrescriptionsForPatientsProxygenPrivateKey
+    - lambda-resources
+  secrets:PrescriptionsForPatientsProxygenProdKid
+    - lambda-resources
+  secrets:PrescriptionsForPatientsProxygenProdPrivateKey
+    - lambda-resources
+  secrets:PrescriptionsForPatientsProxygenPtlKid
+    - lambda-resources
+  secrets:PrescriptionsForPatientsProxygenPtlPrivateKey
     - lambda-resources
   secrets:ptlPrescriptionSigningPublicKey
     - lambda-resources
@@ -373,6 +491,7 @@ Exports with no importers:
   - ci-resources:ArtilleryRunnerRole
   - ci-resources:ArtilleryRunnerRoleName
   - ci-resources:AssistMeDocumentSyncRoleName
+  - ci-resources:AssistMeRegressionTestRole
   - ci-resources:AssistMeRegressionTestRoleName
   - ci-resources:CDKPullImageRole
   - ci-resources:CDKPullImageRoleName
@@ -392,9 +511,11 @@ Exports with no importers:
   - ci-resources:ProxygenPTLRole
   - ci-resources:ReleaseNotesExecuteLambdaRole
   - ci-resources:ReleaseNotesExecuteLambdaRoleName
+  - secrets:DispensingProxygenPrivateKey
   - secrets:DispensingProxygenPublicKey
   - secrets:FhirDispensingProxygenPublicKey
   - secrets:FhirPrescribingProxygenPublicKey
+  - secrets:PrescribingProxygenPrivateKey
   - secrets:PrescribingProxygenPublicKey
   - secrets:PrescriptionsForPatientsProxygenPublicKey
   - secrets:ptlPrescriptionSigningPrivateKey

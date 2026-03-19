@@ -18,6 +18,11 @@ export class ConfigSecrets extends Construct {
   public readonly ptlPrescriptionSigningPrivateKey: Secret
   public readonly ptlPrescriptionSigningPublicKey: Secret
   public readonly spinePublicCertificate: Secret
+  public readonly spineASID: Secret
+  public readonly spinePartyKey: Secret
+  public readonly spineCAChain: Secret
+  public readonly spinePrivateKey: Secret
+  public readonly serviceSearchApiKey: Secret
 
   public constructor(scope: Construct, id: string, props: ConfigSecretsProps){
     super(scope, id)
@@ -125,5 +130,10 @@ export class ConfigSecrets extends Construct {
     this.ptlPrescriptionSigningPrivateKey = ptlPrescriptionSigningPrivateKey.secret
     this.ptlPrescriptionSigningPublicKey = ptlPrescriptionSigningPublicKey.secret
     this.spinePublicCertificate = spinePublicCertificate.secret
+    this.spineASID = spineASID.secret
+    this.spinePartyKey = spinePartyKey.secret
+    this.spineCAChain = spineCAChain.secret
+    this.spinePrivateKey = spinePrivateKey.secret
+    this.serviceSearchApiKey = serviceSearchApiKey.secret
   }
 }

@@ -105,6 +105,7 @@ export class MonitoringStorage extends Construct {
         ]
       }
     })
+
     addSuppressions([splunkDeliveryStreamBackupBucket], [
       "S3_BUCKET_REPLICATION_ENABLED",
       "S3_BUCKET_DEFAULT_LOCK_ENABLED"

@@ -1,5 +1,5 @@
 import {Construct} from "constructs"
-import {Key} from "aws-cdk-lib/aws-kms"
+import {Alias, Key} from "aws-cdk-lib/aws-kms"
 import {ManagedPolicy, PolicyStatement, IRole} from "aws-cdk-lib/aws-iam"
 import {RemovalPolicy} from "aws-cdk-lib"
 
@@ -12,6 +12,7 @@ export class SecretsEncryption extends Construct {
   public readonly secretsKmsKey: Key
   public readonly useSecretsKmsKeyManagedPolicy: ManagedPolicy
   public readonly lambdaDecryptSecretsKmsPolicy: ManagedPolicy
+  public readonly secretsKmsKeyAlias: Alias
 
   public constructor(scope: Construct, id: string, props: SecretsEncryptionProps) {
     super(scope, id)
@@ -20,7 +21,7 @@ export class SecretsEncryption extends Construct {
       enableKeyRotation: true,
       removalPolicy: RemovalPolicy.DESTROY
     })
-    secretsKmsKey.addAlias("alias/SecretsKMSKeyAlias")
+    const secretsKmsKeyAlias = secretsKmsKey.addAlias("alias/SecretsKMSKeyAlias")
 
     const useSecretsKmsKeyManagedPolicy = new ManagedPolicy(this, "UseSecretsKMSKeyManagedPolicy", {
       statements: [
@@ -54,6 +55,7 @@ export class SecretsEncryption extends Construct {
       ]
     })
     this.secretsKmsKey = secretsKmsKey
+    this.secretsKmsKeyAlias = secretsKmsKeyAlias
     this.useSecretsKmsKeyManagedPolicy = useSecretsKmsKeyManagedPolicy
     this.lambdaDecryptSecretsKmsPolicy = lambdaDecryptSecretsKmsPolicy
   }

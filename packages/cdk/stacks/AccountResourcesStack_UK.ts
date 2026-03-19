@@ -211,22 +211,19 @@ export class AccountResourcesStack_UK extends Stack {
     // account-resources:AccessSlackSecretsManagedPolicy
     // used by lambda-resources stack
     new CfnOutput(this, "AccessSlackSecretsManagedPolicy", {
-      //value: props.accessSlackSecretsManagedPolicy.managedPolicyArn,
-      value: "CHANGE_ME",
+      value: props.accessSlackSecretsManagedPolicy.managedPolicyArn,
       exportName: `${props.stackName}:ManagedPolicy:AccessSlackSecretsManagedPolicy:Arn`
     })
     // account-resources:ALBLoggingBucketName
     // used by prescribe-dispense stack
     new CfnOutput(this, "ALBLoggingBucketName", {
-      //value: storage.albLoggingBucket.bucketName || "UNDEFINED",
-      value: "CHANGE_ME",
+      value: storage.albLoggingBucket.bucketName || "UNDEFINED",
       exportName: `${props.stackName}:Bucket:ALBLoggingBucket:Name`
     })
     // account-resources:AuditLoggingBucket
     // used by cpt-ui-stateful-resources and epsam stacks
     new CfnOutput(this, "AuditLoggingBucketName", {
-      //value: storage.auditLoggingBucket.bucketName || "UNDEFINED",
-      value: "CHANGE_ME",
+      value: storage.auditLoggingBucket.bucketName || "UNDEFINED",
       exportName: `${props.stackName}:Bucket:AuditLoggingBucket:Name`
     })
 
@@ -246,6 +243,94 @@ export class AccountResourcesStack_UK extends Stack {
       value: encryption.useCloudwatchLogsKmsKeyManagedPolicy.managedPolicyArn,
       exportName: `${props.stackName}:ManagedPolicy:CloudwatchEncryptionKMSPolicy:Arn`
     })
+
+    // account-resources:CloudwatchLogsKmsKeyArn
+    // used by
+    // cpt-api
+    // cpt-ui
+    // pfp
+    // lambda-resources
+    // monitoring
+    // fhir-validator
+    // psu
+    // vpc-resources
+    // prescribe-dispense
+    // epsam
+    new CfnOutput(this, "CloudwatchLogsKmsKeyArn", {
+      value: encryption.cloudwatchLogsKmsKey.keyArn,
+      exportName: `${props.stackName}:Key:CloudwatchLogsKmsKey:Arn`
+    })
+
+    // account-resources:LambdaEncryptCloudwatchKMSPolicy
+    // used by
+    // lambda-resources
+    // fhir-validator
+    new CfnOutput(this, "LambdaEncryptCloudwatchKMSPolicy", {
+      value: encryption.lambdaEncryptCloudwatchKmsPolicy.managedPolicyArn,
+      exportName: `${props.stackName}:ManagedPolicy:LambdaEncryptCloudwatchKMSPolicy:Arn`
+    })
+
+    // account-resources:SNSFeedbackLoggingRoleArn
+    // used by lambda-resources
+    new CfnOutput(this, "SNSFeedbackLoggingRoleArn", {
+      value: props.snsFeedbackLoggingRole.roleArn,
+      exportName: `${props.stackName}:Role:SNSFeedbackLoggingRole:Arn`
+    })
+
+    // account-resources:SnsKMSKey
+    // used by lambda-resources
+    new CfnOutput(this, "SnsKMSKey", {
+      value: encryption.snsKmsKey.keyArn,
+      exportName: `${props.stackName}:Key:SnsKmsKey:Arn`
+    })
+
+    // account-resources:SplunkDeliveryStreamBackupBucket
+    // used by lambda-resources
+    new CfnOutput(this, "SplunkDeliveryStreamBackupBucket", {
+      value: monitoringStorage.splunkDeliveryStreamBackupBucket.attrArn,
+      exportName: `${props.stackName}:Bucket:SplunkDeliveryStreamBackupBucket:Arn`
+    })
+
+    // account-resources:SplunkDeliveryStreamBackupBucketRole
+    // used by lambda-resources
+    new CfnOutput(this, "SplunkDeliveryStreamBackupBucketRole", {
+      value: props.splunkDeliveryStreamBackupBucketRole.roleName,
+      exportName: `${props.stackName}:Role:SplunkDeliveryStreamBackupBucketRole:Name`
+    })
+
+    // account-resources:SplunkDeliveryStreamBackupBucketRoleArn
+    // used by lambda-resources
+    new CfnOutput(this, "SplunkDeliveryStreamBackupBucketRoleArn", {
+      value: props.splunkDeliveryStreamBackupBucketRole.roleArn,
+      exportName: `${props.stackName}:Role:SplunkDeliveryStreamBackupBucketRole:Arn`
+    })
+
+    // account-resources:SplunkDeliveryStreamBackupKMSKey
+    // used by lambda-resources
+    new CfnOutput(this, "SplunkDeliveryStreamBackupKMSKey", {
+      value: monitoringStorage.splunkDeliveryStreamBackupKmsKey.attrArn,
+      exportName: `${props.stackName}:Key:SplunkDeliveryStreamBackupKMSKey:Arn`
+    })
+
+    // account-resources:SqsDecryptSecretsKMSPolicy
+    // used by lambda-resources
+    new CfnOutput(this, "SqsDecryptSecretsKMSPolicy", {
+      value: encryption.sqsDecryptSecretsKmsPolicy.managedPolicyArn,
+      exportName: `${props.stackName}:ManagedPolicy:SqsDecryptSecretsKMSPolicy:Arn`
+    })
+
+    // account-resources:SqsKMSKey
+    // used by lambda-resources
+    new CfnOutput(this, "SqsKMSKey", {
+      value: encryption.sqsKmsKey.keyArn,
+      exportName: `${props.stackName}:Key:SqsKMSKey:Arn`
+    })
+
+    new CfnOutput(this, "TrustStoreBucket", {
+      value: storage.trustStoreBucket.attrArn,
+      exportName: `${props.stackName}:Bucket:TrustStoreBucket:Arn`
+    })
+
     nagSuppressions(this, "AccountResources_UK")
     this.auditLoggingBucket = storage.auditLoggingBucket
   }
