@@ -2,6 +2,7 @@ import {IRole, ManagedPolicy, PolicyStatement} from "aws-cdk-lib/aws-iam"
 import {IKey} from "aws-cdk-lib/aws-kms"
 import {ISecret} from "aws-cdk-lib/aws-secretsmanager"
 import {Construct} from "constructs"
+import {ProxygenSecretKeys} from "./ProxygenSecrets"
 
 export interface SecretPoliciesProps {
   readonly region: string
@@ -14,8 +15,7 @@ export interface SecretPoliciesProps {
   readonly pfpClientCert: ISecret
   readonly pfpClientSandboxKey: ISecret
   readonly pfpClientSandboxCert: ISecret
-  readonly pfpProxygenPrivateKey: ISecret
-  readonly pfpProxygenPublicKey: ISecret
+  readonly pfpProxygenKeys: ProxygenSecretKeys
 
   readonly psuCAKey: ISecret
   readonly psuCACert: ISecret
@@ -23,10 +23,8 @@ export interface SecretPoliciesProps {
   readonly psuClientCert: ISecret
   readonly psuClientSandboxKey: ISecret
   readonly psuClientSandboxCert: ISecret
-  readonly psuProxygenPrivateKey: ISecret
-  readonly psuProxygenPublicKey: ISecret
-  readonly cpsuProxygenPublicKey: ISecret
-  readonly cpsuProxygenPrivateKey: ISecret
+  readonly psuProxygenKeys: ProxygenSecretKeys
+  readonly cpsuProxygenKeys: ProxygenSecretKeys
 
   readonly clinicalTrackerCAKey: ISecret
   readonly clinicalTrackerCACert: ISecret
@@ -34,8 +32,7 @@ export interface SecretPoliciesProps {
   readonly clinicalTrackerClientCert: ISecret
   readonly clinicalTrackerClientSandboxKey: ISecret
   readonly clinicalTrackerClientSandboxCert: ISecret
-  readonly clinicalTrackerProxygenPrivateKey: ISecret
-  readonly clinicalTrackerProxygenPublicKey: ISecret
+  readonly clinicalTrackerProxygenKeys: ProxygenSecretKeys
 
   readonly fhirFacadeCAKey: ISecret
   readonly fhirFacadeCACert: ISecret
@@ -43,13 +40,10 @@ export interface SecretPoliciesProps {
   readonly fhirFacadeClientCert: ISecret
   readonly fhirFacadeClientSandboxKey: ISecret
   readonly fhirFacadeClientSandboxCert: ISecret
-  readonly prescribingProxygenPrivateKey: ISecret
-  readonly prescribingProxygenPublicKey: ISecret
-  readonly dispensingProxygenPrivateKey: ISecret
-  readonly dispensingProxygenPublicKey: ISecret
+  readonly prescribingProxygenKeys: ProxygenSecretKeys
+  readonly dispensingProxygenKeys: ProxygenSecretKeys
 
   readonly secretKMSKey: IKey
-
 }
 export class SecretPolicies extends Construct {
   public readonly allowCloudFormationSecretsAccessManagedPolicy: ManagedPolicy
@@ -72,36 +66,85 @@ export class SecretPolicies extends Construct {
               props.pfpClientCert.secretArn,
               props.pfpClientSandboxKey.secretArn,
               props.pfpClientSandboxCert.secretArn,
-              props.pfpProxygenPrivateKey.secretArn,
-              props.pfpProxygenPublicKey.secretArn,
+              props.pfpProxygenKeys.proxygenPrivateKey.secretArn,
+              props.pfpProxygenKeys.proxygenPublicKey.secretArn,
+              props.pfpProxygenKeys.proxygenKid.secretArn,
+              props.pfpProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.pfpProxygenKeys.proxygenPTLPublicKey.secretArn,
+              props.pfpProxygenKeys.proxygenPTLKid.secretArn,
+              props.pfpProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.pfpProxygenKeys.proxygenProdPublicKey.secretArn,
+              props.pfpProxygenKeys.proxygenProdKid.secretArn,
               props.psuCAKey.secretArn,
               props.psuCACert.secretArn,
               props.psuClientKey.secretArn,
               props.psuClientCert.secretArn,
               props.psuClientSandboxKey.secretArn,
               props.psuClientSandboxCert.secretArn,
-              props.psuProxygenPrivateKey.secretArn,
-              props.psuProxygenPublicKey.secretArn,
-              props.cpsuProxygenPrivateKey.secretArn,
-              props.cpsuProxygenPublicKey.secretArn,
+
+              props.psuProxygenKeys.proxygenPrivateKey.secretArn,
+              props.psuProxygenKeys.proxygenPublicKey.secretArn,
+              props.psuProxygenKeys.proxygenKid.secretArn,
+              props.psuProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.psuProxygenKeys.proxygenPTLPublicKey.secretArn,
+              props.psuProxygenKeys.proxygenPTLKid.secretArn,
+              props.psuProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.psuProxygenKeys.proxygenProdPublicKey.secretArn,
+              props.psuProxygenKeys.proxygenProdKid.secretArn,
+
+              props.cpsuProxygenKeys.proxygenPrivateKey.secretArn,
+              props.cpsuProxygenKeys.proxygenPublicKey.secretArn,
+              props.cpsuProxygenKeys.proxygenKid.secretArn,
+              props.cpsuProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.cpsuProxygenKeys.proxygenPTLPublicKey.secretArn,
+              props.cpsuProxygenKeys.proxygenPTLKid.secretArn,
+              props.cpsuProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.cpsuProxygenKeys.proxygenProdPublicKey.secretArn,
+              props.cpsuProxygenKeys.proxygenProdKid.secretArn,
+
               props.clinicalTrackerCAKey.secretArn,
               props.clinicalTrackerCACert.secretArn,
               props.clinicalTrackerClientKey.secretArn,
               props.clinicalTrackerClientCert.secretArn,
               props.clinicalTrackerClientSandboxKey.secretArn,
               props.clinicalTrackerClientSandboxCert.secretArn,
-              props.clinicalTrackerProxygenPrivateKey.secretArn,
-              props.clinicalTrackerProxygenPublicKey.secretArn,
+
+              props.clinicalTrackerProxygenKeys.proxygenPrivateKey.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenPublicKey.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenKid.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenPTLPublicKey.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenPTLKid.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenProdPublicKey.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenProdKid.secretArn,
+
               props.fhirFacadeCAKey.secretArn,
               props.fhirFacadeCACert.secretArn,
               props.fhirFacadeClientKey.secretArn,
               props.fhirFacadeClientCert.secretArn,
               props.fhirFacadeClientSandboxKey.secretArn,
               props.fhirFacadeClientSandboxCert.secretArn,
-              props.prescribingProxygenPrivateKey.secretArn,
-              props.prescribingProxygenPublicKey.secretArn,
-              props.dispensingProxygenPrivateKey.secretArn,
-              props.dispensingProxygenPublicKey.secretArn
+
+              props.prescribingProxygenKeys.proxygenPrivateKey.secretArn,
+              props.prescribingProxygenKeys.proxygenPublicKey.secretArn,
+              props.prescribingProxygenKeys.proxygenKid.secretArn,
+              props.prescribingProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.prescribingProxygenKeys.proxygenPTLPublicKey.secretArn,
+              props.prescribingProxygenKeys.proxygenPTLKid.secretArn,
+              props.prescribingProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.prescribingProxygenKeys.proxygenProdPublicKey.secretArn,
+              props.prescribingProxygenKeys.proxygenProdKid.secretArn,
+
+              props.dispensingProxygenKeys.proxygenPrivateKey.secretArn,
+              props.dispensingProxygenKeys.proxygenPublicKey.secretArn,
+              props.dispensingProxygenKeys.proxygenKid.secretArn,
+              props.dispensingProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.dispensingProxygenKeys.proxygenPTLPublicKey.secretArn,
+              props.dispensingProxygenKeys.proxygenPTLKid.secretArn,
+              props.dispensingProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.dispensingProxygenKeys.proxygenProdPublicKey.secretArn,
+              props.dispensingProxygenKeys.proxygenProdKid.secretArn
             ]
           }),
           new PolicyStatement({
@@ -126,12 +169,47 @@ export class SecretPolicies extends Construct {
               "secretsmanager:GetSecretValue"
             ],
             resources: [
-              props.psuProxygenPrivateKey.secretArn,
-              props.cpsuProxygenPrivateKey.secretArn,
-              props.clinicalTrackerProxygenPublicKey.secretArn,
-              props.prescribingProxygenPrivateKey.secretArn,
-              props.dispensingProxygenPrivateKey.secretArn,
-              props.pfpProxygenPrivateKey.secretArn
+              props.pfpProxygenKeys.proxygenPrivateKey.secretArn,
+              props.pfpProxygenKeys.proxygenKid.secretArn,
+              props.pfpProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.pfpProxygenKeys.proxygenProdKid.secretArn,
+              props.pfpProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.pfpProxygenKeys.proxygenPTLKid.secretArn,
+
+              props.psuProxygenKeys.proxygenPrivateKey.secretArn,
+              props.psuProxygenKeys.proxygenKid.secretArn,
+              props.psuProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.psuProxygenKeys.proxygenProdKid.secretArn,
+              props.psuProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.psuProxygenKeys.proxygenPTLKid.secretArn,
+
+              props.cpsuProxygenKeys.proxygenPrivateKey.secretArn,
+              props.cpsuProxygenKeys.proxygenKid.secretArn,
+              props.cpsuProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.cpsuProxygenKeys.proxygenProdKid.secretArn,
+              props.cpsuProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.cpsuProxygenKeys.proxygenPTLKid.secretArn,
+
+              props.clinicalTrackerProxygenKeys.proxygenPrivateKey.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenKid.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenProdKid.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.clinicalTrackerProxygenKeys.proxygenPTLKid.secretArn,
+
+              props.prescribingProxygenKeys.proxygenPrivateKey.secretArn,
+              props.prescribingProxygenKeys.proxygenKid.secretArn,
+              props.prescribingProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.prescribingProxygenKeys.proxygenProdKid.secretArn,
+              props.prescribingProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.prescribingProxygenKeys.proxygenPTLKid.secretArn,
+
+              props.dispensingProxygenKeys.proxygenPrivateKey.secretArn,
+              props.dispensingProxygenKeys.proxygenKid.secretArn,
+              props.dispensingProxygenKeys.proxygenProdPrivateKey.secretArn,
+              props.dispensingProxygenKeys.proxygenProdKid.secretArn,
+              props.dispensingProxygenKeys.proxygenPTLPrivateKey.secretArn,
+              props.dispensingProxygenKeys.proxygenPTLKid.secretArn
             ]
           }),
           new PolicyStatement({

@@ -75,42 +75,41 @@ export class SecretsStack extends Stack {
       region: this.region,
       accountId: this.account,
       cloudFormationDeployRole: props.cloudFormationDeployRole,
+
       pfpCAKey: mtlsSecrets.pfpCAKey,
       pfpCACert: mtlsSecrets.pfpCACert,
       pfpClientKey: mtlsSecrets.pfpClientKey,
       pfpClientCert: mtlsSecrets.pfpClientCert,
       pfpClientSandboxKey: mtlsSecrets.pfpClientSandboxKey,
       pfpClientSandboxCert: mtlsSecrets.pfpClientSandboxCert,
-      pfpProxygenPrivateKey: proxygenSecrets.psuProxygenPrivateKey,
-      pfpProxygenPublicKey: proxygenSecrets.psuProxygenPublicKey,
+      pfpProxygenKeys: proxygenSecrets.pfpProxygenKeys,
+
       psuCAKey: mtlsSecrets.psuCAKey,
       psuCACert: mtlsSecrets.psuCACert,
       psuClientKey: mtlsSecrets.psuClientKey,
       psuClientCert: mtlsSecrets.psuClientCert,
       psuClientSandboxKey: mtlsSecrets.psuClientSandboxKey,
       psuClientSandboxCert: mtlsSecrets.psuClientSandboxCert,
-      psuProxygenPrivateKey: proxygenSecrets.psuProxygenPrivateKey,
-      psuProxygenPublicKey: proxygenSecrets.psuProxygenPublicKey,
-      cpsuProxygenPrivateKey: proxygenSecrets.cpsuProxygenPrivateKey,
-      cpsuProxygenPublicKey: proxygenSecrets.cpsuProxygenPublicKey,
+      psuProxygenKeys: proxygenSecrets.psuProxygenKeys,
+      cpsuProxygenKeys: proxygenSecrets.cpsuProxygenKeys,
+
       clinicalTrackerCAKey: mtlsSecrets.clinicalTrackerCAKey,
       clinicalTrackerCACert: mtlsSecrets.clinicalTrackerCACert,
       clinicalTrackerClientKey: mtlsSecrets.clinicalTrackerClientKey,
       clinicalTrackerClientCert: mtlsSecrets.clinicalTrackerClientCert,
       clinicalTrackerClientSandboxKey: mtlsSecrets.clinicalTrackerClientSandboxKey,
       clinicalTrackerClientSandboxCert: mtlsSecrets.clinicalTrackerClientSandboxCert,
-      clinicalTrackerProxygenPrivateKey: proxygenSecrets.clinicalTrackerProxygenPrivateKey,
-      clinicalTrackerProxygenPublicKey: proxygenSecrets.clinicalTrackerProxygenPublicKey,
+      clinicalTrackerProxygenKeys: proxygenSecrets.clinicalTrackerProxygenKeys,
+
       fhirFacadeCAKey: mtlsSecrets.fhirFacadeCAKey,
       fhirFacadeCACert: mtlsSecrets.fhirFacadeCACert,
       fhirFacadeClientKey: mtlsSecrets.fhirFacadeClientKey,
       fhirFacadeClientCert: mtlsSecrets.fhirFacadeClientCert,
       fhirFacadeClientSandboxKey: mtlsSecrets.fhirFacadeClientSandboxKey,
       fhirFacadeClientSandboxCert: mtlsSecrets.fhirFacadeClientSandboxCert,
-      prescribingProxygenPrivateKey: proxygenSecrets.prescribingProxygenPrivateKey,
-      prescribingProxygenPublicKey: proxygenSecrets.prescribingProxygenPublicKey,
-      dispensingProxygenPrivateKey: proxygenSecrets.dispensingProxygenPrivateKey,
-      dispensingProxygenPublicKey: proxygenSecrets.dispensingProxygenPublicKey,
+      prescribingProxygenKeys: proxygenSecrets.prescribingProxygenKeys,
+      dispensingProxygenKeys: proxygenSecrets.dispensingProxygenKeys,
+
       secretKMSKey: encryption.secretsKmsKey
     })
     this.lambdaDecryptSecretsKmsPolicy = encryption.lambdaDecryptSecretsKmsPolicy
@@ -134,75 +133,67 @@ export class SecretsStack extends Stack {
     // account-resources:ClinicalTrackerCACertSecret
     // used by lambda-resources and ci-resources
     new CfnOutput(this, "ClinicalTrackerCACertArn", {
-      //value: mtlsSecrets.clinicalTrackerCACert.secretArn,
-      value: "CHANGE_ME",
+      value: mtlsSecrets.clinicalTrackerCACert.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerCACert:Arn`
     })
     // account-resources:ClinicalTrackerCAKeySecret
     // used by lambda-resources and ci-resources
     new CfnOutput(this, "ClinicalTrackerCAKeyArn", {
-      //value: mtlsSecrets.clinicalTrackerCAKey.secretArn,
-      value: "CHANGE_ME",
+      value: mtlsSecrets.clinicalTrackerCAKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerCAKey:Value`
     })
     // account-resources:ClinicalTrackerClientCertSecret
     // used by lambda-resources and ci-resources
     new CfnOutput(this, "ClinicalTrackerClientCertArn", {
-      // value: mtlsSecrets.clinicalTrackerClientCert.secretArn,
-      value: "CHANGE_ME",
+      value: mtlsSecrets.clinicalTrackerClientCert.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerClientCert:Arn`
     })
     // account-resources:ClinicalTrackerClientKeySecret
     // used by lambda-resources and ci-resources
     new CfnOutput(this, "ClinicalTrackerClientKey", {
-      //value: mtlsSecrets.clinicalTrackerClientKey.secretArn,
-      value: "CHANGE_ME",
+      value: mtlsSecrets.clinicalTrackerClientKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerClientKey:Arn`
     })
 
     // account-resources:ClinicalTrackerClientSandboxCertSecret
     // used by lambda-resources and ci-resources
     new CfnOutput(this, "ClinicalTrackerClientSandboxCert", {
-      // value: mtlsSecrets.clinicalTrackerClientSandboxCert.secretArn,
-      value: "CHANGE_ME",
+      value: mtlsSecrets.clinicalTrackerClientSandboxCert.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerClientSandboxCert:Arn`
     })
 
     // account-resources:ClinicalTrackerClientSandboxKeySecret
     // used by lambda-resources and ci-resources
     new CfnOutput(this, "ClinicalTrackerClientSandboxKey", {
-      // value: mtlsSecrets.clinicalTrackerClientSandboxKey.secretArn,
-      value: "CHANGE_ME",
+      value: mtlsSecrets.clinicalTrackerClientSandboxKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerClientSandboxKey:Arn`
     })
 
     // account-resources:ClinicalTrackerProxygenPrivateKey
     // used by lambda-resources and ci-resources
     new CfnOutput(this, "ClinicalTrackerProxygenPrivateKey", {
-      // value: proxygenSecrets.clinicalTrackerProxygenPrivateKey.secretArn,
-      value: "CHANGE_ME",
+      value: proxygenSecrets.clinicalTrackerProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenPrivateKey:Arn`
     })
 
     // account-resources:ClinicalTrackerProxygenPublicKey
     // used by lambda-resources and ci-resources
     new CfnOutput(this, "ClinicalTrackerProxygenPublicKey", {
-      // value: proxygenSecrets.clinicalTrackerProxygenPublicKey.secretArn,
-      value: "CHANGE_ME",
+      value: proxygenSecrets.clinicalTrackerProxygenKeys.proxygenPublicKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenPublicKey:Arn`
     })
 
     // account-resources:CPSUProxygenPrivateKey
     // used by lambda-resources and ci-resources
     new CfnOutput(this, "CPSUProxygenPrivateKey", {
-      value: proxygenSecrets.cpsuProxygenPrivateKey.secretArn,
+      value: proxygenSecrets.cpsuProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:CPSUProxygenPrivateKey:Arn`
     })
 
     // account-resources:CPSUProxygenPublicKey
     // used by ci-resources
     new CfnOutput(this, "CPSUProxygenPublicKey", {
-      value: proxygenSecrets.cpsuProxygenPublicKey.secretArn,
+      value: proxygenSecrets.cpsuProxygenKeys.proxygenPublicKey.secretArn,
       exportName: `${props.stackName}:Secret:CPSUProxygenPublicKey:Arn`
     })
 
