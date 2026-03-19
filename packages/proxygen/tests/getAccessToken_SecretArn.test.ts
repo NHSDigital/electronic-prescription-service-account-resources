@@ -11,7 +11,6 @@ import {
 import nock from "nock"
 import {mockClient} from "aws-sdk-vitest-mock"
 import {GetSecretValueCommand, SecretsManagerClient} from "@aws-sdk/client-secrets-manager"
-import jwt from "jsonwebtoken"
 import {Proxygen} from "../src/helpers"
 import * as helpers from "../src/helpers"
 import * as signingHelpers from "../src/signingHelpers"
@@ -26,11 +25,11 @@ vi.mock("../src/signingHelpers", () => ({
 
 const realm_url = "https://mock-realm-url"
 
-describe("getAccessToken", () => {
+describe("getAccessToken - proxygen arn passed in", () => {
   const mockEvent: Proxygen = {
     apiName: "prescription-status-update-api",
     kid: "mockKid",
-    proxygenSecretName: "proxygen-secret-name"
+    proxygenSecretName: "arn:aws:secretsmanager:proxygen-secret-name"
   }
   const mockPrivateKey = "mockPrivateKey"
   const mockAccessToken = "mockAccessToken"
@@ -45,7 +44,6 @@ describe("getAccessToken", () => {
       VersionId: "valid-version-id",
       VersionStages: ["valid-stage"]
     })
-    vi.spyOn(jwt, "sign").mockImplementation(() => "mockSignedJWT")
   })
 
   afterEach(() => {

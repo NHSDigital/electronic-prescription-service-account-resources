@@ -35,3 +35,4 @@ cdk.out
 .local_config
 .npmrc
 .trivy_out/
+.cfn_guard_out/

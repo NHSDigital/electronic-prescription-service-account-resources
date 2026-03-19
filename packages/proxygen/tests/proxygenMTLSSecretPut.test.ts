@@ -26,7 +26,7 @@ const {getSecretMock, createSignedJWTMock} = vi.hoisted(() => ({
     if (secretName === "testSecretCertName") {
       return "mockSecretCert"
     }
-    if (secretName === "testProxygenSecret") {
+    if (secretName === "arn:aws:secretsmanager:testProxygenSecret") {
       return "mockProxygenSecret"
     }
     throw new Error("Unexpected secret name: " + secretName)
@@ -41,7 +41,7 @@ vi.mock("../src/signingHelpers", () => ({
 
 const validProxygen: Proxygen = {
   apiName: "testApi",
-  proxygenSecretName: "testProxygenSecret",
+  proxygenSecretName: "arn:aws:secretsmanager:testProxygenSecret",
   kid: "testKid",
   environment: "dev",
   secretName: "testSecretName",
@@ -207,7 +207,7 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
 
     const proxygenWithSecretNames: Proxygen = {
       apiName: "testApi",
-      proxygenSecretName: "testProxygenSecret",
+      proxygenSecretName: "arn:aws:secretsmanager:testProxygenSecret",
       kid: "testKid",
       environment: "dev",
       secretName: "testSecretName",
