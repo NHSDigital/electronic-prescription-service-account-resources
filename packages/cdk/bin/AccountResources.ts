@@ -23,10 +23,43 @@ async function main() {
 
   const accountResourcesUKStackName = getConfigFromEnvVar("accountResourcesUKStackName")
   const accountResourcesUSStackName = getConfigFromEnvVar("accountResourcesUSStackName")
+  const deploySubjectClaimFilters = getConfigFromEnvVar("deploySubjectClaimFilters")
+    .split(",").map(filter => filter.trim())
+  const checkVersionSubjectClaimFilters = getConfigFromEnvVar("checkVersionSubjectClaimFilters")
+    .split(",").map(filter => filter.trim())
+  const prepareChangesetClaimFilters = getConfigFromEnvVar("prepareChangesetClaimFilters")
+    .split(",").map(filter => filter.trim())
+  const releaseNotesExecuteLambdaClaimFilters = getConfigFromEnvVar("releaseNotesExecuteLambdaClaimFilters")
+    .split(",").map(filter => filter.trim())
+  const artilleryLoadTestRoleClaimFilters = getConfigFromEnvVar("artilleryLoadTestRoleClaimFilters")
+    .split(",").map(filter => filter.trim())
+  const proxygenPTLClaimFilters = getConfigFromEnvVar("proxygenPTLClaimFilters")
+    .split(",").map(filter => filter.trim())
+  const proxygenProdClaimFilters = getConfigFromEnvVar("proxygenProdClaimFilters")
+    .split(",").map(filter => filter.trim())
+  const CDKPullImageClaimFilters = getConfigFromEnvVar("CDKPullImageClaimFilters")
+    .split(",").map(filter => filter.trim())
+  const CDKPushImageClaimFilters = getConfigFromEnvVar("CDKPushImageClaimFilters")
+    .split(",").map(filter => filter.trim())
+  const assistMeRegressionTestClaimFilters = getConfigFromEnvVar("assistMeRegressionTestClaimFilters")
+    .split(",").map(filter => filter.trim())
+  const assistMeDocumentSyncClaimFilters = getConfigFromEnvVar("assistMeDocumentSyncClaimFilters")
+    .split(",").map(filter => filter.trim())
 
   const iamStack = new IAMStack(app, "IAM", {
     ...props,
-    stackName: "iam-stack"
+    stackName: "iam-stack",
+    deploySubjectClaimFilters,
+    checkVersionSubjectClaimFilters,
+    prepareChangesetClaimFilters,
+    releaseNotesExecuteLambdaClaimFilters,
+    artilleryLoadTestRoleClaimFilters,
+    proxygenPTLClaimFilters,
+    proxygenProdClaimFilters,
+    CDKPullImageClaimFilters,
+    CDKPushImageClaimFilters,
+    assistMeRegressionTestClaimFilters,
+    assistMeDocumentSyncClaimFilters
   })
   const secretsStack = new SecretsStack(app, "Secrets", {
     ...props,

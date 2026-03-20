@@ -16,6 +16,17 @@ export interface IAMStackProps extends StackProps {
   readonly stackName: string
   readonly version: string
   readonly commitId: string
+  readonly deploySubjectClaimFilters: Array<string>
+  readonly checkVersionSubjectClaimFilters: Array<string>
+  readonly prepareChangesetClaimFilters: Array<string>
+  readonly releaseNotesExecuteLambdaClaimFilters: Array<string>
+  readonly artilleryLoadTestRoleClaimFilters: Array<string>
+  readonly proxygenPTLClaimFilters: Array<string>
+  readonly proxygenProdClaimFilters: Array<string>
+  readonly CDKPullImageClaimFilters: Array<string>
+  readonly CDKPushImageClaimFilters: Array<string>
+  readonly assistMeRegressionTestClaimFilters: Array<string>
+  readonly assistMeDocumentSyncClaimFilters: Array<string>
 }
 
 export class IAMStack extends Stack {
@@ -34,17 +45,17 @@ export class IAMStack extends Stack {
     const identityProvider = new IdentityProvider(this, "IdentityProvider")
     const roles = new Roles(this, "Roles", {
       gitHubIdentityProvider: identityProvider.gitHubIdentityProvider,
-      deploySubjectClaimFilters: ["foo"],
-      checkVersionSubjectClaimFilters: ["foo"],
-      prepareChangesetClaimFilters: ["foo"],
-      releaseNotesExecuteLambdaClaimFilters: ["foo"],
-      artilleryLoadTestRoleClaimFilters: ["foo"],
-      proxygenPTLClaimFilters: ["foo"],
-      proxygenProdClaimFilters: ["foo"],
-      CDKPullImageClaimFilters: ["foo"],
-      CDKPushImageClaimFilters: ["foo"],
-      assistMeRegressionTestClaimFilters: ["foo"],
-      assistMeDocumentSyncClaimFilters: ["foo"]
+      deploySubjectClaimFilters: props.deploySubjectClaimFilters,
+      checkVersionSubjectClaimFilters: props.checkVersionSubjectClaimFilters,
+      prepareChangesetClaimFilters: props.prepareChangesetClaimFilters,
+      releaseNotesExecuteLambdaClaimFilters: props.releaseNotesExecuteLambdaClaimFilters,
+      artilleryLoadTestRoleClaimFilters: props.artilleryLoadTestRoleClaimFilters,
+      proxygenPTLClaimFilters: props.proxygenPTLClaimFilters,
+      proxygenProdClaimFilters: props.proxygenProdClaimFilters,
+      CDKPullImageClaimFilters: props.CDKPullImageClaimFilters,
+      CDKPushImageClaimFilters: props.CDKPushImageClaimFilters,
+      assistMeRegressionTestClaimFilters: props.assistMeRegressionTestClaimFilters,
+      assistMeDocumentSyncClaimFilters: props.assistMeDocumentSyncClaimFilters
     })
     const policies = new Policies(this, "Policies", {
       region: this.region,
