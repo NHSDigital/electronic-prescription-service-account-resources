@@ -114,6 +114,9 @@ export class IAMStack extends Stack {
 
     // ci-resources:CloudFormationExecutionRole
     // used by account-resources
+    // and psu release_code.sh
+    // and pfp release_code.sh
+    // and validator lambda release_code.sh
     new CfnOutput(this, "CloudFormationExecutionRole", {
       value: roles.cloudFormationExecutionRole.roleArn,
       exportName: `${props.stackName}:Role:CloudFormationExecutionRole:Arn`

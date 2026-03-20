@@ -144,12 +144,14 @@ export class SecretsStack extends Stack {
     })
     // account-resources:ClinicalTrackerClientCertSecret
     // used by lambda-resources and ci-resources
+    // also used by cpt api .github/workflows/cdk_release_code.yml
     new CfnOutput(this, "ClinicalTrackerClientCertArn", {
       value: mtlsSecrets.clinicalTrackerClientCert.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerClientCert:Arn`
     })
     // account-resources:ClinicalTrackerClientKeySecret
     // used by lambda-resources and ci-resources
+    // also used by cpt api .github/workflows/cdk_release_code.yml
     new CfnOutput(this, "ClinicalTrackerClientKey", {
       value: mtlsSecrets.clinicalTrackerClientKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerClientKey:Arn`
@@ -213,6 +215,7 @@ export class SecretsStack extends Stack {
 
     // account-resources:FhirFacadeClientCertSecret
     // used by lambda-resources and ci-resources
+    // and fhir-api cdk_release_code.yml
     new CfnOutput(this, "FhirFacadeClientCert", {
       value: mtlsSecrets.fhirFacadeClientCert.secretArn,
       exportName: `${props.stackName}:Secret:FhirFacadeClientCert:Arn`
@@ -220,6 +223,7 @@ export class SecretsStack extends Stack {
 
     // account-resources:FhirFacadeClientKeySecret
     // used by lambda-resources and ci-resources
+    // and fhir-api cdk_release_code.yml
     new CfnOutput(this, "FhirFacadeClientKey", {
       value: mtlsSecrets.fhirFacadeClientKey.secretArn,
       exportName: `${props.stackName}:Secret:FhirFacadeClientKey:Arn`
@@ -352,6 +356,7 @@ export class SecretsStack extends Stack {
 
     // account-resources:PfpClientCertSecret
     // used by lambda-resources, ci-resources
+    // and pfp sam_release_code.yml
     new CfnOutput(this, "PfpClientCertSecret", {
       value: mtlsSecrets.pfpClientCert.secretArn,
       exportName: `${props.stackName}:Secret:PfpClientCert:Arn`
@@ -359,6 +364,7 @@ export class SecretsStack extends Stack {
 
     // account-resources:PfpClientKeySecret
     // used by lambda-resources, ci-resources
+    // and pfp sam_release_code.yml
     new CfnOutput(this, "PfpClientKeySecret", {
       value: mtlsSecrets.pfpClientKey.secretArn,
       exportName: `${props.stackName}:Secret:PfpClientKey:Arn`
@@ -394,6 +400,7 @@ export class SecretsStack extends Stack {
 
     // account-resources:PsuClientCertSecret
     // used by lambda-resources, ci-resources
+    // and psu run_release_code_and_api
     new CfnOutput(this, "PsuClientCertSecret", {
       value: mtlsSecrets.psuClientCert.secretArn,
       exportName: `${props.stackName}:Secret:PsuClientCert:Arn`
@@ -401,6 +408,7 @@ export class SecretsStack extends Stack {
 
     // account-resources:PsuClientKeySecret
     // used by lambda-resources, ci-resources
+    // and psu run_release_code_and_api.yml
     new CfnOutput(this, "PsuClientKeySecret", {
       value: mtlsSecrets.psuClientKey.secretArn,
       exportName: `${props.stackName}:Secret:PsuClientKey:Arn`

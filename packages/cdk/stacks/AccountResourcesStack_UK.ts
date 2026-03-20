@@ -385,6 +385,7 @@ export class AccountResourcesStack_UK extends Stack {
     // prescribe-dispense
     // epsam
     // monitoring
+    // and cpt-ui fix_cdk_json.sh
     new CfnOutput(this, "SplunkDeliveryStream", {
       value: splunk.splunkDeliveryStream.attrArn,
       exportName: `${props.stackName}:KinesisFirehose:SplunkDeliveryStream:Arn`
@@ -400,9 +401,19 @@ export class AccountResourcesStack_UK extends Stack {
     // prescribe-dispense
     // epsam
     // monitoring
+    // and cpt-ui fix_cdk_json.sh
     new CfnOutput(this, "SplunkSubscriptionFilterRole", {
       value: splunk.splunkSubscriptionFilterRole.roleArn,
       exportName: `${props.stackName}:Role:SplunkSubscriptionFilterRole:Arn`
+    })
+
+    // account-resources:ArtifactsBucket
+    // used by psu release_code.sh
+    // and pfp release_code_sh
+    // and validator lambda release_code.sh
+    new CfnOutput(this, "ArtifactsBucket", {
+      value: storage.artifactsBucket.attrArn,
+      exportName: `${props.stackName}:Bucket:ArtifactsBucket:Arn`
     })
     nagSuppressions(this, "AccountResources_UK")
   }

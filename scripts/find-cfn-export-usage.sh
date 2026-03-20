@@ -145,3 +145,5 @@ main() {
 }
 
 main "$@"
+# collect_exports
+# echo ${EXPORTS[@]}

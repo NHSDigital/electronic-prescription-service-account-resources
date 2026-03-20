@@ -24,6 +24,7 @@ export class Storage extends Construct {
   public readonly trustStoreBucket: CfnBucket
   public readonly trustStoreBucketKmsKey: CfnKey
   public readonly trustStoreDeploymentBucket: CfnBucket
+  public readonly artifactsBucket: CfnBucket
 
   public constructor(scope: Construct, id: string, props: StorageProps) {
     super(scope, id)
@@ -709,6 +710,7 @@ export class Storage extends Construct {
     this.trustStoreBucket = trustStoreBucket
     this.trustStoreBucketKmsKey = trustStoreBucketKmsKey
     this.trustStoreDeploymentBucket = trustStoreDeploymentBucket
+    this.artifactsBucket = artifactsBucket
   }
 
   createAuditLoggingPolicy(
