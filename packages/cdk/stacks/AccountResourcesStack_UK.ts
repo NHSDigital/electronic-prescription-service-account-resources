@@ -237,6 +237,7 @@ export class AccountResourcesStack_UK extends Stack {
     // fhir-validator
     // vpc-resources
     // prescribe-dispense
+    // eps-storage-terraform terraform/archive/cloudformation.tf
     new CfnOutput(this, "CloudwatchEncryptionKMSPolicyArn", {
       value: encryption.useCloudwatchLogsKmsKeyManagedPolicy.managedPolicyArn,
       exportName: `${props.stackName}:ManagedPolicy:CloudwatchEncryptionKMSPolicy:Arn`
@@ -254,6 +255,7 @@ export class AccountResourcesStack_UK extends Stack {
     // vpc-resources
     // prescribe-dispense
     // epsam
+    // eps-storage-terraform terraform/archive/cloudformation.tf
     new CfnOutput(this, "CloudwatchLogsKmsKeyArn", {
       value: encryption.cloudwatchLogsKmsKey.keyArn,
       exportName: `${props.stackName}:Key:CloudwatchLogsKmsKey:Arn`
@@ -359,6 +361,7 @@ export class AccountResourcesStack_UK extends Stack {
     // cpt-api
     // fhir-validator
     // monitoring
+    // eps-storage-terraform terraform/archive/cloudformation.tf
     new CfnOutput(this, "LambdaInsightsLogGroupPolicy", {
       value: functionPolicies.lambdaInsightsLogGroupPolicy.managedPolicyArn,
       exportName: `${props.stackName}:Policy:LambdaInsightsLogGroupPolicy:Arn`
@@ -370,6 +373,7 @@ export class AccountResourcesStack_UK extends Stack {
     // psu
     // fhir-validator
     // monitoring
+    // eps-storage-terraform terraform/archive/cloudformation.tf
     new CfnOutput(this, "SlackAlertsSnsTopicArn", {
       value: slack.slackAlertsSnsTopic.topicArn,
       exportName: `${props.stackName}:SnsTopic:SlackAlertsSnsTopic:Arn`
@@ -386,6 +390,7 @@ export class AccountResourcesStack_UK extends Stack {
     // epsam
     // monitoring
     // and cpt-ui fix_cdk_json.sh
+    // eps-storage-terraform terraform/archive/cloudformation.tf
     new CfnOutput(this, "SplunkDeliveryStream", {
       value: splunk.splunkDeliveryStream.attrArn,
       exportName: `${props.stackName}:KinesisFirehose:SplunkDeliveryStream:Arn`
@@ -402,6 +407,7 @@ export class AccountResourcesStack_UK extends Stack {
     // epsam
     // monitoring
     // and cpt-ui fix_cdk_json.sh
+    // eps-storage-terraform terraform/archive/cloudformation.tf
     new CfnOutput(this, "SplunkSubscriptionFilterRole", {
       value: splunk.splunkSubscriptionFilterRole.roleArn,
       exportName: `${props.stackName}:Role:SplunkSubscriptionFilterRole:Arn`
