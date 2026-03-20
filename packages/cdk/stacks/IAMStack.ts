@@ -90,7 +90,7 @@ export class IAMStack extends Stack {
 
     // ci-resources:AssistMeDocumentSyncRole
     // used by epsam
-    new CfnOutput(this, "AssistMeDocumentSyncRole", {
+    new CfnOutput(this, "AssistMeDocumentSyncRoleArn", {
       value: roles.assistMeDocumentSyncRole.roleArn,
       exportName: `${props.stackName}:Role:AssistMeDocumentSyncRole:Arn`
     })
@@ -100,7 +100,7 @@ export class IAMStack extends Stack {
     // account-resources
     // cpt-ui
     // epsam
-    new CfnOutput(this, "CloudFormationDeployRole", {
+    new CfnOutput(this, "CloudFormationDeployRoleArn", {
       value: roles.cloudFormationDeployRole.roleArn,
       exportName: `${props.stackName}:Role:CloudFormationDeployRole:Arn`
     })
@@ -117,7 +117,7 @@ export class IAMStack extends Stack {
     // and psu release_code.sh
     // and pfp release_code.sh
     // and validator lambda release_code.sh
-    new CfnOutput(this, "CloudFormationExecutionRole", {
+    new CfnOutput(this, "CloudFormationExecutionRoleArn", {
       value: roles.cloudFormationExecutionRole.roleArn,
       exportName: `${props.stackName}:Role:CloudFormationExecutionRole:Arn`
     })
@@ -131,7 +131,7 @@ export class IAMStack extends Stack {
 
     // ci-resources:CloudFormationPrepareChangesetRole
     // used by account-resources
-    new CfnOutput(this, "CloudFormationPrepareChangesetRole", {
+    new CfnOutput(this, "CloudFormationPrepareChangesetRoleArn", {
       value: roles.cloudFormationPrepareChangesetRole.roleArn,
       exportName: `${props.stackName}:Role:CloudFormationPrepareChangesetRole:Arn`
     })

@@ -140,7 +140,7 @@ export class SecretsStack extends Stack {
     // used by lambda-resources and ci-resources
     new CfnOutput(this, "ClinicalTrackerCAKeyArn", {
       value: mtlsSecrets.clinicalTrackerCAKey.secretArn,
-      exportName: `${props.stackName}:Secret:ClinicalTrackerCAKey:Value`
+      exportName: `${props.stackName}:Secret:ClinicalTrackerCAKey:Arn`
     })
     // account-resources:ClinicalTrackerClientCertSecret
     // used by lambda-resources and ci-resources
@@ -152,63 +152,63 @@ export class SecretsStack extends Stack {
     // account-resources:ClinicalTrackerClientKeySecret
     // used by lambda-resources and ci-resources
     // also used by cpt api .github/workflows/cdk_release_code.yml
-    new CfnOutput(this, "ClinicalTrackerClientKey", {
+    new CfnOutput(this, "ClinicalTrackerClientKeyArn", {
       value: mtlsSecrets.clinicalTrackerClientKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerClientKey:Arn`
     })
 
     // account-resources:ClinicalTrackerClientSandboxCertSecret
     // used by lambda-resources and ci-resources
-    new CfnOutput(this, "ClinicalTrackerClientSandboxCert", {
+    new CfnOutput(this, "ClinicalTrackerClientSandboxCertArn", {
       value: mtlsSecrets.clinicalTrackerClientSandboxCert.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerClientSandboxCert:Arn`
     })
 
     // account-resources:ClinicalTrackerClientSandboxKeySecret
     // used by lambda-resources and ci-resources
-    new CfnOutput(this, "ClinicalTrackerClientSandboxKey", {
+    new CfnOutput(this, "ClinicalTrackerClientSandboxKeyArn", {
       value: mtlsSecrets.clinicalTrackerClientSandboxKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerClientSandboxKey:Arn`
     })
 
     // account-resources:ClinicalTrackerProxygenPrivateKey
     // used by lambda-resources and ci-resources
-    new CfnOutput(this, "ClinicalTrackerProxygenPrivateKey", {
+    new CfnOutput(this, "ClinicalTrackerProxygenPrivateKeyArn", {
       value: proxygenSecrets.clinicalTrackerProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenPrivateKey:Arn`
     })
 
     // account-resources:ClinicalTrackerProxygenPublicKey
     // used by lambda-resources and ci-resources
-    new CfnOutput(this, "ClinicalTrackerProxygenPublicKey", {
+    new CfnOutput(this, "ClinicalTrackerProxygenPublicKeyArn", {
       value: proxygenSecrets.clinicalTrackerProxygenKeys.proxygenPublicKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenPublicKey:Arn`
     })
 
     // account-resources:CPSUProxygenPrivateKey
     // used by lambda-resources and ci-resources
-    new CfnOutput(this, "CPSUProxygenPrivateKey", {
+    new CfnOutput(this, "CPSUProxygenPrivateKeyArn", {
       value: proxygenSecrets.cpsuProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:CPSUProxygenPrivateKey:Arn`
     })
 
     // account-resources:CPSUProxygenPublicKey
     // used by ci-resources
-    new CfnOutput(this, "CPSUProxygenPublicKey", {
+    new CfnOutput(this, "CPSUProxygenPublicKeyArn", {
       value: proxygenSecrets.cpsuProxygenKeys.proxygenPublicKey.secretArn,
       exportName: `${props.stackName}:Secret:CPSUProxygenPublicKey:Arn`
     })
 
     // account-resources:FhirFacadeCACertSecret
     // used by lambda-resources and ci-resources
-    new CfnOutput(this, "FhirFacadeCACert", {
+    new CfnOutput(this, "FhirFacadeCACertArn", {
       value: mtlsSecrets.fhirFacadeCACert.secretArn,
       exportName: `${props.stackName}:Secret:FhirFacadeCACert:Arn`
     })
 
     // account-resources:FhirFacadeCAKeySecret
     // used by ci-resources
-    new CfnOutput(this, "FhirFacadeCAKey", {
+    new CfnOutput(this, "FhirFacadeCAKeyArn", {
       value: mtlsSecrets.fhirFacadeCAKey.secretArn,
       exportName: `${props.stackName}:Secret:FhirFacadeCAKey:Arn`
     })
@@ -216,7 +216,7 @@ export class SecretsStack extends Stack {
     // account-resources:FhirFacadeClientCertSecret
     // used by lambda-resources and ci-resources
     // and fhir-api cdk_release_code.yml
-    new CfnOutput(this, "FhirFacadeClientCert", {
+    new CfnOutput(this, "FhirFacadeClientCertArn", {
       value: mtlsSecrets.fhirFacadeClientCert.secretArn,
       exportName: `${props.stackName}:Secret:FhirFacadeClientCert:Arn`
     })
@@ -224,21 +224,21 @@ export class SecretsStack extends Stack {
     // account-resources:FhirFacadeClientKeySecret
     // used by lambda-resources and ci-resources
     // and fhir-api cdk_release_code.yml
-    new CfnOutput(this, "FhirFacadeClientKey", {
+    new CfnOutput(this, "FhirFacadeClientKeyArn", {
       value: mtlsSecrets.fhirFacadeClientKey.secretArn,
       exportName: `${props.stackName}:Secret:FhirFacadeClientKey:Arn`
     })
 
     // account-resources:FhirFacadeClientSandboxCertSecret
     // used by lambda-resources and ci-resources
-    new CfnOutput(this, "FhirFacadeClientSandboxCert", {
+    new CfnOutput(this, "FhirFacadeClientSandboxCertArn", {
       value: mtlsSecrets.fhirFacadeClientSandboxCert.secretArn,
       exportName: `${props.stackName}:Secret:FhirFacadeClientSandboxCert:Arn`
     })
 
     // account-resources:FhirFacadeClientSandboxKeySecret
     // used by lambda-resources and ci-resources
-    new CfnOutput(this, "FhirFacadeClientSandboxKey", {
+    new CfnOutput(this, "FhirFacadeClientSandboxKeyArn", {
       value: mtlsSecrets.fhirFacadeClientSandboxKey.secretArn,
       exportName: `${props.stackName}:Secret:FhirFacadeClientSandboxKey:Arn`
     })
@@ -250,7 +250,7 @@ export class SecretsStack extends Stack {
     // cpt-api
     // cpt
     // prescribe-dispense
-    new CfnOutput(this, "LambdaAccessSecretsPolicy", {
+    new CfnOutput(this, "LambdaAccessSecretsPolicyArn", {
       value: configSecrets.lambdaAccessSecretsPolicy.managedPolicyArn,
       exportName: `${props.stackName}:Policy:LambdaAccessSecrets:Arn`
     })
@@ -265,91 +265,91 @@ export class SecretsStack extends Stack {
     // cpt-ui
     // prescribe-dispense
     // fhir-validator
-    new CfnOutput(this, "LambdaDecryptSecretsKMSPolicy", {
+    new CfnOutput(this, "LambdaDecryptSecretsKMSPolicyArn", {
       value: encryption.lambdaDecryptSecretsKmsPolicy.managedPolicyArn,
       exportName: `${props.stackName}:Policy:LambdaDecryptSecretsKMS:Arn`
     })
 
     // account-resources:PfpCACertSecret
     // used by lambda-resources
-    new CfnOutput(this, "PfpCACertSecret", {
+    new CfnOutput(this, "PfpCACertArn", {
       value: mtlsSecrets.pfpCACert.secretArn,
       exportName: `${props.stackName}:Secret:PfpCACert:Arn`
     })
 
     // account-resources:ClinicalTrackerProxygenKid
     // used by lambda-resources
-    new CfnOutput(this, "ClinicalTrackerProxygenKid", {
+    new CfnOutput(this, "ClinicalTrackerProxygenKidArn", {
       value: proxygenSecrets.clinicalTrackerProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenKid:Arn`
     })
 
     // account-resources:ClinicalTrackerProxygenProdKid
     // used by lambda-resources
-    new CfnOutput(this, "ClinicalTrackerProxygenProdKid", {
+    new CfnOutput(this, "ClinicalTrackerProxygenProdKidArn", {
       value: proxygenSecrets.clinicalTrackerProxygenKeys.proxygenProdKid.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenProdKid:Arn`
     })
 
     // account-resources:ClinicalTrackerProxygenProdPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "ClinicalTrackerProxygenProdPrivateKey", {
+    new CfnOutput(this, "ClinicalTrackerProxygenProdPrivateKeyArn", {
       value: proxygenSecrets.clinicalTrackerProxygenKeys.proxygenProdPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenProdPrivateKey:Arn`
     })
 
     // account-resources:ClinicalTrackerProxygenProdPublicKey
     // used by lambda-resources
-    new CfnOutput(this, "ClinicalTrackerProxygenProdPublicKey", {
+    new CfnOutput(this, "ClinicalTrackerProxygenProdPublicKeyArn", {
       value: proxygenSecrets.clinicalTrackerProxygenKeys.proxygenProdPublicKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenProdPublicKey:Arn`
     })
 
     // account-resources:ClinicalTrackerProxygenTLKid
     // used by lambda-resources
-    new CfnOutput(this, "ClinicalTrackerProxygenPTLKid", {
+    new CfnOutput(this, "ClinicalTrackerProxygenPTLKidArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenPTLKid:Arn`
     })
 
     // account-resources:ClinicalTrackerProxygenPTLPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "ClinicalTrackerProxygenPTLPrivateKey", {
+    new CfnOutput(this, "ClinicalTrackerProxygenPTLPrivateKeyArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:ClinicalTrackerProxygenPTLPrivateKey:Arn`
     })
 
     // account-resources:CPSUProxygenKid
     // used by lambda-resources
-    new CfnOutput(this, "CPSUProxygenKid", {
+    new CfnOutput(this, "CPSUProxygenKidArn", {
       value: proxygenSecrets.cpsuProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:CPSUProxygenKid:Arn`
     })
 
     // account-resources:CPSUProxygenProdKid
     // used by lambda-resources
-    new CfnOutput(this, "CPSUProxygenProdKid", {
+    new CfnOutput(this, "CPSUProxygenProdKidArn", {
       value: proxygenSecrets.cpsuProxygenKeys.proxygenProdKid.secretArn,
       exportName: `${props.stackName}:Secret:CPSUProxygenProdKid:Arn`
     })
 
     // account-resources:CPSUProxygenProdPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "CPSUProxygenProdPrivateKey", {
+    new CfnOutput(this, "CPSUProxygenProdPrivateKeyArn", {
       value: proxygenSecrets.cpsuProxygenKeys.proxygenProdPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:CPSUProxygenProdPrivateKey:Arn`
     })
 
     // account-resources:CPSUProxygenPTLKid
     // used by lambda-resources
-    new CfnOutput(this, "CPSUProxygenPTLKid", {
+    new CfnOutput(this, "CPSUProxygenPTLKidArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:CPSUProxygenPTLKid:Arn`
     })
 
     // account-resources:CPSUProxygenPTLPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "CPSUProxygenPTLPrivateKey", {
+    new CfnOutput(this, "CPSUProxygenPTLPrivateKeyArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:CPSUProxygenPTLPrivateKey:Arn`
     })
@@ -357,7 +357,7 @@ export class SecretsStack extends Stack {
     // account-resources:PfpClientCertSecret
     // used by lambda-resources, ci-resources
     // and pfp sam_release_code.yml
-    new CfnOutput(this, "PfpClientCertSecret", {
+    new CfnOutput(this, "PfpClientCertArn", {
       value: mtlsSecrets.pfpClientCert.secretArn,
       exportName: `${props.stackName}:Secret:PfpClientCert:Arn`
     })
@@ -365,35 +365,35 @@ export class SecretsStack extends Stack {
     // account-resources:PfpClientKeySecret
     // used by lambda-resources, ci-resources
     // and pfp sam_release_code.yml
-    new CfnOutput(this, "PfpClientKeySecret", {
+    new CfnOutput(this, "PfpClientKeyArn", {
       value: mtlsSecrets.pfpClientKey.secretArn,
       exportName: `${props.stackName}:Secret:PfpClientKey:Arn`
     })
 
     // account-resources:PfpClientSandboxCertSecret
     // used by lambda-resources, ci-resources
-    new CfnOutput(this, "PfpClientSandboxCertSecret", {
+    new CfnOutput(this, "PfpClientSandboxCertArn", {
       value: mtlsSecrets.pfpClientSandboxCert.secretArn,
       exportName: `${props.stackName}:Secret:PfpClientSandboxCert:Arn`
     })
 
     // account-resources:PfpClientSandboxKeySecret
     // used by lambda-resources, ci-resources
-    new CfnOutput(this, "PfpClientSandboxKeySecret", {
+    new CfnOutput(this, "PfpClientSandboxKeyArn", {
       value: mtlsSecrets.pfpClientSandboxKey.secretArn,
       exportName: `${props.stackName}:Secret:PfpClientSandboxKey:Arn`
     })
 
     // account-resources:PsuCACertSecret
     // used by lambda-resources, ci-resources
-    new CfnOutput(this, "PsuCACertSecret", {
+    new CfnOutput(this, "PsuCACertArn", {
       value: mtlsSecrets.psuCACert.secretArn,
       exportName: `${props.stackName}:Secret:PsuCACert:Arn`
     })
 
     // account-resources:PsuCAKeySecret
     // used by lambda-resources, ci-resources
-    new CfnOutput(this, "PsuCAKeySecret", {
+    new CfnOutput(this, "PsuCAKeyArn", {
       value: mtlsSecrets.psuCAKey.secretArn,
       exportName: `${props.stackName}:Secret:PsuCAKey:Arn`
     })
@@ -401,7 +401,7 @@ export class SecretsStack extends Stack {
     // account-resources:PsuClientCertSecret
     // used by lambda-resources, ci-resources
     // and psu run_release_code_and_api
-    new CfnOutput(this, "PsuClientCertSecret", {
+    new CfnOutput(this, "PsuClientCertArn", {
       value: mtlsSecrets.psuClientCert.secretArn,
       exportName: `${props.stackName}:Secret:PsuClientCert:Arn`
     })
@@ -409,70 +409,70 @@ export class SecretsStack extends Stack {
     // account-resources:PsuClientKeySecret
     // used by lambda-resources, ci-resources
     // and psu run_release_code_and_api.yml
-    new CfnOutput(this, "PsuClientKeySecret", {
+    new CfnOutput(this, "PsuClientKeyArn", {
       value: mtlsSecrets.psuClientKey.secretArn,
       exportName: `${props.stackName}:Secret:PsuClientKey:Arn`
     })
 
     // account-resources:PsuClientSandboxCertSecret
     // used by lambda-resources, ci-resources
-    new CfnOutput(this, "PsuClientSandboxCertSecret", {
+    new CfnOutput(this, "PsuClientSandboxCertArn", {
       value: mtlsSecrets.psuClientSandboxCert.secretArn,
       exportName: `${props.stackName}:Secret:PsuClientSandboxCert:Arn`
     })
 
     // account-resources:PsuClientSandboxKeySecret
     // used by lambda-resources, ci-resources
-    new CfnOutput(this, "PsuClientSandboxKeySecret", {
+    new CfnOutput(this, "PsuClientSandboxKeyArn", {
       value: mtlsSecrets.psuClientSandboxKey.secretArn,
       exportName: `${props.stackName}:Secret:PsuClientSandboxKey:Arn`
     })
 
     // account-resources:PSUProxygenKid
     // used by lambda-resources
-    new CfnOutput(this, "PSUProxygenKid", {
+    new CfnOutput(this, "PSUProxygenKidArn", {
       value: proxygenSecrets.psuProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:PSUProxygenKid:Arn`
     })
 
     // account-resources:PSUProxygenPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "PSUProxygenPrivateKey", {
+    new CfnOutput(this, "PSUProxygenPrivateKeyArn", {
       value: proxygenSecrets.psuProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:PSUProxygenPrivateKey:Arn`
     })
 
     // account-resources:PSUProxygenProdKid
     // used by lambda-resources
-    new CfnOutput(this, "PSUProxygenProdKid", {
+    new CfnOutput(this, "PSUProxygenProdKidArn", {
       value: proxygenSecrets.psuProxygenKeys.proxygenProdKid.secretArn,
       exportName: `${props.stackName}:Secret:PSUProxygenProdKid:Arn`
     })
 
     // account-resources:PSUProxygenProdPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "PSUProxygenProdPrivateKey", {
+    new CfnOutput(this, "PSUProxygenProdPrivateKeyArn", {
       value: proxygenSecrets.psuProxygenKeys.proxygenProdPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:PSUProxygenProdPrivateKey:Arn`
     })
 
     // account-resources:PSUProxygenPTLKid
     // used by lambda-resources
-    new CfnOutput(this, "PSUProxygenPTLKid", {
+    new CfnOutput(this, "PSUProxygenPTLKidArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:PSUProxygenPTLKid:Arn`
     })
 
     // account-resources:PSUProxygenPTLPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "PSUProxygenPTLPrivateKey", {
+    new CfnOutput(this, "PSUProxygenPTLPrivateKeyArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:PSUProxygenPTLPrivateKey:Arn`
     })
 
     // account-resources:PSUProxygenPublicKey
     // used by lambda-resources
-    new CfnOutput(this, "PSUProxygenPublicKey", {
+    new CfnOutput(this, "PSUProxygenPublicKeyArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenPublicKey.secretArn,
       exportName: `${props.stackName}:Secret:PSUProxygenPublicKey:Arn`
     })
@@ -481,14 +481,14 @@ export class SecretsStack extends Stack {
     // used by secrets
     new CfnOutput(this, "SecretsKMSKeyAlias", {
       value: encryption.secretsKmsKeyAlias.aliasName,
-      exportName: `${props.stackName}:SecretsKMSKeyAlias`
+      exportName: `${props.stackName}:SecretsKMSKey:Alias`
     })
 
     // account-resources:SpineASID
     // used by
     // cpt-api
     // pfp
-    new CfnOutput(this, "SpineASID", {
+    new CfnOutput(this, "SpineASIDArn", {
       value: configSecrets.spineASID.secretArn,
       exportName: `${props.stackName}:Secret:SpineASID:Arn`
     })
@@ -498,7 +498,7 @@ export class SecretsStack extends Stack {
     // cpt-api
     // pfp
     // prescribe-dispense
-    new CfnOutput(this, "SpineCAChain", {
+    new CfnOutput(this, "SpineCAChainArn", {
       value: configSecrets.spineCAChain.secretArn,
       exportName: `${props.stackName}:Secret:SpineCAChain:Arn`
     })
@@ -507,7 +507,7 @@ export class SecretsStack extends Stack {
     // used by
     // cpt-api
     // pfp
-    new CfnOutput(this, "SpinePartyKey", {
+    new CfnOutput(this, "SpinePartyKeyArn", {
       value: configSecrets.spinePartyKey.secretArn,
       exportName: `${props.stackName}:Secret:SpinePartyKey:Arn`
     })
@@ -517,7 +517,7 @@ export class SecretsStack extends Stack {
     // cpt-api
     // pfp
     // prescribe-dispense
-    new CfnOutput(this, "SpinePrivateKey", {
+    new CfnOutput(this, "SpinePrivateKeyArn", {
       value: configSecrets.spinePrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:SpinePrivateKey:Arn`
     })
@@ -528,140 +528,140 @@ export class SecretsStack extends Stack {
     // pfp
     // lambda-resources
     // prescribe-dispense
-    new CfnOutput(this, "SpinePublicCertificate", {
+    new CfnOutput(this, "SpinePublicCertificateArn", {
       value: configSecrets.spinePublicCertificate.secretArn,
       exportName: `${props.stackName}:Secret:SpinePublicCertificate:Arn`
     })
 
     // secrets:DispensingProxygenProdKid
     // used by lambda-resources
-    new CfnOutput(this, "DispensingProxygenProdKid", {
+    new CfnOutput(this, "DispensingProxygenProdKidArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenProdKid.secretArn,
       exportName: `${props.stackName}:Secret:DispensingProxygenProdKid:Arn`
     })
 
     // secrets:DispensingProxygenProdPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "DispensingProxygenProdPrivateKey", {
+    new CfnOutput(this, "DispensingProxygenProdPrivateKeyArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenProdPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:DispensingProxygenProdPrivateKey:Arn`
     })
 
     // secrets:DispensingProxygenPtlKid
     // used by lambda-resources
-    new CfnOutput(this, "DispensingProxygenPtlKid", {
+    new CfnOutput(this, "DispensingProxygenPtlKidArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:DispensingProxygenPtlKid:Arn`
     })
 
     // secrets:DispensingProxygenPtlPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "DispensingProxygenPtlPrivateKey", {
+    new CfnOutput(this, "DispensingProxygenPtlPrivateKeyArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:DispensingProxygenPtlPrivateKey:Arn`
     })
 
     // secrets:epsSigningCertChain
     // used by prescribe-dispense
-    new CfnOutput(this, "epsSigningCertChain", {
+    new CfnOutput(this, "epsSigningCertChainArn", {
       value: configSecrets.epsSigningCertChain.secretArn,
       exportName: `${props.stackName}:Secret:EpsSigningCertChain:Arn`
     })
 
     // secrets:epsSigningCertChainManagedPolicy
     // used by prescribe-dispense
-    new CfnOutput(this, "epsSigningCertChainManagedPolicy", {
+    new CfnOutput(this, "epsSigningCertChainManagedPolicyArn", {
       value: configSecrets.epsSigningCertChainManagedPolicy.managedPolicyArn,
       exportName: `${props.stackName}:Policy:EpsSigningCertChainAccess:Arn`
     })
 
     // secrets:FhirDispensingProxygenKid
     // used by lambda-resources
-    new CfnOutput(this, "FhirDispensingProxygenKid", {
+    new CfnOutput(this, "FhirDispensingProxygenKidArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:FhirDispensingProxygenKid:Arn`
     })
 
     // secrets:FhirDispensingProxygenPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "FhirDispensingProxygenPrivateKey", {
+    new CfnOutput(this, "FhirDispensingProxygenPrivateKeyArn", {
       value: proxygenSecrets.dispensingProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:FhirDispensingProxygenPrivateKey:Arn`
     })
 
     // secrets:PrescribingProxygenProdKid
     // used by lambda-resources
-    new CfnOutput(this, "PrescribingProxygenProdKid", {
+    new CfnOutput(this, "PrescribingProxygenProdKidArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenProdKid.secretArn,
       exportName: `${props.stackName}:Secret:PrescribingProxygenProdKid:Arn`
     })
 
     // secrets:PrescribingProxygenProdPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "PrescribingProxygenProdPrivateKey", {
+    new CfnOutput(this, "PrescribingProxygenProdPrivateKeyArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenProdPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:PrescribingProxygenProdPrivateKey:Arn`
     })
 
     // secrets:PrescribingProxygenPtlKid
     // used by lambda-resources
-    new CfnOutput(this, "PrescribingProxygenPtlKid", {
+    new CfnOutput(this, "PrescribingProxygenPtlKidArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:PrescribingProxygenPtlKid:Arn`
     })
 
     // secrets:PrescribingProxygenPtlPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "PrescribingProxygenPtlPrivateKey", {
+    new CfnOutput(this, "PrescribingProxygenPtlPrivateKeyArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:PrescribingProxygenPtlPrivateKey:Arn`
     })
 
     // secrets:PrescriptionsForPatientsProxygenKid
     // used by lambda-resources
-    new CfnOutput(this, "PrescriptionsForPatientsProxygenKid", {
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenKidArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenKid:Arn`
     })
 
     // secrets:PrescriptionsForPatientsProxygenPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "PrescriptionsForPatientsProxygenPrivateKey", {
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenPrivateKeyArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenPrivateKey:Arn`
     })
 
     // secrets:PrescriptionsForPatientsProxygenProdKid
     // used by lambda-resources
-    new CfnOutput(this, "PrescriptionsForPatientsProxygenProdKid", {
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenProdKidArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenProdKid.secretArn,
       exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenProdKid:Arn`
     })
 
     // secrets:PrescriptionsForPatientsProxygenProdPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "PrescriptionsForPatientsProxygenProdPrivateKey", {
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenProdPrivateKeyArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenProdPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenProdPrivateKey:Arn`
     })
 
     // secrets:PrescriptionsForPatientsProxygenPtlKid
     // used by lambda-resources
-    new CfnOutput(this, "PrescriptionsForPatientsProxygenPtlKid", {
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenPtlKidArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenKid.secretArn,
       exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenPtlKid:Arn`
     })
 
     // secrets:PrescriptionsForPatientsProxygenPtlPrivateKey
     // used by lambda-resources
-    new CfnOutput(this, "PrescriptionsForPatientsProxygenPtlPrivateKey", {
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenPtlPrivateKeyArn", {
       value: proxygenSecrets.prescribingProxygenKeys.proxygenPrivateKey.secretArn,
       exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenPtlPrivateKey:Arn`
     })
 
     // secrets:PTLPrescriptionSigningPublicKey
     // used by lambda-resources
-    new CfnOutput(this, "ptlPrescriptionSigningPublicKey", {
+    new CfnOutput(this, "PTLPrescriptionSigningPublicKeyArn", {
       value: configSecrets.ptlPrescriptionSigningPublicKey.secretArn,
       exportName: `${props.stackName}:Secret:PTLPrescriptionSigningPublicKey:Arn`
     })

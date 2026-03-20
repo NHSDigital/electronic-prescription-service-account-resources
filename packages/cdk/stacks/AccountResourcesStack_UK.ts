@@ -208,7 +208,7 @@ export class AccountResourcesStack_UK extends Stack {
 
     // account-resources:AccessSlackSecretsManagedPolicy
     // used by lambda-resources stack
-    new CfnOutput(this, "AccessSlackSecretsManagedPolicy", {
+    new CfnOutput(this, "AccessSlackSecretsManagedPolicyArn", {
       value: props.accessSlackSecretsManagedPolicy.managedPolicyArn,
       exportName: `${props.stackName}:ManagedPolicy:AccessSlackSecretsManagedPolicy:Arn`
     })
@@ -265,7 +265,7 @@ export class AccountResourcesStack_UK extends Stack {
     // used by
     // lambda-resources
     // fhir-validator
-    new CfnOutput(this, "LambdaEncryptCloudwatchKMSPolicy", {
+    new CfnOutput(this, "LambdaEncryptCloudwatchKMSPolicyArn", {
       value: encryption.lambdaEncryptCloudwatchKmsPolicy.managedPolicyArn,
       exportName: `${props.stackName}:ManagedPolicy:LambdaEncryptCloudwatchKMSPolicy:Arn`
     })
@@ -279,21 +279,21 @@ export class AccountResourcesStack_UK extends Stack {
 
     // account-resources:SnsKMSKey
     // used by lambda-resources
-    new CfnOutput(this, "SnsKMSKey", {
+    new CfnOutput(this, "SnsKMSKeyArn", {
       value: encryption.snsKmsKey.keyArn,
       exportName: `${props.stackName}:Key:SnsKmsKey:Arn`
     })
 
     // account-resources:SplunkDeliveryStreamBackupBucket
     // used by lambda-resources
-    new CfnOutput(this, "SplunkDeliveryStreamBackupBucket", {
+    new CfnOutput(this, "SplunkDeliveryStreamBackupBucketArn", {
       value: monitoringStorage.splunkDeliveryStreamBackupBucket.attrArn,
       exportName: `${props.stackName}:Bucket:SplunkDeliveryStreamBackupBucket:Arn`
     })
 
     // account-resources:SplunkDeliveryStreamBackupBucketRole
     // used by lambda-resources
-    new CfnOutput(this, "SplunkDeliveryStreamBackupBucketRole", {
+    new CfnOutput(this, "SplunkDeliveryStreamBackupBucketRoleName", {
       value: props.splunkDeliveryStreamBackupBucketRole.roleName,
       exportName: `${props.stackName}:Role:SplunkDeliveryStreamBackupBucketRole:Name`
     })
@@ -307,21 +307,21 @@ export class AccountResourcesStack_UK extends Stack {
 
     // account-resources:SplunkDeliveryStreamBackupKMSKey
     // used by lambda-resources
-    new CfnOutput(this, "SplunkDeliveryStreamBackupKMSKey", {
+    new CfnOutput(this, "SplunkDeliveryStreamBackupKMSKeyArn", {
       value: monitoringStorage.splunkDeliveryStreamBackupKmsKey.attrArn,
       exportName: `${props.stackName}:Key:SplunkDeliveryStreamBackupKMSKey:Arn`
     })
 
     // account-resources:SqsDecryptSecretsKMSPolicy
     // used by lambda-resources
-    new CfnOutput(this, "SqsDecryptSecretsKMSPolicy", {
+    new CfnOutput(this, "SqsDecryptSecretsKMSPolicyArn", {
       value: encryption.sqsDecryptSecretsKmsPolicy.managedPolicyArn,
       exportName: `${props.stackName}:ManagedPolicy:SqsDecryptSecretsKMSPolicy:Arn`
     })
 
     // account-resources:SqsKMSKey
     // used by lambda-resources
-    new CfnOutput(this, "SqsKMSKey", {
+    new CfnOutput(this, "SqsKMSKeyArn", {
       value: encryption.sqsKmsKey.keyArn,
       exportName: `${props.stackName}:Key:SqsKMSKey:Arn`
     })
@@ -331,21 +331,21 @@ export class AccountResourcesStack_UK extends Stack {
     // cpt-api
     // psu
     // pfp
-    new CfnOutput(this, "TrustStoreBucket", {
+    new CfnOutput(this, "TrustStoreBucketArn", {
       value: storage.trustStoreBucket.attrArn,
       exportName: `${props.stackName}:Bucket:TrustStoreBucket:Arn`
     })
 
     // account-resources:TrustStoreBucketKMSKey
     // used by cpt-api
-    new CfnOutput(this, "TrustStoreBucketKMSKey", {
+    new CfnOutput(this, "TrustStoreBucketKMSKeyArn", {
       value: storage.trustStoreBucketKmsKey.attrArn,
       exportName: `${props.stackName}:Key:TrustStoreBucketKMSKey:Arn`
     })
 
     // account-resources:TrustStoreBucketKMSKey
     // used by cpt-api
-    new CfnOutput(this, "TrustStoreDeploymentBucket", {
+    new CfnOutput(this, "TrustStoreDeploymentBucketArn", {
       value: storage.trustStoreDeploymentBucket.attrArn,
       exportName: `${props.stackName}:Bucket:TrustStoreDeploymentBucket:Arn`
     })
@@ -362,7 +362,7 @@ export class AccountResourcesStack_UK extends Stack {
     // fhir-validator
     // monitoring
     // eps-storage-terraform terraform/archive/cloudformation.tf
-    new CfnOutput(this, "LambdaInsightsLogGroupPolicy", {
+    new CfnOutput(this, "LambdaInsightsLogGroupPolicyArn", {
       value: functionPolicies.lambdaInsightsLogGroupPolicy.managedPolicyArn,
       exportName: `${props.stackName}:Policy:LambdaInsightsLogGroupPolicy:Arn`
     })
@@ -391,7 +391,7 @@ export class AccountResourcesStack_UK extends Stack {
     // monitoring
     // and cpt-ui fix_cdk_json.sh
     // eps-storage-terraform terraform/archive/cloudformation.tf
-    new CfnOutput(this, "SplunkDeliveryStream", {
+    new CfnOutput(this, "SplunkDeliveryStreamArn", {
       value: splunk.splunkDeliveryStream.attrArn,
       exportName: `${props.stackName}:KinesisFirehose:SplunkDeliveryStream:Arn`
     })
@@ -408,7 +408,7 @@ export class AccountResourcesStack_UK extends Stack {
     // monitoring
     // and cpt-ui fix_cdk_json.sh
     // eps-storage-terraform terraform/archive/cloudformation.tf
-    new CfnOutput(this, "SplunkSubscriptionFilterRole", {
+    new CfnOutput(this, "SplunkSubscriptionFilterRoleArn", {
       value: splunk.splunkSubscriptionFilterRole.roleArn,
       exportName: `${props.stackName}:Role:SplunkSubscriptionFilterRole:Arn`
     })
@@ -417,7 +417,7 @@ export class AccountResourcesStack_UK extends Stack {
     // used by psu release_code.sh
     // and pfp release_code_sh
     // and validator lambda release_code.sh
-    new CfnOutput(this, "ArtifactsBucket", {
+    new CfnOutput(this, "ArtifactsBucketArn", {
       value: storage.artifactsBucket.attrArn,
       exportName: `${props.stackName}:Bucket:ArtifactsBucket:Arn`
     })
