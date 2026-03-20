@@ -525,6 +525,138 @@ export class SecretsStack extends Stack {
       exportName: `${props.stackName}:Secret:SpinePublicCertificate:Arn`
     })
 
+    // secrets:DispensingProxygenProdKid
+    // used by lambda-resources
+    new CfnOutput(this, "DispensingProxygenProdKid", {
+      value: proxygenSecrets.dispensingProxygenKeys.proxygenProdKid.secretArn,
+      exportName: `${props.stackName}:Secret:DispensingProxygenProdKid:Arn`
+    })
+
+    // secrets:DispensingProxygenProdPrivateKey
+    // used by lambda-resources
+    new CfnOutput(this, "DispensingProxygenProdPrivateKey", {
+      value: proxygenSecrets.dispensingProxygenKeys.proxygenProdPrivateKey.secretArn,
+      exportName: `${props.stackName}:Secret:DispensingProxygenProdPrivateKey:Arn`
+    })
+
+    // secrets:DispensingProxygenPtlKid
+    // used by lambda-resources
+    new CfnOutput(this, "DispensingProxygenPtlKid", {
+      value: proxygenSecrets.dispensingProxygenKeys.proxygenKid.secretArn,
+      exportName: `${props.stackName}:Secret:DispensingProxygenPtlKid:Arn`
+    })
+
+    // secrets:DispensingProxygenPtlPrivateKey
+    // used by lambda-resources
+    new CfnOutput(this, "DispensingProxygenPtlPrivateKey", {
+      value: proxygenSecrets.dispensingProxygenKeys.proxygenPrivateKey.secretArn,
+      exportName: `${props.stackName}:Secret:DispensingProxygenPtlPrivateKey:Arn`
+    })
+
+    // secrets:epsSigningCertChain
+    // used by prescribe-dispense
+    new CfnOutput(this, "epsSigningCertChain", {
+      value: configSecrets.epsSigningCertChain.secretArn,
+      exportName: `${props.stackName}:Secret:EpsSigningCertChain:Arn`
+    })
+
+    // secrets:epsSigningCertChainManagedPolicy
+    // used by prescribe-dispense
+    new CfnOutput(this, "epsSigningCertChainManagedPolicy", {
+      value: configSecrets.epsSigningCertChainManagedPolicy.managedPolicyArn,
+      exportName: `${props.stackName}:Policy:EpsSigningCertChainAccess:Arn`
+    })
+
+    // secrets:FhirDispensingProxygenKid
+    // used by lambda-resources
+    new CfnOutput(this, "FhirDispensingProxygenKid", {
+      value: proxygenSecrets.dispensingProxygenKeys.proxygenKid.secretArn,
+      exportName: `${props.stackName}:Secret:FhirDispensingProxygenKid:Arn`
+    })
+
+    // secrets:FhirDispensingProxygenPrivateKey
+    // used by lambda-resources
+    new CfnOutput(this, "FhirDispensingProxygenPrivateKey", {
+      value: proxygenSecrets.dispensingProxygenKeys.proxygenPrivateKey.secretArn,
+      exportName: `${props.stackName}:Secret:FhirDispensingProxygenPrivateKey:Arn`
+    })
+
+    // secrets:PrescribingProxygenProdKid
+    // used by lambda-resources
+    new CfnOutput(this, "PrescribingProxygenProdKid", {
+      value: proxygenSecrets.prescribingProxygenKeys.proxygenProdKid.secretArn,
+      exportName: `${props.stackName}:Secret:PrescribingProxygenProdKid:Arn`
+    })
+
+    // secrets:PrescribingProxygenProdPrivateKey
+    // used by lambda-resources
+    new CfnOutput(this, "PrescribingProxygenProdPrivateKey", {
+      value: proxygenSecrets.prescribingProxygenKeys.proxygenProdPrivateKey.secretArn,
+      exportName: `${props.stackName}:Secret:PrescribingProxygenProdPrivateKey:Arn`
+    })
+
+    // secrets:PrescribingProxygenPtlKid
+    // used by lambda-resources
+    new CfnOutput(this, "PrescribingProxygenPtlKid", {
+      value: proxygenSecrets.prescribingProxygenKeys.proxygenKid.secretArn,
+      exportName: `${props.stackName}:Secret:PrescribingProxygenPtlKid:Arn`
+    })
+
+    // secrets:PrescribingProxygenPtlPrivateKey
+    // used by lambda-resources
+    new CfnOutput(this, "PrescribingProxygenPtlPrivateKey", {
+      value: proxygenSecrets.prescribingProxygenKeys.proxygenPrivateKey.secretArn,
+      exportName: `${props.stackName}:Secret:PrescribingProxygenPtlPrivateKey:Arn`
+    })
+
+    // secrets:PrescriptionsForPatientsProxygenKid
+    // used by lambda-resources
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenKid", {
+      value: proxygenSecrets.prescribingProxygenKeys.proxygenKid.secretArn,
+      exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenKid:Arn`
+    })
+
+    // secrets:PrescriptionsForPatientsProxygenPrivateKey
+    // used by lambda-resources
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenPrivateKey", {
+      value: proxygenSecrets.prescribingProxygenKeys.proxygenPrivateKey.secretArn,
+      exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenPrivateKey:Arn`
+    })
+
+    // secrets:PrescriptionsForPatientsProxygenProdKid
+    // used by lambda-resources
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenProdKid", {
+      value: proxygenSecrets.prescribingProxygenKeys.proxygenProdKid.secretArn,
+      exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenProdKid:Arn`
+    })
+
+    // secrets:PrescriptionsForPatientsProxygenProdPrivateKey
+    // used by lambda-resources
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenProdPrivateKey", {
+      value: proxygenSecrets.prescribingProxygenKeys.proxygenProdPrivateKey.secretArn,
+      exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenProdPrivateKey:Arn`
+    })
+
+    // secrets:PrescriptionsForPatientsProxygenPtlKid
+    // used by lambda-resources
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenPtlKid", {
+      value: proxygenSecrets.prescribingProxygenKeys.proxygenKid.secretArn,
+      exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenPtlKid:Arn`
+    })
+
+    // secrets:PrescriptionsForPatientsProxygenPtlPrivateKey
+    // used by lambda-resources
+    new CfnOutput(this, "PrescriptionsForPatientsProxygenPtlPrivateKey", {
+      value: proxygenSecrets.prescribingProxygenKeys.proxygenPrivateKey.secretArn,
+      exportName: `${props.stackName}:Secret:PrescriptionsForPatientsProxygenPtlPrivateKey:Arn`
+    })
+
+    // secrets:PTLPrescriptionSigningPublicKey
+    // used by lambda-resources
+    new CfnOutput(this, "ptlPrescriptionSigningPublicKey", {
+      value: configSecrets.ptlPrescriptionSigningPublicKey.secretArn,
+      exportName: `${props.stackName}:Secret:PTLPrescriptionSigningPublicKey:Arn`
+    })
     nagSuppressions(this, "Secrets")
   }
 }

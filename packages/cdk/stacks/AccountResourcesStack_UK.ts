@@ -10,7 +10,6 @@ import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
 import {Storage} from "../resources/Storage"
 import {Encryption} from "../resources/Encryption"
 import {ManagedPolicy, Role} from "aws-cdk-lib/aws-iam"
-import {CfnBucket} from "aws-cdk-lib/aws-s3"
 import {nagSuppressions} from "../nagSuppressions"
 import {MonitoringStorage} from "../resources/MonitoringStorage"
 import {Functions} from "../resources/Functions"
@@ -66,7 +65,6 @@ export interface AccountResourcesStackProps_UK extends StackProps {
 }
 
 export class AccountResourcesStack_UK extends Stack {
-  public readonly auditLoggingBucket: CfnBucket
   public constructor(scope: App, id: string, props: AccountResourcesStackProps_UK){
     super(scope, id, props)
 
@@ -326,12 +324,86 @@ export class AccountResourcesStack_UK extends Stack {
       exportName: `${props.stackName}:Key:SqsKMSKey:Arn`
     })
 
+    // account-resources:TrustStoreBucket
+    // used by
+    // cpt-api
+    // psu
+    // pfp
     new CfnOutput(this, "TrustStoreBucket", {
       value: storage.trustStoreBucket.attrArn,
       exportName: `${props.stackName}:Bucket:TrustStoreBucket:Arn`
     })
 
+    // account-resources:TrustStoreBucketKMSKey
+    // used by cpt-api
+    new CfnOutput(this, "TrustStoreBucketKMSKey", {
+      value: storage.trustStoreBucketKmsKey.attrArn,
+      exportName: `${props.stackName}:Key:TrustStoreBucketKMSKey:Arn`
+    })
+
+    // account-resources:TrustStoreBucketKMSKey
+    // used by cpt-api
+    new CfnOutput(this, "TrustStoreDeploymentBucket", {
+      value: storage.trustStoreDeploymentBucket.attrArn,
+      exportName: `${props.stackName}:Bucket:TrustStoreDeploymentBucket:Arn`
+    })
+
+    // lambda-resources:LambdaInsightsLogGroupPolicy
+    // used by
+    // lambda-resources ????
+    // psu
+    // pfp
+    // psu
+    // cpt-ui
+    // epsam
+    // cpt-api
+    // fhir-validator
+    // monitoring
+    new CfnOutput(this, "LambdaInsightsLogGroupPolicy", {
+      value: functionPolicies.lambdaInsightsLogGroupPolicy.managedPolicyArn,
+      exportName: `${props.stackName}:Policy:LambdaInsightsLogGroupPolicy:Arn`
+    })
+
+    // lambda-resources:SlackAlertsSnsTopicArn
+    // used by
+    // pfp
+    // psu
+    // fhir-validator
+    // monitoring
+    new CfnOutput(this, "SlackAlertsSnsTopicArn", {
+      value: slack.slackAlertsSnsTopic.topicArn,
+      exportName: `${props.stackName}:SnsTopic:SlackAlertsSnsTopic:Arn`
+    })
+
+    // lambda-resources:SplunkDeliveryStream
+    // used by
+    // cpt-api
+    // pfp
+    // psu
+    // fhir-validator
+    // cpt-ui
+    // prescribe-dispense
+    // epsam
+    // monitoring
+    new CfnOutput(this, "SplunkDeliveryStream", {
+      value: splunk.splunkDeliveryStream.attrArn,
+      exportName: `${props.stackName}:KinesisFirehose:SplunkDeliveryStream:Arn`
+    })
+
+    // lambda-resources:SplunkSubscriptionFilterRole
+    // used by
+    // cpt-api
+    // pfp
+    // psu
+    // fhir-validator
+    // cpt-ui
+    // prescribe-dispense
+    // epsam
+    // monitoring
+    new CfnOutput(this, "SplunkSubscriptionFilterRole", {
+      value: splunk.splunkSubscriptionFilterRole.roleArn,
+      exportName: `${props.stackName}:Role:SplunkSubscriptionFilterRole:Arn`
+    })
     nagSuppressions(this, "AccountResources_UK")
-    this.auditLoggingBucket = storage.auditLoggingBucket
   }
 }

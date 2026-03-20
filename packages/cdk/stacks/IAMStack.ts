@@ -1,4 +1,9 @@
-import {StackProps, Stack, App} from "aws-cdk-lib"
+import {
+  StackProps,
+  Stack,
+  App,
+  CfnOutput
+} from "aws-cdk-lib"
 import {IdentityProvider} from "../resources/IdentityProvider"
 import {Roles} from "../resources/Roles"
 import {Policies} from "../resources/Policies"
@@ -82,6 +87,73 @@ export class IAMStack extends Stack {
     this.snsFeedbackLoggingRole = roles.snsFeedbackLoggingRole
     this.proxygenPTLRole = roles.proxygenPTLRole
     this.proxygenProdRole = roles.proxygenProdRole
+
+    // ci-resources:AssistMeDocumentSyncRole
+    // used by epsam
+    new CfnOutput(this, "AssistMeDocumentSyncRole", {
+      value: roles.assistMeDocumentSyncRole.roleArn,
+      exportName: `${props.stackName}:Role:AssistMeDocumentSyncRole:Arn`
+    })
+
+    // ci-resources:CloudFormationDeployRole
+    // used by
+    // account-resources
+    // cpt-ui
+    // epsam
+    new CfnOutput(this, "CloudFormationDeployRole", {
+      value: roles.cloudFormationDeployRole.roleArn,
+      exportName: `${props.stackName}:Role:CloudFormationDeployRole:Arn`
+    })
+
+    // ci-resources:CloudFormationDeployRoleName
+    // used by account-resources
+    new CfnOutput(this, "CloudFormationDeployRoleName", {
+      value: roles.cloudFormationDeployRole.roleName,
+      exportName: `${props.stackName}:Role:CloudFormationDeployRole:Name`
+    })
+
+    // ci-resources:CloudFormationExecutionRole
+    // used by account-resources
+    new CfnOutput(this, "CloudFormationExecutionRole", {
+      value: roles.cloudFormationExecutionRole.roleArn,
+      exportName: `${props.stackName}:Role:CloudFormationExecutionRole:Arn`
+    })
+
+    // ci-resources:CloudFormationExecutionRoleName
+    // used by account-resources
+    new CfnOutput(this, "CloudFormationExecutionRoleName", {
+      value: roles.cloudFormationExecutionRole.roleName,
+      exportName: `${props.stackName}:Role:CloudFormationExecutionRole:Name`
+    })
+
+    // ci-resources:CloudFormationPrepareChangesetRole
+    // used by account-resources
+    new CfnOutput(this, "CloudFormationPrepareChangesetRole", {
+      value: roles.cloudFormationPrepareChangesetRole.roleArn,
+      exportName: `${props.stackName}:Role:CloudFormationPrepareChangesetRole:Arn`
+    })
+
+    // ci-resources:CloudFormationPrepareChangesetRoleName
+    // used by account-resources
+    new CfnOutput(this, "CloudFormationPrepareChangesetRoleName", {
+      value: roles.cloudFormationPrepareChangesetRole.roleName,
+      exportName: `${props.stackName}:Role:CloudFormationPrepareChangesetRole:Name`
+    })
+
+    // ci-resources:ProxygenProdRoleName
+    // used by lambda-resources
+    new CfnOutput(this, "ProxygenProdRoleName", {
+      value: roles.proxygenProdRole.roleName,
+      exportName: `${props.stackName}:Role:ProxygenProdRole:Name`
+    })
+
+    // ci-resources:ProxygenPTLRoleName
+    // used by lambda-resources
+    new CfnOutput(this, "ProxygenPTLRoleName", {
+      value: roles.proxygenPTLRole.roleName,
+      exportName: `${props.stackName}:Role:ProxygenPTLRole:Name`
+    })
+
     nagSuppressions(this, "IAM")
 
   }
