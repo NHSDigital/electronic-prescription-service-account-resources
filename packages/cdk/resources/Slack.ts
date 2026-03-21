@@ -51,23 +51,26 @@ export class Slack extends Construct {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const slackAlerterSqsQueuePolicy = new CfnQueuePolicy(this, "SlackAlerterSqsQueuePolicy", {
       policyDocument: {
-        Effect: "Allow",
-        Principal: {
-          Service: "sns.amazonaws.com"
-        },
-        Action: [
-          "sqs:GetQueueAttributes",
-          "sqs:GetQueueUrl",
-          "sqs:SendMessage"
-        ],
-        Resource: [
-          slackAlerterSqsQueue.queueArn
-        ],
-        Condition: {
-          ArnEquals: {
-            "aws:SourceArn": slackAlertsSnsTopic.topicArn
+        Version: "2012-10-17",
+        Statement: [{
+          Effect: "Allow",
+          Principal: {
+            Service: "sns.amazonaws.com"
+          },
+          Action: [
+            "sqs:GetQueueAttributes",
+            "sqs:GetQueueUrl",
+            "sqs:SendMessage"
+          ],
+          Resource: [
+            slackAlerterSqsQueue.queueArn
+          ],
+          Condition: {
+            ArnEquals: {
+              "aws:SourceArn": slackAlertsSnsTopic.topicArn
+            }
           }
-        }
+        }]
       },
       queues: [slackAlerterSqsQueue.queueUrl]
     })
