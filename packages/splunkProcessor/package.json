@@ -16,7 +16,7 @@
     "@aws-sdk/client-kinesis": "^3.1014.0"
   },
   "devDependencies": {
-    "aws-sdk-vitest-mock": "^1.0.47",
+    "aws-sdk-vitest-mock": "^1.0.55",
     "vitest": "^4.0.17"
   }
 }
