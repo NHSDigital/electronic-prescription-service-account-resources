@@ -16,7 +16,7 @@
         "repo:NHSDigital/eps-vpc-resources:environment:prod",
         "repo:NHSDigital/eps-storage-resources:environment:prod",
         "repo:NHSDigital/eps-assist-me:environment:prod",
-        "repo:NHSDigital/eps-data-extract:environment:prod*"
+        "repo:NHSDigital/eps-data-extract:environment:prod"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
