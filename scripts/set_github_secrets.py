@@ -51,6 +51,7 @@ class Roles(TypedDict):
 class Secrets(TypedDict):
     regression_test_pem: str
     automerge_pem: str
+    create_pull_request_pem: str
     eps_multi_repo_deployment_pem: str
     dev_roles: Roles
     int_roles: Roles
@@ -332,6 +333,12 @@ def set_all_secrets(github: Github,
     set_secret(github=github, repoUrl=repoUrl, secret_name="DEPENDABOT_TOKEN",
                secret_value=secrets["dependabot_token"],
                set_dependabot=True)
+    set_secret(github=github, repoUrl=repoUrl, secret_name="CREATE_PULL_REQUEST_PEM",
+               secret_value=secrets["create_pull_request_pem"],
+               set_dependabot=True)
+    set_secret(github=github, repoUrl=repoUrl, secret_name="CREATE_PULL_REQUEST_APP_ID",
+               secret_value="3182106",
+               set_dependabot=True)
 
     # dev secrets
     set_secret(github=github, repoUrl=repoUrl, secret_name="DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE",
@@ -591,6 +598,8 @@ def main():
         regression_test_pem = f.read()
     with open(".secrets/automerge.pem") as f:
         automerge_pem = f.read()
+    with open(".secrets/create_pull_request.pem") as f:
+        create_pull_request_pem = f.read()
     with open(".secrets/eps_multi_repo_deployment.pem") as f:
         eps_multi_repo_deployment_pem = f.read()
 
@@ -599,6 +608,7 @@ def main():
         "regression_test_pem": regression_test_pem,
         "eps_multi_repo_deployment_pem": eps_multi_repo_deployment_pem,
         "automerge_pem": automerge_pem,
+        "create_pull_request_pem": create_pull_request_pem,
         "dev_roles": dev_roles,
         "int_roles": int_roles,
         "prod_roles": prod_roles,
