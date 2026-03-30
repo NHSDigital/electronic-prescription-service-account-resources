@@ -24,7 +24,7 @@ When we add a new environment, you need to do the following
 You need a github token to run this and have aws config setup for each environment
 You can get a github token by first authenticating with github cli
 
-gh auth login
+make github-login
 
 and then get the token
 
@@ -41,11 +41,8 @@ class Roles(TypedDict):
     cloud_formation_deploy_role: str
     cloud_formation_check_version_role: str
     cloud_formation_prepare_changeset_role: str
-    CDK_pull_image_role: str
-    CDK_push_image_role: str
     release_notes_execute_lambda_role: str
     artillery_runner_role: str
-    dev_container_push_image_role: str
 
 
 class Secrets(TypedDict):
@@ -223,16 +220,6 @@ def get_role_exports(all_exports: list) -> Roles:
             "required": True
         },
         {
-            "variable_name": "CDK_pull_image_role",
-            "export_name": "ci-resources:CDKPullImageRole",
-            "required": True
-        },
-        {
-            "variable_name": "CDK_push_image_role",
-            "export_name": "ci-resources:CDKPushImageRole",
-            "required": True
-        },
-        {
             "variable_name": "release_notes_execute_lambda_role",
             "export_name": "ci-resources:ReleaseNotesExecuteLambdaRole",
             "required": False
@@ -240,11 +227,6 @@ def get_role_exports(all_exports: list) -> Roles:
         {
             "variable_name": "artillery_runner_role",
             "export_name": "ci-resources:ArtilleryRunnerRole",
-            "required": False
-        },
-        {
-            "variable_name": "dev_container_push_image_role",
-            "export_name": "ci-resources:DevContainerPushImageRole",
             "required": False
         },
     ]
@@ -290,6 +272,18 @@ def set_secret(github: Github, repoUrl: str, secret_name: str, secret_value: str
         time.sleep(1)  # Sleep for 1 second to avoid rate limiting
 
 
+def set_environment_secret(github: Github, repoUrl: str, environment_name: str, secret_name: str, secret_value: str):
+    repo = github.get_repo(repoUrl)
+    if secret_value is None:
+        print(f"Secret value for {secret_name} in repo {repoUrl} is not set. Not setting")
+        return
+    environment = repo.get_environment(environment_name)
+    print(f"Setting value for {secret_name} in repo {repoUrl} for environment {environment_name}")
+    environment.create_secret(secret_name=secret_name,
+                              unencrypted_value=secret_value)
+    time.sleep(1)  # Sleep for 1 second to avoid rate limiting
+
+
 def set_role_secrets(github: Github, repoUrl: str, roles: Roles, env_name: str, set_dependabot: bool):
     set_secret(github=github, repoUrl=repoUrl, secret_name=f"{env_name}_CLOUD_FORMATION_DEPLOY_ROLE",
                secret_value=roles["cloud_formation_deploy_role"],
@@ -299,12 +293,6 @@ def set_role_secrets(github: Github, repoUrl: str, roles: Roles, env_name: str, 
                set_dependabot=set_dependabot)
     set_secret(github=github, repoUrl=repoUrl, secret_name=f"{env_name}_CLOUD_FORMATION_CREATE_CHANGESET_ROLE",
                secret_value=roles["cloud_formation_prepare_changeset_role"],
-               set_dependabot=set_dependabot)
-    set_secret(github=github, repoUrl=repoUrl, secret_name=f"{env_name}_CDK_PULL_IMAGE_ROLE",
-               secret_value=roles["CDK_pull_image_role"],
-               set_dependabot=set_dependabot)
-    set_secret(github=github, repoUrl=repoUrl, secret_name=f"{env_name}_CDK_PUSH_IMAGE_ROLE",
-               secret_value=roles["CDK_push_image_role"],
                set_dependabot=set_dependabot)
 
 
@@ -333,21 +321,22 @@ def set_all_secrets(github: Github,
     set_secret(github=github, repoUrl=repoUrl, secret_name="DEPENDABOT_TOKEN",
                secret_value=secrets["dependabot_token"],
                set_dependabot=True)
-    set_secret(github=github, repoUrl=repoUrl, secret_name="CREATE_PULL_REQUEST_PEM",
-               secret_value=secrets["create_pull_request_pem"],
-               set_dependabot=True)
-    set_secret(github=github, repoUrl=repoUrl, secret_name="CREATE_PULL_REQUEST_APP_ID",
-               secret_value="3182106",
-               set_dependabot=True)
+    set_environment_secret(github=github,
+                           repoUrl=repoUrl,
+                           environment_name="create_pull_request",
+                           secret_name="CREATE_PULL_REQUEST_PEM",
+                           secret_value=secrets["create_pull_request_pem"])
+    set_environment_secret(github=github,
+                           repoUrl=repoUrl,
+                           environment_name="create_pull_request",
+                           secret_name="CREATE_PULL_REQUEST_APP_ID",
+                           secret_value="3182106")
 
     # dev secrets
     set_secret(github=github, repoUrl=repoUrl, secret_name="DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE",
                secret_value=secrets["dev_roles"]["release_notes_execute_lambda_role"],
                set_dependabot=False)
 
-    set_secret(github=github, repoUrl=repoUrl, secret_name="DEV_CONTAINER_PUSH_IMAGE_ROLE",
-               secret_value=secrets["dev_roles"]["dev_container_push_image_role"],
-               set_dependabot=True)
     if is_echo_repo:
         print(f"All required secrets set for echo repo {repoUrl}.")
         return
@@ -501,6 +490,8 @@ def setup_environments(github: Github,
     deployment_branch_policy = EnvironmentDeploymentBranchPolicyParams(protected_branches=True,
                                                                        custom_branch_policies=False)
 
+    create_pull_request_environment = RepoEnvironment("create_pull_request", [], deployment_branch_policy)
+
     common_environments: list[RepoEnvironment] = [
         RepoEnvironment("dev"),
         RepoEnvironment("ref", [eps_administrator_team_reviewer, eps_team_reviewer]),
@@ -517,8 +508,12 @@ def setup_environments(github: Github,
         ]
         for environment in environments:
             setup_account_resources_environments(repo=repo, environment=environment)
+        setup_repo_environment(repo, create_pull_request_environment)
         return
 
+    common_environments = common_environments + [
+        create_pull_request_environment
+    ]
     if not is_echo_repo:
         environments = common_environments + [
             RepoEnvironment("dev-pr"),
@@ -542,6 +537,11 @@ def setup_repo(github: Github,
                repo: RepoConfig,
                secrets: Secrets,
                github_teams: GithubTeams):
+    setup_environments(github=github,
+                       repoUrl=repo["repoUrl"],
+                       set_account_resources_environments=repo["isAccountResources"],
+                       github_teams=github_teams,
+                       is_echo_repo=repo["isEchoRepo"])
     set_all_secrets(github=github,
                     repoUrl=repo["repoUrl"],
                     setTargetSpineServers=repo["setTargetSpineServers"],
@@ -549,11 +549,6 @@ def setup_repo(github: Github,
                     set_account_resources_secrets=repo["isAccountResources"],
                     secrets=secrets,
                     is_echo_repo=repo["isEchoRepo"])
-    setup_environments(github=github,
-                       repoUrl=repo["repoUrl"],
-                       set_account_resources_environments=repo["isAccountResources"],
-                       github_teams=github_teams,
-                       is_echo_repo=repo["isEchoRepo"])
     # TODO - setup other things automatically
     # see https://nhsd-confluence.digital.nhs.uk/spaces/APIMC/pages/693753388/Git+repository+checklist
 
