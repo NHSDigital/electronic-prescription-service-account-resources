@@ -16,7 +16,8 @@
         "repo:NHSDigital/eps-aws-dashboards:environment:int",
         "repo:NHSDigital/eps-vpc-resources:environment:int",
         "repo:NHSDigital/eps-storage-resources:environment:int",
-        "repo:NHSDigital/eps-assist-me:environment:int"
+        "repo:NHSDigital/eps-assist-me:environment:int",
+        "repo:NHSDigital/eps-data-extract:environment:int"
       ],
       "CheckVersionSubjectClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -30,7 +31,8 @@
         "repo:NHSDigital/eps-aws-dashboards:*",
         "repo:NHSDigital/eps-vpc-resources:*",
         "repo:NHSDigital/eps-storage-resources:*",
-        "repo:NHSDigital/eps-assist-me:*"
+        "repo:NHSDigital/eps-assist-me:*",
+        "repo:NHSDigital/eps-data-extract:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "NONE"

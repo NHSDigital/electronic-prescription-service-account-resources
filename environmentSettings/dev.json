@@ -16,6 +16,7 @@
         "repo:NHSDigital/eps-vpc-resources:*",
         "repo:NHSDigital/eps-storage-resources:*",
         "repo:NHSDigital/eps-assist-me:*",
+        "repo:NHSDigital/eps-data-extract:*",
         "repo:NHSDigital/eps-tool-hack-day:*"
       ],
       "CheckVersionSubjectClaimFilters": [
@@ -31,7 +32,8 @@
         "repo:NHSDigital/eps-aws-dashboards:*",
         "repo:NHSDigital/eps-vpc-resources:*",
         "repo:NHSDigital/eps-storage-resources:*",
-        "repo:NHSDigital/eps-assist-me:*"
+        "repo:NHSDigital/eps-assist-me:*",
+        "repo:NHSDigital/eps-data-extract:*"
       ],
       "ReleaseNotesExecuteLambdaClaimFilters": [
         "repo:NHSDigital/prescriptionsforpatients:*",
@@ -48,6 +50,7 @@
         "repo:NHSDigital/eps-vpc-resources:*",
         "repo:NHSDigital/eps-storage-resources:*",
         "repo:NHSDigital/eps-assist-me:*",
+        "repo:NHSDigital/eps-data-extract:*",
         "repo:NHSDigital/eps-storage-terraform:*"
       ],
       "PrepareChangesetClaimFilters": [
