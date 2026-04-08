@@ -492,10 +492,13 @@ def setup_environments(github: Github,
 
     create_pull_request_environment = RepoEnvironment("create_pull_request", [], deployment_branch_policy)
 
+    int_deployment_branch_policy = deployment_branch_policy
+    if repo.name == "NHSDigital/electronic-prescription-service-api-regression-tests":
+        int_deployment_branch_policy = None
     common_environments: list[RepoEnvironment] = [
         RepoEnvironment("dev"),
         RepoEnvironment("ref", [eps_administrator_team_reviewer, eps_team_reviewer]),
-        RepoEnvironment("int", [eps_administrator_team_reviewer, eps_team_reviewer], deployment_branch_policy),
+        RepoEnvironment("int", [eps_administrator_team_reviewer, eps_team_reviewer], int_deployment_branch_policy),
     ]
 
     if set_account_resources_environments:
