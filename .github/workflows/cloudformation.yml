@@ -250,6 +250,6 @@ jobs:
           git commit -m "update releases for ${TARGET_ENVIRONMENT} and stack ${STACK_NAME}"
           parallel --retries 10 --delay 3 ::: "git pull --rebase && git push"
         env:
-          TARGET_ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
-          STACK_NAME: ${{ inputs.STACK_NAME }}
+          TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
+          STACK_NAME: ${{ inputs.stack_name }}
           VERSION: ${{ inputs.version }}
