@@ -30,6 +30,10 @@ jobs:
   package_code:
     uses: ./.github/workflows/sam_package_code.yml
     needs: get_config_values
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
 
