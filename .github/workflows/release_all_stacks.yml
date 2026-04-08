@@ -196,6 +196,9 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_monitoring
+    permissions:
+      id-token: write
+      contents: write
     with:
       CDK_RESOURCE_STACK_NAME: Monitoring
       DEPLOYED_STACK_NAME: monitoring
@@ -213,6 +216,9 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_account_resources_US
+    permissions:
+      id-token: write
+      contents: write
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_US
       DEPLOYED_STACK_NAME: account-resources-cdk-us
@@ -230,6 +236,9 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     if: ${{ inputs.execute_change_set == true }}
     needs: cdk_diff_account_resources_UK
+    permissions:
+      id-token: write
+      contents: write
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_UK
       DEPLOYED_STACK_NAME: account-resources-cdk-uk
@@ -251,6 +260,9 @@ jobs:
 
   release_lambda_resources:
     uses: ./.github/workflows/sam_release_code.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       env: ${{ inputs.target_environment }}
       STACK_NAME: lambda-resources${{ inputs.lambda_stack_suffix }}
