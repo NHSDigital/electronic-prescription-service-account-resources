@@ -113,6 +113,9 @@ jobs:
   deploy_stacks:
     needs: [quality_checks, package_code, package_cdk_code, get_issue_number, tag_release, get_commit_id, get_config_values]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: read
     with:
       target_environment: dev
       version: pr-${{github.event.number}}

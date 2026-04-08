@@ -77,6 +77,9 @@ jobs:
   deploy_dev_stacks:
     needs: [get_commit_id, package_code, package_cdk_code, tag_release, get_config_values]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: dev
@@ -106,6 +109,9 @@ jobs:
         get_config_values,
       ]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: ref
@@ -135,6 +141,9 @@ jobs:
         get_config_values,
       ]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: qa
@@ -163,6 +172,9 @@ jobs:
         deploy_qa_stacks,
       ]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: int
@@ -192,6 +204,10 @@ jobs:
         get_config_values,
       ]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: read
+
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: prod
