@@ -140,6 +140,9 @@ jobs:
 
   cdk_diff_monitoring:
     uses: ./.github/workflows/cdk_diff_code.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       CDK_RESOURCE_STACK_NAME: Monitoring
       DEPLOYED_STACK_NAME: monitoring
@@ -154,6 +157,9 @@ jobs:
 
   cdk_diff_account_resources_US:
     uses: ./.github/workflows/cdk_diff_code.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_US
       DEPLOYED_STACK_NAME: account-resources-cdk-us
@@ -169,6 +175,10 @@ jobs:
 
   cdk_diff_account_resources_UK:
     uses: ./.github/workflows/cdk_diff_code.yml
+    permissions:
+      id-token: write
+      contents: write
+
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_UK
       DEPLOYED_STACK_NAME: account-resources-cdk-uk
