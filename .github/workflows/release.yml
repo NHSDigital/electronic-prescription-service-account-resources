@@ -79,7 +79,7 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: dev
@@ -111,7 +111,7 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: ref
@@ -143,7 +143,7 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: qa
@@ -174,7 +174,7 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: int
@@ -206,7 +206,7 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
 
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}

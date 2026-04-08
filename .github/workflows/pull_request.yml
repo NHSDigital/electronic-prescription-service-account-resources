@@ -115,7 +115,7 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       target_environment: dev
       version: pr-${{github.event.number}}

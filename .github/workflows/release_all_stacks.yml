@@ -61,7 +61,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       env: ${{ inputs.target_environment }}
       target_environment: ${{ inputs.target_environment }}-ci
@@ -79,6 +79,9 @@ jobs:
   
   list_account_resources_cf_changes:
     uses: ./.github/workflows/cloudformation.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       env: ${{ inputs.target_environment }}
       target_environment: ${{inputs.target_environment}}-account
@@ -98,7 +101,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       env: ${{ inputs.target_environment }}
       target_environment: ${{inputs.target_environment}}-account
@@ -119,7 +122,7 @@ jobs:
     uses: ./.github/workflows/cloudformation.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       env: ${{ inputs.target_environment }}
       target_environment: ${{inputs.target_environment}}-account

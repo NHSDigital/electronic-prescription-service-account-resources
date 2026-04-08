@@ -76,7 +76,7 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       target_environment: dev
       version: ${{ needs.tag_release.outputs.version_tag }}
@@ -108,7 +108,7 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       target_environment: qa
       version: ${{ needs.tag_release.outputs.version_tag }}
@@ -140,7 +140,7 @@ jobs:
     uses: ./.github/workflows/release_all_stacks.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
     with:
       target_environment: ref
       version: ${{ needs.tag_release.outputs.version_tag }}
