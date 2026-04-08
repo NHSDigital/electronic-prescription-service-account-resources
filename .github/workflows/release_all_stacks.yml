@@ -59,6 +59,9 @@ permissions: {}
 jobs:
   list_ci_resources_cf_changes:
     uses: ./.github/workflows/cloudformation.yml
+    permissions:
+      id-token: write
+      contents: read
     with:
       env: ${{ inputs.target_environment }}
       target_environment: ${{ inputs.target_environment }}-ci
