@@ -36,3 +36,4 @@ cdk.out
 .npmrc
 .trivy_out/
 .cfn_guard_out/
+.sbom/
