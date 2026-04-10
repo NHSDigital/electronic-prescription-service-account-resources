@@ -33,7 +33,8 @@ class SetupGithubRepoRunner:
 
         repos = self._repo_status_loader.load_repo_configs()
         for repo in repos:
-            self._github_setup.setup_repo(repo_config=repo, secrets=secrets)
+            if repo["repoUrl"] == 'NHSDigital/eps-dependabot-approve':
+                self._github_setup.setup_repo(repo_config=repo, secrets=secrets)
 
     def _print_setup_summary(self, secrets_keys: list[str]) -> None:
         print('\n\n************************************************')

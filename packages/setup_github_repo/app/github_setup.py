@@ -4,6 +4,7 @@ from github import Github
 
 from .github_access import GithubAccessManager
 from .github_environments import GithubEnvironmentManager
+from .github_repo_settings import GithubRepoSettingsManager
 from .github_secrets import GithubSecretManager
 from .models import GithubTeams, RepoConfig, Secrets
 
@@ -36,6 +37,12 @@ class GithubSetupService:
             interactive=interactive,
             rate_limit_delay_seconds=rate_limit_delay_seconds,
         )
+        self._repo_settings_manager = GithubRepoSettingsManager(
+            github=github,
+            github_teams=github_teams,
+            interactive=interactive,
+            rate_limit_delay_seconds=rate_limit_delay_seconds,
+        )
 
     @staticmethod
     def get_github_teams(github: Github) -> GithubTeams:
@@ -54,6 +61,7 @@ class GithubSetupService:
         }
 
     def setup_repo(self, repo_config: RepoConfig, secrets: Secrets) -> None:
+        self._repo_settings_manager.setup_general_settings(repo_url=repo_config['repoUrl'])
         self._access_manager.setup_access(repo_url=repo_config['repoUrl'])
         self._environment_manager.setup_environments(
             repo_url=repo_config['repoUrl'],
