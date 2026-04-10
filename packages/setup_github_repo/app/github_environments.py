@@ -28,6 +28,11 @@ class GithubEnvironmentManager(GithubOperationBase):
         )
 
         create_pull_request_environment = RepoEnvironment('create_pull_request', [], deployment_branch_policy)
+        self._setup_repo_environment(repo, create_pull_request_environment)
+
+        if not repo_config.inWeeklyRelease:
+            print(f'{repo_url} is not in weekly release, so not creating release environments')
+            return
 
         int_deployment_branch_policy = deployment_branch_policy
         if repo.name == 'NHSDigital/electronic-prescription-service-api-regression-tests':
@@ -51,10 +56,8 @@ class GithubEnvironmentManager(GithubOperationBase):
             ]
             for environment in environments:
                 self._setup_account_resources_environments(repo=repo, environment=environment)
-            self._setup_repo_environment(repo, create_pull_request_environment)
             return
 
-        common_environments.append(create_pull_request_environment)
         if not is_echo_repo:
             environments = common_environments + [
                 RepoEnvironment('dev-pr'),
