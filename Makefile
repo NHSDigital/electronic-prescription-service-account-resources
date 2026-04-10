@@ -11,7 +11,7 @@ install: install-python install-node install-hooks
 	sudo apt install -y faketime
 
 install-python:
-	poetry install
+	poetry install --all-groups
 
 install-node:
 	npm ci --ignore-scripts
