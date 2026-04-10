@@ -24,7 +24,7 @@
         "@types/jsonwebtoken": "^9.0.10",
         "@types/uuid": "^11.0.0",
         "aws-sdk-vitest-mock": "^1.0.55",
-        "nock": "^14.0.10",
+        "nock": "^15.0.0",
         "vitest": "^4.0.17"
     }
 }
