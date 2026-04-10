@@ -2,6 +2,12 @@
 
 Usage remains the same:
     poetry run python scripts/set_github_secrets.py --gh_auth_token "$GH_TOKEN"
+
+You can also run without passing a token; the CLI will use `gh auth token`
+and fall back to `gh auth login` when needed.
+
+The CLI also validates AWS credentials for required profiles and runs
+`make aws-login` if credentials are missing or expired.
 """
 
 from pathlib import Path

@@ -17,3 +17,7 @@ console\.log\(`access token : \${access_token}`\)
 .*node_modules.*
 CidrIp: 0.0.0.0\/0
 poetry.lock
+token = result\.stdout\.strip\(\)
+token = cli\.resolve_gh_auth_token\('explicit-token'\)
+token = cli\._get_or_create_gh_auth_token\(\)
+token = cli\._get_or_create_gh_auth_token\(\)
