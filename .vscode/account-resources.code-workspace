@@ -31,6 +31,10 @@
     {
       "name": "packages/driftDetector",
       "path": "../packages/driftDetector",
+    },
+    {
+      "name": "packages/setup_github_repo",
+      "path": "../packages/setup_github_repo",
     }
   ],
   "settings": {

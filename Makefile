@@ -11,7 +11,7 @@ install: install-python install-node install-hooks
 	sudo apt install -y faketime
 
 install-python:
-	poetry install
+	poetry install --all-groups
 
 install-node:
 	npm ci --ignore-scripts
@@ -20,7 +20,11 @@ install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
 
 
-lint: lint-node
+lint: lint-node lint-python
+
+lint-python:
+	poetry run black packages/setup_github_repo
+	poetry run flake8 packages/setup_github_repo
 
 lint-node:
 	npm run lint --workspace packages/certificateChecker
@@ -31,6 +35,7 @@ lint-node:
 
 test: generate-mock-certs
 	poetry run scripts/check_policy_length.py
+	poetry run pytest packages/setup_github_repo/tests
 	npm run test --workspace packages/splunkProcessor
 	npm run test --workspace packages/certificateChecker
 	npm run test --workspace packages/slackAlerter
