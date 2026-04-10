@@ -1,7 +1,7 @@
 """Unit tests for repository-level settings updates in GithubRepoSettingsManager."""
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 from packages.setup_github_repo.app.github_repo_settings import GithubRepoSettingsManager
 
@@ -17,6 +17,15 @@ class TestGithubRepoSettingsManager(unittest.TestCase):
 
         fake_repo = MagicMock()
         fake_repo.get_branch.return_value = fake_branch
+        fake_repo.private = False
+
+        fake_requester = MagicMock()
+        fake_requester.requestJsonAndCheck.side_effect = [
+            ({}, {'default_workflow_permissions': 'read'}),
+            ({}, {}),
+            ({}, {}),
+        ]
+        fake_repo._requester = fake_requester
 
         fake_github = MagicMock()
         fake_github.get_repo.return_value = fake_repo
@@ -49,6 +58,24 @@ class TestGithubRepoSettingsManager(unittest.TestCase):
             checks=[('build', 123)],
         )
         fake_branch.add_required_signatures.assert_called_once_with()
+        fake_requester.requestJsonAndCheck.assert_has_calls(
+            [
+                call('GET', '/repos/NHSDigital/example-repo/actions/permissions/workflow'),
+                call(
+                    'PUT',
+                    '/repos/NHSDigital/example-repo/actions/permissions/workflow',
+                    input={
+                        'default_workflow_permissions': 'read',
+                        'can_approve_pull_request_reviews': True,
+                    },
+                ),
+                call(
+                    'PUT',
+                    '/repos/NHSDigital/example-repo/actions/permissions/fork-pr-contributor-approval',
+                    input={'approval_policy': 'all_external_contributors'},
+                ),
+            ]
+        )
 
     def test_setup_general_settings_uses_contexts_when_checks_not_present(self):
         fake_required_status_checks = MagicMock()
@@ -61,6 +88,14 @@ class TestGithubRepoSettingsManager(unittest.TestCase):
 
         fake_repo = MagicMock()
         fake_repo.get_branch.return_value = fake_branch
+        fake_repo.private = True
+
+        fake_requester = MagicMock()
+        fake_requester.requestJsonAndCheck.side_effect = [
+            ({}, {'default_workflow_permissions': 'write'}),
+            ({}, {}),
+        ]
+        fake_repo._requester = fake_requester
         fake_github = MagicMock()
         fake_github.get_repo.return_value = fake_repo
 
@@ -81,6 +116,19 @@ class TestGithubRepoSettingsManager(unittest.TestCase):
             checks=['build', 'test'],
         )
         fake_branch.add_required_signatures.assert_not_called()
+        fake_requester.requestJsonAndCheck.assert_has_calls(
+            [
+                call('GET', '/repos/NHSDigital/example-repo/actions/permissions/workflow'),
+                call(
+                    'PUT',
+                    '/repos/NHSDigital/example-repo/actions/permissions/workflow',
+                    input={
+                        'default_workflow_permissions': 'write',
+                        'can_approve_pull_request_reviews': True,
+                    },
+                ),
+            ]
+        )
 
     @patch(
         'packages.setup_github_repo.app.github_repo_settings.GithubRepoSettingsManager._confirm_action',
