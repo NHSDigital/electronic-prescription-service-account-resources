@@ -142,3 +142,67 @@ def test_set_all_secrets_creates_additional_secrets_when_in_weekly_release():
     assert role_env_names == ["DEV", "INT", "PROD", "QA", "REF", "REF", "RECOVERY"]
 
     fake_github.get_repo.assert_called_once_with("NHSDigital/example-repo")
+
+
+def test_set_all_secrets_sets_target_spine_server_secrets_when_enabled():
+    fake_repo = MagicMock()
+    fake_repo.full_name = "NHSDigital/example-repo"
+
+    fake_github = MagicMock()
+    fake_github.get_repo.return_value = fake_repo
+
+    manager = GithubSecretManager(
+        github=fake_github,
+        github_teams=MagicMock(),  # type: ignore[arg-type]
+        interactive=False,
+        rate_limit_delay_seconds=0,
+    )
+
+    manager._set_secret = MagicMock()
+    manager._set_environment_secret = MagicMock()
+    manager._set_role_secrets = MagicMock()
+
+    manager.set_all_secrets(
+        _repo_config(in_weekly_release=True, set_target_spine_servers=True),
+        _secrets(),
+    )
+
+    set_secret_names = [call.kwargs["secret_name"] for call in manager._set_secret.call_args_list]
+    assert "DEV_TARGET_SPINE_SERVER" in set_secret_names
+    assert "INT_TARGET_SPINE_SERVER" in set_secret_names
+    assert "PROD_TARGET_SPINE_SERVER" in set_secret_names
+    assert "QA_TARGET_SPINE_SERVER" in set_secret_names
+    assert "REF_TARGET_SPINE_SERVER" in set_secret_names
+    assert "RECOVERY_TARGET_SPINE_SERVER" in set_secret_names
+
+
+def test_set_all_secrets_sets_target_service_search_secrets_when_enabled():
+    fake_repo = MagicMock()
+    fake_repo.full_name = "NHSDigital/example-repo"
+
+    fake_github = MagicMock()
+    fake_github.get_repo.return_value = fake_repo
+
+    manager = GithubSecretManager(
+        github=fake_github,
+        github_teams=MagicMock(),  # type: ignore[arg-type]
+        interactive=False,
+        rate_limit_delay_seconds=0,
+    )
+
+    manager._set_secret = MagicMock()
+    manager._set_environment_secret = MagicMock()
+    manager._set_role_secrets = MagicMock()
+
+    manager.set_all_secrets(
+        _repo_config(in_weekly_release=True, set_target_service_search_servers=True),
+        _secrets(),
+    )
+
+    set_secret_names = [call.kwargs["secret_name"] for call in manager._set_secret.call_args_list]
+    assert "DEV_TARGET_SERVICE_SEARCH_SERVER" in set_secret_names
+    assert "INT_TARGET_SERVICE_SEARCH_SERVER" in set_secret_names
+    assert "PROD_TARGET_SERVICE_SEARCH_SERVER" in set_secret_names
+    assert "QA_TARGET_SERVICE_SEARCH_SERVER" in set_secret_names
+    assert "REF_TARGET_SERVICE_SEARCH_SERVER" in set_secret_names
+    assert "RECOVERY_TARGET_SERVICE_SEARCH_SERVER" in set_secret_names
