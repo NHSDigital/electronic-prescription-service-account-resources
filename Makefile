@@ -31,6 +31,7 @@ lint-node:
 
 test: generate-mock-certs
 	poetry run scripts/check_policy_length.py
+	poetry run pytest packages/setup_github_repo/tests
 	npm run test --workspace packages/splunkProcessor
 	npm run test --workspace packages/certificateChecker
 	npm run test --workspace packages/slackAlerter

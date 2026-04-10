@@ -2,9 +2,10 @@
 
 import importlib
 import json
-import unittest
 
-repo_status = importlib.import_module('packages.setup_github_repo.app.repo_status')
+import pytest
+
+repo_status = importlib.import_module('setup_github_repo.app.repo_status')
 RepoStatusLoader = repo_status.RepoStatusLoader
 
 
@@ -33,78 +34,75 @@ class FakeGithub:
         return self._repo
 
 
-class TestRepoStatusParsing(unittest.TestCase):
-    def test_parse_repos_payload_from_list_of_strings(self):
-        payload = ['NHSDigital/repo-one', 'NHSDigital/repo-two']
+def test_parse_repos_payload_from_list_of_strings():
+    payload = ['NHSDigital/repo-one', 'NHSDigital/repo-two']
 
-        result = repo_status._parse_repos_payload(payload)
+    result = repo_status._parse_repos_payload(payload)
 
-        self.assertEqual(2, len(result))
-        self.assertEqual('NHSDigital/repo-one', result[0]['repoUrl'])
-        self.assertEqual('main', result[0]['mainBranch'])
-        self.assertFalse(result[0]['setTargetSpineServers'])
-        self.assertFalse(result[0]['isAccountResources'])
-        self.assertFalse(result[0]['setTargetServiceSearchServers'])
-        self.assertFalse(result[0]['isEchoRepo'])
+    assert len(result) == 2
+    assert result[0]['repoUrl'] == 'NHSDigital/repo-one'
+    assert result[0]['mainBranch'] == 'main'
+    assert result[0]['setTargetSpineServers'] is False
+    assert result[0]['isAccountResources'] is False
+    assert result[0]['setTargetServiceSearchServers'] is False
+    assert result[0]['isEchoRepo'] is False
 
-    def test_parse_repos_payload_from_repos_dict(self):
-        payload = {
-            'repos': {
-                'NHSDigital/repo-one': {
-                    'mainBranch': 'release/1.x',
-                    'set_target_spine_servers': True,
-                    'is_account_resources': True,
-                    'set_target_service_search_servers': False,
-                    'is_echo_repo': True,
-                }
+
+def test_parse_repos_payload_from_repos_dict():
+    payload = {
+        'repos': {
+            'NHSDigital/repo-one': {
+                'mainBranch': 'release/1.x',
+                'set_target_spine_servers': True,
+                'is_account_resources': True,
+                'set_target_service_search_servers': False,
+                'is_echo_repo': True,
             }
         }
+    }
 
-        result = repo_status._parse_repos_payload(payload)
+    result = repo_status._parse_repos_payload(payload)
 
-        self.assertEqual(1, len(result))
-        self.assertEqual('NHSDigital/repo-one', result[0]['repoUrl'])
-        self.assertEqual('release/1.x', result[0]['mainBranch'])
-        self.assertTrue(result[0]['setTargetSpineServers'])
-        self.assertTrue(result[0]['isAccountResources'])
-        self.assertFalse(result[0]['setTargetServiceSearchServers'])
-        self.assertTrue(result[0]['isEchoRepo'])
-
-    def test_normalise_repo_entry_rejects_empty_repo_url(self):
-        with self.assertRaises(ValueError):
-            repo_status._normalise_repo_entry({'repoUrl': '   '})
-
-    def test_parse_repos_payload_rejects_invalid_shape(self):
-        with self.assertRaises(ValueError):
-            repo_status._parse_repos_payload({'notRepos': []})
+    assert len(result) == 1
+    assert result[0]['repoUrl'] == 'NHSDigital/repo-one'
+    assert result[0]['mainBranch'] == 'release/1.x'
+    assert result[0]['setTargetSpineServers'] is True
+    assert result[0]['isAccountResources'] is True
+    assert result[0]['setTargetServiceSearchServers'] is False
+    assert result[0]['isEchoRepo'] is True
 
 
-class TestRepoStatusLoader(unittest.TestCase):
-    def test_load_repo_configs_from_repo_status_repo(self):
-        payload = {
-            'repos': [
-                {
-                    'repoUrl': 'NHSDigital/repo-one',
-                    'mainBranch': 'main',
-                    'setTargetSpineServers': True,
-                    'isAccountResources': False,
-                    'setTargetServiceSearchServers': True,
-                    'isEchoRepo': False,
-                }
-            ]
-        }
-        fake_github = FakeGithub(payload)
-        loader = RepoStatusLoader(fake_github)  # type: ignore[arg-type]
-
-        result = loader.load_repo_configs()
-
-        self.assertEqual('NHSDigital/eps-repo-status', fake_github.requested_repo_name)
-        self.assertEqual(('repos.json', 'main'), fake_github._repo.last_get_contents_args)
-        self.assertEqual('NHSDigital/repo-one', result[0]['repoUrl'])
-        self.assertEqual('main', result[0]['mainBranch'])
-        self.assertTrue(result[0]['setTargetSpineServers'])
-        self.assertTrue(result[0]['setTargetServiceSearchServers'])
+def test_normalise_repo_entry_rejects_empty_repo_url():
+    with pytest.raises(ValueError):
+        repo_status._normalise_repo_entry({'repoUrl': '   '})
 
 
-if __name__ == '__main__':
-    unittest.main()
+def test_parse_repos_payload_rejects_invalid_shape():
+    with pytest.raises(ValueError):
+        repo_status._parse_repos_payload({'notRepos': []})
+
+
+def test_load_repo_configs_from_repo_status_repo():
+    payload = {
+        'repos': [
+            {
+                'repoUrl': 'NHSDigital/repo-one',
+                'mainBranch': 'main',
+                'setTargetSpineServers': True,
+                'isAccountResources': False,
+                'setTargetServiceSearchServers': True,
+                'isEchoRepo': False,
+            }
+        ]
+    }
+    fake_github = FakeGithub(payload)
+    loader = RepoStatusLoader(fake_github)  # type: ignore[arg-type]
+
+    result = loader.load_repo_configs()
+
+    assert fake_github.requested_repo_name == 'NHSDigital/eps-repo-status'
+    assert fake_github._repo.last_get_contents_args == ('repos.json', 'main')
+    assert result[0]['repoUrl'] == 'NHSDigital/repo-one'
+    assert result[0]['mainBranch'] == 'main'
+    assert result[0]['setTargetSpineServers'] is True
+    assert result[0]['setTargetServiceSearchServers'] is True
