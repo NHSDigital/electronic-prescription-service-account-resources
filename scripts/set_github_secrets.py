@@ -13,13 +13,10 @@ from github.EnvironmentDeploymentBranchPolicy import (
     )
 
 """
-This script is used to set common secrets in all repositories
-When we add a new repository, add it to the repos list in the main function
-When we add a new environment, you need to do the following
-  - modify Secrets class to have roles for the new environment
-  - modify main function so all exports are retrieved for the new environment
-  - modify main function so roles are retrieved from exports for the new environment
-  - modify set_all_secrets function to set variables for the new environment
+This script is used to set common secrets and to set options in all repositories
+The list of repositories is taken from https://github.com/NHSDigital/eps-repo-status/blob/main/repos.json
+For each repository, it does the following:
+
 
 You need a github token to run this and have aws config setup for each environment
 You can get a github token by first authenticating with github cli
@@ -470,6 +467,30 @@ def setup_repo_environment(repo: Repository, environment: RepoEnvironment):
     time.sleep(1)  # Sleep for 1 second to avoid rate
 
 
+def setup_access(github: Github, repoUrl: str, github_teams: GithubTeams):
+    """Grant the standard EPS team access for a repository."""
+    response = input(f"Setting access in repo {repoUrl}. Do you want to continue? (y/N): ")
+
+    if response.lower() == "y":
+        print("Continuing...")
+    else:
+        print("Returning.")
+        return
+
+    org = github.get_organization("NHSDigital")
+    repo = github.get_repo(repoUrl)
+    team_permissions = [
+        (github_teams["eps_team"], "Write_View_Dependabot_Alerts"),
+        (github_teams["eps_administrator_team"], "Admin"),
+    ]
+
+    for team_id, permission in team_permissions:
+        team = org.get_team(int(team_id))
+        print(f"Granting team {team.slug} access to repo {repoUrl} with role {permission}")
+        team.update_team_repository(repo, permission)
+        time.sleep(1)  # Sleep for 1 second to avoid rate limiting
+
+
 def setup_environments(github: Github,
                        repoUrl: str,
                        set_account_resources_environments: bool,
@@ -540,6 +561,9 @@ def setup_repo(github: Github,
                repo: RepoConfig,
                secrets: Secrets,
                github_teams: GithubTeams):
+    setup_access(github=github,
+                 repoUrl=repo["repoUrl"],
+                 github_teams=github_teams)
     setup_environments(github=github,
                        repoUrl=repo["repoUrl"],
                        set_account_resources_environments=repo["isAccountResources"],
