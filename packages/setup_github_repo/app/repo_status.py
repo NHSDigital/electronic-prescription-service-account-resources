@@ -36,6 +36,7 @@ def _normalise_repo_entry(entry: Any, fallback_repo_url: str | None = None) -> R
 
     return {
         'repoUrl': repo_url,
+        'mainBranch': str(entry_dict.get('mainBranch') or entry_dict.get('main_branch') or 'main'),
         'setTargetSpineServers': _as_bool(
             entry_dict,
             camel_key='setTargetSpineServers',

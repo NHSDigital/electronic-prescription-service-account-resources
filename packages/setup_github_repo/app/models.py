@@ -52,6 +52,7 @@ class GithubTeams(TypedDict):
 
 class RepoConfig(TypedDict):
     repoUrl: str
+    mainBranch: str
     setTargetSpineServers: bool
     isAccountResources: bool
     setTargetServiceSearchServers: bool

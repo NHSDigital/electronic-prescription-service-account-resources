@@ -41,6 +41,7 @@ class TestRepoStatusParsing(unittest.TestCase):
 
         self.assertEqual(2, len(result))
         self.assertEqual('NHSDigital/repo-one', result[0]['repoUrl'])
+        self.assertEqual('main', result[0]['mainBranch'])
         self.assertFalse(result[0]['setTargetSpineServers'])
         self.assertFalse(result[0]['isAccountResources'])
         self.assertFalse(result[0]['setTargetServiceSearchServers'])
@@ -50,6 +51,7 @@ class TestRepoStatusParsing(unittest.TestCase):
         payload = {
             'repos': {
                 'NHSDigital/repo-one': {
+                    'mainBranch': 'release/1.x',
                     'set_target_spine_servers': True,
                     'is_account_resources': True,
                     'set_target_service_search_servers': False,
@@ -62,6 +64,7 @@ class TestRepoStatusParsing(unittest.TestCase):
 
         self.assertEqual(1, len(result))
         self.assertEqual('NHSDigital/repo-one', result[0]['repoUrl'])
+        self.assertEqual('release/1.x', result[0]['mainBranch'])
         self.assertTrue(result[0]['setTargetSpineServers'])
         self.assertTrue(result[0]['isAccountResources'])
         self.assertFalse(result[0]['setTargetServiceSearchServers'])
@@ -82,6 +85,7 @@ class TestRepoStatusLoader(unittest.TestCase):
             'repos': [
                 {
                     'repoUrl': 'NHSDigital/repo-one',
+                    'mainBranch': 'main',
                     'setTargetSpineServers': True,
                     'isAccountResources': False,
                     'setTargetServiceSearchServers': True,
@@ -97,6 +101,7 @@ class TestRepoStatusLoader(unittest.TestCase):
         self.assertEqual('NHSDigital/eps-repo-status', fake_github.requested_repo_name)
         self.assertEqual(('repos.json', 'main'), fake_github._repo.last_get_contents_args)
         self.assertEqual('NHSDigital/repo-one', result[0]['repoUrl'])
+        self.assertEqual('main', result[0]['mainBranch'])
         self.assertTrue(result[0]['setTargetSpineServers'])
         self.assertTrue(result[0]['setTargetServiceSearchServers'])
 
