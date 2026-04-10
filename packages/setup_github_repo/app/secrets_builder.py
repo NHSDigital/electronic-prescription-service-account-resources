@@ -1,3 +1,5 @@
+"""Builds the consolidated secrets payload from files, exports, and environment values."""
+
 import os
 from pathlib import Path
 from typing import Any

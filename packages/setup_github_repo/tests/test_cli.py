@@ -1,3 +1,5 @@
+"""Unit tests for CLI auth/bootstrap behavior and runner invocation."""
+
 from types import SimpleNamespace
 import unittest
 from unittest.mock import MagicMock, patch

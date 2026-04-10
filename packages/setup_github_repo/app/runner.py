@@ -1,3 +1,5 @@
+"""High-level orchestration for end-to-end GitHub repository setup tasks."""
+
 import json
 
 from github import Github

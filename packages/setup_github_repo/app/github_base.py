@@ -1,3 +1,5 @@
+"""Shared utilities for prompting and API pacing in GitHub setup operations."""
+
 import time
 
 from github import Github

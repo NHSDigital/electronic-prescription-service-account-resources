@@ -1,3 +1,5 @@
+"""Typed models shared across setup_github_repo services and orchestration."""
+
 from dataclasses import dataclass, field
 from typing import TypedDict
 

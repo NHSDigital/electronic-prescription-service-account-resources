@@ -1,3 +1,5 @@
+"""GitHub environment creation rules for EPS repositories."""
+
 from github.EnvironmentDeploymentBranchPolicy import EnvironmentDeploymentBranchPolicyParams
 from github.EnvironmentProtectionRuleReviewer import ReviewerParams
 from github.Repository import Repository

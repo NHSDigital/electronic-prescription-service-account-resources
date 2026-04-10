@@ -1,3 +1,5 @@
+"""Repository access permission management for standard EPS GitHub teams."""
+
 from .github_base import GithubOperationBase
 
 

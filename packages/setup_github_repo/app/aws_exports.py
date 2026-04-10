@@ -1,3 +1,5 @@
+"""AWS CloudFormation export helpers used to resolve role values by environment."""
+
 from typing import Any
 
 import boto3

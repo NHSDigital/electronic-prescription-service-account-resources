@@ -1,3 +1,5 @@
+"""Secret and environment-secret provisioning for EPS repository automation."""
+
 import os
 
 from github.Repository import Repository

@@ -1,3 +1,5 @@
+"""Static constants for AWS profiles, app IDs, and target service hostnames."""
+
 AWS_PROFILE_BY_ENV: dict[str, str] = {
     'dev': 'prescription-dev',
     'qa': 'prescription-qa',

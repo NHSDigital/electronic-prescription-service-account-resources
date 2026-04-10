@@ -1,3 +1,5 @@
+"""Unit tests for secrets payload creation from exports, files, and environment."""
+
 import os
 from pathlib import Path
 import tempfile

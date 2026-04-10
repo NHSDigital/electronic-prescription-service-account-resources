@@ -1,7 +1,11 @@
+"""Unit tests for repo status payload normalization, parsing, and loading."""
+
+import importlib
 import json
 import unittest
 
-from packages.setup_github_repo.app.repo_status import _normalise_repo_entry, _parse_repos_payload, RepoStatusLoader
+repo_status = importlib.import_module('packages.setup_github_repo.app.repo_status')
+RepoStatusLoader = repo_status.RepoStatusLoader
 
 
 class FakeContentFile:
@@ -33,7 +37,7 @@ class TestRepoStatusParsing(unittest.TestCase):
     def test_parse_repos_payload_from_list_of_strings(self):
         payload = ['NHSDigital/repo-one', 'NHSDigital/repo-two']
 
-        result = _parse_repos_payload(payload)
+        result = repo_status._parse_repos_payload(payload)
 
         self.assertEqual(2, len(result))
         self.assertEqual('NHSDigital/repo-one', result[0]['repoUrl'])
@@ -54,7 +58,7 @@ class TestRepoStatusParsing(unittest.TestCase):
             }
         }
 
-        result = _parse_repos_payload(payload)
+        result = repo_status._parse_repos_payload(payload)
 
         self.assertEqual(1, len(result))
         self.assertEqual('NHSDigital/repo-one', result[0]['repoUrl'])
@@ -65,11 +69,11 @@ class TestRepoStatusParsing(unittest.TestCase):
 
     def test_normalise_repo_entry_rejects_empty_repo_url(self):
         with self.assertRaises(ValueError):
-            _normalise_repo_entry({'repoUrl': '   '})
+            repo_status._normalise_repo_entry({'repoUrl': '   '})
 
     def test_parse_repos_payload_rejects_invalid_shape(self):
         with self.assertRaises(ValueError):
-            _parse_repos_payload({'notRepos': []})
+            repo_status._parse_repos_payload({'notRepos': []})
 
 
 class TestRepoStatusLoader(unittest.TestCase):

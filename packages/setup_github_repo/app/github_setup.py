@@ -1,3 +1,5 @@
+"""Facade for orchestrating repository access, environment, and secret setup."""
+
 from github import Github
 
 from .github_access import GithubAccessManager

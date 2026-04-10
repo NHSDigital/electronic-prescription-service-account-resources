@@ -1,3 +1,5 @@
+"""CLI entrypoint that validates auth prerequisites and runs repository setup."""
+
 import argparse
 import subprocess
 
