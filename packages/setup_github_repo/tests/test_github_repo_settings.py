@@ -3,6 +3,19 @@
 from unittest.mock import MagicMock, call, patch
 
 from setup_github_repo.app.github_repo_settings import GithubRepoSettingsManager
+from setup_github_repo.app.models import RepoConfig
+
+
+def _repo_config() -> RepoConfig:
+    return RepoConfig(
+        repoUrl='NHSDigital/example-repo',
+        mainBranch='main',
+        setTargetSpineServers=False,
+        isAccountResources=False,
+        setTargetServiceSearchServers=False,
+        isEchoRepo=False,
+        inWeeklyRelease=False,
+    )
 
 
 def test_setup_general_settings_applies_expected_pr_options():
@@ -35,7 +48,7 @@ def test_setup_general_settings_applies_expected_pr_options():
         rate_limit_delay_seconds=0,
     )
 
-    manager.setup_general_settings('NHSDigital/example-repo', 'main')
+    manager.setup_general_settings(_repo_config())
 
     fake_github.get_repo.assert_called_once_with('NHSDigital/example-repo')
     fake_repo.edit.assert_called_once_with(
@@ -105,7 +118,7 @@ def test_setup_general_settings_uses_contexts_when_checks_not_present():
         rate_limit_delay_seconds=0,
     )
 
-    manager.setup_general_settings('NHSDigital/example-repo', 'main')
+    manager.setup_general_settings(_repo_config())
 
     fake_branch.edit_protection.assert_called_once_with(
         strict=True,
@@ -146,7 +159,7 @@ def test_setup_general_settings_skips_when_not_confirmed(_mock_confirm_action: M
         rate_limit_delay_seconds=0,
     )
 
-    manager.setup_general_settings('NHSDigital/example-repo', 'main')
+    manager.setup_general_settings(_repo_config())
 
     fake_github.get_repo.assert_not_called()
     fake_repo.edit.assert_not_called()

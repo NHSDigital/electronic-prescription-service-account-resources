@@ -5,18 +5,16 @@ from github.EnvironmentProtectionRuleReviewer import ReviewerParams
 from github.Repository import Repository
 
 from .github_base import GithubOperationBase
-from .models import RepoEnvironment
+from .models import RepoConfig, RepoEnvironment
 
 
 class GithubEnvironmentManager(GithubOperationBase):
     """Manage GitHub environments for EPS repositories."""
 
-    def setup_environments(
-        self,
-        repo_url: str,
-        set_account_resources_environments: bool,
-        is_echo_repo: bool,
-    ) -> None:
+    def setup_environments(self, repo_config: RepoConfig) -> None:
+        repo_url = repo_config.repoUrl
+        set_account_resources_environments = repo_config.isAccountResources
+        is_echo_repo = repo_config.isEchoRepo
         if not self._confirm_action(f'Setting environments in repo {repo_url}. Do you want to continue? (y/N): '):
             return
 

@@ -57,6 +57,11 @@ def _normalise_repo_entry(entry: Any, fallback_repo_url: str | None = None) -> R
             camel_key='isEchoRepo',
             snake_key='is_echo_repo',
         ),
+        inWeeklyRelease=_as_bool(
+            entry_dict,
+            camel_key='inWeeklyRelease',
+            snake_key='in_weekly_release',
+        ),
     )
 
 

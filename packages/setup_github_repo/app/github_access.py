@@ -1,12 +1,14 @@
 """Repository access permission management for standard EPS GitHub teams."""
 
 from .github_base import GithubOperationBase
+from .models import RepoConfig
 
 
 class GithubAccessManager(GithubOperationBase):
     """Manage repository team access permissions."""
 
-    def setup_access(self, repo_url: str) -> None:
+    def setup_access(self, repo_config: RepoConfig) -> None:
+        repo_url = repo_config.repoUrl
         if not self._confirm_action(f'Setting access in repo {repo_url}. Do you want to continue? (y/N): '):
             return
 

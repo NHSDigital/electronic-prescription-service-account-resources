@@ -60,6 +60,7 @@ class RepoConfig:
     isAccountResources: bool
     setTargetServiceSearchServers: bool
     isEchoRepo: bool
+    inWeeklyRelease: bool
 
 
 @dataclass

@@ -3,12 +3,15 @@
 from typing import Any
 
 from .github_base import GithubOperationBase
+from .models import RepoConfig
 
 
 class GithubRepoSettingsManager(GithubOperationBase):
     """Handles repository settings that are not access, environments, or secrets."""
 
-    def setup_general_settings(self, repo_url: str, main_branch: str) -> None:
+    def setup_general_settings(self, repo_config: RepoConfig) -> None:
+        repo_url = repo_config.repoUrl
+        main_branch = repo_config.mainBranch
         if not self._confirm_action(f'Setting general settings in repo {repo_url}. Do you want to continue? (y/N): '):
             return
 

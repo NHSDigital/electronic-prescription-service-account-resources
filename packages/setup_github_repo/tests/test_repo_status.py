@@ -46,6 +46,7 @@ def test_parse_repos_payload_from_list_of_strings():
     assert result[0].isAccountResources is False
     assert result[0].setTargetServiceSearchServers is False
     assert result[0].isEchoRepo is False
+    assert result[0].inWeeklyRelease is False
 
 
 def test_parse_repos_payload_from_repos_dict():
@@ -57,6 +58,7 @@ def test_parse_repos_payload_from_repos_dict():
                 'is_account_resources': True,
                 'set_target_service_search_servers': False,
                 'is_echo_repo': True,
+                'in_weekly_release': True,
             }
         }
     }
@@ -70,6 +72,7 @@ def test_parse_repos_payload_from_repos_dict():
     assert result[0].isAccountResources is True
     assert result[0].setTargetServiceSearchServers is False
     assert result[0].isEchoRepo is True
+    assert result[0].inWeeklyRelease is True
 
 
 def test_normalise_repo_entry_rejects_empty_repo_url():
@@ -92,6 +95,7 @@ def test_load_repo_configs_from_repo_status_repo():
                 'isAccountResources': False,
                 'setTargetServiceSearchServers': True,
                 'isEchoRepo': False,
+                'inWeeklyRelease': True,
             }
         ]
     }
@@ -106,3 +110,4 @@ def test_load_repo_configs_from_repo_status_repo():
     assert result[0].mainBranch == 'main'
     assert result[0].setTargetSpineServers is True
     assert result[0].setTargetServiceSearchServers is True
+    assert result[0].inWeeklyRelease is True

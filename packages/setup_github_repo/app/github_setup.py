@@ -61,14 +61,7 @@ class GithubSetupService:
         )
 
     def setup_repo(self, repo_config: RepoConfig, secrets: Secrets) -> None:
-        self._repo_settings_manager.setup_general_settings(
-            repo_url=repo_config.repoUrl,
-            main_branch=repo_config.mainBranch,
-        )
-        self._access_manager.setup_access(repo_url=repo_config.repoUrl)
-        self._environment_manager.setup_environments(
-            repo_url=repo_config.repoUrl,
-            set_account_resources_environments=repo_config.isAccountResources,
-            is_echo_repo=repo_config.isEchoRepo,
-        )
+        self._repo_settings_manager.setup_general_settings(repo_config=repo_config)
+        self._access_manager.setup_access(repo_config=repo_config)
+        self._environment_manager.setup_environments(repo_config=repo_config)
         self._secret_manager.set_all_secrets(repo_config=repo_config, secrets=secrets)
