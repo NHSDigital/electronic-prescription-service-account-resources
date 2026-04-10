@@ -34,3 +34,7 @@ testpaths = ["packages/setup_github_repo/tests"]
 python_files = ["test_*.py"]
 
 [tool.poetry.scripts]
+
+
+[tool.black]
+line-length = 120

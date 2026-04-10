@@ -27,11 +27,11 @@ class GithubOperationBase:
             return True
 
         response = input(prompt)
-        if response.lower() == 'y':
-            print('Continuing...')
+        if response.lower() == "y":
+            print("Continuing...")
             return True
 
-        print('Returning.')
+        print("Returning.")
         return False
 
     def _sleep_for_rate_limit(self) -> None:

@@ -46,12 +46,12 @@ class GithubSetupService:
 
     @staticmethod
     def get_github_teams(github: Github) -> GithubTeams:
-        print('Getting github teams')
-        org = github.get_organization('NHSDigital')
-        eps_administrator_team = org.get_team_by_slug('eps-administrators')
-        eps_testers_team = org.get_team_by_slug('eps-testers')
-        eps_team = org.get_team_by_slug('eps')
-        eps_deployments_team = org.get_team_by_slug('eps-deployments')
+        print("Getting github teams")
+        org = github.get_organization("NHSDigital")
+        eps_administrator_team = org.get_team_by_slug("eps-administrators")
+        eps_testers_team = org.get_team_by_slug("eps-testers")
+        eps_team = org.get_team_by_slug("eps")
+        eps_deployments_team = org.get_team_by_slug("eps-deployments")
 
         return GithubTeams(
             eps_administrator_team=eps_administrator_team.id,

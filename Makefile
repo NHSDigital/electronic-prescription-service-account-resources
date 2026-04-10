@@ -20,7 +20,11 @@ install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
 
 
-lint: lint-node
+lint: lint-node lint-python
+
+lint-python:
+	poetry run black packages/setup_github_repo
+	poetry run flake8 packages/setup_github_repo
 
 lint-node:
 	npm run lint --workspace packages/certificateChecker
