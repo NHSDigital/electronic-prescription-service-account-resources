@@ -23,7 +23,7 @@ class SecretsBuilder:
         }
 
         roles_by_env: dict[str, Roles] = {
-            env_name: Roles(**self._aws_exports.get_role_exports(exports))
+            env_name: self._to_roles(self._aws_exports.get_role_exports(exports))
             for env_name, exports in exports_by_env.items()
         }
 
@@ -66,6 +66,12 @@ class SecretsBuilder:
             recovery_target_service_search_server=TARGET_SERVICE_SEARCH_SERVERS['recovery'],
             dependabot_token=os.environ.get('dependabot_token'),
         )
+
+    @staticmethod
+    def _to_roles(role_exports: Roles | dict[str, str | None]) -> Roles:
+        if isinstance(role_exports, Roles):
+            return role_exports
+        return Roles(**role_exports)
 
     def _read_secret_file(self, file_name: str) -> str:
         file_path = self._secrets_directory / file_name

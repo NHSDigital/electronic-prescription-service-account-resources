@@ -8,6 +8,7 @@ from unittest.mock import patch
 import pytest
 
 from setup_github_repo.app.constants import AWS_PROFILE_BY_ENV
+from setup_github_repo.app.models import Roles
 from setup_github_repo.app.secrets_builder import SecretsBuilder
 
 
@@ -32,13 +33,13 @@ class StubAwsExportsService:
         def _find(name: str):
             return next(export['Value'] for export in all_exports if export['Name'] == name)
 
-        return {
-            'cloud_formation_deploy_role': _find('ci-resources:CloudFormationDeployRole'),
-            'cloud_formation_check_version_role': _find('ci-resources:CloudFormationCheckVersionRole'),
-            'cloud_formation_prepare_changeset_role': _find('ci-resources:CloudFormationPrepareChangesetRole'),
-            'release_notes_execute_lambda_role': _find('ci-resources:ReleaseNotesExecuteLambdaRole'),
-            'artillery_runner_role': _find('ci-resources:ArtilleryRunnerRole'),
-        }
+        return Roles(
+            cloud_formation_deploy_role=_find('ci-resources:CloudFormationDeployRole'),
+            cloud_formation_check_version_role=_find('ci-resources:CloudFormationCheckVersionRole'),
+            cloud_formation_prepare_changeset_role=_find('ci-resources:CloudFormationPrepareChangesetRole'),
+            release_notes_execute_lambda_role=_find('ci-resources:ReleaseNotesExecuteLambdaRole'),
+            artillery_runner_role=_find('ci-resources:ArtilleryRunnerRole'),
+        )
 
     def get_named_export(self, all_exports, export_name: str, required: bool):
         self.get_named_export_calls.append((export_name, required))

@@ -14,7 +14,7 @@ class GithubAccessManager(GithubOperationBase):
         repo = self._github.get_repo(repo_url)
         team_permissions = [
             (self._github_teams.eps_team, 'Write_View_Dependabot_Alerts'),
-            (self._github_teams.eps_administrator_team, 'Admin'),
+            (self._github_teams.eps_administrator_team, 'admin'),
         ]
 
         for team_id, permission in team_permissions:
