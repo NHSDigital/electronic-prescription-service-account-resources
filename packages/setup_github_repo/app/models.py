@@ -1,13 +1,13 @@
 """Typed models shared across setup_github_repo services and orchestration."""
 
 from dataclasses import dataclass, field
-from typing import TypedDict
 
 from github.EnvironmentDeploymentBranchPolicy import EnvironmentDeploymentBranchPolicyParams
 from github.EnvironmentProtectionRuleReviewer import ReviewerParams
 
 
-class Roles(TypedDict):
+@dataclass
+class Roles:
     cloud_formation_deploy_role: str | None
     cloud_formation_check_version_role: str | None
     cloud_formation_prepare_changeset_role: str | None
@@ -15,7 +15,8 @@ class Roles(TypedDict):
     artillery_runner_role: str | None
 
 
-class Secrets(TypedDict):
+@dataclass
+class Secrets:
     regression_test_pem: str
     automerge_pem: str
     create_pull_request_pem: str
@@ -43,14 +44,16 @@ class Secrets(TypedDict):
     dependabot_token: str | None
 
 
-class GithubTeams(TypedDict):
+@dataclass
+class GithubTeams:
     eps_administrator_team: int
     eps_testers_team: int
     eps_team: int
     eps_deployments_team: int
 
 
-class RepoConfig(TypedDict):
+@dataclass
+class RepoConfig:
     repoUrl: str
     mainBranch: str
     setTargetSpineServers: bool

@@ -21,9 +21,9 @@ class GithubEnvironmentManager(GithubOperationBase):
             return
 
         repo = self._github.get_repo(repo_url)
-        eps_administrator_team_reviewer = ReviewerParams('Team', self._github_teams['eps_administrator_team'])
-        eps_deployments_team_reviewer = ReviewerParams('Team', self._github_teams['eps_deployments_team'])
-        eps_team_reviewer = ReviewerParams('Team', self._github_teams['eps_team'])
+        eps_administrator_team_reviewer = ReviewerParams('Team', self._github_teams.eps_administrator_team)
+        eps_deployments_team_reviewer = ReviewerParams('Team', self._github_teams.eps_deployments_team)
+        eps_team_reviewer = ReviewerParams('Team', self._github_teams.eps_team)
         deployment_branch_policy = EnvironmentDeploymentBranchPolicyParams(
             protected_branches=True,
             custom_branch_policies=False,

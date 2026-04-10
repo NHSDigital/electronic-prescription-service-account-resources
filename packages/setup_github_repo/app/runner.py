@@ -1,6 +1,7 @@
 """High-level orchestration for end-to-end GitHub repository setup tasks."""
 
 import json
+from dataclasses import asdict
 
 from github import Github
 
@@ -29,7 +30,7 @@ class SetupGithubRepoRunner:
     def run(self) -> None:
         secrets = self._secrets_builder.build()
 
-        self._print_setup_summary(secrets_keys=sorted(secrets.keys()))
+        self._print_setup_summary(secrets_keys=sorted(asdict(secrets).keys()))
 
         repos = self._repo_status_loader.load_repo_configs()
         for repo in repos:
@@ -38,7 +39,7 @@ class SetupGithubRepoRunner:
     def _print_setup_summary(self, secrets_keys: list[str]) -> None:
         print('\n\n************************************************')
         print('************************************************')
-        print(f'github_teams: {json.dumps(self._github_teams, indent=2)}')
+        print(f'github_teams: {json.dumps(asdict(self._github_teams), indent=2)}')
         print('************************************************')
         print(f'secrets keys only: {json.dumps(secrets_keys, indent=2)}')
         print('************************************************')

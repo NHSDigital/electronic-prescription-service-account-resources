@@ -59,13 +59,13 @@ def test_build_returns_complete_secrets_payload():
         with patch.dict(os.environ, {'dependabot_token': 'token-123'}, clear=False):
             result = builder.build()
 
-    assert result['regression_test_pem'] == 'regression'
-    assert result['eps_multi_repo_deployment_pem'] == 'multi-repo'
-    assert result['automerge_pem'] == 'automerge'
-    assert result['create_pull_request_pem'] == 'create-pr'
-    assert result['proxygen_ptl_role'] == 'ptl-role-arn'
-    assert result['proxygen_prod_role'] == 'prod-role-arn'
-    assert result['dependabot_token'] == 'token-123'
+    assert result.regression_test_pem == 'regression'
+    assert result.eps_multi_repo_deployment_pem == 'multi-repo'
+    assert result.automerge_pem == 'automerge'
+    assert result.create_pull_request_pem == 'create-pr'
+    assert result.proxygen_ptl_role == 'ptl-role-arn'
+    assert result.proxygen_prod_role == 'prod-role-arn'
+    assert result.dependabot_token == 'token-123'
 
     assert set(aws_exports.requested_profiles) == set(AWS_PROFILE_BY_ENV.values())
     assert ('ci-resources:ProxygenPTLRole', True) in aws_exports.get_named_export_calls

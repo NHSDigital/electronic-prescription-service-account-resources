@@ -53,22 +53,22 @@ class GithubSetupService:
         eps_team = org.get_team_by_slug('eps')
         eps_deployments_team = org.get_team_by_slug('eps-deployments')
 
-        return {
-            'eps_administrator_team': eps_administrator_team.id,
-            'eps_testers_team': eps_testers_team.id,
-            'eps_team': eps_team.id,
-            'eps_deployments_team': eps_deployments_team.id,
-        }
+        return GithubTeams(
+            eps_administrator_team=eps_administrator_team.id,
+            eps_testers_team=eps_testers_team.id,
+            eps_team=eps_team.id,
+            eps_deployments_team=eps_deployments_team.id,
+        )
 
     def setup_repo(self, repo_config: RepoConfig, secrets: Secrets) -> None:
         self._repo_settings_manager.setup_general_settings(
-            repo_url=repo_config['repoUrl'],
-            main_branch=repo_config['mainBranch'],
+            repo_url=repo_config.repoUrl,
+            main_branch=repo_config.mainBranch,
         )
-        self._access_manager.setup_access(repo_url=repo_config['repoUrl'])
+        self._access_manager.setup_access(repo_url=repo_config.repoUrl)
         self._environment_manager.setup_environments(
-            repo_url=repo_config['repoUrl'],
-            set_account_resources_environments=repo_config['isAccountResources'],
-            is_echo_repo=repo_config['isEchoRepo'],
+            repo_url=repo_config.repoUrl,
+            set_account_resources_environments=repo_config.isAccountResources,
+            is_echo_repo=repo_config.isEchoRepo,
         )
         self._secret_manager.set_all_secrets(repo_config=repo_config, secrets=secrets)

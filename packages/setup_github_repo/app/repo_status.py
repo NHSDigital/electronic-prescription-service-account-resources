@@ -34,30 +34,30 @@ def _normalise_repo_entry(entry: Any, fallback_repo_url: str | None = None) -> R
     if not repo_url:
         raise ValueError('Repo entry contains empty repoUrl')
 
-    return {
-        'repoUrl': repo_url,
-        'mainBranch': str(entry_dict.get('mainBranch') or entry_dict.get('main_branch') or 'main'),
-        'setTargetSpineServers': _as_bool(
+    return RepoConfig(
+        repoUrl=repo_url,
+        mainBranch=str(entry_dict.get('mainBranch') or entry_dict.get('main_branch') or 'main'),
+        setTargetSpineServers=_as_bool(
             entry_dict,
             camel_key='setTargetSpineServers',
             snake_key='set_target_spine_servers',
         ),
-        'isAccountResources': _as_bool(
+        isAccountResources=_as_bool(
             entry_dict,
             camel_key='isAccountResources',
             snake_key='is_account_resources',
         ),
-        'setTargetServiceSearchServers': _as_bool(
+        setTargetServiceSearchServers=_as_bool(
             entry_dict,
             camel_key='setTargetServiceSearchServers',
             snake_key='set_target_service_search_servers',
         ),
-        'isEchoRepo': _as_bool(
+        isEchoRepo=_as_bool(
             entry_dict,
             camel_key='isEchoRepo',
             snake_key='is_echo_repo',
         ),
-    }
+    )
 
 
 def _parse_repos_payload(payload: Any) -> list[RepoConfig]:

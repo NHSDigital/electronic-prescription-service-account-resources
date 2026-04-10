@@ -40,12 +40,12 @@ def test_parse_repos_payload_from_list_of_strings():
     result = repo_status._parse_repos_payload(payload)
 
     assert len(result) == 2
-    assert result[0]['repoUrl'] == 'NHSDigital/repo-one'
-    assert result[0]['mainBranch'] == 'main'
-    assert result[0]['setTargetSpineServers'] is False
-    assert result[0]['isAccountResources'] is False
-    assert result[0]['setTargetServiceSearchServers'] is False
-    assert result[0]['isEchoRepo'] is False
+    assert result[0].repoUrl == 'NHSDigital/repo-one'
+    assert result[0].mainBranch == 'main'
+    assert result[0].setTargetSpineServers is False
+    assert result[0].isAccountResources is False
+    assert result[0].setTargetServiceSearchServers is False
+    assert result[0].isEchoRepo is False
 
 
 def test_parse_repos_payload_from_repos_dict():
@@ -64,12 +64,12 @@ def test_parse_repos_payload_from_repos_dict():
     result = repo_status._parse_repos_payload(payload)
 
     assert len(result) == 1
-    assert result[0]['repoUrl'] == 'NHSDigital/repo-one'
-    assert result[0]['mainBranch'] == 'release/1.x'
-    assert result[0]['setTargetSpineServers'] is True
-    assert result[0]['isAccountResources'] is True
-    assert result[0]['setTargetServiceSearchServers'] is False
-    assert result[0]['isEchoRepo'] is True
+    assert result[0].repoUrl == 'NHSDigital/repo-one'
+    assert result[0].mainBranch == 'release/1.x'
+    assert result[0].setTargetSpineServers is True
+    assert result[0].isAccountResources is True
+    assert result[0].setTargetServiceSearchServers is False
+    assert result[0].isEchoRepo is True
 
 
 def test_normalise_repo_entry_rejects_empty_repo_url():
@@ -102,7 +102,7 @@ def test_load_repo_configs_from_repo_status_repo():
 
     assert fake_github.requested_repo_name == 'NHSDigital/eps-repo-status'
     assert fake_github._repo.last_get_contents_args == ('repos.json', 'main')
-    assert result[0]['repoUrl'] == 'NHSDigital/repo-one'
-    assert result[0]['mainBranch'] == 'main'
-    assert result[0]['setTargetSpineServers'] is True
-    assert result[0]['setTargetServiceSearchServers'] is True
+    assert result[0].repoUrl == 'NHSDigital/repo-one'
+    assert result[0].mainBranch == 'main'
+    assert result[0].setTargetSpineServers is True
+    assert result[0].setTargetServiceSearchServers is True
