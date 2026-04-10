@@ -4,7 +4,7 @@ import os
 
 from github.Repository import Repository
 
-from .constants import AUTOMERGE_APP_ID, CREATE_PULL_REQUEST_APP_ID, EPS_MULTI_REPO_DEPLOYMENT_APP_ID
+from .constants import AUTOMERGE_APP_ID, CREATE_PULL_REQUEST_APP_ID
 from .github_base import GithubOperationBase
 from .models import RepoConfig, Roles, Secrets
 
@@ -49,6 +49,10 @@ class GithubSecretManager(GithubOperationBase):
             secret_name='CREATE_PULL_REQUEST_APP_ID',
             secret_value=CREATE_PULL_REQUEST_APP_ID,
         )
+
+        if not repo_config.inWeeklyRelease:
+            print(f'Repo {repo_url} is not in weekly release, so not creating additional secrets.')
+            return
 
         self._set_secret(
             repo=repo,
@@ -186,20 +190,6 @@ class GithubSecretManager(GithubOperationBase):
                 repo=repo,
                 secret_name='RECOVERY_TARGET_SERVICE_SEARCH_SERVER',
                 secret_value=secrets.recovery_target_service_search_server,
-                set_dependabot=False,
-            )
-
-        if repo_config.isAccountResources:
-            self._set_secret(
-                repo=repo,
-                secret_name='EPS_MULTI_REPO_DEPLOYMENT_PEM',
-                secret_value=secrets.eps_multi_repo_deployment_pem,
-                set_dependabot=False,
-            )
-            self._set_secret(
-                repo=repo,
-                secret_name='EPS_MULTI_REPO_DEPLOYMENT_APP_ID',
-                secret_value=EPS_MULTI_REPO_DEPLOYMENT_APP_ID,
                 set_dependabot=False,
             )
 

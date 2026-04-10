@@ -11,7 +11,6 @@ AWS_PROFILE_BY_ENV: dict[str, str] = {
 
 AUTOMERGE_APP_ID = '420347'
 CREATE_PULL_REQUEST_APP_ID = '3182106'
-EPS_MULTI_REPO_DEPLOYMENT_APP_ID = '2278388'
 
 TARGET_SPINE_SERVERS: dict[str, str] = {
     'dev': 'msg.veit07.devspineservices.nhs.uk',
