@@ -1,12 +1,14 @@
 """Repository-level settings management, including pull request merge options."""
 
+from typing import Any
+
 from .github_base import GithubOperationBase
 
 
 class GithubRepoSettingsManager(GithubOperationBase):
     """Handles repository settings that are not access, environments, or secrets."""
 
-    def setup_general_settings(self, repo_url: str) -> None:
+    def setup_general_settings(self, repo_url: str, main_branch: str) -> None:
         if not self._confirm_action(f'Setting general settings in repo {repo_url}. Do you want to continue? (y/N): '):
             return
 
@@ -21,5 +23,35 @@ class GithubRepoSettingsManager(GithubOperationBase):
             squash_merge_commit_title='PR_TITLE',
             squash_merge_commit_message='PR_BODY',
         )
+
+        print(f'Applying branch protection to {repo_url} branch {main_branch}')
+        branch = repo.get_branch(main_branch)
+        checks = self._get_existing_required_checks(branch)
+        branch.edit_protection(
+            strict=True,
+            required_approving_review_count=1,
+            dismiss_stale_reviews=True,
+            require_last_push_approval=True,
+            checks=checks,
+        )
+
+        if not branch.get_required_signatures():
+            branch.add_required_signatures()
+
         self._sleep_for_rate_limit()
         print(f'General repository settings applied in {repo_url}')
+
+    def _get_existing_required_checks(self, branch: Any) -> list[str | tuple[str, int]]:
+        try:
+            required_status_checks = branch.get_required_status_checks()
+        except Exception:
+            return []
+
+        checks = getattr(required_status_checks, 'checks', None)
+        if checks:
+            return [
+                (check.context, check.app_id) if check.app_id is not None else check.context
+                for check in checks
+            ]
+
+        return list(getattr(required_status_checks, 'contexts', []))

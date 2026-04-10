@@ -8,7 +8,16 @@ from packages.setup_github_repo.app.github_repo_settings import GithubRepoSettin
 
 class TestGithubRepoSettingsManager(unittest.TestCase):
     def test_setup_general_settings_applies_expected_pr_options(self):
+        fake_required_status_checks = MagicMock()
+        fake_required_status_checks.checks = [MagicMock(context='build', app_id=123)]
+
+        fake_branch = MagicMock()
+        fake_branch.get_required_status_checks.return_value = fake_required_status_checks
+        fake_branch.get_required_signatures.return_value = False
+
         fake_repo = MagicMock()
+        fake_repo.get_branch.return_value = fake_branch
+
         fake_github = MagicMock()
         fake_github.get_repo.return_value = fake_repo
 
@@ -19,7 +28,7 @@ class TestGithubRepoSettingsManager(unittest.TestCase):
             rate_limit_delay_seconds=0,
         )
 
-        manager.setup_general_settings('NHSDigital/example-repo')
+        manager.setup_general_settings('NHSDigital/example-repo', 'main')
 
         fake_github.get_repo.assert_called_once_with('NHSDigital/example-repo')
         fake_repo.edit.assert_called_once_with(
@@ -31,6 +40,47 @@ class TestGithubRepoSettingsManager(unittest.TestCase):
             squash_merge_commit_title='PR_TITLE',
             squash_merge_commit_message='PR_BODY',
         )
+        fake_repo.get_branch.assert_called_once_with('main')
+        fake_branch.edit_protection.assert_called_once_with(
+            strict=True,
+            required_approving_review_count=1,
+            dismiss_stale_reviews=True,
+            require_last_push_approval=True,
+            checks=[('build', 123)],
+        )
+        fake_branch.add_required_signatures.assert_called_once_with()
+
+    def test_setup_general_settings_uses_contexts_when_checks_not_present(self):
+        fake_required_status_checks = MagicMock()
+        fake_required_status_checks.checks = []
+        fake_required_status_checks.contexts = ['build', 'test']
+
+        fake_branch = MagicMock()
+        fake_branch.get_required_status_checks.return_value = fake_required_status_checks
+        fake_branch.get_required_signatures.return_value = True
+
+        fake_repo = MagicMock()
+        fake_repo.get_branch.return_value = fake_branch
+        fake_github = MagicMock()
+        fake_github.get_repo.return_value = fake_repo
+
+        manager = GithubRepoSettingsManager(
+            github=fake_github,
+            github_teams={},  # type: ignore[arg-type]
+            interactive=False,
+            rate_limit_delay_seconds=0,
+        )
+
+        manager.setup_general_settings('NHSDigital/example-repo', 'main')
+
+        fake_branch.edit_protection.assert_called_once_with(
+            strict=True,
+            required_approving_review_count=1,
+            dismiss_stale_reviews=True,
+            require_last_push_approval=True,
+            checks=['build', 'test'],
+        )
+        fake_branch.add_required_signatures.assert_not_called()
 
     @patch(
         'packages.setup_github_repo.app.github_repo_settings.GithubRepoSettingsManager._confirm_action',
@@ -48,7 +98,7 @@ class TestGithubRepoSettingsManager(unittest.TestCase):
             rate_limit_delay_seconds=0,
         )
 
-        manager.setup_general_settings('NHSDigital/example-repo')
+        manager.setup_general_settings('NHSDigital/example-repo', 'main')
 
         fake_github.get_repo.assert_not_called()
         fake_repo.edit.assert_not_called()
