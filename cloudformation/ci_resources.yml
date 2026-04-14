@@ -999,6 +999,9 @@ Resources:
           - inspector2:TagResource
           - inspector2:UntagResource
           - athena:CreateWorkGroup
+          - athena:DeleteWorkGroup
+          - athena:CreateNamedQuery
+          - athena:DeleteNamedQuery
           Resource: "*"
         - Effect: Allow
           Action:
