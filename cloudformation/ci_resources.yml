@@ -998,6 +998,7 @@ Resources:
           - inspector2:UpdateFilter
           - inspector2:TagResource
           - inspector2:UntagResource
+          - athena:CreateWorkGroup
           Resource: "*"
         - Effect: Allow
           Action:
