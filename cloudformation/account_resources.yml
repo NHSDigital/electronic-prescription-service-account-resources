@@ -639,6 +639,21 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !ImportValue "data-extract:DestinationBucket:Arn"
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action:
+              - s3:PutObject*
+            Resource:
+              - !Join [
+                  "",
+                  [!GetAtt AuditLoggingBucket.Arn, "/data-extract/dosage-extract-fdp/*"],
+                ]
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref "AWS::AccountId"
+              ArnLike:
+                aws:SourceArn: !ImportValue "data-extract:DosageExtractFDPDestinationBucket:Arn"
 
   #endregion
 
