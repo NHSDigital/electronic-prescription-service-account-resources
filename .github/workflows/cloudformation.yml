@@ -41,6 +41,7 @@ on:
         required: false
       cf_create_changeset_role:
         required: true
+permissions: {}
 
 jobs:
   create_change_set:
@@ -71,7 +72,7 @@ jobs:
     - name: checkout code
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with:
-        ref: ${{ env.BRANCH_NAME }}
+        persist-credentials: false
         fetch-depth: 0
 
     - name: Assume create changeset role
@@ -105,8 +106,10 @@ jobs:
       if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
       shell: bash
       run: |
-        aws cloudformation create-stack --stack-name ${{ inputs.stack_name }} \
+        aws cloudformation create-stack --stack-name "${STACK_NAME}" \
         --template-body file://./cloudformation/empty_stack.yml
+      env:
+        STACK_NAME: ${{ inputs.stack_name }}
 
     - name: Assume create changeset role
       if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
@@ -120,10 +123,12 @@ jobs:
       env:
         parameter_secrets: ${{ secrets.parameter_secrets }}
         dynamic_vars: ${{ inputs.dynamic_vars }}
+        TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
+        STACK_NAME: ${{ inputs.stack_name }}
       id: parse_parameters
       shell: bash
       run: |
-        PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ inputs.target_environment }} ${{ inputs.stack_name }})
+        PARAMETERS_FILE_NAME=$(python scripts/parse_parameters.py ${{ env.TARGET_ENVIRONMENT }} ${{ env.STACK_NAME }})
         cat "$PARAMETERS_FILE_NAME"
         echo "PARAMETERS_FILE_NAME=${PARAMETERS_FILE_NAME}" >> "$GITHUB_OUTPUT"
 
@@ -167,15 +172,21 @@ jobs:
       shell: bash
       run: |
         aws cloudformation delete-change-set \
-        --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}
+        --stack-name "${STACK_NAME}" \
+        --change-set-name "${STACK_NAME}-${CHANGE_SET_VERSION}"
+      env:
+        STACK_NAME: ${{ inputs.stack_name }}
+        CHANGE_SET_VERSION: ${{ inputs.change_set_version }}
 
     - name: Delete Change Set for existing tag
       shell: bash
       run: |
         aws cloudformation delete-change-set \
-        --stack-name ${{ inputs.stack_name }} \
-        --change-set-name ${{ inputs.stack_name }}-${{ inputs.change_set_version }}-current-tag
+        --stack-name "${STACK_NAME}" \
+        --change-set-name "${STACK_NAME}-${CHANGE_SET_VERSION}-current-tag"
+      env:
+        STACK_NAME: ${{ inputs.stack_name }}
+        CHANGE_SET_VERSION: ${{ inputs.change_set_version }}
   
   execute_change_set:
     name: Execute ${{ inputs.stack_name }} change Set
@@ -202,7 +213,7 @@ jobs:
       - name: Checkout scripts
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          persist-credentials: false
           sparse-checkout: |
             .github/scripts
 
@@ -221,6 +232,7 @@ jobs:
       - name: Checkout gh-pages
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          persist-credentials: true
           ref: gh-pages
           path: gh-pages
 
@@ -228,12 +240,16 @@ jobs:
         run: |
           cd gh-pages
           NOW=$(date +'%Y-%m-%dT%H:%M:%S')
-          echo "tag,release_datetime" > _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
-          echo "${{ inputs.version }},${NOW}" >> _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
-          echo "${{ inputs.version }},${NOW}" >> _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_deployments.csv
+          echo "tag,release_datetime" > "_data/${TARGET_ENVIRONMENT}_${STACK_NAME}_latest.csv"
+          echo "${VERSION},${NOW}" >> "_data/${TARGET_ENVIRONMENT}_${STACK_NAME}_latest.csv"
+          echo "${VERSION},${NOW}" >> "_data/${TARGET_ENVIRONMENT}_${STACK_NAME}_deployments.csv"
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_latest.csv
-          git add _data/${{ inputs.TARGET_ENVIRONMENT }}_${{ inputs.STACK_NAME }}_deployments.csv
-          git commit -m 'update releases for ${{ inputs.TARGET_ENVIRONMENT }} and stack ${{ inputs.STACK_NAME }}'
+          git add "_data/${TARGET_ENVIRONMENT}_${STACK_NAME}_latest.csv"
+          git add "_data/${TARGET_ENVIRONMENT}_${STACK_NAME}_deployments.csv"
+          git commit -m "update releases for ${TARGET_ENVIRONMENT} and stack ${STACK_NAME}"
           parallel --retries 10 --delay 3 ::: "git pull --rebase && git push"
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
+          STACK_NAME: ${{ inputs.stack_name }}
+          VERSION: ${{ inputs.version }}

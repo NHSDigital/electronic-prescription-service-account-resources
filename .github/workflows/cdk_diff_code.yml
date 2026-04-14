@@ -38,6 +38,7 @@ on:
       CLOUD_FORMATION_DIFF_ROLE:
         required: true
 
+permissions: {}
 jobs:
   deploy_cdk_code:
     runs-on: ubuntu-22.04
