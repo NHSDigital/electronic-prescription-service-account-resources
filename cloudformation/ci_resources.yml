@@ -1039,9 +1039,12 @@ Resources:
           - Effect: Allow
             Action:
             - athena:CreateWorkGroup
+            - athena:TagResource
             - athena:DeleteWorkGroup
             - athena:CreateNamedQuery
             - athena:DeleteNamedQuery
+            - s3:GetBucketLocation
+            - s3:ListBucket
             Resource: "*"
 
   GrantCloudFormationExecutionEc2AccessPolicy:
