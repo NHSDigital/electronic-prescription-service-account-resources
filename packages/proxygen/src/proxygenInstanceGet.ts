@@ -4,6 +4,7 @@ import {
   checkAllowedEnvironment,
   checkRequiredKeys,
   getAccessToken,
+  getProxygenURL,
   getRealmURL,
   Proxygen,
   proxygenErrorHandler
@@ -19,10 +20,9 @@ const lambdaHandler = async (event: Proxygen) => {
 
   checkAllowedEnvironment(event.environment)
 
-  const accessToken = await getAccessToken(event, getRealmURL())
+  const accessToken = await getAccessToken(event, getRealmURL(event.environment))
 
-  //eslint-disable-next-line max-len
-  const path = `https://proxygen.prod.api.platform.nhs.uk/apis/${event.apiName}/environments/${event.environment}/instances`
+  const path = `${getProxygenURL(event.environment)}/apis/${event.apiName}/environments/${event.environment}/instances`
   try {
     const response = await axios.get(path, {
       headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}

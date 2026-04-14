@@ -2,10 +2,19 @@ import axios from "axios"
 import {createSignedJWT, getSecret} from "./signingHelpers"
 import {Logger} from "@aws-lambda-powertools/logger"
 
-export function getRealmURL() {
-  return "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
+export function getRealmURL(environment?: string) {
+  if (environment === "prod" || environment === "uat") {
+    return "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
+  }
+  return "https://identity.ptl.api.platform.nhs.uk/realms/api-producers"
 }
 
+export function getProxygenURL(environment?: string) {
+  if (environment === "prod" || environment === "uat") {
+    return "https://proxygen.prod.api.platform.nhs.uk"
+  }
+  return "https://proxygen.ptl.api.platform.nhs.uk"
+}
 export async function getAccessToken(event: Proxygen, realm_url: string) {
   const environment = event.environment
   const baseSecretName = event.proxygenSecretName
