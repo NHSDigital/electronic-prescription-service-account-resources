@@ -1041,6 +1041,7 @@ Resources:
             - athena:CreateWorkGroup
             - athena:GetWorkGroup
             - athena:TagResource
+            - athena:UpdateWorkGroup
             - athena:DeleteWorkGroup
             - athena:CreateNamedQuery
             - athena:DeleteNamedQuery
