@@ -1039,6 +1039,7 @@ Resources:
           - Effect: Allow
             Action:
             - athena:CreateWorkGroup
+            - athena:GetWorkGroup
             - athena:TagResource
             - athena:DeleteWorkGroup
             - athena:CreateNamedQuery
