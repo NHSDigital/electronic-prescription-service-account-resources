@@ -17,6 +17,6 @@
         "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
     },
     "devDependencies": {
-        "vitest": "^4.0.17"
+        "vitest": "^4.1.4"
     }
 }

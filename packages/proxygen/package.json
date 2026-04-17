@@ -25,6 +25,6 @@
         "@types/uuid": "^11.0.0",
         "aws-sdk-vitest-mock": "^1.0.55",
         "nock": "^15.0.0",
-        "vitest": "^4.0.17"
+        "vitest": "^4.1.4"
     }
 }
