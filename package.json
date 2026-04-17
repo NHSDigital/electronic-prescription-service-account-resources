@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.32.0",
-    "@nhsdigital/eps-cdk-constructs": "^1.4.4",
+    "@nhsdigital/eps-cdk-constructs": "^1.6.1",
     "archiver": "^7.0.1",
     "esbuild": "^0.28.0",
     "ts-node": "^10.9.2",
