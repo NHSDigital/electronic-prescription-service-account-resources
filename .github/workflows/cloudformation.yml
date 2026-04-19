@@ -76,7 +76,7 @@ jobs:
         fetch-depth: 0
 
     - name: Assume create changeset role
-      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+      uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_create_changeset_role}}
@@ -96,7 +96,7 @@ jobs:
 
     - name: Assume create deploy stack role
       if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
-      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+      uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_deploy_role}}
@@ -113,7 +113,7 @@ jobs:
 
     - name: Assume create changeset role
       if: ${{ steps.check_stack_exists.outputs.STACK_EXISTS == 'false' }} 
-      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+      uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37
       with:
         aws-region: eu-west-2
         role-to-assume: ${{ secrets.cf_create_changeset_role}}
@@ -218,7 +218,7 @@ jobs:
             .github/scripts
 
       - name: Assume deploy changeset role
-        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.cf_deploy_role }}
