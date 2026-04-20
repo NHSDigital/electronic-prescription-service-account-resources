@@ -1043,8 +1043,8 @@ Resources:
             - athena:TagResource
             - athena:UpdateWorkGroup
             - athena:DeleteWorkGroup
-            - athena:CreatePreparedStatement
-            - athena:GetPreparedStatement
+            - athena:CreateNamedQuery
+            - athena:DeleteNamedQuery
             - s3:GetBucketLocation
             - s3:ListBucket
             Resource: "*"
