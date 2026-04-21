@@ -1622,7 +1622,7 @@ Resources:
   
 Outputs:
   ##################################################
-  # Github Identity Provider Outputs
+  # GitHub Identity Provider Outputs
   ##################################################
   GitHubIdentityProvider:
     Description: ARN of the IAM OIDC Identity Provider for GitHub
