@@ -1622,6 +1622,14 @@ Resources:
   
 Outputs:
   ##################################################
+  # Github Identity Provider Outputs
+  ##################################################
+  GitHubIdentityProvider:
+    Description: ARN of the IAM OIDC Identity Provider for GitHub
+    Value: !GetAtt GitHubIdentityProvider.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "GitHubIdentityProvider"]]
+  ##################################################
   # Cloudformation Deployment Role Outputs
   ##################################################
   CloudFormationDeployRole:
