@@ -20,9 +20,9 @@ const lambdaHandler = async (event: Proxygen) => {
   checkRequiredKeys(event, ["environment", "instance"])
   checkAllowedEnvironment(event.environment)
 
-  const accessToken = await getAccessToken(event, getRealmURL(event.environment))
+  const accessToken = await getAccessToken(event, getRealmURL(event))
   //eslint-disable-next-line max-len
-  const path = `${getProxygenURL(event.environment)}/apis/${event.apiName}/environments/${event.environment}/instances/${event.instance}`
+  const path = `${getProxygenURL(event)}/apis/${event.apiName}/environments/${event.environment}/instances/${event.instance}`
   try {
     const response = await axios.delete(path, {
       headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
