@@ -34,10 +34,10 @@ const lambdaHandler = async (event: Proxygen) => {
     throw new Error("Either secretCert and secretKey or secretCertName and secretKeyName must be provided")
   }
 
-  const accessToken = await getAccessToken(event, getRealmURL(event.environment))
+  const accessToken = await getAccessToken(event, getRealmURL(event))
 
   //eslint-disable-next-line max-len
-  const path = `${getProxygenURL(event.environment)}/apis/${event.apiName}/environments/${event.environment}/secrets/mtls/${event.secretName}`
+  const path = `${getProxygenURL(event)}/apis/${event.apiName}/environments/${event.environment}/secrets/mtls/${event.secretName}`
   try {
     const response = await axios.putForm(path, formData, {
       headers: {Authorization: `Bearer ${accessToken}`}

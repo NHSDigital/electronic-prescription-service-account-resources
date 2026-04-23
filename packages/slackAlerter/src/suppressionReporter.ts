@@ -4,7 +4,7 @@ import middy, {Request} from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import {getSecrets} from "./secrets"
 import {postSlackMessage} from "./helpers"
-import {LogItemMessage} from "@aws-lambda-powertools/logger/lib/cjs/types/Logger"
+import {LogItemMessage} from "@aws-lambda-powertools/logger/types"
 
 const logger = new Logger({serviceName: "supressionReporter"})
 
