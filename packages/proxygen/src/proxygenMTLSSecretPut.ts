@@ -1,6 +1,5 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import {LogItemMessage} from "@aws-lambda-powertools/logger/lib/cjs/types/Logger"
 import {
   checkAllowedEnvironment,
   checkRequiredKeys,
@@ -10,10 +9,10 @@ import {
   Proxygen,
   proxygenErrorHandler
 } from "./helpers"
-import middy, {Request} from "@middy/core"
-import inputOutputLogger from "@middy/input-output-logger"
+import middy from "@middy/core"
 import axios from "axios"
 import {getSecret} from "./signingHelpers"
+import {iOLogger} from "./middleware"
 
 const logger = new Logger({serviceName: "proxygenMTLSSecretPut"})
 
@@ -51,14 +50,4 @@ const lambdaHandler = async (event: Proxygen) => {
 
 export const handler = middy(lambdaHandler)
   .use(injectLambdaContext(logger, {clearState: true}))
-  .use(
-    inputOutputLogger({
-      logger: (request: unknown) => {
-        if ((request as Request).response) {
-          logger.debug(request as LogItemMessage)
-        } else {
-          logger.info(request as LogItemMessage)
-        }
-      }
-    })
-  )
+  .use(iOLogger(logger))
