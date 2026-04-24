@@ -10,6 +10,8 @@ Conditions:
 
 Resources:
   NonResource:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: Custom::NonResource
     Condition: Never
     Properties:

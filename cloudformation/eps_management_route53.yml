@@ -4,7 +4,7 @@ Resources:
   EPSZone:
     Type: "AWS::Route53::HostedZone"
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       HostedZoneConfig:
         Comment: "hosted zone for eps"
@@ -13,7 +13,7 @@ Resources:
   nsDevHostedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "dev.eps.national.nhs.uk"
@@ -30,7 +30,7 @@ Resources:
   nsQAHostedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "qa.eps.national.nhs.uk"
@@ -47,7 +47,7 @@ Resources:
   nsIntHostedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "int.eps.national.nhs.uk"
@@ -64,7 +64,7 @@ Resources:
   nsRefHostedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "ref.eps.national.nhs.uk"
@@ -81,7 +81,7 @@ Resources:
   nsProdHostedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "prod.eps.national.nhs.uk"
@@ -99,7 +99,7 @@ Resources:
   nsRecoveryHstedEPSZoneRecordSet:
     Type: "AWS::Route53::RecordSet"
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       HostedZoneId: !Ref EPSZone
       Name: "recovery.eps.national.nhs.uk"

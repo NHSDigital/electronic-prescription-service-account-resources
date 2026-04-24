@@ -5,6 +5,8 @@ Resources:
   # artillery-io-test-data Bucket
   ##################################################
   ArtilleryBucketKMSKey:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
@@ -21,12 +23,16 @@ Resources:
             Resource: "*"
 
   ArtilleryBucketKMSKeyAlias:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Alias
     Properties:
       AliasName: alias/ArtilleryBucketKMSKeyAlias
       TargetKeyId: !Ref ArtilleryBucketKMSKey
 
   UseArtilleryBucketKMSKeyManagedPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -45,6 +51,8 @@ Resources:
             Resource: !GetAtt ArtilleryBucketKMSKey.Arn
 
   ArtilleryBucket:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::S3::Bucket
     Metadata:
       guard:
@@ -74,6 +82,8 @@ Resources:
               SSEAlgorithm: "aws:kms"
 
   ArtilleryBucketPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
@@ -109,6 +119,8 @@ Resources:
               - !GetAtt ArtilleryBucket.Arn
 
   ArtilleryWorkerRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       RoleName: artilleryio-ecs-worker-role
@@ -129,6 +141,8 @@ Resources:
           - - !ImportValue account-resources:CloudwatchEncryptionKMSPolicyArn
 
   ArtilleryWorkerPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -174,6 +188,8 @@ Resources:
               - "*"
 
   ArtilleryWorkerLogGroupManagedPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -190,6 +206,8 @@ Resources:
               - !Sub ${ArtilleryWorkerLogGroup.Arn}:log-stream:*
 
   ArtilleryWorkerLogGroup:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: artilleryio-log-group/artilleryio-cluster
@@ -197,6 +215,8 @@ Resources:
       KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
   ECSCluster:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: "AWS::ECS::Cluster"
     Properties:
       ClusterName: artilleryio-cluster
@@ -209,6 +229,8 @@ Resources:
   ##################################################
 
   ArtilleryArtifactoryAuthParam:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Name: /artilleryio/ARTIFACTORY_AUTH
@@ -216,6 +238,8 @@ Resources:
       Value: "null"
 
   ArtilleryArtifactoryEmailParam:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Name: /artilleryio/ARTIFACTORY_EMAIL
@@ -223,6 +247,8 @@ Resources:
       Value: "null"
 
   ArtilleryNpmrcParam:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Name: /artilleryio/NPMRC
@@ -230,6 +256,8 @@ Resources:
       Value: "null"
 
   ArtilleryNpmRegistryParam:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Name: /artilleryio/NPM_REGISTRY
@@ -237,6 +265,8 @@ Resources:
       Value: "null"
 
   ArtilleryNpmScopeParam:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Name: /artilleryio/NPM_SCOPE
@@ -244,6 +274,8 @@ Resources:
       Value: "null"
 
   ArtilleryNpmScopeRegistryParam:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Name: /artilleryio/NPM_SCOPE_REGISTRY
@@ -251,6 +283,8 @@ Resources:
       Value: "null"
 
   ArtilleryNpmTokenParam:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Name: /artilleryio/NPM_TOKEN
@@ -262,6 +296,8 @@ Resources:
   ##################################################
 
   ArtilleryPSUApiKey:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Description: API key used for PSU load testing
@@ -270,6 +306,8 @@ Resources:
       Value: ChangeMe
 
   ArtilleryPSUPrivateKey:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Description: Private key used for PSU load testing
@@ -278,6 +316,8 @@ Resources:
       Value: ChangeMe
 
   ArtilleryPSUKid:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Description: KID used for PSU load testing
@@ -286,6 +326,8 @@ Resources:
       Value: ChangeMe
 
   ArtilleryCPSUApiKey:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Description: API key used for CPSU load testing
@@ -294,6 +336,8 @@ Resources:
       Value: ChangeMe
 
   ArtilleryFhirClientId:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Description: API client id used for FHIR api load testing
@@ -302,6 +346,8 @@ Resources:
       Value: ChangeMe
 
   ArtilleryFhirClientSecret:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::SSM::Parameter
     Properties:
       Description: API client secret used for FHIR api load testing
@@ -313,6 +359,8 @@ Resources:
   # VPC Security group, allowing outbound traffic (i.e. hit the test target), but forbids inbound traffic
   ##################################################
   ArtillerySecurityGroup:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: "Security group that blocks inbound traffic but allows outbound traffic"

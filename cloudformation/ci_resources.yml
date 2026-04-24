@@ -66,6 +66,8 @@ Resources:
   # Identity Provider
   ##################################################
   GitHubIdentityProvider:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::OIDCProvider
     Properties:
       Url: https://token.actions.githubusercontent.com
@@ -76,6 +78,8 @@ Resources:
         - eps-storage-terraform
 
   AllowOpenIDProviderPermissionsPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -100,6 +104,8 @@ Resources:
   # see https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
   # for details about subject claim filters that are used for each role
   CloudFormationDeployRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -116,6 +122,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref DeploySubjectClaimFilters
 
   CreateCloudFormationStackPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -138,6 +146,8 @@ Resources:
             Resource: "*"
 
   AllowCloudFormationSecretsAccessManagedPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -185,6 +195,8 @@ Resources:
               - !Sub "arn:aws:kms:us-east-1:${AWS::AccountId}:key/*"
 
   ECRPushImagePolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -219,6 +231,8 @@ Resources:
             Resource: !Sub "arn:aws:inspector2:${AWS::Region}:${AWS::AccountId}:*"
 
   RemoveOldCNAMERecordsPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -242,6 +256,8 @@ Resources:
                 route53:ChangeResourceRecordSetsNormalizedRecordNames: _*
 
   UpdateCloudfrontKVS:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -262,6 +278,8 @@ Resources:
   # Cloudformation Execution Role
   ##################################################
   CloudFormationExecutionRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -275,6 +293,8 @@ Resources:
               - sts:AssumeRole
 
   AssumeExecutionRolePolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -289,6 +309,8 @@ Resources:
             Resource: !GetAtt CloudFormationExecutionRole.Arn
 
   AssumeCDKRolesPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -326,6 +348,8 @@ Resources:
 
   # iam permissions are restricted to just act on this account so are in a separate policy
   GrantCloudFormationExecutionAccessIAMPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -351,6 +375,8 @@ Resources:
             Resource: !Sub "arn:aws:iam::${AWS::AccountId}:*"
 
   GrantCloudFormationExecutionAccessPolicyA:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Metadata:
       # ignore warning about invalid policies as AWS source does not reflect policies that are available
@@ -563,6 +589,8 @@ Resources:
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyB:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -696,6 +724,8 @@ Resources:
             Resource: "*"
 
   GrantCloudFormationExecutionAccessPolicyC:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Metadata:
       # ignore warning about invalid policies as AWS source does not reflect policies that are available
@@ -844,6 +874,8 @@ Resources:
               - !Sub arn:aws:lambda:*:${AWS::AccountId}:function:*BucketNotificationsHandler*
 
   GrantCloudFormationExecutionAccessPolicyD:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Metadata:
       # ignore warning about invalid policies as AWS source does not reflect policies that are available
@@ -1023,6 +1055,8 @@ Resources:
           - !Sub arn:aws:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1
 
   GrantCloudFormationExecutionEc2AccessPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Metadata:
       # ignore warning about invalid policies as AWS source does not reflect policies that are available
@@ -1138,6 +1172,8 @@ Resources:
   # Cloudformation Check Version Role
   ##################################################
   CloudFormationCheckVersionRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1154,6 +1190,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref CheckVersionSubjectClaimFilters
 
   DescribeCloudFormationStackPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1172,6 +1210,8 @@ Resources:
   # Cloudformation Prepare Changeset Role
   ##################################################
   CloudFormationPrepareChangesetRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1188,6 +1228,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref PrepareChangesetClaimFilters
 
   CreateCloudFormationStackChangeSetPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1218,6 +1260,8 @@ Resources:
   # LookupRole is used to perform context lookups
   # file-publishing-role is used to upload assets to S3 and ECR
   CreateCloudFormationStackChangeSetAssumeLookupRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1238,6 +1282,8 @@ Resources:
   # Release Notes Role
   ##################################################
   ReleaseNotesExecuteLambdaRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1257,6 +1303,8 @@ Resources:
   # Artillery.io runner Role
   ##################################################
   ArtilleryRunnerRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1273,6 +1321,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref ArtilleryLoadTestRoleClaimFilters
 
   ArtilleryRunnerPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1384,6 +1434,8 @@ Resources:
   # Proxygen roles
   ##################################################
   ProxygenPTLRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1400,6 +1452,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref ProxygenPTLClaimFilters
 
   ProxygenProdRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1416,6 +1470,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref ProxygenProdClaimFilters
 
   ProxygenAccessExportPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1433,6 +1489,8 @@ Resources:
   # CDK Util roles
   ##################################################
   CDKPullImageRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1449,6 +1507,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref CDKPullImageClaimFilters
 
   CDKPullImageRolePolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1471,6 +1531,8 @@ Resources:
             Resource: "*"
 
   CDKPushImageRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1487,6 +1549,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref CDKPushImageClaimFilters
 
   CDKPushImageRolePolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1520,6 +1584,8 @@ Resources:
             Resource: !Sub "arn:aws:inspector2:${AWS::Region}:${AWS::AccountId}:*"
 
   DevContainerPushImageRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1536,6 +1602,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref DevContainerPushImageClaimFilters
 
   DevContainerPushImageRolePolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1576,6 +1644,8 @@ Resources:
   # EPS Assist Me Regression Test Role
   ##################################################
   AssistMeRegressionTestRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1592,6 +1662,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref AssistMeRegressionTestClaimFilters
 
   AssistMeDocumentSyncRole:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -1608,6 +1680,8 @@ Resources:
                 token.actions.githubusercontent.com:sub: !Ref AssistMeDocumentSyncClaimFilters
 
   AssistMeDocumentSyncPolicy:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:

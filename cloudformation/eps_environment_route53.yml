@@ -16,7 +16,7 @@ Resources:
   DNSRecordHostedZoneEPS:
     Type: "AWS::Route53::HostedZone"
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       HostedZoneConfig:
         Comment: !Sub
@@ -28,7 +28,7 @@ Resources:
     Type: "AWS::Route53::HostedZone"
     Condition: CreateProdCPTDomain
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       HostedZoneConfig:
         Comment: "hosted zone for prescriptiontracker.nhs.uk"
@@ -38,7 +38,7 @@ Resources:
     Type: "AWS::Route53::HostedZone"
     Condition: CreateIntCPTDomain
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       HostedZoneConfig:
         Comment: "hosted zone for int-prescriptiontracker.nhs.uk"
