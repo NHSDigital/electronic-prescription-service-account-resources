@@ -3,7 +3,8 @@ import {
   Stack,
   App,
   Tags,
-  Fn
+  Fn,
+  CfnOutput
 } from "aws-cdk-lib"
 import {ECRRepositories} from "../resources/ECRRepositories"
 import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
@@ -14,11 +15,13 @@ import {InspectorFilters} from "../resources/InspectorFilters"
 import {Alarms} from "../resources/Alarms"
 import {Secret} from "aws-cdk-lib/aws-secretsmanager"
 import {Topic} from "aws-cdk-lib/aws-sns"
+import {getExportValue} from "../resources/ExportMigrations"
 
 export interface AccountResourcesStackProps_UK extends StackProps {
   readonly stackName: string
   readonly version: string
   readonly commitId: string
+  readonly environment: string
   readonly cloudFormationExecutionRole: Role
   readonly cloudFormationPrepareChangesetRole: Role
   readonly cloudFormationDeployRole: Role
@@ -88,6 +91,11 @@ export class AccountResourcesStack_UK extends Stack {
       logRetentionInDays: 30,
       logLevel: "DEBUG",
       alertSuppressionsParameter: alarms.parameters.alertSuppressions
+    })
+
+    new CfnOutput(this, "AccessSlackSecretsManagedPolicyArn", {
+      value: getExportValue("account-resources:AccessSlackSecretsManagedPolicy", props.environment),
+      exportName: `${props.stackName}:ManagedPolicy:AccessSlackSecretsManagedPolicy:Arn`
     })
 
     nagSuppressions(this, "AccountResources_UK")

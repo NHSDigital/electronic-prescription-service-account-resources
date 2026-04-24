@@ -6,6 +6,7 @@ export interface IAMStackProps extends StackProps {
   readonly stackName: string
   readonly version: string
   readonly commitId: string
+  readonly environment: string
   readonly deploySubjectClaimFilters: Array<string>
   readonly checkVersionSubjectClaimFilters: Array<string>
   readonly prepareChangesetClaimFilters: Array<string>
