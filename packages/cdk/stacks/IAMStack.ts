@@ -41,41 +41,41 @@ export class IAMStack extends Stack {
 
     new CfnOutput(this, "CiResourcesAssistMeDocumentSyncRoleMigrationExport", {
       value: getExportValue("ci-resources:AssistMeDocumentSyncRole", props.environment),
-      exportName: "ci-resources:AssistMeDocumentSyncRole"
+      exportName: `${props.stackName}:IAM:AssistMeDocumentSyncRole:Arn`
     })
     new CfnOutput(this, "CiResourcesCloudFormationDeployRoleMigrationExport", {
       value: getExportValue("ci-resources:CloudFormationDeployRole", props.environment),
-      exportName: "ci-resources:CloudFormationDeployRole"
+      exportName: `${props.stackName}:IAM:CloudFormationDeployRole:Arn`
     })
     new CfnOutput(this, "CiResourcesCloudFormationDeployRoleNameMigrationExport", {
       value: getExportValue("ci-resources:CloudFormationDeployRoleName", props.environment),
-      exportName: "ci-resources:CloudFormationDeployRoleName"
+      exportName: `${props.stackName}:IAM:CloudFormationDeployRole:Name`
     })
     new CfnOutput(this, "CiResourcesCloudFormationExecutionRoleMigrationExport", {
       value: getExportValue("ci-resources:CloudFormationExecutionRole", props.environment),
-      exportName: "ci-resources:CloudFormationExecutionRole"
+      exportName: `${props.stackName}:IAM:CloudFormationExecutionRole:Arn`
     })
     new CfnOutput(this, "CiResourcesCloudFormationExecutionRoleNameMigrationExport", {
       value: getExportValue("ci-resources:CloudFormationExecutionRoleName", props.environment),
-      exportName: "ci-resources:CloudFormationExecutionRoleName"
+      exportName: `${props.stackName}:IAM:CloudFormationExecutionRole:Name`
     })
 
     new CfnOutput(this, "CiResourcesCloudFormationPrepareChangesetRoleMigrationExport", {
       value: getExportValue("ci-resources:CloudFormationPrepareChangesetRole", props.environment),
-      exportName: "ci-resources:CloudFormationPrepareChangesetRole"
+      exportName: `${props.stackName}:IAM:CloudFormationPrepareChangesetRole:Arn`
     })
     new CfnOutput(this, "CiResourcesCloudFormationPrepareChangesetRoleNameMigrationExport", {
       value: getExportValue("ci-resources:CloudFormationPrepareChangesetRoleName", props.environment),
-      exportName: "ci-resources:CloudFormationPrepareChangesetRoleName"
+      exportName: `${props.stackName}:IAM:CloudFormationPrepareChangesetRole:Name`
     })
     new CfnOutput(this, "CiResourcesProxygenProdRoleNameMigrationExport", {
       value: getExportValue("ci-resources:ProxygenProdRoleName", props.environment),
-      exportName: "ci-resources:ProxygenProdRoleName"
+      exportName: `${props.stackName}:IAM:ProxygenProdRole:Name`
     })
 
     new CfnOutput(this, "CiResourcesProxygenPTLRoleNameMigrationExport", {
       value: getExportValue("ci-resources:ProxygenPTLRoleName", props.environment),
-      exportName: "ci-resources:ProxygenPTLRoleName"
+      exportName: `${props.stackName}:IAM:ProxygenPTLRole:Name`
     })
 
     nagSuppressions(this, "IAM")
