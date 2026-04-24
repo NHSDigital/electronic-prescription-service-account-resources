@@ -1,6 +1,6 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import middy, {Request} from "@middy/core"
+import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import {getSecrets} from "./secrets"
 import {postSlackMessage} from "./helpers"
@@ -37,11 +37,7 @@ export const handler = middy(lambdaHandler)
   .use(
     inputOutputLogger({
       logger: (request: unknown) => {
-        if ((request as Request).response) {
-          logger.debug(request as LogItemMessage)
-        } else {
-          logger.info(request as LogItemMessage)
-        }
+        logger.info(request as LogItemMessage)
       }
     })
   )

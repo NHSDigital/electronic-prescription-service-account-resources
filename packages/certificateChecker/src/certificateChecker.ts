@@ -3,7 +3,7 @@ import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
 import {checkCertificateExpiry} from "./helpers"
 import {Secret} from "./helpers"
-import middy, {Request} from "@middy/core"
+import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import {LogItemMessage} from "@aws-lambda-powertools/logger/types"
 
@@ -63,11 +63,7 @@ export const handler = middy(lambdaHandler)
   .use(
     inputOutputLogger({
       logger: (request: unknown) => {
-        if ((request as Request).response) {
-          logger.debug(request as LogItemMessage)
-        } else {
-          logger.info(request as LogItemMessage)
-        }
+        logger.info(request as LogItemMessage)
       }
     })
   )
