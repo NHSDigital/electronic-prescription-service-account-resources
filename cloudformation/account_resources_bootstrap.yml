@@ -872,11 +872,6 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "LambdaAccessSecretsPolicy"]]
 
-  SplunkHECToken:
-    Description: SplunkHECToken
-    Value: !GetAtt SplunkHECToken.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SplunkHECToken"]]
 
   PSUProxygenPrivateKey:
     Description: PSUProxygenPrivateKey

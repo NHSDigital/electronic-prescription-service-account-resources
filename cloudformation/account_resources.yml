@@ -2252,13 +2252,6 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "AuditLoggingBucket"]]
   #endregion
 
-  #region ALB Logging Bucket Outputs
-  ALBLoggingBucketArn:
-    Description: ARN of the ALB logging bucket
-    Value: !GetAtt ALBLoggingBucket.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketArn"]]
-
   ALBLoggingBucketName:
     Description: Name of the ALB logging bucket
     Value: !Ref ALBLoggingBucket
@@ -2267,20 +2260,6 @@ Outputs:
 
   #endregion
 
-  #region athena results Bucket Outputs
-  AthenaResultsBucketArn:
-    Description: ARN of the Athena results bucket
-    Value: !GetAtt AthenaResultsBucket.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "AthenaResultsBucketArn"]]
-
-  AthenaResultsBucketName:
-    Description: Name of the Athena results bucket
-    Value: !Ref AthenaResultsBucket
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "AthenaResultsBucketName"]]
-
-  #endregion
 
   #region Splunk Delivery Stream Backup Bucket Outputs
   SplunkDeliveryStreamBackupKMSKey:
@@ -2318,50 +2297,11 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStreamBackupBucket"]]
   #endregion
 
-  #region ECR Repositories Outputs
-  FHIRFacadeRepoArn:
-    Description: "The Arn of the FHIR Facade ECR repo"
-    Value: !GetAtt FHIRFacadeRepo.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
 
-  FHIRFacadeRepoUri:
-    Description: "The URI of the FHIR Facade ECR repo"
-    Value: !GetAtt FHIRFacadeRepo.RepositoryUri
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
 
-  ValidatorRepoArn:
-    Description: "The Arn of the Validator repo"
-    Value: !GetAtt ValidatorRepo.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]
-
-  ValidatorRepoUri:
-    Description: "The URI of the Validator ECR repo"
-    Value: !GetAtt ValidatorRepo.RepositoryUri
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
-
-  CDKUtilsBuildRepoArn:
-    Description: "The Arn of the Validator repo"
-    Value: !GetAtt CDKUtilsBuildRepo.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoArn"]]
-
-  CDKUtilsBuildRepoUri:
-    Description: "The URI of the Validator ECR repo"
-    Value: !GetAtt CDKUtilsBuildRepo.RepositoryUri
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoUri"]]
   #endregion
 
   #region Secrets KMS Outputs
-  SecretsKMSKey:
-    Description: SecretsKMSKey
-    Value: !GetAtt SecretsKMSKey.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
 
   SecretsKMSKeyAlias:
     Description: SecretsKMSKeyAlias
@@ -2384,11 +2324,6 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SnsKMSKey"]]
 
-  SnsDecryptSecretsKMSPolicy:
-    Description: "SNS Decrypt Secrets KMS Policy ARN"
-    Value: !GetAtt SnsDecryptSecretsKMSPolicy.PolicyArn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SnsDecryptSecretsKMSPolicy"]]
   #endregion
 
   #region SQS KMS Outputs
@@ -2406,11 +2341,6 @@ Outputs:
   #endregion
 
   #region PfP CA Secrets Outputs
-  PfpCAKeySecret:
-    Description: ARN of the PfP CA key secret
-    Value: !GetAtt PfpCAKeySecret.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "PfpCAKeySecret"]]
 
   PfpCACertSecret:
     Description: ARN of the PfP CA cert secret
@@ -2701,11 +2631,6 @@ Outputs:
       Name:
         !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenKid"]]
 
-  SlackWebHookUrl:
-    Description: Slack webhook url
-    Value: !GetAtt SlackWebHookUrl.Id
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "SlackWebHookUrl"]]
 
   AccessSlackSecretsManagedPolicy:
     Description: "Access SNS Secrets Policy ARN"

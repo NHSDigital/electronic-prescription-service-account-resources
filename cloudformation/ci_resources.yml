@@ -1727,26 +1727,6 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "CloudFormationExecutionRoleName"]]
 
   ##################################################
-  # Cloudformation Check Version Role Outputs
-  ##################################################
-  CloudFormationCheckVersionRole:
-    Description: ARN of the IAM Role(CloudFormationCheckVersionRole)
-    Value: !GetAtt CloudFormationCheckVersionRole.Arn
-    Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "CloudFormationCheckVersionRole"]]
-
-  CloudFormationCheckVersionRoleName:
-    Description: Name of the IAM Role(CloudFormationCheckVersionRole)
-    Value: !Ref CloudFormationCheckVersionRole
-    Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "CloudFormationCheckVersionRoleName"],
-        ]
-
-  ##################################################
   # Cloudformation Prepare Changeset Role Outputs
   ##################################################
   CloudFormationPrepareChangesetRole:
@@ -1768,37 +1748,6 @@ Outputs:
           ":",
           [!Ref "AWS::StackName", "CloudFormationPrepareChangesetRoleName"],
         ]
-  ##################################################
-  # Release Notes Role Outputs
-  ##################################################
-  ReleaseNotesExecuteLambdaRole:
-    Description: ARN of the IAM Role(ReleaseNotesExecuteLambdaRole)
-    Value: !GetAtt ReleaseNotesExecuteLambdaRole.Arn
-    Export:
-      Name:
-        !Join [":", [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRole"]]
-  ReleaseNotesExecuteLambdaName:
-    Description: Name of the IAM Role(ReleaseNotesExecuteLambda)
-    Value: !Ref ReleaseNotesExecuteLambdaRole
-    Export:
-      Name:
-        !Join [
-          ":",
-          [!Ref "AWS::StackName", "ReleaseNotesExecuteLambdaRoleName"],
-        ]
-  ##################################################
-  # Artillery Runner Role Outputs
-  ##################################################
-  ArtilleryRunnerRole:
-    Description: ARN of the IAM Role(ArtilleryRunnerRole)
-    Value: !GetAtt ArtilleryRunnerRole.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryRunnerRole"]]
-  ArtilleryRunnerRoleName:
-    Description: Name of the IAM Role(ArtilleryRunnerRole)
-    Value: !Ref ArtilleryRunnerRole
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "ArtilleryRunnerRoleName"]]
   ##################################################
   # Proxygen Roles Outputs
   ##################################################
@@ -1822,80 +1771,6 @@ Outputs:
     Value: !Ref ProxygenProdRole
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "ProxygenProdRoleName"]]
-  ##################################################
-  # CDK Utils Role Outputs
-  ##################################################
-  CDKPullImageRole:
-    Description: ARN of the IAM Role(CDKPullImageRole)
-    Value: !GetAtt CDKPullImageRole.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKPullImageRole"]]
-  CDKPullImageRoleName:
-    Description: Name of the IAM Role(CDKPullImageRole)
-    Value: !Ref CDKPullImageRole
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKPullImageRoleName"]]
-  CDKPushImageRole:
-    Description: ARN of the IAM Role(CDKPushImageRole)
-    Value: !GetAtt CDKPushImageRole.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKPushImageRole"]]
-  CDKPushImageRoleName:
-    Description: Name of the IAM Role(CDKPushImageRole)
-    Value: !Ref CDKPushImageRole
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "CDKPushImageRoleName"]]
-  ##################################################
-  # Dev container push image Role Outputs
-  ##################################################
-  DevContainerPushImageRole:
-    Description: ARN of the IAM Role(DevContainerPushImageRole)
-    Value: !GetAtt DevContainerPushImageRole.Arn
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "DevContainerPushImageRole"]]
-  DevContainerPushImageRoleName:
-    Description: Name of the IAM Role(DevContainerPushImageRole)
-    Value: !Ref DevContainerPushImageRole
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "DevContainerPushImageRoleName"]]
-  ##################################################
-  # Managed policy Outputs
-  ##################################################
-  GrantCloudFormationExecutionAccessIAMPolicy:
-    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessIAMPolicy
-    Value: !Ref GrantCloudFormationExecutionAccessIAMPolicy
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessIAMPolicy"]]
-  GrantCloudFormationExecutionAccessPolicyA:
-    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessPolicyA
-    Value: !Ref GrantCloudFormationExecutionAccessPolicyA
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyA"]]
-  GrantCloudFormationExecutionAccessPolicyB:
-    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessPolicyB
-    Value: !Ref GrantCloudFormationExecutionAccessPolicyB
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyB"]]
-  GrantCloudFormationExecutionAccessPolicyC:
-    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessPolicyC
-    Value: !Ref GrantCloudFormationExecutionAccessPolicyC
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyC"]]
-  GrantCloudFormationExecutionAccessPolicyD:
-    Description: ARN of the IAM policy GrantCloudFormationExecutionAccessPolicyD
-    Value: !Ref GrantCloudFormationExecutionAccessPolicyD
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionAccessPolicyD"]]
-  GrantCloudFormationExecutionEc2AccessPolicy:
-    Description: ARN of the IAM policy GrantCloudFormationExecutionEc2AccessPolicy
-    Value: !Ref GrantCloudFormationExecutionEc2AccessPolicy
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "GrantCloudFormationExecutionEc2AccessPolicy"]]
-  AllowCloudFormationSecretsAccessManagedPolicy:
-    Description: ARN of the IAM policy AllowCloudFormationSecretsAccessManagedPolicy
-    Value: !Ref AllowCloudFormationSecretsAccessManagedPolicy
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "AllowCloudFormationSecretsAccessManagedPolicy"]]
 
   ##################################################
   # EPS Assist Me Regression Test Role Outputs
@@ -1905,12 +1780,6 @@ Outputs:
     Value: !GetAtt AssistMeRegressionTestRole.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AssistMeRegressionTestRole"]]
-
-  AssistMeRegressionTestRoleName:
-    Description: Name of the IAM Role(AssistMeRegressionTestRole)
-    Value: !Ref AssistMeRegressionTestRole
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "AssistMeRegressionTestRoleName"]]
   
   ##################################################
   # EPS Assist Document Sync Role Outputs
@@ -1920,9 +1789,3 @@ Outputs:
     Value: !GetAtt AssistMeDocumentSyncRole.Arn
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "AssistMeDocumentSyncRole"]]
-  
-  AssistMeDocumentSyncRoleName:
-    Description: Name of the IAM Role(AssistMeDocumentSyncRole)
-    Value: !Ref AssistMeDocumentSyncRole
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "AssistMeDocumentSyncRoleName"]]
