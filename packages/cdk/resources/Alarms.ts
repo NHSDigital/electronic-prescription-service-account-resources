@@ -9,13 +9,13 @@ export interface AlarmsProps {
   readonly enableAlerts: boolean
   readonly lambdaConcurrencyThreshold: number
   readonly lambdaConcurrencyWarningThreshold: number
-  readonly slackAlertTopicArn: ITopic
+  readonly slackAlertsSnsTopic: ITopic
 }
 
 export class Alarms extends Construct {
-  parameters: {[key: string]: StringParameter}
-  stepFunctionAlarms: Array<{[key: string]: Alarm}>
-  lambdaAlarms: Array<{[key: string]: Alarm}>
+  public readonly parameters: {[key: string]: StringParameter}
+  public readonly stepFunctionAlarms: Array<{[key: string]: Alarm}>
+  public readonly lambdaAlarms: Array<{[key: string]: Alarm}>
 
   public constructor(scope: Construct, id: string, props: AlarmsProps){
     super(scope, id)
@@ -53,7 +53,7 @@ export class Alarms extends Construct {
         enableAlerts: props.enableAlerts,
         namespace: "AWS/States",
         alarmDefinition: a,
-        slackAlertTopic: props.slackAlertTopicArn
+        slackAlertTopic: props.slackAlertsSnsTopic
       })
       this.stepFunctionAlarms = {...this.stepFunctionAlarms, [a.name]: alarm.alarms[a.name]}
     }
@@ -91,7 +91,7 @@ export class Alarms extends Construct {
         enableAlerts: props.enableAlerts,
         namespace: "AWS/States",
         alarmDefinition: a,
-        slackAlertTopic: props.slackAlertTopicArn
+        slackAlertTopic: props.slackAlertsSnsTopic
       })
       this.lambdaAlarms = {...this.lambdaAlarms, [a.name]: alarm.alarms[a.name]}
     }

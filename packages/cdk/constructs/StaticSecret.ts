@@ -11,6 +11,7 @@ export interface StaticSecretProps {
 }
 
 export class StaticSecret extends Construct {
+  readonly secret: Secret
 
   public constructor(scope: Construct, id: string, props: StaticSecretProps){
     super(scope, id)
@@ -26,6 +27,7 @@ export class StaticSecret extends Construct {
         reason: "Static secret - does not need rotation"
       }
     ])
+    this.secret = secret
 
   }
 }
