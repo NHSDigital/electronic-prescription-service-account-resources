@@ -93,9 +93,93 @@ export class AccountResourcesStack_UK extends Stack {
       alertSuppressionsParameter: alarms.parameters.alertSuppressions
     })
 
-    new CfnOutput(this, "AccessSlackSecretsManagedPolicyArn", {
-      value: getExportValue("account-resources:AccessSlackSecretsManagedPolicy", props.environment),
-      exportName: `${props.stackName}:ManagedPolicy:AccessSlackSecretsManagedPolicy:Arn`
+    // checked they are in the right stack
+
+    new CfnOutput(this, "AccountResourcesALBLoggingBucketNameMigrationExport", {
+      value: getExportValue("account-resources:ALBLoggingBucketName", props.environment),
+      exportName: "account-resources:ALBLoggingBucketName"
+    })
+    new CfnOutput(this, "AccountResourcesAuditLoggingBucketMigrationExport", {
+      value: getExportValue("account-resources:AuditLoggingBucket", props.environment),
+      exportName: "account-resources:AuditLoggingBucket"
+    })
+
+    new CfnOutput(this, "AccountResourcesCloudwatchEncryptionKMSPolicyArnMigrationExport", {
+      value: getExportValue("account-resources:CloudwatchEncryptionKMSPolicyArn", props.environment),
+      exportName: "account-resources:CloudwatchEncryptionKMSPolicyArn"
+    })
+    new CfnOutput(this, "AccountResourcesCloudwatchLogsKmsKeyArnMigrationExport", {
+      value: getExportValue("account-resources:CloudwatchLogsKmsKeyArn", props.environment),
+      exportName: "account-resources:CloudwatchLogsKmsKeyArn"
+    })
+    new CfnOutput(this, "AccountResourcesLambdaEncryptCloudwatchKMSPolicyMigrationExport", {
+      value: getExportValue("account-resources:LambdaEncryptCloudwatchKMSPolicy", props.environment),
+      exportName: "account-resources:LambdaEncryptCloudwatchKMSPolicy"
+    })
+    new CfnOutput(this, "AccountResourcesSNSFeedbackLoggingRoleArnMigrationExport", {
+      value: getExportValue("account-resources:SNSFeedbackLoggingRoleArn", props.environment),
+      exportName: "account-resources:SNSFeedbackLoggingRoleArn"
+    })
+    new CfnOutput(this, "AccountResourcesSnsKMSKeyMigrationExport", {
+      value: getExportValue("account-resources:SnsKMSKey", props.environment),
+      exportName: "account-resources:SnsKMSKey"
+    })
+
+    new CfnOutput(this, "AccountResourcesSplunkDeliveryStreamBackupBucketMigrationExport", {
+      value: getExportValue("account-resources:SplunkDeliveryStreamBackupBucket", props.environment),
+      exportName: "account-resources:SplunkDeliveryStreamBackupBucket"
+    })
+
+    new CfnOutput(this, "AccountResourcesSplunkDeliveryStreamBackupBucketRoleMigrationExport", {
+      value: getExportValue("account-resources:SplunkDeliveryStreamBackupBucketRole", props.environment),
+      exportName: "account-resources:SplunkDeliveryStreamBackupBucketRole"
+    })
+
+    new CfnOutput(this, "AccountResourcesSplunkDeliveryStreamBackupBucketRoleArnMigrationExport", {
+      value: getExportValue("account-resources:SplunkDeliveryStreamBackupBucketRoleArn", props.environment),
+      exportName: "account-resources:SplunkDeliveryStreamBackupBucketRoleArn"
+    })
+
+    new CfnOutput(this, "AccountResourcesSplunkDeliveryStreamBackupKMSKeyMigrationExport", {
+      value: getExportValue("account-resources:SplunkDeliveryStreamBackupKMSKey", props.environment),
+      exportName: "account-resources:SplunkDeliveryStreamBackupKMSKey"
+    })
+
+    new CfnOutput(this, "AccountResourcesSqsDecryptSecretsKMSPolicyMigrationExport", {
+      value: getExportValue("account-resources:SqsDecryptSecretsKMSPolicy", props.environment),
+      exportName: "account-resources:SqsDecryptSecretsKMSPolicy"
+    })
+    new CfnOutput(this, "AccountResourcesSqsKMSKeyMigrationExport", {
+      value: getExportValue("account-resources:SqsKMSKey", props.environment),
+      exportName: "account-resources:SqsKMSKey"
+    })
+    new CfnOutput(this, "AccountResourcesTrustStoreBucketMigrationExport", {
+      value: getExportValue("account-resources:TrustStoreBucket", props.environment),
+      exportName: "account-resources:TrustStoreBucket"
+    })
+    new CfnOutput(this, "AccountResourcesTrustStoreBucketKMSKeyMigrationExport", {
+      value: getExportValue("account-resources:TrustStoreBucketKMSKey", props.environment),
+      exportName: "account-resources:TrustStoreBucketKMSKey"
+    })
+    new CfnOutput(this, "AccountResourcesTrustStoreDeploymentBucketMigrationExport", {
+      value: getExportValue("account-resources:TrustStoreDeploymentBucket", props.environment),
+      exportName: "account-resources:TrustStoreDeploymentBucket"
+    })
+    new CfnOutput(this, "LambdaResourcesLambdaInsightsLogGroupPolicyMigrationExport", {
+      value: getExportValue("lambda-resources:LambdaInsightsLogGroupPolicy", props.environment),
+      exportName: "lambda-resources:LambdaInsightsLogGroupPolicy"
+    })
+    new CfnOutput(this, "LambdaResourcesSlackAlertsSnsTopicArnMigrationExport", {
+      value: getExportValue("lambda-resources:SlackAlertsSnsTopicArn", props.environment),
+      exportName: "lambda-resources:SlackAlertsSnsTopicArn"
+    })
+    new CfnOutput(this, "LambdaResourcesSplunkDeliveryStreamMigrationExport", {
+      value: getExportValue("lambda-resources:SplunkDeliveryStream", props.environment),
+      exportName: "lambda-resources:SplunkDeliveryStream"
+    })
+    new CfnOutput(this, "LambdaResourcesSplunkSubscriptionFilterRoleMigrationExport", {
+      value: getExportValue("lambda-resources:SplunkSubscriptionFilterRole", props.environment),
+      exportName: "lambda-resources:SplunkSubscriptionFilterRole"
     })
 
     nagSuppressions(this, "AccountResources_UK")

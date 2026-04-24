@@ -1266,7 +1266,8 @@ const exportValues: { [key: string]: ExportValue } = {
   }
 }
 
-export function getExportValue(exportName: string, environment: string): string {
+export function
+getExportValue(exportName: string, environment: string): string {
   const exportValue = exportValues[exportName]
   if (!exportValue) {
     throw new Error(`Export with name ${exportName} not found`)
