@@ -19,7 +19,7 @@ const lambdaHandler = async (event: Proxygen) => {
 
   checkAllowedEnvironment(event.environment)
 
-  const accessToken = await getAccessToken(event, getRealmURL())
+  const accessToken = await getAccessToken(event, getRealmURL(event))
 
   let path
   if (event.environment === "uat") {

@@ -2,8 +2,34 @@ import axios from "axios"
 import {createSignedJWT, getSecret} from "./signingHelpers"
 import {Logger} from "@aws-lambda-powertools/logger"
 
-export function getRealmURL() {
-  return "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
+export function getRealmURL(event: Proxygen): string {
+  const environment = event.environment
+  if (isSingleProxygenCredentials(event)) {
+    return "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
+  }
+  if (environment === "prod" || environment === "uat") {
+    return "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
+  }
+  return "https://identity.ptl.api.platform.nhs.uk/realms/api-producers"
+}
+
+export function getProxygenURL(event: Proxygen) {
+  const environment = event.environment
+  if (isSingleProxygenCredentials(event)) {
+    return "https://proxygen.prod.api.platform.nhs.uk"
+  }
+  if (environment === "prod" || environment === "uat") {
+    return "https://proxygen.prod.api.platform.nhs.uk"
+  }
+  return "https://proxygen.ptl.api.platform.nhs.uk"
+}
+
+export function isSingleProxygenCredentials(event: Proxygen): boolean {
+  const baseSecretName = event.proxygenSecretName
+  if (baseSecretName.startsWith("arn:aws:secretsmanager")) {
+    return true
+  }
+  return false
 }
 
 export async function getAccessToken(event: Proxygen, realm_url: string) {
@@ -14,7 +40,7 @@ export async function getAccessToken(event: Proxygen, realm_url: string) {
 
   // if proxygen secret name passed in is an arn, then get the value from secrets using the arn
   // if its not, then we get the value for private key and kid from secrets depending on the environment
-  if (baseSecretName.startsWith("arn:aws:secretsmanager")) {
+  if (isSingleProxygenCredentials(event)) {
     privateKey = await getSecret(baseSecretName)
   } else if (environment === "prod") {
     privateKey = await getSecret(`${baseSecretName}-PrivateKey-prod`)

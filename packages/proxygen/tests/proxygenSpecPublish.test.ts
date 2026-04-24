@@ -79,11 +79,11 @@ describe("Unit test for proxygenSpecPublish", function () {
   })
 
   it("throws error if environment is not uat or prod", async () => {
-    process.env.ALLOWED_ENVIRONMENTS = "dev,uat"
+    process.env.ALLOWED_ENVIRONMENTS = "prod,uat"
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
 
     // eslint-disable-next-line max-len
-    await expect(proxygenSpecPublishHandler(validProxygen, {} as Context)).rejects.toThrow("Environment is not uat or prod")
+    await expect(proxygenSpecPublishHandler(validProxygen, {} as Context)).rejects.toThrow("environment dev is invalid. Allowed environments: prod,uat")
   })
 
   it("throws error if proxygen responds with error", async () => {
