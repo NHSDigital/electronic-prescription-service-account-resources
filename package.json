@@ -27,7 +27,7 @@
     "@typescript-eslint/eslint-plugin": "^8.58.2",
     "@typescript-eslint/parser": "^8.57.2",
     "@vitest/coverage-v8": "^4.1.4",
-    "aws-cdk": "^2.1118.0",
+    "aws-cdk": "^2.1118.2",
     "eslint": "^10.2.0",
     "eslint-plugin-import-newlines": "^2.0.0",
     "globals": "^17.5.0",
