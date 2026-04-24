@@ -20,9 +20,9 @@ const lambdaHandler = async (event: Proxygen) => {
 
   checkAllowedEnvironment(event.environment)
 
-  const accessToken = await getAccessToken(event, getRealmURL(event.environment))
+  const accessToken = await getAccessToken(event, getRealmURL(event))
 
-  const path = `${getProxygenURL(event.environment)}/apis/${event.apiName}/environments/${event.environment}/instances`
+  const path = `${getProxygenURL(event)}/apis/${event.apiName}/environments/${event.environment}/instances`
   try {
     const response = await axios.get(path, {
       headers: {"content-type": "application/json", Authorization: `Bearer ${accessToken}`}
