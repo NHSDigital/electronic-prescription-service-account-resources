@@ -39,18 +39,17 @@ vi.mock("../src/signingHelpers", () => ({
   createSignedJWT: createSignedJWTMock
 }))
 
-const validProxygen: Proxygen = {
-  apiName: "testApi",
-  proxygenSecretName: "arn:aws:secretsmanager:testProxygenSecret",
-  kid: "testKid",
-  environment: "dev",
-  secretName: "testSecretName",
-  secretKey: "testSecretKey",
-  secretCert: "testSecretCert"
-}
-const realm_url = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
-
 describe("Unit test for proxygenMTLSSecretPut", function () {
+  const validProxygen: Proxygen = {
+    apiName: "testApi",
+    proxygenSecretName: "arn:aws:secretsmanager:testProxygenSecret",
+    kid: "testKid",
+    environment: "dev",
+    secretName: "testSecretName",
+    secretKey: "testSecretKey",
+    secretCert: "testSecretCert"
+  }
+  const realm_url = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
   let _SAVED_ALLOWED_ENVIRONMENTS: string | undefined
   const mockPrivateKey = "mockPrivateKey"
   const mockAccessToken = "mockAccessToken"
@@ -210,6 +209,81 @@ describe("Unit test for proxygenMTLSSecretPut", function () {
       proxygenSecretName: "arn:aws:secretsmanager:testProxygenSecret",
       kid: "testKid",
       environment: "dev",
+      secretName: "testSecretName",
+      secretKeyName: "testSecretKeyName",
+      secretCertName: "testSecretCertName"
+    }
+
+    const res = await proxygenMTLSSecretPutHandler(proxygenWithSecretNames, {} as Context)
+    expect(res).toMatchObject({foo: "bar"})
+  })
+})
+
+describe("Unit test for proxygenMTLSSecretPut - prod environment", function () {
+  const validProxygen: Proxygen = {
+    apiName: "testApi",
+    proxygenSecretName: "arn:aws:secretsmanager:testProxygenSecret",
+    kid: "testKid",
+    environment: "prod",
+    secretName: "testSecretName",
+    secretKey: "testSecretKey",
+    secretCert: "testSecretCert"
+  }
+  const realm_url = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
+  let _SAVED_ALLOWED_ENVIRONMENTS: string | undefined
+  const mockPrivateKey = "mockPrivateKey"
+  const mockAccessToken = "mockAccessToken"
+
+  beforeEach(() => {
+    vi.resetModules()
+    _SAVED_ALLOWED_ENVIRONMENTS = process.env.ALLOWED_ENVIRONMENTS
+
+    const smMock = mockClient(SecretsManagerClient)
+    smMock.on(GetSecretValueCommand).resolves({
+      ARN: "valid-arn",
+      CreatedDate: new Date(),
+      Name: "valid-certificate",
+      SecretString: mockPrivateKey,
+      VersionId: "valid-version-id",
+      VersionStages: ["valid-stage"]
+    })
+    vi.spyOn(jwt, "sign").mockImplementation(() => "mockSignedJWT")
+    if (!nock.isActive()) {
+      nock.activate()
+    }
+  })
+
+  afterEach(() => {
+    process.env.ALLOWED_ENVIRONMENTS = _SAVED_ALLOWED_ENVIRONMENTS
+    vi.clearAllMocks()
+    nock.cleanAll()
+    nock.restore()
+  })
+  it("should work with secretCert and secretKey", async () => {
+    nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
+    nock("https://proxygen.prod.api.platform.nhs.uk")
+      .put("/apis/testApi/environments/prod/secrets/mtls/testSecretName")
+      .reply(200, {foo: "bar"})
+
+    process.env.ALLOWED_ENVIRONMENTS = "prod"
+
+    const res = await proxygenMTLSSecretPutHandler(validProxygen, {} as Context)
+    expect(res).toMatchObject({foo: "bar"})
+  })
+
+  it("should work with secretCertName and secretKeyName", async () => {
+    nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
+    nock("https://proxygen.prod.api.platform.nhs.uk")
+      .put("/apis/testApi/environments/prod/secrets/mtls/testSecretName")
+      .reply(200, {foo: "bar"})
+
+    process.env.ALLOWED_ENVIRONMENTS = "prod"
+
+    const proxygenWithSecretNames: Proxygen = {
+      apiName: "testApi",
+      proxygenSecretName: "arn:aws:secretsmanager:testProxygenSecret",
+      kid: "testKid",
+      environment: "prod",
       secretName: "testSecretName",
       secretKeyName: "testSecretKeyName",
       secretCertName: "testSecretCertName"

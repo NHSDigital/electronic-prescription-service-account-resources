@@ -6,6 +6,7 @@ on:
       pinned_image:
         type: string
         required: true
+permissions: {}
 
 jobs:
   sam_package_code:
@@ -27,7 +28,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          persist-credentials: false
 
       - name: Setting up .npmrc
         env:
@@ -53,7 +54,7 @@ jobs:
           mkdir -p .aws-sam/build/cloudformation/env
           cp -r environmentSettings/ .aws-sam/build/
 
-      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         name: upload build artifact
         with:
           name: packaged_code

@@ -24,16 +24,16 @@ const mockedSigningHelpers = vi.hoisted(() => ({
 
 vi.mock("../src/signingHelpers", () => mockedSigningHelpers)
 
-const validProxygen: Proxygen = {
-  apiName: "testApi",
-  proxygenSecretName: "testSecret",
-  kid: "testKid",
-  environment: "dev",
-  instance: "testInstance"
-}
-const realm_url = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
-
 describe("Unit test for proxygenInstanceDelete", function () {
+  const validProxygen: Proxygen = {
+    apiName: "testApi",
+    proxygenSecretName: "testSecret",
+    kid: "testKid",
+    environment: "dev",
+    instance: "testInstance"
+  }
+  const realm_url = "https://identity.ptl.api.platform.nhs.uk/realms/api-producers"
+
   let _SAVED_ALLOWED_ENVIRONMENTS: string | undefined
   const mockPrivateKey = "mockPrivateKey"
   const mockAccessToken = "mockAccessToken"
@@ -80,7 +80,7 @@ describe("Unit test for proxygenInstanceDelete", function () {
 
   it("throws error if proxygen responds with error", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .delete("/apis/testApi/environments/dev/instances/testInstance")
       .reply(500, {foo_error: "bar_error"})
 
@@ -106,7 +106,7 @@ describe("Unit test for proxygenInstanceDelete", function () {
             "Accept-Encoding": "gzip, compress, deflate, br"
           }),
           method: "delete",
-          url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/instances/testInstance"
+          url: "https://proxygen.ptl.api.platform.nhs.uk/apis/testApi/environments/dev/instances/testInstance"
         },
         request: {
           headers: undefined,
@@ -129,7 +129,7 @@ describe("Unit test for proxygenInstanceDelete", function () {
 
   it("throws error if proxygen request fails", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .delete("/apis/testApi/environments/dev/instances/testInstance")
       .replyWithError("Something awful happened")
 
@@ -153,7 +153,7 @@ describe("Unit test for proxygenInstanceDelete", function () {
             "Accept-Encoding": "gzip, compress, deflate, br"
           }),
           method: "delete",
-          url: "https://proxygen.prod.api.platform.nhs.uk/apis/testApi/environments/dev/instances/testInstance"
+          url: "https://proxygen.ptl.api.platform.nhs.uk/apis/testApi/environments/dev/instances/testInstance"
         }
       })
     })
@@ -161,11 +161,64 @@ describe("Unit test for proxygenInstanceDelete", function () {
 
   it("should work if everything is OK", async () => {
     nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
-    nock("https://proxygen.prod.api.platform.nhs.uk")
+    nock("https://proxygen.ptl.api.platform.nhs.uk")
       .delete("/apis/testApi/environments/dev/instances/testInstance")
       .reply(200, {foo: "bar"})
 
     process.env.ALLOWED_ENVIRONMENTS = "dev"
+
+    const res = await proxygenInstanceDeleteHandler(validProxygen, {} as Context)
+    expect(res).toMatchObject({foo: "bar"})
+  })
+})
+
+describe("Unit test for proxygenInstanceDelete - prod environment", function () {
+  const validProxygen: Proxygen = {
+    apiName: "testApi",
+    proxygenSecretName: "testSecret",
+    kid: "testKid",
+    environment: "prod",
+    instance: "testInstance"
+  }
+  const realm_url = "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
+
+  let _SAVED_ALLOWED_ENVIRONMENTS: string | undefined
+  const mockPrivateKey = "mockPrivateKey"
+  const mockAccessToken = "mockAccessToken"
+
+  beforeEach(() => {
+    vi.resetModules()
+    _SAVED_ALLOWED_ENVIRONMENTS = process.env.ALLOWED_ENVIRONMENTS
+
+    const smMock = mockClient(SecretsManagerClient)
+    smMock.on(GetSecretValueCommand).resolves({
+      ARN: "valid-arn",
+      CreatedDate: new Date(),
+      Name: "valid-certificate",
+      SecretString: mockPrivateKey,
+      VersionId: "valid-version-id",
+      VersionStages: ["valid-stage"]
+    })
+    vi.spyOn(jwt, "sign").mockImplementation(() => "mockSignedJWT")
+    if (!nock.isActive()) {
+      nock.activate()
+    }
+  })
+
+  afterEach(() => {
+    process.env.ALLOWED_ENVIRONMENTS = _SAVED_ALLOWED_ENVIRONMENTS
+    vi.clearAllMocks()
+    nock.cleanAll()
+    nock.restore()
+  })
+
+  it("should work if everything is OK", async () => {
+    nock(realm_url).post("/protocol/openid-connect/token").reply(200, {access_token: mockAccessToken})
+    nock("https://proxygen.prod.api.platform.nhs.uk")
+      .delete("/apis/testApi/environments/prod/instances/testInstance")
+      .reply(200, {foo: "bar"})
+
+    process.env.ALLOWED_ENVIRONMENTS = "prod"
 
     const res = await proxygenInstanceDeleteHandler(validProxygen, {} as Context)
     expect(res).toMatchObject({foo: "bar"})

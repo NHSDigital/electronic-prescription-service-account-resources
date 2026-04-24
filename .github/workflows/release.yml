@@ -3,18 +3,25 @@ name: deploy to environments
 on:
   workflow_dispatch:
 
-env:
-  BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
+permissions: {}
 
 jobs:
   get_config_values:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@5ac2707dd9cd60ad127275179495b9c890d74711
+    uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@e798d5aee897de6f7dc387dd5623fcd9ba4c8929
+    permissions:
+      attestations: read
+      contents: read
+      packages: read
     with:
       verify_published_from_main_image: true
   
   quality_checks:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks-devcontainer.yml@5ac2707dd9cd60ad127275179495b9c890d74711
+    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks-devcontainer.yml@8399c1f015c1304e40771cbd8ccc24c7ed48fdbc
     needs: [get_config_values]
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
     secrets:
@@ -23,12 +30,20 @@ jobs:
   package_code:
     uses: ./.github/workflows/sam_package_code.yml
     needs: get_config_values
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
 
   package_cdk_code:
     uses: ./.github/workflows/cdk_package_code.yml
     needs: get_config_values
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
 
@@ -44,10 +59,11 @@ jobs:
   
   tag_release:
     needs: [quality_checks, package_code, package_cdk_code, get_commit_id, get_config_values]
-    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@5ac2707dd9cd60ad127275179495b9c890d74711
+    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@e798d5aee897de6f7dc387dd5623fcd9ba4c8929
     permissions:
       id-token: write
       contents: write
+      packages: write
     with:
       dry_run: false
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
@@ -61,6 +77,9 @@ jobs:
   deploy_dev_stacks:
     needs: [get_commit_id, package_code, package_cdk_code, tag_release, get_config_values]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: dev
@@ -90,6 +109,9 @@ jobs:
         get_config_values,
       ]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: ref
@@ -119,6 +141,9 @@ jobs:
         get_config_values,
       ]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: qa
@@ -147,6 +172,9 @@ jobs:
         deploy_qa_stacks,
       ]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: int
@@ -176,6 +204,10 @@ jobs:
         get_config_values,
       ]
     uses: ./.github/workflows/release_all_stacks.yml
+    permissions:
+      id-token: write
+      contents: write
+
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       target_environment: prod
