@@ -30,7 +30,7 @@
     "aws-cdk": "^2.1118.0",
     "eslint": "^10.2.0",
     "eslint-plugin-import-newlines": "^2.0.0",
-    "globals": "^17.4.0",
+    "globals": "^17.5.0",
     "vitest": "^4.0.17"
   },
   "dependencies": {
