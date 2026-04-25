@@ -34,7 +34,7 @@
     "vitest": "^4.0.17"
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^2.32.0",
+    "@aws-lambda-powertools/logger": "^2.33.0",
     "@nhsdigital/eps-cdk-constructs": "^1.7.0",
     "archiver": "^7.0.1",
     "esbuild": "^0.28.0",
