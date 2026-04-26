@@ -7,13 +7,10 @@ import {
   CfnOutput
 } from "aws-cdk-lib"
 import {ECRRepositories} from "../resources/ECRRepositories"
-import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
-import {ManagedPolicy, Role} from "aws-cdk-lib/aws-iam"
 import {nagSuppressions} from "../nagSuppressions"
 import {Functions} from "../resources/Functions"
 import {InspectorFilters} from "../resources/InspectorFilters"
 import {Alarms} from "../resources/Alarms"
-import {Secret} from "aws-cdk-lib/aws-secretsmanager"
 import {Topic} from "aws-cdk-lib/aws-sns"
 import {getExportValue} from "../resources/ExportMigrations"
 
@@ -22,42 +19,9 @@ export interface AccountResourcesStackProps_UK extends StackProps {
   readonly version: string
   readonly commitId: string
   readonly environment: string
-  readonly cloudFormationExecutionRole: Role
-  readonly cloudFormationPrepareChangesetRole: Role
-  readonly cloudFormationDeployRole: Role
-  readonly apiGwCloudWatchRole: Role
-  readonly splunkDeliveryStreamBackupBucketRole: Role
   readonly enableAlerts: boolean
   readonly lambdaConcurrencyThreshold: number
   readonly lambdaConcurrencyWarningThreshold: number
-  readonly lambdaDecryptSecretsKmsPolicy: ManagedPolicy
-  readonly lambdaInsightsLogGroupName: string
-  readonly clinicalTrackerCACertSecret: Secret
-  readonly clinicalTrackerClientCertSecret: Secret
-  readonly clinicalTrackerClientSandboxCertSecret: Secret
-  readonly pfpCACertSecret: Secret
-  readonly pfpClientCertSecret: Secret
-  readonly pfpClientSandboxCertSecret: Secret
-  readonly psuCACertSecret: Secret
-  readonly psuClientCertSecret: Secret
-  readonly psuClientSandboxCertSecret: Secret
-  readonly fhirFacadeCACertSecret: Secret
-  readonly fhirFacadeClientCertSecret: Secret
-  readonly fhirFacadeClientSandboxCertSecret: Secret
-  readonly spinePublicCertificate: Secret
-  readonly ptlPrescriptionSigningPublicKey: Secret
-  readonly splunkHECEndpoint: string
-  readonly snsFeedbackLoggingRole: Role
-  readonly fhirValidatorUkCoreLambdaArn?: string
-  readonly accessSlackSecretsManagedPolicy: ManagedPolicy
-  readonly proxygenPTLRole: Role
-  readonly proxygenProdRole: Role
-  readonly proxygenManagedPolicy: ManagedPolicy
-  readonly artifactsBucketArn?: string
-  readonly trustStoreBucketArn?: string
-  readonly trustStoreDeploymentBucketArn?: string
-  readonly cptUIStatefulResourcesStaticContentBucketArn?: string
-  readonly epsamKbDocsBucketArn?: string
 }
 
 export class AccountResourcesStack_UK extends Stack {
@@ -73,8 +37,6 @@ export class AccountResourcesStack_UK extends Stack {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const ecrRepositories = new ECRRepositories(this, "ECRRepositories")
-    new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
-
     new InspectorFilters(this, "InspectorFilters")
 
     const alarms = new Alarms(this, "Alarms", {

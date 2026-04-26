@@ -1263,6 +1263,18 @@ const exportValues: { [key: string]: ExportValue } = {
       "arn:aws:secretsmanager:eu-west-2:399793560585:secret:secrets-ptlPrescriptionSigningPublicKey-ehZky2",
     prod:
       "arn:aws:secretsmanager:eu-west-2:434629240718:secret:secrets-ptlPrescriptionSigningPublicKey-LsMLeu"
+  },
+  "ci-resources:GitHubIdentityProvider": {
+    dev:
+      "arn:aws:iam::591291862413:oidc-provider/token.actions.githubusercontent.com",
+    ref:
+      "arn:aws:iam::158471595810:oidc-provider/token.actions.githubusercontent.com",
+    qa:
+      "arn:aws:iam::394382261442:oidc-provider/token.actions.githubusercontent.com",
+    int:
+      "arn:aws:iam::399793560585:oidc-provider/token.actions.githubusercontent.com",
+    prod:
+      "arn:aws:iam::434629240718:oidc-provider/token.actions.githubusercontent.com"
   }
 }
 
