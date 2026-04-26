@@ -6,9 +6,9 @@
     "author": "NHS England",
     "license": "MIT",
     "dependencies": {
-        "@aws-sdk/client-cloudformation": "^3.1029.0",
-        "@aws-sdk/client-cloudwatch-logs": "^3.1029.0",
-        "@middy/core": "^7.2.1",
+        "@aws-sdk/client-cloudformation": "^3.1032.0",
+        "@aws-sdk/client-cloudwatch-logs": "^3.1032.0",
+        "@middy/core": "^7.2.3",
         "@middy/input-output-logger": "^7.1.0"
     },
     "scripts": {
