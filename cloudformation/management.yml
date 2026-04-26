@@ -8,8 +8,6 @@ Resources:
   # policy to allow readonly role access to decrypt using kms keys
   # this policy is added to eps-prod-readonly role so needs to exist
   EPSReadOnlyExtraPermissions:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: EPSReadOnlyExtraPermissions

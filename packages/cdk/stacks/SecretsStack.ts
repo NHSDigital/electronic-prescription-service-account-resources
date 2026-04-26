@@ -5,7 +5,6 @@ import {
   Tags,
   CfnOutput
 } from "aws-cdk-lib"
-import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
 import {nagSuppressions} from "../nagSuppressions"
 import {getExportValue} from "../resources/ExportMigrations"
 
@@ -22,7 +21,9 @@ export class SecretsStack extends Stack {
     super(scope, id, props)
 
     Tags.of(this).add("stackName", props.stackName)
-    const regressionTestSecrets = new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
+    // this will be imported into here
+    // const regressionTestSecrets =
+    // new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
 
     // policy exports
     new CfnOutput(this, "AccessSlackSecretsManagedPolicyArn", {
@@ -326,14 +327,18 @@ export class SecretsStack extends Stack {
       exportName: `${props.stackName}:Secrets:PrescriptionsForPatientsProxygenPtlPrivateKey:Arn`
     })
     new CfnOutput(this, "ptlPrescriptionSigningPublicKeyArn", {
-      value: regressionTestSecrets.secrets["PTL_PRESCRIPTION_SIGNING_PUBLIC_KEY"].secretArn,
+      value: getExportValue("secrets:ptlPrescriptionSigningPublicKey", props.environment),
       exportName: `${props.stackName}:Secrets:ptlPrescriptionSigningPublicKey:Arn`
     })
     new CfnOutput(this, "ptlPrescriptionSigningPrivateKeyArn", {
-      value: regressionTestSecrets.secrets["PTL_PRESCRIPTION_SIGNING_PRIVATE_KEY"].secretArn,
+      value: getExportValue("secrets:ptlPrescriptionSigningPrivateKey", props.environment),
       exportName: `${props.stackName}:Secrets:ptlPrescriptionSigningPrivateKey:Arn`
     })
 
+    new CfnOutput(this, "AllowCloudFormationSecretsAccessManagedPolicyArn", {
+      value: getExportValue("ci-resources:AllowCloudFormationSecretsAccessManagedPolicy", props.environment),
+      exportName: `${props.stackName}:Secrets:AllowCloudFormationSecretsAccessManagedPolicy:Arn`
+    })
     nagSuppressions(this, "Secrets")
   }
 }

@@ -1264,6 +1264,18 @@ const exportValues: { [key: string]: ExportValue } = {
     prod:
       "arn:aws:secretsmanager:eu-west-2:434629240718:secret:secrets-ptlPrescriptionSigningPublicKey-LsMLeu"
   },
+  "secrets:ptlPrescriptionSigningPrivateKey": {
+    dev:
+      "arn:aws:secretsmanager:eu-west-2:591291862413:secret:secrets-ptlPrescriptionSigningPrivateKey-snav8w",
+    ref:
+      "<CHANGE ME>",
+    qa:
+      "<CHANGE ME>",
+    int:
+      "<CHANGE ME>",
+    prod:
+      "<CHANGE ME>"
+  },
   "ci-resources:GitHubIdentityProvider": {
     dev:
       "arn:aws:iam::591291862413:oidc-provider/token.actions.githubusercontent.com",
@@ -1275,6 +1287,90 @@ const exportValues: { [key: string]: ExportValue } = {
       "arn:aws:iam::399793560585:oidc-provider/token.actions.githubusercontent.com",
     prod:
       "arn:aws:iam::434629240718:oidc-provider/token.actions.githubusercontent.com"
+  },
+  "ci-resources:GrantCloudFormationExecutionAccessIAMPolicy": {
+    dev:
+      "arn:aws:iam::591291862413:policy/ci-resources-GrantCloudFormationExecutionAccessIAMPolicy-gdiAGlPPXYVZ",
+    ref:
+      "arn:aws:iam::158471595810:policy/ci-resources-GrantCloudFormationExecutionAccessIAMPolicy-OqARMtcrKaMp",
+    qa:
+      "arn:aws:iam::394382261442:policy/ci-resources-GrantCloudFormationExecutionAccessIAMPolicy-APAXil4HZeNl",
+    int:
+      "arn:aws:iam::399793560585:policy/ci-resources-GrantCloudFormationExecutionAccessIAMPolicy-9uNdOePRUwH3",
+    prod:
+      "arn:aws:iam::434629240718:policy/ci-resources-GrantCloudFormationExecutionAccessIAMPolicy-kqStD2Toh1bA"
+  },
+  "ci-resources:GrantCloudFormationExecutionAccessPolicyA": {
+    dev:
+      "arn:aws:iam::591291862413:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyA-C69lLvBMqN5E",
+    ref:
+      "arn:aws:iam::158471595810:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyA-QV0IFg9cnMwp",
+    qa:
+      "arn:aws:iam::394382261442:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyA-MVANxQg0AGM1",
+    int:
+      "arn:aws:iam::399793560585:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyA-cALdM1yXpnST",
+    prod:
+      "arn:aws:iam::434629240718:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyA-A0ucTOFkrgaJ"
+  },
+  "ci-resources:GrantCloudFormationExecutionAccessPolicyB": {
+    dev:
+      "arn:aws:iam::591291862413:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyB-Yhazzqk3hi9H",
+    ref:
+      "arn:aws:iam::158471595810:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyB-DyPGT5dC7S3Q",
+    qa:
+      "arn:aws:iam::394382261442:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyB-4AwhNCWeGSX5",
+    int:
+      "arn:aws:iam::399793560585:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyB-E8pxfC2lwRA7",
+    prod:
+      "arn:aws:iam::434629240718:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyB-tQDFjvYhb05i"
+  },
+  "ci-resources:GrantCloudFormationExecutionAccessPolicyC": {
+    dev:
+      "arn:aws:iam::591291862413:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyC-B5O11HpNZ1dl",
+    ref:
+      "arn:aws:iam::158471595810:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyC-tOVtqoI80qFf",
+    qa:
+      "arn:aws:iam::394382261442:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyC-D1Mq3y2Ax2tH",
+    int:
+      "arn:aws:iam::399793560585:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyC-zgouHqCnlYB",
+    prod:
+      "arn:aws:iam::434629240718:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyC-VUfsijftBFL4"
+  },
+  "ci-resources:GrantCloudFormationExecutionAccessPolicyD": {
+    dev:
+      "arn:aws:iam::591291862413:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyD-ol9LS7VJsCG4",
+    ref:
+      "arn:aws:iam::158471595810:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyD-VhPO4Z9f63zS",
+    qa:
+      "arn:aws:iam::394382261442:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyD-Pc2ZLALZDvv0",
+    int:
+      "arn:aws:iam::399793560585:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyD-SL1jeqv0qMxR",
+    prod:
+      "arn:aws:iam::434629240718:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyD-8ZmTkGtQ0hyL"
+  },
+  "ci-resources:GrantCloudFormationExecutionAccessPolicyE": {
+    dev:
+      "arn:aws:iam::591291862413:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyE-l4fZxSSj5UYn",
+    ref:
+      "not_created_yet",
+    qa:
+      "not_created_yet",
+    int:
+      "not_created_yet",
+    prod:
+      "not_created_yet"
+  },
+  "ci-resources:AllowCloudFormationSecretsAccessManagedPolicy": {
+    dev:
+      "arn:aws:iam::591291862413:policy/ci-resources-AllowCloudFormationSecretsAccessManagedPolicy-9hMFLJpwl0zr",
+    ref:
+      "arn:aws:iam::158471595810:policy/ci-resources-AllowCloudFormationSecretsAccessManagedPolicy-gmuQxPPYKNXF",
+    qa:
+      "arn:aws:iam::394382261442:policy/ci-resources-AllowCloudFormationSecretsAccessManagedPolicy-lQ4GxVZKTvXZ",
+    int:
+      "arn:aws:iam::399793560585:policy/ci-resources-AllowCloudFormationSecretsAccessManagedPolicy-UOnk2KV2NgxM",
+    prod:
+      "arn:aws:iam::434629240718:policy/ci-resources-AllowCloudFormationSecretsAccessManagedPolicy-gSySdnRavQEO"
   }
 }
 

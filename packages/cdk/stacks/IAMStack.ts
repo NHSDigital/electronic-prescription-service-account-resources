@@ -63,6 +63,31 @@ export class IAMStack extends Stack {
       exportName: `${props.stackName}:IAM:GitHubIdentityProvider:Arn`
     })
 
+    new CfnOutput(this, "GrantCloudFormationExecutionAccessIAMPolicy", {
+      value: getExportValue("ci-resources:GrantCloudFormationExecutionAccessIAMPolicy", props.environment),
+      exportName: `${props.stackName}:IAM:GrantCloudFormationExecutionAccessIAMPolicy:Arn`
+    })
+
+    new CfnOutput(this, "GrantCloudFormationExecutionAccessPolicyA", {
+      value: getExportValue("ci-resources:GrantCloudFormationExecutionAccessPolicyA", props.environment),
+      exportName: `${props.stackName}:IAM:GrantCloudFormationExecutionAccessPolicyA:Arn`
+    })
+    new CfnOutput(this, "GrantCloudFormationExecutionAccessPolicyB", {
+      value: getExportValue("ci-resources:GrantCloudFormationExecutionAccessPolicyB", props.environment),
+      exportName: `${props.stackName}:IAM:GrantCloudFormationExecutionAccessPolicyB:Arn`
+    })
+    new CfnOutput(this, "GrantCloudFormationExecutionAccessPolicyC", {
+      value: getExportValue("ci-resources:GrantCloudFormationExecutionAccessPolicyC", props.environment),
+      exportName: `${props.stackName}:IAM:GrantCloudFormationExecutionAccessPolicyC:Arn`
+    })
+    new CfnOutput(this, "GrantCloudFormationExecutionAccessPolicyD", {
+      value: getExportValue("ci-resources:GrantCloudFormationExecutionAccessPolicyD", props.environment),
+      exportName: `${props.stackName}:IAM:GrantCloudFormationExecutionAccessPolicyD:Arn`
+    })
+    new CfnOutput(this, "GrantCloudFormationExecutionAccessPolicyE", {
+      value: getExportValue("ci-resources:GrantCloudFormationExecutionAccessPolicyE", props.environment),
+      exportName: `${props.stackName}:IAM:GrantCloudFormationExecutionAccessPolicyE:Arn`
+    })
     nagSuppressions(this, "IAM")
 
   }

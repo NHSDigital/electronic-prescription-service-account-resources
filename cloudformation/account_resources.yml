@@ -33,8 +33,6 @@ Parameters:
 Resources:
   #region API Gateway
   ApiGwCloudWatchRole:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -49,8 +47,6 @@ Resources:
 
   AllowApiGwLoggingPolicy:
     Type: AWS::IAM::ManagedPolicy
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       Roles:
         - !Ref ApiGwCloudWatchRole
@@ -79,8 +75,6 @@ Resources:
   #region Account
   Account:
     Type: AWS::ApiGateway::Account
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       CloudWatchRoleArn: !GetAtt ApiGwCloudWatchRole.Arn
     DependsOn: AllowApiGwLoggingPolicy
@@ -89,16 +83,12 @@ Resources:
   #region Cloudwatch
   CloudwatchResourcePolicy:
     Type: AWS::Logs::ResourcePolicy
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       PolicyName: AWSLogDeliveryWrite20150319
       PolicyDocument: '{ "Version": "2012-10-17", "Statement": [ { "Sid": "AWSLogDeliveryWrite", "Effect": "Allow", "Principal": { "Service": "delivery.logs.amazonaws.com" }, "Action": [ "logs:CreateLogStream", "logs:PutLogEvents" ], "Resource": [ "*" ] } ] }'
 
   CloudwatchLogsKmsKey:
     Type: AWS::KMS::Key
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       EnableKeyRotation: true
       KeyPolicy:
@@ -164,16 +154,12 @@ Resources:
 
   CloudwatchLogsKmsKeyAlias:
     Type: AWS::KMS::Alias
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       AliasName: alias/CloudwatchLogsKmsKeyAlias
       TargetKeyId: !Ref CloudwatchLogsKmsKey
 
   LambdaEncryptCloudwatchKMSPolicy:
     Type: AWS::IAM::ManagedPolicy
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       PolicyDocument:
         Version: 2012-10-17
@@ -189,8 +175,6 @@ Resources:
 
   CloudwatchEncryptionKMSPolicy:
     Type: AWS::IAM::ManagedPolicy
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       PolicyDocument:
         Version: 2012-10-17
@@ -208,8 +192,6 @@ Resources:
   #region IAM Roles & Policies
   SNSFeedbackLoggingRole:
     Type: AWS::IAM::Role
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -224,8 +206,6 @@ Resources:
 
   SNSFeedbackLoggingPolicy:
     Type: AWS::IAM::ManagedPolicy
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       PolicyDocument:
         Version: 2012-10-17
@@ -242,8 +222,6 @@ Resources:
   #region Artifacts Bucket
   ArtifactsBucketKMSKey:
     Type: AWS::KMS::Key
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       EnableKeyRotation: true
       KeyPolicy:
@@ -260,16 +238,12 @@ Resources:
 
   ArtifactsBucketKMSKeyAlias:
     Type: AWS::KMS::Alias
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       AliasName: alias/ArtifactsBucketKMSKeyAlias
       TargetKeyId: !Ref ArtifactsBucketKMSKey
 
   UseArtifactBucketKMSKeyManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       Roles:
         - !ImportValue ci-resources:CloudFormationExecutionRoleName
@@ -289,8 +263,6 @@ Resources:
 
   ArtifactsBucket:
     Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Metadata:
       guard:
         SuppressedRules:
@@ -324,8 +296,6 @@ Resources:
 
   ArtifactsBucketPolicy:
     Type: AWS::S3::BucketPolicy
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Metadata:
       guard:
         SuppressedRules:
@@ -370,8 +340,6 @@ Resources:
 
   #region Trust Store Bucket
   TrustStoreBucketKMSKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
@@ -388,16 +356,12 @@ Resources:
             Resource: "*"
 
   TrustStoreBucketKMSKeyKMSKeyAlias:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Alias
     Properties:
       AliasName: alias/TrustStoreBucketKMSKeyAlias
       TargetKeyId: !Ref TrustStoreBucketKMSKey
 
   UseTrustStoreBucketKMSKeyManagedPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -415,8 +379,6 @@ Resources:
             Resource: !GetAtt TrustStoreBucketKMSKey.Arn
 
   TrustStoreBucket:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::Bucket
     Metadata:
       guard:
@@ -441,8 +403,6 @@ Resources:
               SSEAlgorithm: "aws:kms"
 
   TrustStoreBucketPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
@@ -478,8 +438,6 @@ Resources:
               - !GetAtt TrustStoreBucket.Arn
 
   TrustStoreDeploymentBucket:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::Bucket
     Metadata:
       guard:
@@ -505,8 +463,6 @@ Resources:
               SSEAlgorithm: "aws:kms"
 
   TrustStoreDeploymentBucketPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
@@ -535,8 +491,6 @@ Resources:
 
   #region Audit Logging Bucket
   AuditLoggingBucket:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::Bucket
     Metadata:
       guard:
@@ -567,8 +521,6 @@ Resources:
             # no ExpirationInDays (never delete)
 
   AuditLoggingBucketPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
@@ -691,8 +643,6 @@ Resources:
   #endregion
 
   ALBLoggingBucket:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::Bucket
     Metadata:
       guard:
@@ -723,8 +673,6 @@ Resources:
             ExpirationInDays: !Ref LogRetentionDays
 
   ALBLoggingBucketPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
@@ -756,8 +704,6 @@ Resources:
 
   #region athena results Bucket
   AthenaResultsBucketKMSKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
@@ -774,16 +720,12 @@ Resources:
             Resource: "*"
 
   AthenaResultsBucketKMSKeyKMSKeyAlias:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Alias
     Properties:
       AliasName: alias/AthenaResultsBucketKMSKeyAlias
       TargetKeyId: !Ref AthenaResultsBucketKMSKey
 
   AthenaResultsBucket:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::Bucket
     Metadata:
       guard:
@@ -815,8 +757,6 @@ Resources:
             ExpirationInDays: 90
 
   AthenaResultsBucketPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
@@ -840,8 +780,6 @@ Resources:
 
   #region Splunk Delivery Stream Backup Bucket
   SplunkDeliveryStreamBackupKMSKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
@@ -858,16 +796,12 @@ Resources:
             Resource: "*"
 
   SplunkDeliveryStreamBackupKMSKeyAlias:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Alias
     Properties:
       AliasName: alias/SplunkDeliveryStreamBackupKMSKeyAlias
       TargetKeyId: !Ref SplunkDeliveryStreamBackupKMSKey
 
   SplunkDeliveryStreamBackupBucketRoleKMSMangedPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -885,8 +819,6 @@ Resources:
               - !GetAtt SplunkDeliveryStreamBackupKMSKey.Arn
 
   SplunkDeliveryStreamBackupBucketRole:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -898,8 +830,6 @@ Resources:
             Action: sts:AssumeRole
 
   SplunkDeliveryStreamBackupBucket:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::Bucket
     Metadata:
       guard:
@@ -934,8 +864,6 @@ Resources:
             ExpirationInDays: 90
 
   SplunkDeliveryStreamBackupBucketPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::S3::BucketPolicy
     Metadata:
       guard:
@@ -975,8 +903,6 @@ Resources:
                   - "/*"
 
   SplunkDeliveryStreamBackupBucketIAMManagedPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1112,8 +1038,6 @@ Resources:
           }
 
   CDKUtilsBuildRepo:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::ECR::Repository
     # not going to bother with retention policies for this as we are going to delete it eventually
     # DeletionPolicy: Retain
@@ -1173,8 +1097,6 @@ Resources:
   #endregion
   #region Secrets KMS
   SecretsKMSKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
@@ -1191,16 +1113,12 @@ Resources:
             Resource: "*"
 
   SecretsKMSKeyKMSKeyAlias:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Alias
     Properties:
       AliasName: alias/SecretsKMSKeyAlias
       TargetKeyId: !Ref SecretsKMSKey
 
   UseSecretsKMSKeyManagedPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1218,8 +1136,6 @@ Resources:
             Resource: !GetAtt SecretsKMSKey.Arn
 
   LambdaDecryptSecretsKMSPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -1234,8 +1150,6 @@ Resources:
 
   #region SNS KMS
   SnsKMSKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
@@ -1272,16 +1186,12 @@ Resources:
             Resource: "*"
 
   SnsKMSKeyKMSKeyAlias:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Alias
     Properties:
       AliasName: alias/SnsKMSKeyAlias
       TargetKeyId: !Ref SnsKMSKey
 
   UseSnsKMSKeyManagedPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1299,8 +1209,6 @@ Resources:
             Resource: !GetAtt SnsKMSKey.Arn
 
   SnsDecryptSecretsKMSPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -1315,8 +1223,6 @@ Resources:
 
   #region SQS KMS
   SqsKMSKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
@@ -1344,16 +1250,12 @@ Resources:
             Resource: "*"
 
   SqsKMSKeyKMSKeyAlias:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::KMS::Alias
     Properties:
       AliasName: alias/SqsKMSKeyAlias
       TargetKeyId: !Ref SqsKMSKey
 
   UseSqsKMSKeyManagedPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
@@ -1371,8 +1273,6 @@ Resources:
             Resource: !GetAtt SqsKMSKey.Arn
 
   SqsDecryptSecretsKMSPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -1387,8 +1287,6 @@ Resources:
 
   #region PfP CA Secrets
   PfpCAKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1397,8 +1295,6 @@ Resources:
       SecretString: ChangeMe
 
   PfpCACertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1409,8 +1305,6 @@ Resources:
 
   #region PfP Client Secrets
   PfpClientKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1419,8 +1313,6 @@ Resources:
       SecretString: ChangeMe
 
   PfpClientCertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1429,8 +1321,6 @@ Resources:
       SecretString: ChangeMe
 
   PfpClientSandboxKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1439,8 +1329,6 @@ Resources:
       SecretString: ChangeMe
 
   PfpClientSandboxCertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1451,8 +1339,6 @@ Resources:
 
   #region Clinical Tracker CA Secrets
   ClinicalTrackerCAKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1461,8 +1347,6 @@ Resources:
       SecretString: ChangeMe
 
   ClinicalTrackerCACertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1473,8 +1357,6 @@ Resources:
 
   #region Clinical Tracker Client Secrets
   ClinicalTrackerClientKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1483,8 +1365,6 @@ Resources:
       SecretString: ChangeMe
 
   ClinicalTrackerClientCertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1493,8 +1373,6 @@ Resources:
       SecretString: ChangeMe
 
   ClinicalTrackerClientSandboxKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1503,8 +1381,6 @@ Resources:
       SecretString: ChangeMe
 
   ClinicalTrackerClientSandboxCertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1515,8 +1391,6 @@ Resources:
 
   #region PSU CA Secrets
   PsuCAKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1525,8 +1399,6 @@ Resources:
       SecretString: ChangeMe
 
   PsuCACertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1537,8 +1409,6 @@ Resources:
 
   #region PSU Client Secrets
   PsuClientKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1547,8 +1417,6 @@ Resources:
       SecretString: ChangeMe
 
   PsuClientCertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1557,8 +1425,6 @@ Resources:
       SecretString: ChangeMe
 
   PsuClientSandboxKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1567,8 +1433,6 @@ Resources:
       SecretString: ChangeMe
 
   PsuClientSandboxCertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1579,8 +1443,6 @@ Resources:
 
   #region EPS FHIR Facade CA Secrets
   FhirFacadeCAKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1589,8 +1451,6 @@ Resources:
       SecretString: ChangeMe
 
   FhirFacadeCACertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1600,8 +1460,6 @@ Resources:
 
   # EPS FHIR Facade Client Secrets
   FhirFacadeClientKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1610,8 +1468,6 @@ Resources:
       SecretString: ChangeMe
 
   FhirFacadeClientCertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1620,8 +1476,6 @@ Resources:
       SecretString: ChangeMe
 
   FhirFacadeClientSandboxKeySecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1630,8 +1484,6 @@ Resources:
       SecretString: ChangeMe
 
   FhirFacadeClientSandboxCertSecret:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1642,8 +1494,6 @@ Resources:
 
   #region Spine Secrets
   SpinePrivateKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1652,8 +1502,6 @@ Resources:
       SecretString: ChangeMe
 
   SpinePublicCertificate:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1662,8 +1510,6 @@ Resources:
       SecretString: ChangeMe
 
   SpineASID:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1672,8 +1518,6 @@ Resources:
       SecretString: ChangeMe
 
   SpinePartyKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1682,8 +1526,6 @@ Resources:
       SecretString: ChangeMe
 
   SpineCAChain:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1694,8 +1536,6 @@ Resources:
 
   #region Other Secrets
   ServiceSearchApiKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1704,8 +1544,6 @@ Resources:
       SecretString: ChangeMe
 
   JiraToken:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1715,8 +1553,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-jiraToken"
 
   ConfluenceToken:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1728,8 +1564,6 @@ Resources:
   # keys for proxygen
   # when adding new keys, you need to add a filter to cloudformation/env/prod.json to allow the repo to access the lambdas
   PSUProxygenPrivateKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1739,8 +1573,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-PSU-ProxygenPrivateKey"
 
   PSUProxygenPublicKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1750,8 +1582,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-PSU-ProxygenPublicKey"
 
   PSUProxygenKid:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1761,8 +1591,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-PSU-ProxygenKid"
 
   PSUProxygenProdPrivateKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1772,8 +1600,6 @@ Resources:
       Name: "PSUProxygen-PrivateKey-prod"
 
   PSUProxygenProdPublicKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1783,8 +1609,6 @@ Resources:
       Name: "PSUProxygen-PublicKey-prod"
 
   PSUProxygenProdKid:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1794,8 +1618,6 @@ Resources:
       Name: "PSUProxygen-kid-prod"
 
   PSUProxygenPTLPrivateKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1805,8 +1627,6 @@ Resources:
       Name: "PSUProxygen-PrivateKey-ptl"
 
   PSUProxygenPTLPublicKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1816,8 +1636,6 @@ Resources:
       Name: "PSUProxygen-PublicKey-ptl"
 
   PSUProxygenPTLKid:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1827,8 +1645,6 @@ Resources:
       Name: "PSUProxygen-kid-ptl"
 
   CPSUProxygenPrivateKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1838,8 +1654,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-CPSU-ProxygenPrivateKey"
 
   CPSUProxygenPublicKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1849,8 +1663,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-CPSU-ProxygenPublicKey"
 
   CPSUProxygenKid:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1860,8 +1672,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-CPSU-ProxygenKid"
 
   CPSUProxygenProdPrivateKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1871,8 +1681,6 @@ Resources:
       Name: "CPSUProxygen-PrivateKey-prod"
 
   CPSUProxygenProdPublicKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1882,8 +1690,6 @@ Resources:
       Name: "CPSUProxygen-PublicKey-prod"
 
   CPSUProxygenProdKid:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1893,8 +1699,6 @@ Resources:
       Name: "CPSUProxygen-kid-prod"
 
   CPSUProxygenPTLPrivateKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1904,8 +1708,6 @@ Resources:
       Name: "CPSUProxygen-PrivateKey-ptl"
 
   CPSUProxygenPTLPublicKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1915,8 +1717,6 @@ Resources:
       Name: "CPSUProxygen-PublicKey-ptl"
 
   CPSUProxygenPTLKid:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1926,8 +1726,6 @@ Resources:
       Name: "CPSUProxygen-kid-ptl"
 
   ClinicalTrackerProxygenPrivateKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1937,8 +1735,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-ClinicalTracker-ProxygenPrivateKey"
 
   ClinicalTrackerProxygenPublicKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1948,8 +1744,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-ClinicalTracker-ProxygenPublicKey"
 
   ClinicalTrackerProxygenKid:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1959,8 +1753,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-ClinicalTracker-ProxygenKid"
 
   ClinicalTrackerProxygenProdPrivateKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1970,8 +1762,6 @@ Resources:
       Name: "ClinicalTrackerProxygen-PrivateKey-prod"
 
   ClinicalTrackerProxygenProdPublicKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1981,8 +1771,6 @@ Resources:
       Name: "ClinicalTrackerProxygen-PublicKey-prod"
 
   ClinicalTrackerProxygenProdKid:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -1992,8 +1780,6 @@ Resources:
       Name: "ClinicalTrackerProxygen-kid-prod"
 
   ClinicalTrackerProxygenPTLPrivateKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -2003,8 +1789,6 @@ Resources:
       Name: "ClinicalTrackerProxygen-PrivateKey-ptl"
 
   ClinicalTrackerProxygenPTLPublicKey:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -2014,8 +1798,6 @@ Resources:
       Name: "ClinicalTrackerProxygen-PublicKey-ptl"
 
   ClinicalTrackerProxygenPTLKid:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -2025,8 +1807,6 @@ Resources:
       Name: "ClinicalTrackerProxygen-kid-ptl"
 
   LambdaAccessSecretsPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -2044,8 +1824,6 @@ Resources:
               - !Ref ServiceSearchApiKey
 
   SplunkHECToken:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -2055,8 +1833,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-SplunkHECToken"
 
   SlackWebHookUrl:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     DependsOn: SecretsKMSKeyKMSKeyAlias
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -2066,8 +1842,6 @@ Resources:
       Name: !Sub "${AWS::StackName}-SlackWebhookUrl"
 
   AccessSlackSecretsManagedPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -2085,8 +1859,6 @@ Resources:
   # adapted from AWS managed policy CloudWatchAutomaticDashboardsAccess
   # and https://repost.aws/questions/QUnUkhd8loQ92Axnzd_EvLCw/how-to-grant-someone-else-cloudwatch-dashboard-view-access
   DashboardViewerPolicy:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: DashboardViewer
@@ -2155,8 +1927,6 @@ Resources:
   # policy to allow readonly role access to decrypt using kms keys
   # and to allow write access to athena bucket
   EPSReadOnlyExtraPermissions:
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: EPSReadOnlyExtraPermissions
@@ -2267,6 +2037,13 @@ Outputs:
       Name: !Join [":", [!Ref "AWS::StackName", "AuditLoggingBucket"]]
   #endregion
 
+  #region ALB Logging Bucket Outputs
+  ALBLoggingBucketArn:
+    Description: ARN of the ALB logging bucket
+    Value: !GetAtt ALBLoggingBucket.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ALBLoggingBucketArn"]]
+
   ALBLoggingBucketName:
     Description: Name of the ALB logging bucket
     Value: !Ref ALBLoggingBucket
@@ -2275,6 +2052,20 @@ Outputs:
 
   #endregion
 
+  #region athena results Bucket Outputs
+  AthenaResultsBucketArn:
+    Description: ARN of the Athena results bucket
+    Value: !GetAtt AthenaResultsBucket.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AthenaResultsBucketArn"]]
+
+  AthenaResultsBucketName:
+    Description: Name of the Athena results bucket
+    Value: !Ref AthenaResultsBucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "AthenaResultsBucketName"]]
+
+  #endregion
 
   #region Splunk Delivery Stream Backup Bucket Outputs
   SplunkDeliveryStreamBackupKMSKey:
@@ -2312,11 +2103,50 @@ Outputs:
         !Join [":", [!Ref "AWS::StackName", "SplunkDeliveryStreamBackupBucket"]]
   #endregion
 
+  #region ECR Repositories Outputs
+  FHIRFacadeRepoArn:
+    Description: "The Arn of the FHIR Facade ECR repo"
+    Value: !GetAtt FHIRFacadeRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoArn"]]
 
+  FHIRFacadeRepoUri:
+    Description: "The URI of the FHIR Facade ECR repo"
+    Value: !GetAtt FHIRFacadeRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "FHIRFacadeRepoUri"]]
 
+  ValidatorRepoArn:
+    Description: "The Arn of the Validator repo"
+    Value: !GetAtt ValidatorRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoArn"]]
+
+  ValidatorRepoUri:
+    Description: "The URI of the Validator ECR repo"
+    Value: !GetAtt ValidatorRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "ValidatorRepoUri"]]
+
+  CDKUtilsBuildRepoArn:
+    Description: "The Arn of the Validator repo"
+    Value: !GetAtt CDKUtilsBuildRepo.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoArn"]]
+
+  CDKUtilsBuildRepoUri:
+    Description: "The URI of the Validator ECR repo"
+    Value: !GetAtt CDKUtilsBuildRepo.RepositoryUri
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "CDKUtilsBuildRepoUri"]]
   #endregion
 
   #region Secrets KMS Outputs
+  SecretsKMSKey:
+    Description: SecretsKMSKey
+    Value: !GetAtt SecretsKMSKey.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SecretsKMSKey"]]
 
   SecretsKMSKeyAlias:
     Description: SecretsKMSKeyAlias
@@ -2339,6 +2169,11 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "SnsKMSKey"]]
 
+  SnsDecryptSecretsKMSPolicy:
+    Description: "SNS Decrypt Secrets KMS Policy ARN"
+    Value: !GetAtt SnsDecryptSecretsKMSPolicy.PolicyArn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SnsDecryptSecretsKMSPolicy"]]
   #endregion
 
   #region SQS KMS Outputs
@@ -2356,6 +2191,11 @@ Outputs:
   #endregion
 
   #region PfP CA Secrets Outputs
+  PfpCAKeySecret:
+    Description: ARN of the PfP CA key secret
+    Value: !GetAtt PfpCAKeySecret.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PfpCAKeySecret"]]
 
   PfpCACertSecret:
     Description: ARN of the PfP CA cert secret
@@ -2646,6 +2486,11 @@ Outputs:
       Name:
         !Join [":", [!Ref "AWS::StackName", "ClinicalTrackerProxygenKid"]]
 
+  SlackWebHookUrl:
+    Description: Slack webhook url
+    Value: !GetAtt SlackWebHookUrl.Id
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "SlackWebHookUrl"]]
 
   AccessSlackSecretsManagedPolicy:
     Description: "Access SNS Secrets Policy ARN"
