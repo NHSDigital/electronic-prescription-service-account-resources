@@ -146,7 +146,7 @@ jobs:
     with:
       CDK_RESOURCE_STACK_NAME: IAM
       DEPLOYED_STACK_NAME: iam-cdk
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
@@ -163,7 +163,7 @@ jobs:
     with:
       CDK_RESOURCE_STACK_NAME: Secrets
       DEPLOYED_STACK_NAME: secrets-cdk
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
@@ -180,7 +180,7 @@ jobs:
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_US
       DEPLOYED_STACK_NAME: account-resources-cdk-us
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
@@ -199,7 +199,7 @@ jobs:
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_UK
       DEPLOYED_STACK_NAME: account-resources-cdk-uk
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
@@ -219,11 +219,10 @@ jobs:
     with:
       CDK_RESOURCE_STACK_NAME: IAM
       DEPLOYED_STACK_NAME: iam-cdk
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: eu-west-2
       pinned_image: ${{ inputs.pinned_image }}
     secrets:
@@ -239,11 +238,10 @@ jobs:
     with:
       CDK_RESOURCE_STACK_NAME: Secrets
       DEPLOYED_STACK_NAME: secrets-cdk
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: us-east-1
       pinned_image: ${{ inputs.pinned_image }}
     secrets:
@@ -259,11 +257,10 @@ jobs:
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_US
       DEPLOYED_STACK_NAME: account-resources-cdk-us
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: us-east-1
       pinned_image: ${{ inputs.pinned_image }}
     secrets:
@@ -279,11 +276,10 @@ jobs:
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_UK
       DEPLOYED_STACK_NAME: account-resources-cdk-uk
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: eu-west-2
       pinned_image: ${{ inputs.pinned_image }}
     secrets:
