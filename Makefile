@@ -156,6 +156,20 @@ cdk-synth:
 	CDK_CONFIG_lambdaConcurrencyThreshold=900 \
 	CDK_CONFIG_lambdaConcurrencyWarningThreshold=700 \
 	CDK_CONFIG_enableAlerts=false \
+	CDK_CONFIG_lambdaInsightsLogGroupName=foo_bar \
+	CDK_CONFIG_splunkHECEndpoint=https://example.com:8088/services/collector/event \
+	CDK_CONFIG_hecToken=example-token \
+	CDK_CONFIG_deploySubjectClaimFilters=foo,bar,baz \
+	CDK_CONFIG_checkVersionSubjectClaimFilters=foo,bar,baz \
+	CDK_CONFIG_prepareChangesetClaimFilters=foo,bar,baz \
+	CDK_CONFIG_releaseNotesExecuteLambdaClaimFilters=foo,bar,baz \
+	CDK_CONFIG_artilleryLoadTestRoleClaimFilters=foo,bar,baz \
+	CDK_CONFIG_proxygenPTLClaimFilters=foo,bar,baz \
+	CDK_CONFIG_proxygenProdClaimFilters=foo,bar,baz \
+	CDK_CONFIG_CDKPullImageClaimFilters=foo,bar,baz \
+	CDK_CONFIG_CDKPushImageClaimFilters=foo,bar,baz \
+	CDK_CONFIG_assistMeRegressionTestClaimFilters=foo,bar,baz \
+	CDK_CONFIG_assistMeDocumentSyncClaimFilters=foo,bar,baz \
 	npm run cdk-synth --workspace packages/cdk/
 
 compile:
