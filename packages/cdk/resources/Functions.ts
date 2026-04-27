@@ -2,9 +2,10 @@ import {Construct} from "constructs"
 import {LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda"
 import {IStringParameter} from "aws-cdk-lib/aws-ssm"
 import {ManagedPolicy, PolicyStatement} from "aws-cdk-lib/aws-iam"
-import {Fn, Stack} from "aws-cdk-lib"
+import {Stack} from "aws-cdk-lib"
 import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
 import {resolve} from "path"
+import {getExportValue} from "./ExportMigrations"
 
 export interface FunctionsProps {
   readonly stackName: string
@@ -12,6 +13,7 @@ export interface FunctionsProps {
   readonly commitId: string
   readonly logRetentionInDays: number
   readonly logLevel: string
+  readonly environment: string
   readonly alertSuppressionsParameter: IStringParameter
 }
 
@@ -22,7 +24,8 @@ export class Functions extends Construct {
     super(scope, id)
 
     // Imports
-    const decryptSecretsKMSKeyPolicyImport = Fn.importValue("account-resources:LambdaDecryptSecretsKMSPolicy")
+    const decryptSecretsKMSKeyPolicyImport = getExportValue(
+      "account-resources:LambdaDecryptSecretsKMSPolicy", props.environment)
     const parameterAndSecretsLayerArn =
       "arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:20"
     const parameterAndSecretsLayer = LayerVersion.fromLayerVersionArn(

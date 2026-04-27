@@ -3,7 +3,6 @@ import {
   Stack,
   App,
   Tags,
-  Fn,
   CfnOutput
 } from "aws-cdk-lib"
 import {ECRRepositories} from "../resources/ECRRepositories"
@@ -33,7 +32,7 @@ export class AccountResourcesStack_UK extends Stack {
     // Imports
     // import the existing slack alert topic until we migrate rest of slack alerter code to cdk
     const slackAlertsSnsTopic = Topic.fromTopicArn(this, "SlackAlertTopic",
-      Fn.importValue("lambda-resources:SlackAlertsSnsTopicArn"))
+      getExportValue("lambda-resources:SlackAlertsSnsTopicArn", props.environment))
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const ecrRepositories = new ECRRepositories(this, "ECRRepositories")
@@ -54,6 +53,7 @@ export class AccountResourcesStack_UK extends Stack {
       commitId: props.commitId,
       logRetentionInDays: 30,
       logLevel: "DEBUG",
+      environment: props.environment,
       alertSuppressionsParameter: alarms.parameters.alertSuppressions
     })
 
