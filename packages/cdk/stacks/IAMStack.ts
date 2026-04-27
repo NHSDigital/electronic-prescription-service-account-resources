@@ -2,7 +2,8 @@ import {
   StackProps,
   Stack,
   App,
-  CfnOutput
+  CfnOutput,
+  Tags
 } from "aws-cdk-lib"
 import {nagSuppressions} from "../nagSuppressions"
 import {getExportValue} from "../resources/ExportMigrations"
@@ -18,6 +19,8 @@ export class IAMStack extends Stack {
 
   public constructor(scope: App, id: string, props: IAMStackProps) {
     super(scope, id, props)
+
+    Tags.of(this).add("stackName", props.stackName)
 
     new CfnOutput(this, "AssistMeDocumentSyncRoleArn", {
       value: getExportValue("ci-resources:AssistMeDocumentSyncRole", props.environment),
