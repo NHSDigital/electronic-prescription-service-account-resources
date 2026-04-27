@@ -1352,11 +1352,11 @@ const exportValues: { [key: string]: ExportValue } = {
     dev:
       "arn:aws:iam::591291862413:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyE-l4fZxSSj5UYn",
     ref:
-      "not_created_yet",
+      "arn:aws:iam::158471595810:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyE-KN3pSV9fOeg3",
     qa:
-      "not_created_yet",
+      "arn:aws:iam::394382261442:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyE-YuQuQXxlRATl",
     int:
-      "not_created_yet",
+      "arn:aws:iam::399793560585:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyE-RO8T3d8HQPYk",
     prod:
       "not_created_yet"
   },
@@ -1371,6 +1371,18 @@ const exportValues: { [key: string]: ExportValue } = {
       "arn:aws:iam::399793560585:policy/ci-resources-AllowCloudFormationSecretsAccessManagedPolicy-UOnk2KV2NgxM",
     prod:
       "arn:aws:iam::434629240718:policy/ci-resources-AllowCloudFormationSecretsAccessManagedPolicy-gSySdnRavQEO"
+  },
+  "account-resources:ArtifactsBucket": {
+    dev:
+      "arn:aws:s3:::ci-resources-artifactsbucket-8tfokumg8i3z",
+    ref:
+      "arn:aws:s3:::ci-resources-artifactsbucket-197tpxmwhvin8",
+    qa:
+      "arn:aws:s3:::ci-resources-artifactsbucket-1qldqrx1rpxbs",
+    int:
+      "arn:aws:s3:::ci-resources-artifactsbucket-4687sfjwdxcw",
+    prod:
+      "arn:aws:s3:::ci-resources-artifactsbucket-1q5cgjvlusl0g"
   }
 }
 
