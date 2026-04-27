@@ -1,6 +1,5 @@
 import {readFile} from "node:fs/promises"
 
-import {CloudFormationClient, DescribeStacksCommand} from "@aws-sdk/client-cloudformation"
 import {AllowedDestructiveChange, checkDestructiveChangeSet} from "@nhsdigital/eps-cdk-constructs"
 
 const requireEnv = (name: string): string => {
@@ -44,45 +43,11 @@ const loadAllowedChanges = async (filename: string): Promise<Array<AllowedDestru
   }
 }
 
-const checkStackExists = async (stackName: string, region: string): Promise<boolean> => {
-  const client = new CloudFormationClient({region})
-
-  try {
-    await client.send(
-      new DescribeStacksCommand({
-        StackName: stackName
-      })
-    )
-  } catch (error) {
-    if (
-      error instanceof Error
-      && "name" in error
-      && error.name === "ValidationError"
-      && error.message.includes("does not exist")
-    ) {
-
-      console.log(`CloudFormation stack ${stackName} does not exist in region ${region}`)
-      return false
-    }
-
-    throw error
-  } finally {
-    client.destroy()
-  }
-  return true
-}
-
 const main = async (): Promise<void> => {
   const changeSetName = requireEnv("CDK_CHANGE_SET_NAME")
   const stackName = requireEnv("STACK_NAME")
   const region = requireEnv("AWS_REGION")
   const allowedChangesFilename = requireEnv("ALLOWED_CHANGES_FILENAME")
-
-  const stackExists = await checkStackExists(stackName, region)
-  if (!stackExists) {
-    console.log("Stack does not exist, skipping destructive change check.")
-    return
-  }
 
   const allowedChanges = await loadAllowedChanges(allowedChangesFilename)
 
