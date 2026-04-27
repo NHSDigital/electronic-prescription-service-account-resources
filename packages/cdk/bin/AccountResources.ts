@@ -1,9 +1,4 @@
-import {
-  createApp,
-  getBooleanConfigFromEnvVar,
-  getNumberConfigFromEnvVar,
-  getConfigFromEnvVar
-} from "@nhsdigital/eps-cdk-constructs"
+import {createApp, getBooleanConfigFromEnvVar, getNumberConfigFromEnvVar} from "@nhsdigital/eps-cdk-constructs"
 import {AccountResourcesStack_UK} from "../stacks/AccountResourcesStack_UK"
 import {AccountResourcesStack_US} from "../stacks/AccountResourcesStack_US"
 import {IAMStack} from "../stacks/IAMStack"
@@ -17,21 +12,18 @@ async function main() {
     driftDetectionGroup: "account-resources"
   })
 
-  const accountResourcesUKStackName = getConfigFromEnvVar("accountResourcesUKStackName")
-  const accountResourcesUSStackName = getConfigFromEnvVar("accountResourcesUSStackName")
-
   new IAMStack(app, "IAM", {
     ...props,
-    stackName: "iam-stack"
+    stackName: "iam-cdk"
   })
   new SecretsStack(app, "Secrets", {
     ...props,
-    stackName: "secrets-stack"
+    stackName: "secrets-cdk"
   })
 
   new AccountResourcesStack_UK(app, "AccountResources_UK", {
     ...props,
-    stackName: accountResourcesUKStackName,
+    stackName: "account-resources-cdk-uk",
     enableAlerts: getBooleanConfigFromEnvVar("enableAlerts"),
     lambdaConcurrencyThreshold:  getNumberConfigFromEnvVar("lambdaConcurrencyThreshold"),
     lambdaConcurrencyWarningThreshold: getNumberConfigFromEnvVar("lambdaConcurrencyWarningThreshold")
@@ -42,7 +34,7 @@ async function main() {
     env: {
 	    region: "us-east-1"
     },
-    stackName: accountResourcesUSStackName
+    stackName: "account-resources-cdk-us"
   })
 }
 
