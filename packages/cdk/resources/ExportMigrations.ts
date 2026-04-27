@@ -1268,13 +1268,13 @@ const exportValues: { [key: string]: ExportValue } = {
     dev:
       "arn:aws:secretsmanager:eu-west-2:591291862413:secret:secrets-ptlPrescriptionSigningPrivateKey-snav8w",
     ref:
-      "<CHANGE ME>",
+      "arn:aws:secretsmanager:eu-west-2:158471595810:secret:secrets-ptlPrescriptionSigningPrivateKey-KubuME",
     qa:
-      "<CHANGE ME>",
+      "arn:aws:secretsmanager:eu-west-2:394382261442:secret:secrets-ptlPrescriptionSigningPrivateKey-KFEyCL",
     int:
-      "<CHANGE ME>",
+      "arn:aws:secretsmanager:eu-west-2:399793560585:secret:secrets-ptlPrescriptionSigningPrivateKey-qOu0Li",
     prod:
-      "<CHANGE ME>"
+      "arn:aws:secretsmanager:eu-west-2:434629240718:secret:secrets-ptlPrescriptionSigningPrivateKey-F7yevj"
   },
   "ci-resources:GitHubIdentityProvider": {
     dev:
