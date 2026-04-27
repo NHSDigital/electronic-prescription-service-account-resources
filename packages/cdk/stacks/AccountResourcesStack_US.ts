@@ -10,6 +10,7 @@ export interface AccountResourcesStackProps_US extends StackProps {
   readonly stackName: string
   readonly version: string
   readonly commitId: string
+  readonly environment: string
 }
 
 export class AccountResourcesStack_US extends Stack {

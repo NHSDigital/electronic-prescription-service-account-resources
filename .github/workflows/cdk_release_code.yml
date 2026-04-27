@@ -21,9 +21,6 @@ on:
       CDK_APP_NAME:
         required: true
         type: string
-      DEPLOYMENT_ENVIRONMENT:
-        required: false
-        type: string
       AWS_REGION:
         required: false
         type: string
@@ -46,7 +43,7 @@ jobs:
       run:
         shell: bash
     name: "Deploy cdk app ${{ inputs.CDK_APP_NAME }} stack ${{ inputs.DEPLOYED_STACK_NAME }}"
-    environment: ${{ fromJSON(inputs.DEPLOYMENT_ENVIRONMENT != '' && format('"{0}"', inputs.DEPLOYMENT_ENVIRONMENT) || 'null') }}
+    environment: ${{ inputs.TARGET_ENVIRONMENT }}
     permissions:
       id-token: write
       contents: write

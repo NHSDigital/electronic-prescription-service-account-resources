@@ -138,15 +138,32 @@ jobs:
       cf_create_changeset_role: ${{ secrets.cf_create_changeset_role }}
       cf_deploy_role: ${{ secrets.cf_deploy_role }}
 
-  cdk_diff_monitoring:
+  cdk_diff_iam:
     uses: ./.github/workflows/cdk_diff_code.yml
     permissions:
       id-token: write
       contents: write
     with:
-      CDK_RESOURCE_STACK_NAME: Monitoring
-      DEPLOYED_STACK_NAME: monitoring
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      CDK_RESOURCE_STACK_NAME: IAM
+      DEPLOYED_STACK_NAME: iam-cdk
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
+      VERSION: ${{ inputs.version }}
+      COMMIT_ID: ${{ inputs.commit_id }}
+      CDK_APP_NAME: AccountResources
+      IS_PULL_REQUEST: ${{ inputs.is_pull_request }}
+      pinned_image: ${{ inputs.pinned_image }}
+    secrets:
+      CLOUD_FORMATION_DIFF_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
+
+  cdk_diff_secrets:
+    uses: ./.github/workflows/cdk_diff_code.yml
+    permissions:
+      id-token: write
+      contents: write
+    with:
+      CDK_RESOURCE_STACK_NAME: Secrets
+      DEPLOYED_STACK_NAME: secrets-cdk
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
@@ -163,7 +180,7 @@ jobs:
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_US
       DEPLOYED_STACK_NAME: account-resources-cdk-us
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
@@ -182,7 +199,7 @@ jobs:
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_UK
       DEPLOYED_STACK_NAME: account-resources-cdk-uk
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
@@ -192,21 +209,39 @@ jobs:
     secrets:
       CLOUD_FORMATION_DIFF_ROLE: ${{ secrets.cf_create_changeset_role }} # use create changeset role as we are just doing a diff
 
-  cdk_deploy_monitoring:
+  cdk_deploy_iam:
     uses: ./.github/workflows/cdk_release_code.yml
     if: ${{ inputs.execute_change_set == true }}
-    needs: cdk_diff_monitoring
+    needs: [cdk_diff_iam, cdk_diff_secrets, cdk_diff_account_resources_US, cdk_diff_account_resources_UK]
     permissions:
       id-token: write
       contents: write
     with:
-      CDK_RESOURCE_STACK_NAME: Monitoring
-      DEPLOYED_STACK_NAME: monitoring
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      CDK_RESOURCE_STACK_NAME: IAM
+      DEPLOYED_STACK_NAME: iam-cdk
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
+      AWS_REGION: eu-west-2
+      pinned_image: ${{ inputs.pinned_image }}
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
+
+  cdk_deploy_secrets:
+    uses: ./.github/workflows/cdk_release_code.yml
+    if: ${{ inputs.execute_change_set == true }}
+    needs: cdk_deploy_iam
+    permissions:
+      id-token: write
+      contents: write
+    with:
+      CDK_RESOURCE_STACK_NAME: Secrets
+      DEPLOYED_STACK_NAME: secrets-cdk
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
+      VERSION: ${{ inputs.version }}
+      COMMIT_ID: ${{ inputs.commit_id }}
+      CDK_APP_NAME: AccountResources
       AWS_REGION: eu-west-2
       pinned_image: ${{ inputs.pinned_image }}
     secrets:
@@ -215,18 +250,17 @@ jobs:
   cdk_deploy_account_resources_US:
     uses: ./.github/workflows/cdk_release_code.yml
     if: ${{ inputs.execute_change_set == true }}
-    needs: cdk_diff_account_resources_US
+    needs: cdk_deploy_secrets
     permissions:
       id-token: write
       contents: write
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_US
       DEPLOYED_STACK_NAME: account-resources-cdk-us
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: us-east-1
       pinned_image: ${{ inputs.pinned_image }}
     secrets:
@@ -235,18 +269,17 @@ jobs:
   cdk_deploy_account_resources_UK:
     uses: ./.github/workflows/cdk_release_code.yml
     if: ${{ inputs.execute_change_set == true }}
-    needs: cdk_diff_account_resources_UK
+    needs: cdk_deploy_secrets
     permissions:
       id-token: write
       contents: write
     with:
       CDK_RESOURCE_STACK_NAME: AccountResources_UK
       DEPLOYED_STACK_NAME: account-resources-cdk-uk
-      TARGET_ENVIRONMENT: ${{inputs.target_environment}}-account
+      TARGET_ENVIRONMENT: ${{inputs.target_environment}}
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      DEPLOYMENT_ENVIRONMENT: ${{ inputs.target_environment }}-account
       AWS_REGION: eu-west-2
       pinned_image: ${{ inputs.pinned_image }}
     secrets:

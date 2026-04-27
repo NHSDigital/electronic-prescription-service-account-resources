@@ -107,9 +107,7 @@
       "package-lock.json",
       "node_modules",
       ".vscode"
-    ],
-    "eslint.useFlatConfig": true,
-    "eslint.format.enable": true
+    ]
   },
   "extensions": {
     "recommendations": [

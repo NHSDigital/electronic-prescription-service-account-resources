@@ -6,7 +6,8 @@ import {
 } from "@nhsdigital/eps-cdk-constructs"
 import {AccountResourcesStack_UK} from "../stacks/AccountResourcesStack_UK"
 import {AccountResourcesStack_US} from "../stacks/AccountResourcesStack_US"
-import {MonitoringStack} from "../stacks/MonitoringStack"
+import {IAMStack} from "../stacks/IAMStack"
+import {SecretsStack} from "../stacks/SecretsStack"
 
 async function main() {
   const {app, props} = createApp({
@@ -18,25 +19,30 @@ async function main() {
 
   const accountResourcesUKStackName = getConfigFromEnvVar("accountResourcesUKStackName")
   const accountResourcesUSStackName = getConfigFromEnvVar("accountResourcesUSStackName")
-  const monitoringStackName = getConfigFromEnvVar("monitoringStackName")
+
+  new IAMStack(app, "IAM", {
+    ...props,
+    stackName: "iam-stack"
+  })
+  new SecretsStack(app, "Secrets", {
+    ...props,
+    stackName: "secrets-stack"
+  })
 
   new AccountResourcesStack_UK(app, "AccountResources_UK", {
     ...props,
-    stackName: accountResourcesUKStackName
+    stackName: accountResourcesUKStackName,
+    enableAlerts: getBooleanConfigFromEnvVar("enableAlerts"),
+    lambdaConcurrencyThreshold:  getNumberConfigFromEnvVar("lambdaConcurrencyThreshold"),
+    lambdaConcurrencyWarningThreshold: getNumberConfigFromEnvVar("lambdaConcurrencyWarningThreshold")
   })
+
   new AccountResourcesStack_US(app, "AccountResources_US", {
     ...props,
     env: {
 	    region: "us-east-1"
     },
     stackName: accountResourcesUSStackName
-  })
-  new MonitoringStack(app, "Monitoring", {
-    ...props,
-    stackName: monitoringStackName,
-    lambdaConcurrencyThreshold:  getNumberConfigFromEnvVar("lambdaConcurrencyThreshold"),
-    lambdaConcurrencyWarningThreshold: getNumberConfigFromEnvVar("lambdaConcurrencyWarningThreshold"),
-    enableAlerts: getBooleanConfigFromEnvVar("enableAlerts")
   })
 }
 

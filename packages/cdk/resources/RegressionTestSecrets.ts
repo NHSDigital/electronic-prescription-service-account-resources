@@ -8,11 +8,14 @@ import {
 import {Key} from "aws-cdk-lib/aws-kms"
 import {Construct} from "constructs"
 import {StaticSecret} from "../constructs/StaticSecret"
+import {Secret} from "aws-cdk-lib/aws-secretsmanager"
 
 export interface RegressionTestSecretsProps {
   readonly stackName: string
 }
 export class RegressionTestSecrets extends Construct {
+  public readonly secrets: { [key: string]: Secret } = {}
+  public readonly regressionTestSecretsKmsKey: Key
 
   public constructor(scope: Construct, id: string, props: RegressionTestSecretsProps){
     super(scope, id)
@@ -75,27 +78,31 @@ export class RegressionTestSecrets extends Construct {
         ]
       })
     })
+    this.regressionTestSecretsKmsKey = regressionTestSecretsKmsKey
     for (const environment of environments){
       for (const regressionTestSecret of regressionTestSecrets){
-        new StaticSecret(this, `${environment}-${regressionTestSecret}-StaticSecret`, {
+        const secret = new StaticSecret(this, `${environment}-${regressionTestSecret}-StaticSecret`, {
           secretName: `/regression-tests/${environment}/${regressionTestSecret}`,
           description: `Regression test secret for ${regressionTestSecret} in ${environment} environment`,
           encryptionKey: regressionTestSecretsKmsKey
         })
+        this.secrets[`${environment}_${regressionTestSecret}`] = secret.secret
       }
     }
 
     // secrets for PTL prescription signing keys
-    new StaticSecret(this, `ptl-Prescription-SigningPublicKey-StaticSecret`, {
+    const signingPublicKeySecret = new StaticSecret(this, `ptl-Prescription-SigningPublicKey-StaticSecret`, {
       secretName: `/regression-tests/ptl-Prescription-SigningPublicKey`,
       description: `Regression test secret for SigningPublicKey`,
       encryptionKey: regressionTestSecretsKmsKey
     })
-    new StaticSecret(this, `ptl-Prescription-SigningPrivateKey-StaticSecret`, {
+    this.secrets["PTL_PRESCRIPTION_SIGNING_PUBLIC_KEY"] = signingPublicKeySecret.secret
+    const signingPrivateKeySecret = new StaticSecret(this, `ptl-Prescription-SigningPrivateKey-StaticSecret`, {
       secretName: `/regression-tests/ptl-Prescription-SigningPrivateKey`,
       description: `Regression test secret for SigningPrivateKey`,
       encryptionKey: regressionTestSecretsKmsKey
     })
+    this.secrets["PTL_PRESCRIPTION_SIGNING_PRIVATE_KEY"] = signingPrivateKeySecret.secret
 
   }
 }
