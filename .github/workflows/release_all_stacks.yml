@@ -242,7 +242,7 @@ jobs:
       VERSION: ${{ inputs.version }}
       COMMIT_ID: ${{ inputs.commit_id }}
       CDK_APP_NAME: AccountResources
-      AWS_REGION: us-east-1
+      AWS_REGION: eu-west-2
       pinned_image: ${{ inputs.pinned_image }}
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.cf_deploy_role }}
