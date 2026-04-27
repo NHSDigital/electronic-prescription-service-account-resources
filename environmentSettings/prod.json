@@ -7,6 +7,7 @@
         "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-account",
         "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-ci",
         "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod-lambda",
+        "repo:NHSDigital/electronic-prescription-service-account-resources:environment:prod",
         "repo:NHSDigital/electronic-prescription-service-clinical-prescription-tracker:environment:prod",
         "repo:NHSDigital/eps-FHIR-validator-lambda:environment:prod",
         "repo:NHSDigital/eps-prescription-status-update-api:environment:prod",
