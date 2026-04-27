@@ -34,8 +34,7 @@ export class AccountResourcesStack_UK extends Stack {
     const slackAlertsSnsTopic = Topic.fromTopicArn(this, "SlackAlertTopic",
       getExportValue("lambda-resources:SlackAlertsSnsTopicArn", props.environment))
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const ecrRepositories = new ECRRepositories(this, "ECRRepositories")
+    new ECRRepositories(this, "ECRRepositories")
 
     // this will be migrated to secrets stack
     new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
