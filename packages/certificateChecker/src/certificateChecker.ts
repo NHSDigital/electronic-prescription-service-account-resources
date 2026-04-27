@@ -5,6 +5,7 @@ import {checkCertificateExpiry} from "./helpers"
 import {Secret} from "./helpers"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
+import {LogItemMessage} from "@aws-lambda-powertools/logger/types"
 
 const secretsClient = new SecretsManagerClient({})
 
@@ -61,12 +62,8 @@ export const handler = middy(lambdaHandler)
   .use(injectLambdaContext(logger, {clearState: true}))
   .use(
     inputOutputLogger({
-      logger: (request) => {
-        if (request.response) {
-          logger.debug(request)
-        } else {
-          logger.info(request)
-        }
+      logger: (request: unknown) => {
+        logger.info(request as LogItemMessage)
       }
     })
   )
