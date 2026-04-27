@@ -10,9 +10,9 @@ import {
   proxygenErrorHandler
 } from "./helpers"
 import middy from "@middy/core"
-import inputOutputLogger from "@middy/input-output-logger"
 import axios from "axios"
 import {getSecret} from "./signingHelpers"
+import {iOLogger} from "./middleware"
 
 const logger = new Logger({serviceName: "proxygenMTLSSecretPut"})
 
@@ -50,14 +50,4 @@ const lambdaHandler = async (event: Proxygen) => {
 
 export const handler = middy(lambdaHandler)
   .use(injectLambdaContext(logger, {clearState: true}))
-  .use(
-    inputOutputLogger({
-      logger: (request) => {
-        if (request.response) {
-          logger.debug(request)
-        } else {
-          logger.info(request)
-        }
-      }
-    })
-  )
+  .use(iOLogger(logger))

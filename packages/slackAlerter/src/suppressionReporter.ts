@@ -4,6 +4,7 @@ import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import {getSecrets} from "./secrets"
 import {postSlackMessage} from "./helpers"
+import {LogItemMessage} from "@aws-lambda-powertools/logger/types"
 
 const logger = new Logger({serviceName: "supressionReporter"})
 
@@ -35,12 +36,8 @@ export const handler = middy(lambdaHandler)
   .use(injectLambdaContext(logger, {clearState: true}))
   .use(
     inputOutputLogger({
-      logger: (request) => {
-        if (request.response) {
-          logger.debug(request)
-        } else {
-          logger.info(request)
-        }
+      logger: (request: unknown) => {
+        logger.info(request as LogItemMessage)
       }
     })
   )
