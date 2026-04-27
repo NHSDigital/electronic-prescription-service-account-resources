@@ -86,7 +86,7 @@ export class RegressionTestSecrets extends Construct {
           description: `Regression test secret for ${regressionTestSecret} in ${environment} environment`,
           encryptionKey: regressionTestSecretsKmsKey
         })
-        this.secrets[`${regressionTestSecret}`] = secret.secret
+        this.secrets[`${environment}_${regressionTestSecret}`] = secret.secret
       }
     }
 
