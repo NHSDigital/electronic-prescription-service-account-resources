@@ -89,7 +89,7 @@ export class Alarms extends Construct {
       const alarm = new MetricAlarm(this, `${a.name}Alarm`, {
         stackName: props.stackName,
         enableAlerts: props.enableAlerts,
-        namespace: "AWS/States",
+        namespace: "AWS/Lambda",
         alarmDefinition: a,
         slackAlertTopic: props.slackAlertsSnsTopic
       })
