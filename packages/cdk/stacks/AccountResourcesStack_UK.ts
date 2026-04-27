@@ -79,7 +79,7 @@ export class AccountResourcesStack_UK extends Stack {
       value: getExportValue("account-resources:LambdaEncryptCloudwatchKMSPolicy", props.environment),
       exportName: `${props.stackName}:IAM:LambdaEncryptCloudwatchKMSPolicy:Arn`
     })
-    new CfnOutput(this, "SNSAlertLoggingRoleArn", {
+    new CfnOutput(this, "SnsAlertLoggingRoleArn", {
       value: getExportValue("account-resources:SNSFeedbackLoggingRoleArn", props.environment),
       exportName: `${props.stackName}:IAM:SNSAlertLoggingRole:Arn`
     })
