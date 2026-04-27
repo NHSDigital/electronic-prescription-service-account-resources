@@ -29,6 +29,15 @@ Parameters:
         3288,
         3653,
       ]
+  AddDataExtractToAuditBucket:
+    Type: String
+    Description: Whether to add the data extract bucket as a source to the audit logging bucket policy
+    AllowedValues:
+      - "true"
+      - "false"
+
+Conditions:
+  AddDataExtractToAuditBucketCondition: !Equals [!Ref AddDataExtractToAuditBucket, "true"]
 
 Resources:
   #region API Gateway
@@ -624,21 +633,24 @@ Resources:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
                 aws:SourceArn: !ImportValue "epsam:kbDocsBucket:Arn"
-          - Effect: Allow
-            Principal:
-              Service: logging.s3.amazonaws.com
-            Action:
-              - s3:PutObject*
-            Resource:
-              - !Join [
-                  "",
-                  [!GetAtt AuditLoggingBucket.Arn, "/data-extract/*"],
-                ]
-            Condition:
-              StringEquals:
-                aws:SourceAccount: !Ref "AWS::AccountId"
-              ArnLike:
-                aws:SourceArn: !ImportValue "data-extract:DestinationBucket:Arn"
+          - !If
+            - AddDataExtractToAuditBucketCondition
+            - Effect: Allow
+              Principal:
+                Service: logging.s3.amazonaws.com
+              Action:
+                - s3:PutObject*
+              Resource:
+                - !Join [
+                    "",
+                    [!GetAtt AuditLoggingBucket.Arn, "/data-extract/*"],
+                  ]
+              Condition:
+                StringEquals:
+                  aws:SourceAccount: !Ref "AWS::AccountId"
+                ArnLike:
+                  aws:SourceArn: !ImportValue "data-extract:DestinationBucket:Arn"
+            - !Ref AWS::NoValue
 
   #endregion
 

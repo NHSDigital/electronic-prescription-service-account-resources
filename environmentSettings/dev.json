@@ -114,7 +114,8 @@
       ]
     },
     "account-resources": {
-      "LogRetentionDays": "90"
+      "LogRetentionDays": "90",
+      "AddDataExtractToAuditBucket": "true"
     },
     "lambda-resources": {
       "SplunkHECEndpoint": "https://firehose.inputs.splunk.aws.digital.nhs.uk/services/collector/event",
