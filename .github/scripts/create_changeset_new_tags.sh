@@ -10,7 +10,7 @@ CF_LONDON_EXPORTS=$(aws cloudformation list-exports --region eu-west-2 --output 
 
 ROLE=$(echo "$CF_LONDON_EXPORTS" | \
     jq \
-    --arg EXPORT_NAME "ci-resources:CloudFormationExecutionRole" \
+    --arg EXPORT_NAME "iam-cdk:IAM:CloudFormationExecutionRole:Arn" \
     -r '.Exports[] | select(.Name == $EXPORT_NAME) | .Value')
 if [ -z "${ROLE}" ]; then
     echo "could not retrieve ROLE from aws cloudformation list-exports"
@@ -27,6 +27,7 @@ if [ "${status}" != '"CREATE_COMPLETE"' ] && [ "${status}" != '"UPDATE_ROLLBACK_
 fi
 
 # upload file to s3
+# change this to account-resources-cdk-uk:Bucket:ArtifactsBucket:Arn once other change is merged
 artifact_bucket_arn=$(echo "$CF_LONDON_EXPORTS" | \
     jq \
     --arg EXPORT_NAME "account-resources:ArtifactsBucket" \

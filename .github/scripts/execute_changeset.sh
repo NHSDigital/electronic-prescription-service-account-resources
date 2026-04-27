@@ -4,6 +4,7 @@ AWS_MAX_ATTEMPTS=20
 export AWS_MAX_ATTEMPTS
 
 CF_LONDON_EXPORTS=$(aws cloudformation list-exports --region eu-west-2 --output json)
+# change this to account-resources-cdk-uk:Bucket:ArtifactsBucket:Arn once other change is merged
 artifact_bucket_arn=$(echo "$CF_LONDON_EXPORTS" | \
     jq \
     --arg EXPORT_NAME "account-resources:ArtifactsBucket" \

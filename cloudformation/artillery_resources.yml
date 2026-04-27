@@ -57,7 +57,7 @@ Resources:
         DestinationBucketName:
           !Select [
             5,
-            !Split [":", !ImportValue account-resources:AuditLoggingBucket],
+            !Split [":", !ImportValue account-resources-cdk-uk:Bucket:AuditLoggingBucket:Arn],
           ]
         LogFilePrefix: artilleryIO/
       VersioningConfiguration:
@@ -126,7 +126,7 @@ Resources:
         - ","
         - !Join
           - ","
-          - - !ImportValue account-resources:CloudwatchEncryptionKMSPolicyArn
+          - - !ImportValue account-resources-cdk-uk:IAM:CloudwatchEncryptionKMSPolicy:Arn
 
   ArtilleryWorkerPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -194,7 +194,7 @@ Resources:
     Properties:
       LogGroupName: artilleryio-log-group/artilleryio-cluster
       RetentionInDays: 30
-      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+      KmsKeyId: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
 
   ECSCluster:
     Type: "AWS::ECS::Cluster"
