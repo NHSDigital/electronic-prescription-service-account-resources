@@ -8,11 +8,14 @@ policy_a = data["Resources"]["GrantCloudFormationExecutionAccessPolicyA"]["Prope
 policy_b = data["Resources"]["GrantCloudFormationExecutionAccessPolicyB"]["Properties"]["PolicyDocument"]
 policy_c = data["Resources"]["GrantCloudFormationExecutionAccessPolicyC"]["Properties"]["PolicyDocument"]
 policy_d = data["Resources"]["GrantCloudFormationExecutionAccessPolicyD"]["Properties"]["PolicyDocument"]
+policy_e = data["Resources"]["GrantCloudFormationExecutionAccessPolicyE"]["Properties"]["PolicyDocument"]
 
 policy_a_length = len(str(policy_a))
 policy_b_length = len(str(policy_b))
 policy_c_length = len(str(policy_c))
 policy_d_length = len(str(policy_d))
+policy_e_length = len(str(policy_e))
+
 
 # estimate at max length due to replacement in cloudformation template
 # and how it is rendered
@@ -26,6 +29,7 @@ if (policy_a_length > max_length
     print(f"policy_b_length {policy_b_length}")
     print(f"policy_c_length {policy_c_length}")
     print(f"policy_d_length {policy_d_length}")
+    print(f"policy_e_length {policy_e_length}")
     raise Exception("Policy lengths are probably too big - please investigate")
 
 print("Policy lengths are probably OK")

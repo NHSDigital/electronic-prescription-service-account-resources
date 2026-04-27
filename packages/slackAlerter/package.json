@@ -12,8 +12,8 @@
         "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
     },
     "dependencies": {
-        "@aws-lambda-powertools/logger": "^2.32.0",
-        "@middy/core": "^7.2.1",
+        "@aws-lambda-powertools/logger": "^2.33.0",
+        "@middy/core": "^7.2.3",
         "uuid": "^14.0.0"
     },
     "devDependencies": {
