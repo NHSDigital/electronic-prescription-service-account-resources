@@ -91,6 +91,14 @@ export class IAMStack extends Stack {
       value: getExportValue("ci-resources:GrantCloudFormationExecutionAccessPolicyE", props.environment),
       exportName: `${props.stackName}:IAM:GrantCloudFormationExecutionAccessPolicyE:Arn`
     })
+    new CfnOutput(this, "ReleaseNotesExecuteLambdaRole", {
+      value: getExportValue("ci-resources:ReleaseNotesExecuteLambdaRole", props.environment),
+      exportName: `${props.stackName}:IAM:ReleaseNotesExecuteLambdaRole:Arn`
+    })
+    new CfnOutput(this, "AssistMeRegressionTestRole", {
+      value: getExportValue("ci-resources:AssistMeRegressionTestRole", props.environment),
+      exportName: `${props.stackName}:IAM:AssistMeRegressionTestRole:Arn`
+    })
     nagSuppressions(this, "IAM")
 
   }

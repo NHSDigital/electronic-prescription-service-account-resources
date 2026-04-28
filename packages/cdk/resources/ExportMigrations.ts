@@ -1383,6 +1383,54 @@ const exportValues: { [key: string]: ExportValue } = {
       "arn:aws:s3:::ci-resources-artifactsbucket-4687sfjwdxcw",
     prod:
       "arn:aws:s3:::ci-resources-artifactsbucket-1q5cgjvlusl0g"
+  },
+  "ci-resources:ReleaseNotesExecuteLambdaRole": {
+    dev:
+      "arn:aws:iam::591291862413:role/ci-resources-ReleaseNotesExecuteLambdaRole-SbLUYzNu2XVJ",
+    ref:
+      "arn:aws:iam::158471595810:role/ci-resources-ReleaseNotesExecuteLambdaRole-qtlanktYhP1T",
+    qa:
+      "arn:aws:iam::394382261442:role/ci-resources-ReleaseNotesExecuteLambdaRole-UTNxPM31ZcMK",
+    int:
+      "arn:aws:iam::399793560585:role/ci-resources-ReleaseNotesExecuteLambdaRole-q9iNsmzHnT32",
+    prod:
+      "arn:aws:iam::434629240718:role/ci-resources-ReleaseNotesExecuteLambdaRole-bZxfuO6isHp9"
+  },
+  "account-resources:JiraToken": {
+    dev:
+      "arn:aws:secretsmanager:eu-west-2:591291862413:secret:account-resources-jiraToken-Ld5lCx",
+    ref:
+      "arn:aws:secretsmanager:eu-west-2:158471595810:secret:account-resources-jiraToken-3Dc9gB",
+    qa:
+      "arn:aws:secretsmanager:eu-west-2:394382261442:secret:account-resources-jiraToken-MSJYcd",
+    int:
+      "arn:aws:secretsmanager:eu-west-2:399793560585:secret:account-resources-jiraToken-s59BJ5",
+    prod:
+      "arn:aws:secretsmanager:eu-west-2:434629240718:secret:account-resources-jiraToken-Gq8H84"
+  },
+  "account-resources:ConfluenceToken": {
+    dev:
+      "arn:aws:secretsmanager:eu-west-2:591291862413:secret:account-resources-confluenceToken-uP3yYi",
+    ref:
+      "arn:aws:secretsmanager:eu-west-2:158471595810:secret:account-resources-confluenceToken-dBmCF7",
+    qa:
+      "arn:aws:secretsmanager:eu-west-2:394382261442:secret:account-resources-confluenceToken-bsgQh0",
+    int:
+      "arn:aws:secretsmanager:eu-west-2:399793560585:secret:account-resources-confluenceToken-8qMZMJ",
+    prod:
+      "arn:aws:secretsmanager:eu-west-2:434629240718:secret:account-resources-confluenceToken-G2MMAo"
+  },
+  "ci-resources:AssistMeRegressionTestRole": {
+    dev:
+      "arn:aws:iam::591291862413:role/ci-resources-AssistMeRegressionTestRole-lCFZB0bfYDND",
+    ref:
+      "arn:aws:iam::158471595810:role/ci-resources-AssistMeRegressionTestRole-fPfXXkoLaNZv",
+    qa:
+      "arn:aws:iam::394382261442:role/ci-resources-AssistMeRegressionTestRole-d373Zet8a7ru",
+    int:
+      "arn:aws:iam::399793560585:role/ci-resources-AssistMeRegressionTestRole-Y99BkX1jodG9",
+    prod:
+      "arn:aws:iam::434629240718:role/ci-resources-AssistMeRegressionTestRole-xHhWqFgIIq0m"
   }
 }
 

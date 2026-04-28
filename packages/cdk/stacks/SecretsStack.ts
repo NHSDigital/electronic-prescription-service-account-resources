@@ -339,6 +339,14 @@ export class SecretsStack extends Stack {
       value: getExportValue("ci-resources:AllowCloudFormationSecretsAccessManagedPolicy", props.environment),
       exportName: `${props.stackName}:Secrets:AllowCloudFormationSecretsAccessManagedPolicy:Arn`
     })
+    new CfnOutput(this, "JiraToken", {
+      value: getExportValue("account-resources:JiraToken", props.environment),
+      exportName: `${props.stackName}:Secrets:JiraToken:Arn`
+    })
+    new CfnOutput(this, "ConfluenceToken", {
+      value: getExportValue("account-resources:ConfluenceToken", props.environment),
+      exportName: `${props.stackName}:Secrets:ConfluenceToken:Arn`
+    })
     nagSuppressions(this, "Secrets")
   }
 }
