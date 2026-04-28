@@ -1358,7 +1358,7 @@ const exportValues: { [key: string]: ExportValue } = {
     int:
       "arn:aws:iam::399793560585:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyE-RO8T3d8HQPYk",
     prod:
-      "not_created_yet"
+      "arn:aws:iam::434629240718:policy/ci-resources-GrantCloudFormationExecutionAccessPolicyE-d9a3gVnlM2yl"
   },
   "ci-resources:AllowCloudFormationSecretsAccessManagedPolicy": {
     dev:
