@@ -152,7 +152,7 @@ Resources:
             Effect: Allow
             Principal:
               AWS:
-                - !ImportValue ci-resources:CloudFormationExecutionRole
+                - !ImportValue iam-cdk:IAM:CloudFormationExecutionRole:Arn
                 - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-2
             Action:
               - kms:DescribeKey
@@ -255,9 +255,9 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue ci-resources:CloudFormationExecutionRoleName
-        - !ImportValue ci-resources:CloudFormationPrepareChangesetRoleName
-        - !ImportValue ci-resources:CloudFormationDeployRoleName
+        - !ImportValue iam-cdk:IAM:CloudFormationExecutionRole:Name
+        - !ImportValue iam-cdk:IAM:CloudFormationPrepareChangesetRole:Name
+        - !ImportValue iam-cdk:IAM:CloudFormationDeployRole:Name
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -326,9 +326,9 @@ Resources:
           - Effect: Allow
             Principal:
               AWS:
-                - !ImportValue ci-resources:CloudFormationDeployRole
-                - !ImportValue ci-resources:CloudFormationExecutionRole
-                - !ImportValue ci-resources:CloudFormationPrepareChangesetRole
+                - !ImportValue iam-cdk:IAM:CloudFormationDeployRole:Arn
+                - !ImportValue iam-cdk:IAM:CloudFormationExecutionRole:Arn
+                - !ImportValue iam-cdk:IAM:CloudFormationPrepareChangesetRole:Arn
             Action:
               - s3:GetObject*
               - s3:PutObject*
@@ -340,7 +340,7 @@ Resources:
           - Effect: Allow
             Principal:
               AWS:
-                - !ImportValue ci-resources:CloudFormationDeployRole
+                - !ImportValue ciam-cdk:IAM:CloudFormationDeployRole:Arn
             Action:
               - s3:DeleteObject*
             Resource:
@@ -374,7 +374,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+        - !ImportValue iam-cdk:IAM:CloudFormationExecutionRole:Name
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -434,8 +434,8 @@ Resources:
           - Effect: Allow
             Principal:
               AWS:
-                - !ImportValue ci-resources:CloudFormationDeployRole
-                - !ImportValue ci-resources:CloudFormationExecutionRole
+                - !ImportValue iam-cdk:IAM:CloudFormationDeployRole:Arn
+                - !ImportValue iam-cdk:IAM:CloudFormationExecutionRole:Arn
                 - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-2
             Action:
               - s3:GetObject*
@@ -1134,7 +1134,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+        - !ImportValue iam-cdk:IAM:CloudFormationExecutionRole:Name
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -1207,7 +1207,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+        - !ImportValue iam-cdk:IAM:CloudFormationExecutionRole:Name
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -1271,7 +1271,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue ci-resources:CloudFormationExecutionRoleName
+        - !ImportValue iam-cdk:IAM:CloudFormationExecutionRole:Name
       PolicyDocument:
         Version: 2012-10-17
         Statement:
