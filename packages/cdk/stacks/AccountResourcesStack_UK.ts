@@ -145,6 +145,11 @@ export class AccountResourcesStack_UK extends Stack {
       exportName: `${props.stackName}:IAM:SplunkSubscriptionFilterRole:Arn`
     })
 
+    new CfnOutput(this, "ArtifactsBucketArn", {
+      value: getExportValue("account-resources:ArtifactsBucket", props.environment),
+      exportName: `${props.stackName}:Bucket:ArtifactsBucket:Arn`
+    })
+
     nagSuppressions(this, "AccountResources_UK")
   }
 }
