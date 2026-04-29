@@ -338,6 +338,15 @@ export class SecretsStack extends Stack {
       exportName: `${props.stackName}:Secrets:AllowCloudFormationSecretsAccessManagedPolicy:Arn`
     })
 
+    new CfnOutput(this, "JiraTokenArn", {
+      value: getExportValue("account-resources:JiraToken", props.environment),
+      exportName: `${props.stackName}:Secrets:JiraToken:Arn`
+    })
+    new CfnOutput(this, "ConfluenceTokenArn", {
+      value: getExportValue("account-resources:ConfluenceToken", props.environment),
+      exportName: `${props.stackName}:Secrets:ConfluenceToken:Arn`
+    })
+
     // new, unmigrated secrets
     const secretsKmsKey = Alias.fromAliasName(
       this,
