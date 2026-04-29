@@ -8,7 +8,7 @@ import {
 import {Alias} from "aws-cdk-lib/aws-kms"
 import {nagSuppressions} from "../nagSuppressions"
 import {getExportValue} from "../resources/ExportMigrations"
-import {StaticSecret} from "../constructs/StaticSecret"
+import {ConfigSecrets} from "../resources/ConfigSecrets"
 
 export interface SecretsStackProps extends StackProps {
   readonly stackName: string
@@ -26,6 +26,18 @@ export class SecretsStack extends Stack {
     // this will be imported into here
     // const regressionTestSecrets =
     // new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
+
+    // new, unmigrated secrets
+    const secretsKmsKey = Alias.fromAliasName(
+      this,
+      "SecretsKMSKeyAliasLookup",
+      getExportValue("account-resources:SecretsKMSKeyAlias", props.environment)
+    )
+
+    const configSecrets = new ConfigSecrets(this, "ConfigSecrets", {
+      stackName: props.stackName,
+      configSecretsKmsKey: secretsKmsKey
+    })
 
     // policy exports
     new CfnOutput(this, "AccessSlackSecretsManagedPolicyArn", {
@@ -347,19 +359,8 @@ export class SecretsStack extends Stack {
       exportName: `${props.stackName}:Secrets:ConfluenceToken:Arn`
     })
 
-    // new, unmigrated secrets
-    const secretsKmsKey = Alias.fromAliasName(
-      this,
-      "SecretsKMSKeyAliasLookup",
-      getExportValue("account-resources:SecretsKMSKeyAlias", props.environment)
-    )
-    const serviceSearch3ApiKey = new StaticSecret(this, "ServiceSearch3ApiKey", {
-      secretName:  `${props.stackName}-ServiceSearch3ApiKey`,
-      description: "Service Search 3 API Key",
-      encryptionKey: secretsKmsKey
-    })
     new CfnOutput(this, "ServiceSearch3ApiKeyArn", {
-      value: serviceSearch3ApiKey.secret.secretArn,
+      value: configSecrets.serviceSearch3ApiKey.secretArn,
       exportName: `${props.stackName}:Secrets:ServiceSearch3ApiKey:Arn`
     })
 

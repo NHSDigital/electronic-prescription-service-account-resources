@@ -463,6 +463,7 @@ Resources:
               - !Ref SpineASID
               - !Ref SpinePartyKey
               - !Ref SpineCAChain
+              - !ImportValue secrets-cdk:Secrets:ServiceSearch3ApiKey:Arn
 
   SplunkHECToken:
     DependsOn: SecretsKMSKeyKMSKeyAlias
