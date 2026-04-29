@@ -652,18 +652,6 @@ const exportValues: { [key: string]: ExportValue } = {
     prod:
       "alias/SecretsKMSKeyAlias"
   },
-  "account-resources:ServiceSearchApiKey": {
-    dev:
-      "arn:aws:secretsmanager:eu-west-2:591291862413:secret:ServiceSearchApiKey-L1Yz7eJVrEIe-R7D494",
-    ref:
-      "arn:aws:secretsmanager:eu-west-2:158471595810:secret:ServiceSearchApiKey-0UxJjamgAQYs-t8Eowl",
-    qa:
-      "arn:aws:secretsmanager:eu-west-2:394382261442:secret:ServiceSearchApiKey-Zs7o3MVIGRJG-JJMjsE",
-    int:
-      "arn:aws:secretsmanager:eu-west-2:399793560585:secret:ServiceSearchApiKey-crcKn9ohTqwR-l1kEkw",
-    prod:
-      "arn:aws:secretsmanager:eu-west-2:434629240718:secret:ServiceSearchApiKey-TtpNiKjpPP5t-fhvN92"
-  },
   "account-resources:SNSFeedbackLoggingRoleArn": {
     dev:
       "arn:aws:iam::591291862413:role/account-resources-SNSFeedbackLoggingRole-JU3IlNDbdZML",

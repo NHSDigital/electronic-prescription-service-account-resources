@@ -5,8 +5,10 @@ import {
   Tags,
   CfnOutput
 } from "aws-cdk-lib"
+import {Alias} from "aws-cdk-lib/aws-kms"
 import {nagSuppressions} from "../nagSuppressions"
 import {getExportValue} from "../resources/ExportMigrations"
+import {StaticSecret} from "../constructs/StaticSecret"
 
 export interface SecretsStackProps extends StackProps {
   readonly stackName: string
@@ -222,10 +224,6 @@ export class SecretsStack extends Stack {
       value: getExportValue("account-resources:PSUProxygenPublicKey", props.environment),
       exportName: `${props.stackName}:Secrets:PSUProxygenPublicKey:Arn`
     })
-    new CfnOutput(this, "ServiceSearchApiKeyArn", {
-      value: getExportValue("account-resources:ServiceSearchApiKey", props.environment),
-      exportName: `${props.stackName}:Secrets:ServiceSearchApiKey:Arn`
-    })
     new CfnOutput(this, "SpineASIDArn", {
       value: getExportValue("account-resources:SpineASID", props.environment),
       exportName: `${props.stackName}:Secrets:SpineASID:Arn`
@@ -339,6 +337,23 @@ export class SecretsStack extends Stack {
       value: getExportValue("ci-resources:AllowCloudFormationSecretsAccessManagedPolicy", props.environment),
       exportName: `${props.stackName}:Secrets:AllowCloudFormationSecretsAccessManagedPolicy:Arn`
     })
+
+    // new, unmigrated secrets
+    const secretsKmsKey = Alias.fromAliasName(
+      this,
+      "SecretsKMSKeyAliasLookup",
+      getExportValue("account-resources:SecretsKMSKeyAlias", props.environment)
+    )
+    const serviceSearch3ApiKey = new StaticSecret(this, "ServiceSearch3ApiKey", {
+      secretName:  `${props.stackName}-ServiceSearch3ApiKey`,
+      description: "Service Search 3 API Key",
+      encryptionKey: secretsKmsKey
+    })
+    new CfnOutput(this, "ServiceSearch3ApiKeyArn", {
+      value: serviceSearch3ApiKey.secret.secretArn,
+      exportName: `${props.stackName}:Secrets:ServiceSearch3ApiKey:Arn`
+    })
+
     nagSuppressions(this, "Secrets")
   }
 }

@@ -158,7 +158,6 @@ Environment:
     SpinePublicCertificateARN: !ImportValue account-resources:SpinePublicCertificate
     # Service search
     TargetServiceSearchServer: !Ref TargetServiceSearchServer
-    ServiceSearchApiKeyARN: !ImportValue account-resources:ServiceSearchApiKey
 ```
 
 ### Logging Configuration
