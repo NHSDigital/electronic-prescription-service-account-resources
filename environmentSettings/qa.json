@@ -65,7 +65,8 @@
         "NONE"
       ],
       "AssistMeRegressionTestClaimFilters": [
-        "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*"
+        "repo:NHSDigital/electronic-prescription-service-api-regression-tests:*",
+        "repo:NHSDigital/eps-assist-me:*"
       ],
       "AssistMeDocumentSyncClaimFilters": [
         "NONE"
