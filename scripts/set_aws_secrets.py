@@ -111,12 +111,6 @@ def get_secret_arns_and_local_values(all_exports: list, environment: str) -> lis
             "local_value": read_local_secret(f"{environment}/eps_signing_cert_chain")
         },
         {
-            "variable_name": "service_search_api_key",
-            "export_name": "account-resources:ServiceSearchApiKey",
-            "required": True,
-            "local_value": os.environ.get(f"{environment}_service_search_api_key")
-        },
-        {
             "variable_name": "PSU_proxygen_private_key",
             "export_name": "account-resources:PSUProxygenPrivateKey",
             "required": True,
@@ -187,6 +181,13 @@ def get_secret_arns_and_local_values(all_exports: list, environment: str) -> lis
             "export_name": "secrets:ptlPrescriptionSigningPrivateKey",
             "required": True,
             "local_value": read_local_secret(f"{environment}/ptl_prescription_signing_private_key")
+        },
+        # new, cdk managed secrets
+        {
+            "variable_name": "service_search_api_key",
+            "export_name": "secrets-cdk:Secrets:ServiceSearch3ApiKey:Arn",
+            "required": True,
+            "local_value": os.environ.get(f"{environment}_service_search_api_key")
         },
     ]
 
