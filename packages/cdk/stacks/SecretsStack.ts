@@ -5,8 +5,10 @@ import {
   Tags,
   CfnOutput
 } from "aws-cdk-lib"
+import {Alias} from "aws-cdk-lib/aws-kms"
 import {nagSuppressions} from "../nagSuppressions"
 import {getExportValue} from "../resources/ExportMigrations"
+import {ConfigSecrets} from "../resources/ConfigSecrets"
 
 export interface SecretsStackProps extends StackProps {
   readonly stackName: string
@@ -24,6 +26,18 @@ export class SecretsStack extends Stack {
     // this will be imported into here
     // const regressionTestSecrets =
     // new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
+
+    // new, unmigrated secrets
+    const secretsKmsKey = Alias.fromAliasName(
+      this,
+      "SecretsKMSKeyAliasLookup",
+      getExportValue("account-resources:SecretsKMSKeyAlias", props.environment)
+    )
+
+    const configSecrets = new ConfigSecrets(this, "ConfigSecrets", {
+      stackName: props.stackName,
+      configSecretsKmsKey: secretsKmsKey
+    })
 
     // policy exports
     new CfnOutput(this, "AccessSlackSecretsManagedPolicyArn", {
@@ -222,10 +236,6 @@ export class SecretsStack extends Stack {
       value: getExportValue("account-resources:PSUProxygenPublicKey", props.environment),
       exportName: `${props.stackName}:Secrets:PSUProxygenPublicKey:Arn`
     })
-    new CfnOutput(this, "ServiceSearchApiKeyArn", {
-      value: getExportValue("account-resources:ServiceSearchApiKey", props.environment),
-      exportName: `${props.stackName}:Secrets:ServiceSearchApiKey:Arn`
-    })
     new CfnOutput(this, "SpineASIDArn", {
       value: getExportValue("account-resources:SpineASID", props.environment),
       exportName: `${props.stackName}:Secrets:SpineASID:Arn`
@@ -339,6 +349,7 @@ export class SecretsStack extends Stack {
       value: getExportValue("ci-resources:AllowCloudFormationSecretsAccessManagedPolicy", props.environment),
       exportName: `${props.stackName}:Secrets:AllowCloudFormationSecretsAccessManagedPolicy:Arn`
     })
+
     new CfnOutput(this, "JiraTokenArn", {
       value: getExportValue("account-resources:JiraToken", props.environment),
       exportName: `${props.stackName}:Secrets:JiraToken:Arn`
@@ -347,6 +358,12 @@ export class SecretsStack extends Stack {
       value: getExportValue("account-resources:ConfluenceToken", props.environment),
       exportName: `${props.stackName}:Secrets:ConfluenceToken:Arn`
     })
+
+    new CfnOutput(this, "ServiceSearch3ApiKeyArn", {
+      value: configSecrets.serviceSearch3ApiKey.secretArn,
+      exportName: `${props.stackName}:Secrets:ServiceSearch3ApiKey:Arn`
+    })
+
     nagSuppressions(this, "Secrets")
   }
 }

@@ -145,7 +145,6 @@ It creates the following resources
     - SpineASID - used to store the spine ASID
     - SpinePartyKey - used to store the spine party key
     - SpineCAChain - used to store the spine CA chain
-    - ServiceSearchApiKey - used to store the service search API key
     - JiraToken - used to store token for jira
     - ConfluenceToken - used to store token for confluence
     - ProxgenPrivateKey - used to store the private key for proxygen
